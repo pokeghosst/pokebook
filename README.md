@@ -17,3 +17,7 @@ Poke!Book is your own digital notebook for writing poetry. Get into your creativ
 - [ ] Literature tools: count lines, characters, and words; syllable counter; literature form helper, maybe?
 - [ ] Better look on small screens
 - [ ] Export to text file
+
+## Known limitations
+
+- You cannot save poems in private browser window (guess why, duh!)
