@@ -7,11 +7,11 @@
 
 <div class="w-11/12 h-screen columns-2 mx-auto mt-5">
 	<div class="top" />
-	<div class="w-full h-5/6 overflow-hidden">
+	<div class="w-full h-5/6">
 		<textarea bind:value={$noteStorage} class="paper h-full" />
 	</div>
 	<div class="top" />
-	<div class="w-full h-5/6 overflow-hidden">
+	<div class="w-full h-5/6">
 		<textarea bind:value={$poemStorage} class="paper h-full" />
 	</div>
 </div>
