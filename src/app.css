@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Bubblegum Sans';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''), url('/fonts/bubblegum-sans.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Cartoon Relief';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''), url('/fonts/cartoon-relief.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Tiki Tropic';
+    font-style: normal;
+    font-weight: normal;
+    src: local(''), url('/fonts/tiki-tropic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Halogen';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/Halogen.ttf');
+    src: local(''),
+        url('/fonts/Halogen.ttf') format('truetype'),
+}
+
+textarea {
+    max-height: 98%;
+}
+
+.top {
+    width: 100%;
+    height: 50px;
+    background: #333;
+    border-radius: 5px 5px 0 0;
+}
+
+.paper {
+    width: 100%;
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.15),
+        0 10px 0 -5px #eee,
+        0 10px 1px -4px rgba(0, 0, 0, 0.15),
+        0 20px 0 -10px #eee,
+        0 20px 1px -9px rgba(0, 0, 0, 0.15);
+    padding: 35px 20px;
+    background: repeating-linear-gradient(#F7F3EC, #F7F3EC 31px, #94ACD4 31px, #94ACD4 32px);
+    font-family: "Halogen", "Comic Sans MS", "Comic Sans", cursive;
+    line-height: 32px;
+    font-size: 22px;
+}
