@@ -22,7 +22,7 @@
 </script>
 
 <div class="w-11/12 mx-auto mt-5 text-center md:text-left">
-	<div class="pr-5 md:inline-block">
+	<div class="md:pr-5 md:inline-block">
 		<a href="/"><img alt="Poke!Book" src="/logo.png" style="width: 200px" class="mx-auto" /></a>
 	</div>
 	<ul class="inline-flex items-center mx-auto pt-5 md:pt-0 md:leading-[60px] md:align-bottom">
