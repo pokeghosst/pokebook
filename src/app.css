@@ -84,5 +84,6 @@ textarea:focus {
         display: inline-block;
         width: 87vw;
         height: 90vh;
+        flex: none;
     }
 }

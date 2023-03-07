@@ -61,7 +61,7 @@
 		>Delete poem</button
 	>
 </div>
-<div class="notebook-container w-11/12 h-screen columns-2 mx-auto mt-5">
+<div class="notebook-container w-11/12 h-screen md:columns-2 mx-auto mt-5">
 	<div class="notebook h-full">
 		<div class="top text-white leading-[50px] pl-5 font-bold">Notes</div>
 		<div class="w-full h-5/6">
@@ -76,7 +76,7 @@
 		<div
 			bind:this={nameEl}
 			class="top text-white leading-[50px] pl-5 font-bold overflow-scroll"
-			disabled={!editMode}
+			contenteditable={editMode}
 		>
 			{poemName}
 		</div>
