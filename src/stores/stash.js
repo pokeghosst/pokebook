@@ -15,7 +15,7 @@ function createPoemStash() {
             return poems;
         },
         set: async (newPoem) => {
-            dbfun.addPoem(notes, poem)
+            dbfun.addPoem(notes, poem, poemName)
                 .then(() => {
                     return {};
                 });

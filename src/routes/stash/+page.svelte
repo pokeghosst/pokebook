@@ -19,7 +19,7 @@
 									<a href="/stash/{poem.id}"
 										><td
 											class="w-10/12 whitespace-nowrap px-6 py-4 underline decoration-dotted hover:no-underline"
-											>{poem.poem.slice(0, 50)}...</td
+											>{poem.name}</td
 										></a
 									>
 									<td class="w-1/12 whitespace-nowrap px-6 py-4 text-right"

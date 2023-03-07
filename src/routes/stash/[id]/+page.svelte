@@ -4,39 +4,36 @@
 	import { db } from '../../../stores/db';
 
 	let response;
-	export let text;
+	export let note;
+	export let poem;
+	export let poemName;
 	export let data;
-	export let editMode = false;
-	let editablePoem;
-	// Are we editing a poem or not(e)?
-	export let poemMode = true;
+	let nameEl;
+	let editMode;
 
 	onMount(async () => {
-		loadPoem();
+		load();
+		editMode = false;
 	});
 
-	async function loadPoem() {
-		response = await db.poems.get({ id: Number(data.id) });
-		text = response.poem;
-		poemMode = true;
+	function toggleEdit() {
+		editMode = !editMode;
 	}
 
-	async function loadNotes() {
+	async function load() {
 		response = await db.poems.get({ id: Number(data.id) });
-		text = response.note;
-		poemMode = false;
+		note = response.note;
+		poem = response.poem;
+		poemName = response.name;
 	}
 
-	// Probably not the best way...
 	async function save() {
-		text = editablePoem.textContent;
-		if (poemMode) {
-			console.log(text);
-			db.poems.where('id').equals(Number(data.id)).modify({ poem: text });
-		} else {
-			db.poems.where('id').equals(Number(data.id)).modify({ note: text });
-		}
-		editMode = false;
+		await db.poems.where('id').equals(Number(data.id)).modify({
+			note: note,
+			poem: poem,
+			name: nameEl.innerText
+		});
+		toggleEdit();
 	}
 
 	async function deletePoem() {
@@ -45,39 +42,50 @@
 	}
 </script>
 
-<div class="w-6/12 h-screen mx-auto mt-5 relative">
-	<div class="top">
-		{#if editMode}
-			<button
-				class="cursor-pointer underline decoration-dotted hover:no-underline block float-right text-white leading-[50px] mr-5"
-				on:click={() => save()}>Save</button
-			>
-		{/if}
-	</div>
-	<div class="w-full h-5/6">
-		<div bind:this={editablePoem} class="paper whitespace-pre-line h-fit mb-10 min-h-full" contenteditable={editMode}>
-			{text}
+<div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
+	{#if !editMode}
+		<button
+			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+			on:click={toggleEdit}>Edit</button
+		>
+	{:else}
+		<button
+			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+			on:click={save}>Save</button
+		>
+	{/if}
+
+	<button
+		on:click={() => deletePoem()}
+		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+		>Delete poem</button
+	>
+</div>
+<div class="notebook-container w-11/12 h-screen columns-2 mx-auto mt-5">
+	<div class="notebook h-full">
+		<div class="top text-white leading-[50px] pl-5 font-bold">Notes</div>
+		<div class="w-full h-5/6">
+			<textarea
+				bind:value={note}
+				class="paper whitespace-pre-line h-fit mb-10 min-h-full"
+				disabled={!editMode}
+			/>
 		</div>
 	</div>
-	<div class="absolute top-0 -right-[7em]">
-		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline block"
-			on:click={() => loadPoem()}
-			disabled={editMode}>Poem</button
+	<div class="notebook h-full">
+		<div
+			bind:this={nameEl}
+			class="top text-white leading-[50px] pl-5 font-bold overflow-scroll"
+			disabled={!editMode}
 		>
-		<button
-			class="mb-5 cursor-pointer underline decoration-dotted hover:no-underline block"
-			on:click={() => loadNotes()}
-			disabled={editMode}>Poem notes</button
-		>
-		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline block"
-			on:click={() => (editMode = true)}>Edit</button
-		>
-		<button
-			on:click={() => deletePoem()}
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline block"
-			>Delete poem</button
-		>
+			{poemName}
+		</div>
+		<div class="w-full h-5/6">
+			<textarea
+				bind:value={poem}
+				class="paper whitespace-pre-line h-fit mb-10 min-h-full"
+				disabled={!editMode}
+			/>
+		</div>
 	</div>
 </div>
