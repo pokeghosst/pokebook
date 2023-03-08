@@ -2,6 +2,7 @@
 
 # Poke!Book (Pokeghost’s poetry noteBook)
 
+[![https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg](https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg)](https://good-labs.github.io/greater-good-affirmation)
 ![Website](https://img.shields.io/website?url=https%3A%2F%2Fbook.pokeghost.org)
 [![GitHub license](https://img.shields.io/github/license/pokegh0st/pokebook.svg)](https://github.com/pokegh0st/pokebook/blob/main/LICENSE)
 ![Version](https://img.shields.io/github/v/release/pokegh0st/pokebook)
@@ -18,6 +19,10 @@
 - The draft is autosaved with every single character written – don't worry about crashes or blackouts so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous poem is saved in the Poem Stash™!
 - View, edit and delete your previously written poems and store as many as your computer can handle!
+
+## PokeBook desktop app
+
+PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS produced with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
 
 ## Installing / Getting started
 
