@@ -1,6 +1,5 @@
 <script>
-	import { redirect } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
+		import { onMount } from 'svelte';
 	import { db } from '../../../stores/db';
 
 	let response;
