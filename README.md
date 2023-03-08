@@ -1,6 +1,6 @@
 <img src="/static/logo.png" width="300px" alt="PókeBook logo"/>
 
-# Póke!Book (Pókeghost’s poetry noteBook)
+# Poké!Book (Pokéghost’s poetry noteBook)
 
 ![Website](https://img.shields.io/website?url=https%3A%2F%2Fbook.pokeghost.org)
 [![GitHub license](https://img.shields.io/github/license/pokegh0st/pokebook.svg)](https://github.com/pokegh0st/pokebook/blob/main/LICENSE)
@@ -9,9 +9,9 @@
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e7d89e1a-3c25-47e9-82e6-23acd668e75e/deploy-status)](https://app.netlify.com/sites/dancing-axolotl-36cfbd/deploys)
 
-> Poke!Book is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
+> Poké!Book is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
 
-## What makes Poke!Book so cool?
+## What makes Poké!Book so cool?
 
 - Workspace split into two independent notepads – jot down notes in the left one and write the poem in the right one.
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
