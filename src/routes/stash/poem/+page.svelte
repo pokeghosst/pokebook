@@ -1,12 +1,13 @@
 <script>
-		import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { db } from '../../../stores/db';
+	import { currentPoem } from '../../../stores/poemId';
+	import { goto } from '$app/navigation';
 
 	let response;
 	export let note;
 	export let poem;
 	export let poemName;
-	export let data;
 	let nameEl;
 	let editMode;
 
@@ -20,14 +21,14 @@
 	}
 
 	async function load() {
-		response = await db.poems.get({ id: Number(data.id) });
+		response = await db.poems.get({ id: Number($currentPoem) });
 		note = response.note;
 		poem = response.poem;
 		poemName = response.name;
 	}
 
 	async function save() {
-		await db.poems.where('id').equals(Number(data.id)).modify({
+		await db.poems.where('id').equals(Number($currentPoem)).modify({
 			note: note,
 			poem: poem,
 			name: nameEl.innerText
@@ -36,8 +37,8 @@
 	}
 
 	async function deletePoem() {
-		db.poems.where('id').equals(Number(data.id)).delete();
-		window.location.replace('/stash');
+		db.poems.where('id').equals(Number($currentPoem)).delete();
+		goto('/stash', { replaceState: false })
 	}
 </script>
 

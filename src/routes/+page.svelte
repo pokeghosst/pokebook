@@ -1,7 +1,6 @@
 <script>
 	import { count, countFromFile, info } from 'letter-count';
 	import { poemStorage, noteStorage, poemNameStorage } from '../stores/poemStore.js';
-	import { onMount } from 'svelte';
 	
 </script>
 

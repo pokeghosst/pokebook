@@ -2,8 +2,15 @@
 	import { liveQuery } from 'dexie';
 	import { db } from '../../stores/db';
 	import { browser } from '$app/environment';
+	import { currentPoem } from '../../stores/poemId';
+	import { goto } from '$app/navigation';
 
 	let poems = liveQuery(() => (browser ? db.poems.reverse().toArray() : []));
+
+	function openPoem(id) {
+		currentPoem.set(id);
+		goto('/stash/poem', { replaceState: false })
+	}
 </script>
 
 <div class="flex flex-col w-7/12 mx-auto">
@@ -16,11 +23,11 @@
 							<tr><th /></tr>
 							{#each $poems as poem (poem.id)}
 								<tr class="border-b bg-white dark:border-neutral-500 dark:bg-neutral-700">
-									<a href="/stash/{poem.id}"
+									<button on:click={openPoem(poem.id)}
 										><td
 											class="w-10/12 whitespace-nowrap px-6 py-4 underline decoration-dotted hover:no-underline"
 											>{poem.name}</td
-										></a
+										></button
 									>
 									<td class="w-1/12 whitespace-nowrap px-6 py-4 text-right"
 										>{new Date(poem.timestamp).toLocaleDateString('en-US', {
