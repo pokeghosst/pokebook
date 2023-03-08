@@ -10,9 +10,9 @@
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/e7d89e1a-3c25-47e9-82e6-23acd668e75e/deploy-status)](https://app.netlify.com/sites/dancing-axolotl-36cfbd/deploys)
 
-> Poke!Book is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
+> PokeBook is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
 
-## What makes Poke!Book so cool?
+## What makes PokeBook so cool?
 
 - Workspace split into two independent notepads – jot down notes in the left one and write the poem in the right one.
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
@@ -26,7 +26,7 @@ PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS prod
 
 ## Installing / Getting started
 
-You can use Póke!Book at no cost by visiting https://book.pokeghost.org.
+You can use PokeBook at no cost by visiting https://book.pokeghost.org.
 
 Production-ready build can be deployed anywhere by doing the following:
 
@@ -37,7 +37,7 @@ yarn
 yarn run build
 ```
 
-Póke!Book can be easily deployed on many app platforms (such as Netlify or DigitalOcean) with zero configuration required. For example:
+PokeBook can be easily deployed on many app platforms (such as Netlify or DigitalOcean) with zero configuration required. For example:
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/pokegh0st/pokebook)
 
