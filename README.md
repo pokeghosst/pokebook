@@ -71,4 +71,4 @@ For bugs and feature requests, don't hesitate to open issues!
 - [ ] Literature tools: count lines, characters, and words; syllable counter; literature form helper, maybe?
 - [x] Better look on small screens
 - [ ] Export to text file
-- [ ] Electron app
+- [x] ~Electron~ Tauri desktop app
