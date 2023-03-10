@@ -37,8 +37,10 @@
 	}
 
 	async function deletePoem() {
-		db.poems.where('id').equals(Number($currentPoem)).delete();
-		goto('/stash', { replaceState: false })
+		if (confirm('Heads up! You sure want to delete this poem?')) {
+			db.poems.where('id').equals(Number($currentPoem)).delete();
+			goto('/stash', { replaceState: false });
+		}
 	}
 </script>
 
