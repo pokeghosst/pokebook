@@ -34,19 +34,19 @@
 
 textarea {
     max-height: 98%;
-    outline: none!important;
+    outline: none !important;
     position: relative;
 }
 
 textarea:focus {
-    outline: none !important;    
+    outline: none !important;
     box-shadow:
-    0 0 10px #CCC,
-    0 1px 1px rgba(0, 0, 0, 0.15),
-    0 10px 0 -5px #eee,
-    0 10px 1px -4px rgba(0, 0, 0, 0.15),
-    0 20px 0 -10px #eee,
-    0 20px 1px -9px rgba(0, 0, 0, 0.15);
+        0 0 10px #CCC,
+        0 1px 1px rgba(0, 0, 0, 0.15),
+        0 10px 0 -5px #eee,
+        0 10px 1px -4px rgba(0, 0, 0, 0.15),
+        0 20px 0 -10px #eee,
+        0 20px 1px -9px rgba(0, 0, 0, 0.15);
 }
 
 .top {
@@ -80,8 +80,8 @@ textarea:focus {
         overflow-y: hidden;
         white-space: nowrap;
     }
+
     .notebook {
-        display: inline-block;
         width: 87vw;
         height: 90vh;
         flex: none;
