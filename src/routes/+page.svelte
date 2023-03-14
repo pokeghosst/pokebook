@@ -1,20 +1,30 @@
 <script>
 	import { count, countFromFile, info } from 'letter-count';
-	import { poemStorage, noteStorage, poemNameStorage } from '../stores/poemStore.js';
+	import Notes from '../components/Notes.svelte';
+	import Poem from '../components/Poem.svelte';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faRightLeft } from '@fortawesome/free-solid-svg-icons';
 	
+	let views = [Poem, Notes];
+	let currentState = "transition-opacity duration-500 ease-out opacity-100";
+
+	function swapViews() {
+		currentState = "transition-opacity duration-500 ease-out opacity-0";
+		setTimeout(function() {
+			[views[0], views[1]] = [views[1], views[0]];
+			currentState = "transition-opacity duration-500 ease-out opacity-100";
+		}, 600)
+	}
 </script>
 
-<div class="notebook-container w-11/12 h-screen md:columns-2 mx-auto mt-5">
-	<div class="notebook h-full">
-		<div class="top text-white leading-[50px] pl-5 font-bold">Notes</div>
-		<div class="w-full h-5/6">
-			<textarea bind:value={$noteStorage} class="paper h-full" />
+<div class="notebook-container w-11/12 h-screen md:columns-2 mx-auto mt-5 {currentState}">
+	<div class="h-full inline-block md:block">
+		<div class="relative">
+			<button class="absolute right-2 top-2 z-10" on:click={swapViews}><FontAwesomeIcon icon={faRightLeft} class="text-[#333333] border-[#333333] border-[1px] bg-white p-2 rounded-full"/></button>
 		</div>
+		<svelte:component this={views[0]} />
 	</div>
-	<div class="notebook h-full">
-		<div class="top text-white leading-[50px] pl-5 font-bold overflow-scroll" contenteditable="true" bind:textContent={$poemNameStorage}></div>
-		<div class="w-full h-5/6">
-			<textarea bind:value={$poemStorage} class="paper h-full" />
-		</div>
+	<div class="h-full inline-block md:block">
+		<svelte:component this={views[1]} />
 	</div>
 </div>

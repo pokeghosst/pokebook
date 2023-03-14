@@ -13,19 +13,19 @@
 	}
 </script>
 
-<div class="flex flex-col w-7/12 mx-auto">
-	<div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-		<div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+<div class="flex flex-col w-11/12 md:w-7/12 mx-auto">
+	<div class="overflow-x-auto">
+		<div class="inline-block min-w-full">
 			<div class="overflow-hidden">
 				<table class="min-w-full text-left table-fixed">
 					<tbody>
 						{#if $poems}
 							<tr><th /></tr>
 							{#each $poems as poem (poem.id)}
-								<tr class="border-b bg-white dark:border-neutral-500 dark:bg-neutral-700">
+								<tr class="border-b bg-white">
 									<button on:click={openPoem(poem.id)}
 										><td
-											class="w-10/12 whitespace-nowrap px-6 py-4 underline decoration-dotted hover:no-underline"
+											class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted hover:no-underline"
 											>{poem.name}</td
 										></button
 									>
