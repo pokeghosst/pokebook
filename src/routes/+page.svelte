@@ -17,14 +17,14 @@
 	}
 </script>
 
-<div class="notebook-container w-11/12 h-screen md:columns-2 mx-auto mt-5 {currentState}">
-	<div class="h-full inline-block md:block">
+<div class="notebook-container w-11/12 mb-40 md:columns-2 mx-auto mt-5 {currentState}">
+	<div class="h-screen w-max md:w-full inline-block">
 		<div class="relative">
 			<button class="absolute right-2 top-2 z-10" on:click={swapViews}><FontAwesomeIcon icon={faRightLeft} class="text-[#333333] border-[#333333] border-[1px] bg-white p-2 rounded-full"/></button>
 		</div>
 		<svelte:component this={views[0]} />
 	</div>
-	<div class="h-full inline-block md:block">
+	<div class="h-screen w-max md:w-full inline-block">
 		<svelte:component this={views[1]} />
 	</div>
 </div>
