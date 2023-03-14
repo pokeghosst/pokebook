@@ -4,7 +4,7 @@
 
 <div class="notebook h-full">
 	<div
-		class="top text-white leading-[50px] pl-5 font-bold overflow-scroll"
+		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
 		contenteditable="true"
 		bind:textContent={$poemNameStorage}
 	/>
