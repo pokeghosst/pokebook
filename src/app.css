@@ -73,6 +73,11 @@ textarea:focus {
     font-size: 22px;
 }
 
+.dark .paper {
+    background: repeating-linear-gradient(#333333, #333333 31px, #f7f3ec 31px, #4f483d 32px);
+    color: #f7f3ec;
+}
+
 @media only screen and (max-width: 768px) {
 
     .notebook-container {
