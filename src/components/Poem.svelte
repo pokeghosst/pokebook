@@ -1,5 +1,5 @@
 <script>
-	import { font } from "../stores/font";
+	import { font, poemAlignment } from "../stores/font";
 
 	export let props;
 	export let editable;
@@ -12,6 +12,6 @@
 		bind:textContent={props.poemName}
 	/>
 	<div class="w-full">
-		<textarea bind:value={props.poem} disabled={!editable} class="paper h-screen {$font}" />
+		<textarea bind:value={props.poem} disabled={!editable} class="paper h-screen {$font} {$poemAlignment}" />
 	</div>
 </div>

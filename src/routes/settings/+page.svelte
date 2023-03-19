@@ -1,24 +1,41 @@
 <script>
-	import { font } from '../../stores/font';
+	import { font, poemAlignment } from '../../stores/font';
 
 	const fonts = [
-		{ id: 1, family: 'halogen', displayName: 'Halogen' },
-		{ id: 1, family: 'hashtag', displayName: 'Hashtag' },
-		{ id: 1, family: 'ammys', displayName: 'Ammys Handwriting' },
-		{ id: 1, family: 'journal', displayName: 'Journal' },
-		{ id: 1, family: 'damagrafik', displayName: 'Damagrafik Script' },
-		{ id: 1, family: 'jphand', displayName: 'JP Hand' },
+		{ family: 'halogen', displayName: 'Halogen' },
+		{ family: 'hashtag', displayName: 'Hashtag' },
+		{ family: 'ammys', displayName: 'Ammys Handwriting' },
+		{ family: 'journal', displayName: 'Journal' },
+		{ family: 'damagrafik', displayName: 'Damagrafik Script' },
+		{ family: 'jphand', displayName: 'JP Hand' }
+	];
+
+	const alignments = [
+		{ alignmentClass: 'text-left', displayName: 'Left' },
+		{ alignmentClass: 'text-right', displayName: 'Right' },
+		{ alignmentClass: 'text-center', displayName: 'Centered' }
 	];
 </script>
 
 <div class="w-11/12 mt-10 mx-auto">
-	<div>
+	<div class="mb-5">
 		<label for="font">Notebook font:</label>
 
 		<select bind:value={$font}>
 			{#each fonts as font}
 				<option value={font.family}>
 					{font.displayName}
+				</option>
+			{/each}
+		</select>
+	</div>
+	<div>
+		<label for="font">Poem alignment:</label>
+
+		<select bind:value={$poemAlignment}>
+			{#each alignments as alignment}
+				<option value={alignment.alignmentClass}>
+					{alignment.displayName}
 				</option>
 			{/each}
 		</select>

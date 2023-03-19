@@ -5,6 +5,7 @@
 ## Added
 - Dark mode
 - Ability to change fonts
+- Ability to set poem alignment
 
 ## Fixed
 - Broken panes on poem editing
