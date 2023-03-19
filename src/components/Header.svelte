@@ -45,7 +45,7 @@
 			<a href="/settings" class="underline decoration-dotted hover:no-underline block">Settings</a>
 		</li>
 		<li>
-			<a href="https://github.com/pokegh0st/pokebook" target="_blank" rel="noreferrer" class="underline decoration-dotted hover:no-underline block">Donate <span class="text-xs align-sub">(pwease?)</span></a>
+			<a href="https://ko-fi.com/pokeghost" target="_blank" rel="noreferrer" class="underline decoration-dotted hover:no-underline block">Donate <span class="text-xs align-sub">(pwease?)</span></a>
 		</li>
 	</ul>
 
