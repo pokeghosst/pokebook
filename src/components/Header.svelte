@@ -4,6 +4,7 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMoon } from '@fortawesome/free-solid-svg-icons';
 	import { darkMode } from '../stores/mode.js';
+	
 
 	async function stashPoem() {
 		if ($poemStorage != '' || $noteStorage != '' || $poemNameStorage != '') {
@@ -20,12 +21,13 @@
 			} catch (e) {
 				console.log(e);
 			}
+		location.reload();
 		}
 	}
 
 	function toggleDarkMode() {
-		($darkMode == 'dark') ? darkMode.update(() => '') : darkMode.update(() => 'dark')
-		document.documentElement.classList.toggle('dark')
+		$darkMode == 'dark' ? darkMode.update(() => '') : darkMode.update(() => 'dark');
+		document.documentElement.classList.toggle('dark');
 	}
 </script>
 

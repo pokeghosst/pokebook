@@ -3,17 +3,22 @@
 	import { db } from '../../../stores/db';
 	import { currentPoem } from '../../../stores/poemId';
 	import { goto } from '$app/navigation';
+	import Workspace from '../../../components/Workspace.svelte';
 
 	let response;
-	export let note;
-	export let poem;
-	export let poemName;
-	let nameEl;
 	let editMode;
 
+	let poemProps;
+	let noteProps;
+
+	let loaded = false;
+
 	onMount(async () => {
-		load();
+		await load();
 		editMode = false;
+		console.log(poemProps);
+		console.log(noteProps);
+		loaded = true;
 	});
 
 	function toggleEdit() {
@@ -22,16 +27,22 @@
 
 	async function load() {
 		response = await db.poems.get({ id: Number($currentPoem) });
-		note = response.note;
-		poem = response.poem;
-		poemName = response.name;
+		console.log(response);
+		poemProps = {
+			poem: response.poem,
+			poemName: response.name
+		};
+
+		noteProps = {
+			note: response.note
+		};
 	}
 
 	async function save() {
 		await db.poems.where('id').equals(Number($currentPoem)).modify({
-			note: note,
-			poem: poem,
-			name: nameEl.innerText
+			note: noteProps.note,
+			poem: poemProps.poem,
+			name: poemProps.poemName
 		});
 		toggleEdit();
 	}
@@ -44,7 +55,7 @@
 	}
 </script>
 
-<div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
+<div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto dark:text-stone-100">
 	{#if !editMode}
 		<button
 			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
@@ -63,31 +74,6 @@
 		>Delete poem</button
 	>
 </div>
-<div class="notebook-container w-11/12 h-screen md:columns-2 mx-auto mt-5">
-	<div class="notebook h-full">
-		<div
-			bind:this={nameEl}
-			class="top text-white leading-[50px] pl-5 font-bold overflow-scroll"
-			contenteditable={editMode}
-		>
-			{poemName}
-		</div>
-		<div class="w-full h-5/6">
-			<textarea
-				bind:value={poem}
-				class="paper whitespace-pre-line h-fit mb-10 min-h-full"
-				disabled={!editMode}
-			/>
-		</div>
-	</div>
-	<div class="notebook h-full">
-		<div class="top text-white leading-[50px] pl-5 font-bold">Notes</div>
-		<div class="w-full h-5/6">
-			<textarea
-				bind:value={note}
-				class="paper whitespace-pre-line h-fit mb-10 min-h-full"
-				disabled={!editMode}
-			/>
-		</div>
-	</div>
-</div>
+{#if loaded}
+	<Workspace bind:poemProps bind:noteProps editable={editMode} />
+{/if}
