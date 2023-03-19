@@ -38,6 +38,11 @@ textarea {
     position: relative;
 }
 
+.dark textarea:disabled {
+    -webkit-text-fill-color: #1c1917;
+    opacity: 1;
+}
+
 textarea:focus {
     outline: none !important;
     box-shadow:
@@ -78,6 +83,12 @@ body:focus-visible {
 }
 
 .dark .paper {
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.15),
+        0 10px 0 -5px #a8a29e,
+        0 10px 1px -4px rgba(0, 0, 0, 0.15),
+        0 20px 0 -10px #a8a29e,
+        0 20px 1px -9px rgba(0, 0, 0, 0.15);
     background: repeating-linear-gradient(#a8a29e, #a8a29e 31px, #57534e 31px, #57534e 32px);
     color: #1c1917;
 }
