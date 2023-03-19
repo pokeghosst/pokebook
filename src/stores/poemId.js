@@ -1,3 +1,12 @@
 import { writable } from "svelte/store";
+import { browser } from '$app/environment';
 
-export const currentPoem = writable(0);
+let currentPoem;
+
+if (browser) {
+    const currentPoemStored = localStorage.currentPoem;
+    currentPoem = writable(currentPoemStored || 0)
+    currentPoem.subscribe((value) => localStorage.currentPoem = value)
+}
+
+export { currentPoem };

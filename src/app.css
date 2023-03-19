@@ -49,6 +49,10 @@ textarea:focus {
         0 20px 1px -9px rgba(0, 0, 0, 0.15);
 }
 
+body:focus-visible {
+    outline: none;
+}
+
 .top {
     width: 100%;
     height: 50px;
@@ -71,6 +75,11 @@ textarea:focus {
     font-family: "Halogen", "Comic Sans MS", "Comic Sans", cursive;
     line-height: 32px;
     font-size: 22px;
+}
+
+.dark .paper {
+    background: repeating-linear-gradient(#a8a29e, #a8a29e 31px, #57534e 31px, #57534e 32px);
+    color: #1c1917;
 }
 
 @media only screen and (max-width: 768px) {

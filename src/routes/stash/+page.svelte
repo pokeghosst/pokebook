@@ -22,7 +22,7 @@
 						{#if $poems}
 							<tr><th /></tr>
 							{#each $poems as poem (poem.id)}
-								<tr class="border-b bg-white">
+								<tr class="border-b bg-white dark:bg-stone-800 dark:text-stone-100 dark:border-b-stone-100">
 									<button on:click={openPoem(poem.id)}
 										><td
 											class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted hover:no-underline"
