@@ -1,5 +1,13 @@
 # Changelog 
 
+[UNRELEASED]
+
+## Added
+- Dark mode
+
+## Fixed
+- Broken panes on poem editing
+
 # [0.4.0] - 2023-03-14
 ## Added
 - Confirmation when deleting the poem
