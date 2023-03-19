@@ -4,7 +4,6 @@
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMoon } from '@fortawesome/free-solid-svg-icons';
 	import { darkMode } from '../stores/mode.js';
-	
 
 	async function stashPoem() {
 		if ($poemStorage != '' || $noteStorage != '' || $poemNameStorage != '') {
@@ -21,7 +20,7 @@
 			} catch (e) {
 				console.log(e);
 			}
-		location.reload();
+			location.reload();
 		}
 	}
 
@@ -36,11 +35,14 @@
 		<a href="/"><img alt="Poke!Book" src="/logo.png" class="mx-auto w-[200px] opacity-80" /></a>
 	</div>
 	<ul class="inline-flex items-center mx-auto pt-5 pr-5 md:pt-0 md:leading-[60px] md:align-bottom">
-		<li class="pr-5 underline decoration-dotted hover:no-underline block">
-			<a href="/" on:click={() => stashPoem()}>Save and add new</a>
+		<li class="pr-5">
+			<a href="/" class="underline decoration-dotted hover:no-underline block" on:click={() => stashPoem()}>Save and add new</a>
+		</li>
+		<li class="pr-5">
+			<a href="/stash" class="underline decoration-dotted hover:no-underline block">Poem stash</a>
 		</li>
 		<li>
-			<a href="/stash" class="underline decoration-dotted hover:no-underline block">Poem stash</a>
+			<a href="/settings" class="underline decoration-dotted hover:no-underline block">Settings</a>
 		</li>
 	</ul>
 
