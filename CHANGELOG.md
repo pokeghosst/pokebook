@@ -1,7 +1,6 @@
 # Changelog 
 
-[UNRELEASED]
-
+# [0.5.0] - 2023-03-19
 ## Added
 - Dark mode
 - Ability to change fonts
