@@ -7,7 +7,11 @@
 		{ family: 'ammys', displayName: 'Ammys Handwriting' },
 		{ family: 'journal', displayName: 'Journal' },
 		{ family: 'damagrafik', displayName: 'Damagrafik Script' },
-		{ family: 'jphand', displayName: 'JP Hand' }
+		{ family: 'jphand', displayName: 'JP Hand' },
+		{ family: 'arial', displayName: 'Arial' },
+		{ family: 'oldattic', displayName: 'Times Old Attic Bold' },
+		{ family: 'crimson', displayName: 'Crimson Roman' },
+		{ family: 'comic', displayName: 'Comic Sans MS' },
 	];
 
 	const alignments = [

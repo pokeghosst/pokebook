@@ -2,6 +2,9 @@
 
 # [Unreleased]
 
+## Added
+- New fonts: Arial, Crimson Roman, Comic Sans MS, Times Old Attic Bold
+
 ## Fixed
 - Poem alignment not being stored in local storage
 
