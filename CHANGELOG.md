@@ -7,6 +7,7 @@
 
 ## Fixed
 - Poem alignment not being stored in local storage
+- Color for label in settings for dark mode
 
 # [0.5.0] - 2023-03-19
 ## Added

@@ -23,7 +23,7 @@
 
 <div class="w-11/12 mt-10 mx-auto">
 	<div class="mb-5">
-		<label for="font">Notebook font:</label>
+		<label for="font" class="dark:text-stone-100">Notebook font:</label>
 
 		<select bind:value={$font}>
 			{#each fonts as font}
@@ -34,7 +34,7 @@
 		</select>
 	</div>
 	<div>
-		<label for="font">Poem alignment:</label>
+		<label for="font" class="dark:text-stone-100">Poem alignment:</label>
 
 		<select bind:value={$poemAlignment}>
 			{#each alignments as alignment}
