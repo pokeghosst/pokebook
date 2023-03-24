@@ -12,8 +12,8 @@
 
 	const alignments = [
 		{ alignmentClass: 'text-left', displayName: 'Left' },
-		{ alignmentClass: 'text-right', displayName: 'Right' },
-		{ alignmentClass: 'text-center', displayName: 'Centered' }
+		{ alignmentClass: 'text-center', displayName: 'Centered' },
+		{ alignmentClass: 'text-right', displayName: 'Right' }
 	];
 </script>
 

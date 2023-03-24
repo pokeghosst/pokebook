@@ -1,5 +1,10 @@
 # Changelog 
 
+# [Unreleased]
+
+## Fixed
+- Poem alignment not being stored in local storage
+
 # [0.5.0] - 2023-03-19
 ## Added
 - Dark mode

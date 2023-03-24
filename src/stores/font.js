@@ -11,7 +11,7 @@ if (browser) {
 
     const poemAlignmentStored = localStorage.poemAlignment;
     poemAlignment = writable(poemAlignmentStored || 'text-left')
-    poemAlignment.subscribe((value) => poemAlignment.font = value)
+    poemAlignment.subscribe((value) => localStorage.poemAlignment = value)
 }
 
 export { font, poemAlignment };
