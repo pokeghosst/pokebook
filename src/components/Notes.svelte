@@ -1,5 +1,6 @@
 <script>
 	import { font } from "../stores/font";
+	import { dayTheme } from "../stores/mode";
 
 	export let props;
 	export let editable;

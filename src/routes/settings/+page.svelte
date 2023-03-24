@@ -1,5 +1,6 @@
 <script>
 	import { font, poemAlignment } from '../../stores/font';
+	import { dayTheme } from '../../stores/mode';
 
 	const fonts = [
 		{ family: 'halogen', displayName: 'Halogen' },
@@ -19,6 +20,11 @@
 		{ alignmentClass: 'text-center', displayName: 'Centered' },
 		{ alignmentClass: 'text-right', displayName: 'Right' }
 	];
+
+	const dayThemes = [
+		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
+		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
+	];
 </script>
 
 <div class="w-11/12 mt-10 mx-auto">
@@ -33,13 +39,28 @@
 			{/each}
 		</select>
 	</div>
-	<div>
+	<div class="mb-5">
 		<label for="font" class="dark:text-stone-100">Poem alignment:</label>
 
 		<select bind:value={$poemAlignment}>
 			{#each alignments as alignment}
 				<option value={alignment.alignmentClass}>
 					{alignment.displayName}
+				</option>
+			{/each}
+		</select>
+	</div>
+	<div class="mb-5">
+		<label for="dayTheme" class="dark:text-stone-100">Day theme:</label>
+
+		<select bind:value={$dayTheme} on:change="{() => {
+			if (!document.documentElement.classList.contains("dark")) {
+				document.documentElement.classList.value = $dayTheme;
+			}
+		}}">
+			{#each dayThemes as theme}
+				<option value={theme.themeClass}>
+					{theme.displayName}
 				</option>
 			{/each}
 		</select>

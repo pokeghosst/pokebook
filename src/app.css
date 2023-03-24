@@ -172,23 +172,51 @@ body:focus-visible {
 .top {
     width: 100%;
     height: 50px;
-    background: #333;
     border-radius: 5px 5px 0 0;
     position: relative;
     z-index: 1;
 }
 
+.vanilla .top {
+    background: #333;
+}
+
+.strawberry .top {
+    background: #f9a8d4;
+}
+
+.strawberry body {
+    background: #fdf2f8;
+}
+
+.strawberry .poem-list {
+    background: #fdf2f8;
+}
+
 .paper {
     width: 100%;
+    padding: 35px 20px;
+    line-height: 32px;
+}
+
+.vanilla .paper {
+    background: repeating-linear-gradient(#F7F3EC, #F7F3EC 31px, #94ACD4 31px, #94ACD4 32px);
     box-shadow:
         0 1px 1px rgba(0, 0, 0, 0.15),
         0 10px 0 -5px #eee,
         0 10px 1px -4px rgba(0, 0, 0, 0.15),
         0 20px 0 -10px #eee,
         0 20px 1px -9px rgba(0, 0, 0, 0.15);
-    padding: 35px 20px;
-    background: repeating-linear-gradient(#F7F3EC, #F7F3EC 31px, #94ACD4 31px, #94ACD4 32px);
-    line-height: 32px;
+}
+
+.strawberry .paper {
+    background: repeating-linear-gradient(#fce7f3, #fce7f3 31px, #f9a8d4 31px, #f9a8d4 32px);
+    box-shadow:
+        0 1px 1px rgba(131, 24, 67, 0.15),
+        0 10px 0 -5px #fce7f3,
+        0 10px 1px -4px rgba(131, 24, 67, 0.15),
+        0 20px 0 -10px #fce7f3,
+        0 20px 1px -9px rgba(131, 24, 67, 0.15)
 }
 
 .dark .paper {
