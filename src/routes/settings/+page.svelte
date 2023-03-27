@@ -25,6 +25,11 @@
 		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
 		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
 	];
+
+	const nightThemes = [
+		{ themeClass: 'chocolate', displayName: 'Chocolate' },
+		// { themeClass: 'black-lobelia', displayName: 'Black Lobelia' },
+	];
 </script>
 
 <div class="w-11/12 mt-10 mx-auto">
