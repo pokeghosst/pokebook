@@ -15,6 +15,7 @@
 - Poem alignment not being stored in local storage
 - Color for label in settings for dark mode
 - Greyed out text in mobile browsers when editing is disabled
+- Prevent saving poem with empty name
 
 ## Changed
 - Dark mode doesn't rely on Tailwind's `dark:` selector anymore to enable different night themes 

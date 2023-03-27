@@ -18,7 +18,7 @@
 	$: $noteStorage = noteProps.note;
 
 	async function stashPoem() {
-		if ($poemStorage != '' || $noteStorage != '' || $poemNameStorage != '') {
+		if ($poemStorage !== '' && $poemNameStorage !== '') {
 			try {
 				await db.poems.add({
 					note: $noteStorage,
@@ -33,6 +33,8 @@
 				console.log(e);
 			}
 			location.reload();
+		} else {
+			alert('You cannot save a poem without a name or... a poem!')
 		}
 	}
 
