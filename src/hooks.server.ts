@@ -4,7 +4,7 @@ const securityHeaders = {
     'Cross-Origin-Opener-Policy': 'same-origin',
     'X-XSS-Protection': '1; mode=block',
     'X-Frame-Options': 'DENY',
-    'Content-Security-Policy': 'base-uri \'self\'; default-src \'self\'; img-src \'self\'; script-src \'self\' \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\'; object-src \'self\'; frame-ancestors \'none\'; form-action \'self\'',
+    'Content-Security-Policy': 'base-uri \'self\'; script-src \'self\' \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\'; object-src \'self\'; frame-ancestors \'none\'; form-action \'self\'',
     'X-Content-Type-Options': 'nosniff',
 
 }

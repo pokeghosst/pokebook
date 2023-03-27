@@ -6,6 +6,7 @@
 - New fonts: Arial, Crimson Roman, Comic Sans MS, Times Old Attic Bold
 - Day theme switching
 - Themes: Strawberry Sundae
+- Export poem to image
 
 ## Fixed
 - Poem alignment not being stored in local storage

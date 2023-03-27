@@ -4,6 +4,7 @@
 	import { currentPoem } from '../../../stores/poemId';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
+	import generateImage from '../../../util/poem2image'
 
 	let response;
 	let editMode;
@@ -16,8 +17,6 @@
 	onMount(async () => {
 		await load();
 		editMode = false;
-		console.log(poemProps);
-		console.log(noteProps);
 		loaded = true;
 	});
 
@@ -27,7 +26,6 @@
 
 	async function load() {
 		response = await db.poems.get({ id: Number($currentPoem) });
-		console.log(response);
 		poemProps = {
 			poem: response.poem,
 			poemName: response.name
@@ -53,17 +51,23 @@
 			goto('/stash', { replaceState: false });
 		}
 	}
+
 </script>
 
 <div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto dark:text-stone-100">
+	<button
+		on:click={() => generateImage(poemProps.poemName)}
+		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+		>Export as image</button
+	>
 	{#if !editMode}
 		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
 			on:click={toggleEdit}>Edit</button
 		>
 	{:else}
 		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
 			on:click={save}>Save</button
 		>
 	{/if}
@@ -71,7 +75,7 @@
 	<button
 		on:click={() => deletePoem()}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
-		>Delete poem</button
+		>Forget</button
 	>
 </div>
 {#if loaded}

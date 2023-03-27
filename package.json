@@ -38,6 +38,8 @@
 		"@fortawesome/free-solid-svg-icons": "^6.1.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
 		"dexie": "^3.2.3",
+		"downloadjs": "^1.4.7",
+		"html-to-image": "^1.11.11",
 		"letter-count": "^4.0.1",
 		"syllable": "^5.0.1"
 	}
