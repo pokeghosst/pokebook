@@ -8,7 +8,7 @@
 
 <div class="notebook h-screen" id="poem-notebook">
 	<div
-		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden dark:bg-stone-900 dark:text-stone-100"
+		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
 		contenteditable="true"
 		bind:textContent={props.poemName}
 	/>

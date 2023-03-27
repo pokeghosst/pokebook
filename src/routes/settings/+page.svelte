@@ -1,6 +1,6 @@
 <script>
 	import { font, poemAlignment } from '../../stores/font';
-	import { dayTheme } from '../../stores/mode';
+	import { dayTheme, nightTheme } from '../../stores/mode';
 
 	const fonts = [
 		{ family: 'halogen', displayName: 'Halogen' },
@@ -34,7 +34,7 @@
 
 <div class="w-11/12 mt-10 mx-auto">
 	<div class="mb-5">
-		<label for="font" class="dark:text-stone-100">Notebook font:</label>
+		<label for="font">Notebook font:</label>
 
 		<select bind:value={$font}>
 			{#each fonts as font}
@@ -45,7 +45,7 @@
 		</select>
 	</div>
 	<div class="mb-5">
-		<label for="font" class="dark:text-stone-100">Poem alignment:</label>
+		<label for="font">Poem alignment:</label>
 
 		<select bind:value={$poemAlignment}>
 			{#each alignments as alignment}
@@ -56,7 +56,7 @@
 		</select>
 	</div>
 	<div class="mb-5">
-		<label for="dayTheme" class="dark:text-stone-100">Day theme:</label>
+		<label for="dayTheme">Day theme:</label>
 
 		<select bind:value={$dayTheme} on:change="{() => {
 			if (!document.documentElement.classList.contains("dark")) {
@@ -64,6 +64,21 @@
 			}
 		}}">
 			{#each dayThemes as theme}
+				<option value={theme.themeClass}>
+					{theme.displayName}
+				</option>
+			{/each}
+		</select>
+	</div>
+	<div class="mb-5">
+		<label for="nightTheme">Night theme:</label>
+
+		<select bind:value={$nightTheme} on:change="{() => {
+			if (!document.documentElement.classList.contains("dark")) {
+				document.documentElement.classList.value = $nightTheme;
+			}
+		}}">
+			{#each nightThemes as theme}
 				<option value={theme.themeClass}>
 					{theme.displayName}
 				</option>

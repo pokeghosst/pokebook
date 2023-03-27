@@ -1,15 +1,17 @@
 <script>
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMoon } from '@fortawesome/free-solid-svg-icons';
-	import { darkMode } from '../stores/mode.js';
+	import { darkMode, dayTheme, nightTheme } from '../stores/mode.js';
 
 	function toggleDarkMode() {
 		$darkMode == 'dark' ? darkMode.update(() => '') : darkMode.update(() => 'dark');
 		document.documentElement.classList.toggle('dark');
+		document.documentElement.classList.toggle($nightTheme);
+		document.documentElement.classList.toggle($dayTheme);
 	}
 </script>
 
-<div class="w-11/12 mx-auto mt-5 text-center md:text-left dark:text-stone-100">
+<div class="w-11/12 mx-auto mt-5 text-center md:text-left" id="header-menu">
 	<div class="md:pr-5 md:inline-block">
 		<a href="/"><img alt="Poke!Book" src="/logo.png" class="mx-auto w-[200px] opacity-80" /></a>
 	</div>
@@ -25,7 +27,7 @@
 		</li>
 	</ul>
 
-	<button class="absolute right-6 top-6 p-2" on:click={() => toggleDarkMode()}
-		><FontAwesomeIcon icon={faMoon} class="text-[#333333] text-2xl dark:text-stone-100" /></button
+	<button class="absolute right-6 top-6 p-2" id="moon" on:click={() => toggleDarkMode()}
+		><FontAwesomeIcon icon={faMoon} class="text-2xl"/></button
 	>
 </div>

@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 
 let darkMode;
 let dayTheme;
+let nightTheme;
 
 if (browser) {
     const modeStored = localStorage.darkMode;
@@ -12,6 +13,10 @@ if (browser) {
     const dayThemeStored = localStorage.dayTheme;
     dayTheme = writable(dayThemeStored || 'vanilla')
     dayTheme.subscribe((value) => localStorage.dayTheme = value)
+
+    const nightThemeStored = localStorage.nightTheme;
+    nightTheme = writable(nightThemeStored || 'chocolate')
+    nightTheme.subscribe((value) => localStorage.nightTheme = value)
 }
 
-export { darkMode, dayTheme };
+export { darkMode, dayTheme, nightTheme };

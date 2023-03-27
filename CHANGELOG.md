@@ -14,6 +14,9 @@
 - Color for label in settings for dark mode
 - Greyed out text in mobile browsers when editing is disabled
 
+## Changed
+- Dark mode doesn't rely on Tailwind's `dark:` selector anymore to enable different night themes 
+
 # [0.5.0] - 2023-03-19
 ## Added
 - Dark mode

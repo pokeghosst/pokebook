@@ -54,7 +54,7 @@
 
 </script>
 
-<div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto dark:text-stone-100">
+<div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
 	<button
 		on:click={() => generateImage(poemProps.poemName)}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"

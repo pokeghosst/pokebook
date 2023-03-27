@@ -21,7 +21,7 @@
 					<tbody>
 						{#if $poems}
 							{#each $poems as poem (poem.id)}
-								<tr class="border-b dark:bg-stone-800 dark:text-stone-100 dark:border-b-stone-100">
+								<tr class="border-b">
 									<button on:click={openPoem(poem.id)}
 										><td
 											class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted hover:no-underline"
