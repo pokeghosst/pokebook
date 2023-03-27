@@ -10,6 +10,7 @@
 ## Fixed
 - Poem alignment not being stored in local storage
 - Color for label in settings for dark mode
+- Greyed out text in mobile browsers when editing is disabled
 
 # [0.5.0] - 2023-03-19
 ## Added

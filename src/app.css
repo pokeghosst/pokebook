@@ -149,7 +149,7 @@ textarea {
     position: relative;
 }
 
-.dark textarea:disabled {
+textarea:disabled {
     -webkit-text-fill-color: #1c1917;
     opacity: 1;
 }
