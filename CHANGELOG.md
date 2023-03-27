@@ -9,6 +9,7 @@
 - Themes: Strawberry Sundae
 - Export poem to image
 - Ability to forget the latest draft
+- Remember position of poem and note panels
 
 ## Fixed
 - Poem alignment not being stored in local storage

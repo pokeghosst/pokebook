@@ -2,6 +2,7 @@
 	import { count, countFromFile, info } from 'letter-count';
 	import Notes from '../components/Notes.svelte';
 	import Poem from '../components/Poem.svelte';
+	import { viewsState } from '../stores/views';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faRightLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,20 +12,21 @@
 
 	let views = [Poem, Notes];
 	let props = [poemProps, noteProps];
-	let propPositions = [0, 1];
 
-	$: poemProps.poem = props[propPositions[0]].poem;
-	$: poemProps.poemName = props[propPositions[0]].poemName;
-	$: noteProps.note = props[propPositions[1]].note
+	let state = JSON.parse($viewsState)
+	console.log(state)
+
+	$: poemProps.poem = props[0].poem;
+	$: poemProps.poemName = props[0].poemName;
+	$: noteProps.note = props[1].note
 
 	let currentState = 'transition-opacity duration-500 ease-out opacity-100';
 
 	function swapViews() {
 		currentState = 'transition-opacity duration-500 ease-out opacity-0';
 		setTimeout(function () {
-			[views[0], views[1]] = [views[1], views[0]];
-            [props[0], props[1]] = [props[1], props[0]];
-            [propPositions[0], propPositions[1]] = [propPositions[1], propPositions[0]];
+            [state[0], state[1]] = [state[1], state[0]];
+			$viewsState = JSON.stringify(state)
 			currentState = 'transition-opacity duration-500 ease-out opacity-100';
 		}, 600);
 	}
@@ -41,9 +43,9 @@
 				/></button
 			>
 		</div>
-		<svelte:component this={views[0]} bind:editable={editable} bind:props={props[0]} />
+		<svelte:component this={views[state[0]]} bind:editable={editable} bind:props={props[state[0]]} />
 	</div>
 	<div class="h-screen w-max md:w-full inline-block">
-		<svelte:component this={views[1]} bind:editable={editable} bind:props={props[1]} />
+		<svelte:component this={views[state[1]]} bind:editable={editable} bind:props={props[state[1]]} />
 	</div>
 </div>
