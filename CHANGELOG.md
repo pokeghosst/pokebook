@@ -7,6 +7,7 @@
 - Day theme switching
 - Themes: Strawberry Sundae
 - Export poem to image
+- Ability to forget the latest draft
 
 ## Fixed
 - Poem alignment not being stored in local storage

@@ -35,6 +35,15 @@
 			location.reload();
 		}
 	}
+
+	function forgetDraft() {
+		if (confirm('Heads up! You sure want to forget this poem?')) {
+			noteStorage.update(() => '');
+			poemStorage.update(() => '');
+			poemNameStorage.update(() => 'Unnamed');
+			location.reload();
+		}
+	}
 </script>
 
 <div class="w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto dark:text-stone-100">
@@ -44,8 +53,12 @@
 		>Export as image</button
 	>
 	<button
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
 		on:click={stashPoem}>Remember poem</button
+	>
+	<button
+		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+		on:click={forgetDraft}>Forget poem</button
 	>
 </div>
 <Workspace bind:poemProps bind:noteProps />

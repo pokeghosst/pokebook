@@ -75,7 +75,7 @@
 	<button
 		on:click={() => deletePoem()}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
-		>Forget</button
+		>Forget poem</button
 	>
 </div>
 {#if loaded}
