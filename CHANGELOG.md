@@ -1,6 +1,6 @@
 # Changelog 
 
-# [Unreleased]
+# [0.6.0] - 2023-03-27
 
 ## Added
 - New fonts: Arial, Crimson Roman, Comic Sans MS, Times Old Attic Bold
