@@ -5,7 +5,7 @@
 ## Added
 - New fonts: Arial, Crimson Roman, Comic Sans MS, Times Old Attic Bold
 - Day theme switching
-- Night theme switching
+- Night theme switching (default theme -- Chocolate)
 - Themes: Strawberry Sundae
 - Export poem to image
 - Ability to forget the latest draft
