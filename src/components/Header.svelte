@@ -1,28 +1,7 @@
 <script>
-	import { poemStorage, noteStorage, poemNameStorage } from '../stores/poemStore.js';
-	import { db } from '../stores/db.js';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMoon } from '@fortawesome/free-solid-svg-icons';
 	import { darkMode } from '../stores/mode.js';
-
-	async function stashPoem() {
-		if ($poemStorage != '' || $noteStorage != '' || $poemNameStorage != '') {
-			try {
-				await db.poems.add({
-					note: $noteStorage,
-					poem: $poemStorage,
-					name: $poemNameStorage,
-					timestamp: Date.now()
-				});
-				noteStorage.update(() => '');
-				poemStorage.update(() => '');
-				poemNameStorage.update(() => 'Unnamed');
-			} catch (e) {
-				console.log(e);
-			}
-			location.reload();
-		}
-	}
 
 	function toggleDarkMode() {
 		$darkMode == 'dark' ? darkMode.update(() => '') : darkMode.update(() => 'dark');
@@ -36,16 +15,13 @@
 	</div>
 	<ul class="inline-flex items-center mx-auto pt-5 pr-5 md:pt-0 md:leading-[60px] md:align-bottom">
 		<li class="pr-5">
-			<a href="/" class="underline decoration-dotted hover:no-underline block" on:click={() => stashPoem()}>Save and add new</a>
-		</li>
-		<li class="pr-5">
-			<a href="/stash" class="underline decoration-dotted hover:no-underline block">Poem stash</a>
+			<a href="/stash" class="underline decoration-dotted hover:no-underline block">Poem Stash</a>
 		</li>
 		<li class="pr-5">
 			<a href="/settings" class="underline decoration-dotted hover:no-underline block">Settings</a>
 		</li>
 		<li>
-			<a href="https://ko-fi.com/pokeghost" target="_blank" rel="noreferrer" class="underline decoration-dotted hover:no-underline block">Donate <span class="text-xs align-sub">(pwease?)</span></a>
+			<a href="https://ko-fi.com/pokeghost" target="_blank" rel="noreferrer" class="block"><span class="underline decoration-dotted hover:no-underline">Donate</span> <span class="text-xs align-sub">(pwease?)</span></a>
 		</li>
 	</ul>
 
