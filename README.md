@@ -1,4 +1,4 @@
-<img src="/static/logo.png" width="300px" alt="PókeBook logo"/>
+<img src="/static/logo.png" width="300px" alt="PokeBook logo"/>
 
 # Poke!Book (Pokeghost’s poetry noteBook)
 
@@ -19,6 +19,7 @@
 - The draft is autosaved with every single character written – don't worry about crashes or blackouts so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous poem is saved in the Poem Stash™!
 - View, edit and delete your previously written poems and store as many as your computer can handle!
+- Express yourself with a selection of themes and fonts!
 
 ## PokeBook desktop app
 
@@ -65,10 +66,3 @@ For bugs and feature requests, don't hesitate to open issues!
 ## Known limitations
 
 - You cannot save poems in private browser window (guess why, duh!)
-
-## To Do
-
-- [ ] Literature tools: count lines, characters, and words; syllable counter; literature form helper, maybe?
-- [x] Better look on small screens
-- [ ] Export to text file
-- [x] ~Electron~ Tauri desktop app
