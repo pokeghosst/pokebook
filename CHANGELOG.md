@@ -1,5 +1,15 @@
 # Changelog 
 
+# [Unreleased]
+
+## Fixed
+- Broken layout on Chrome (again... almost)
+
+## Changed
+- More elegant way to export a poem
+- Constant width when exporting the poem, that corresponds to A4 page at 96 PPI
+- Improved wording for saving the poem
+
 # [0.6.0] - 2023-03-27
 
 ## Added

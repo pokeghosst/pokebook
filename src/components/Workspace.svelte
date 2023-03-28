@@ -14,7 +14,6 @@
 	let props = [poemProps, noteProps];
 
 	let state = JSON.parse($viewsState)
-	console.log(state)
 
 	$: poemProps.poem = props[0].poem;
 	$: poemProps.poemName = props[0].poemName;
@@ -45,7 +44,7 @@
 		</div>
 		<svelte:component this={views[state[0]]} bind:editable={editable} bind:props={props[state[0]]} />
 	</div>
-	<div class="h-screen w-max md:w-full inline-block">
+	<div class="h-screen w-max md:w-full inline-block md:block">
 		<svelte:component this={views[state[1]]} bind:editable={editable} bind:props={props[state[1]]} />
 	</div>
 </div>

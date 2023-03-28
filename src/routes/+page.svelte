@@ -34,7 +34,7 @@
 			}
 			location.reload();
 		} else {
-			alert('You cannot save a poem without a name or... a poem!')
+			alert('You cannot save a poem without a name or... a poem!');
 		}
 	}
 
@@ -50,13 +50,13 @@
 
 <div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
 	<button
+		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+		on:click={stashPoem}>New poem (&save this one)</button
+	>
+	<button
 		on:click={() => generateImage($poemNameStorage)}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
 		>Export as image</button
-	>
-	<button
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
-		on:click={stashPoem}>Remember poem</button
 	>
 	<button
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
