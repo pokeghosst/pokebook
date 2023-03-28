@@ -1,6 +1,6 @@
 # Changelog 
 
-# [Unreleased]
+# [0.6.1] - 2023-03-28
 
 ## Fixed
 - Broken layout on Chrome (again... almost)
