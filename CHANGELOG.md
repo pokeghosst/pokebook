@@ -1,4 +1,12 @@
-# Changelog 
+# Changelog
+
+# [Unreleased]
+
+## Added
+- Black Lobelia theme
+
+## Fixed
+- Switcher for night themes
 
 # [0.6.1] - 2023-03-28
 

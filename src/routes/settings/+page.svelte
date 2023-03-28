@@ -28,7 +28,7 @@
 
 	const nightThemes = [
 		{ themeClass: 'chocolate', displayName: 'Chocolate' },
-		// { themeClass: 'black-lobelia', displayName: 'Black Lobelia' },
+		{ themeClass: 'black-lobelia', displayName: 'Black Lobelia' },
 	];
 </script>
 
@@ -74,8 +74,8 @@
 		<label for="nightTheme">Night theme:</label>
 
 		<select bind:value={$nightTheme} on:change="{() => {
-			if (!document.documentElement.classList.contains("dark")) {
-				document.documentElement.classList.value = $nightTheme;
+			if (document.documentElement.classList.contains("dark")) {
+				document.documentElement.classList.value = "dark " + $nightTheme;
 			}
 		}}">
 			{#each nightThemes as theme}

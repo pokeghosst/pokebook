@@ -270,6 +270,32 @@ body:focus-visible {
     background-color: #1c1917;
 }
 
+/* Black Lobelia */
+
+.black-lobelia body, .black-lobelia tr {
+    background-color: #211b2c;
+}
+
+.black-lobelia .top {
+    background-color: #413655;
+}
+
+.black-lobelia .paper {
+    box-shadow:
+        0 1px 1px rgba(0, 0, 0, 0.15),
+        0 10px 0 -5px #8f8ca8,
+        0 10px 1px -4px rgba(0, 0, 0, 0.15),
+        0 20px 0 -10px #8f8ca8,
+        0 20px 1px -9px rgba(0, 0, 0, 0.15);
+    background: repeating-linear-gradient(#8f8ca8, #8f8ca8 31px, #4c4666 31px, #4c4666 32px);
+    color: #211b2c;
+}
+
+.black-lobelia textarea:disabled {
+    -webkit-text-fill-color: #211b2c;
+    opacity: 1;
+}
+
 @media only screen and (max-width: 768px) {
 
     .notebook-container {
