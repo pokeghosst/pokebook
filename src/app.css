@@ -232,7 +232,7 @@ body:focus-visible {
 /* Global Dark */
 
 .dark a, .dark #moon, .dark .toolbelt, .dark label,
-.dark tr {
+.dark tr, .dark h1 {
     color: #f5f5f4;
 }
 
