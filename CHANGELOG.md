@@ -4,6 +4,7 @@
 
 ## Added
 - Black Lobelia theme
+- Lemon tart theme
 
 ## Fixed
 - Switcher for night themes
