@@ -4,7 +4,10 @@
 	import { currentPoem } from '../../../stores/poemId';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
-	import generateImage from '../../../util/poem2image'
+	import generateImage from '../../../util/poem2image';
+	import { storageMode } from '../../../stores/storage';
+	import { refreshCode } from '../../../stores/refreshCode';
+	import { json } from '@sveltejs/kit';
 
 	let response;
 	let editMode;
@@ -37,11 +40,27 @@
 	}
 
 	async function save() {
-		await db.poems.where('id').equals(Number($currentPoem)).modify({
-			note: noteProps.note,
-			poem: poemProps.poem,
-			name: poemProps.poemName
-		});
+		switch ($storageMode) {
+			case 'gdrive':
+				const auth = JSON.parse($refreshCode)
+			const response = await fetch('/api/gdrive/savepoem', {
+					method: 'POST',
+					body: JSON.stringify({
+						refreshToken: auth.refresh_token
+					}),
+					headers: {
+						'content-type': 'application/json'
+					}
+				});
+				break;
+			case 'local':
+				await db.poems.where('id').equals(Number($currentPoem)).modify({
+					note: noteProps.note,
+					poem: poemProps.poem,
+					name: poemProps.poemName
+				});
+				break;
+		}
 		toggleEdit();
 	}
 
@@ -51,7 +70,6 @@
 			goto('/stash', { replaceState: false });
 		}
 	}
-
 </script>
 
 <div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">

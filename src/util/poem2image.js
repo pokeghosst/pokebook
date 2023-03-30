@@ -1,3 +1,5 @@
+// TODO: REFACTOR TO LIB/SERVER
+
 import { goto } from '$app/navigation';
 // import * as htmlToImage from 'html-to-image';
 import domtoimage from 'dom-to-image';
