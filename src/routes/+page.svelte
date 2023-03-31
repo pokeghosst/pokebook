@@ -3,6 +3,8 @@
 	import { poemStorage, poemNameStorage, noteStorage } from '../stores/poemStore.js';
 	import { db } from '../stores/db.js';
 	import generateImage from '../util/poem2image';
+	import { storageMode } from '../stores/storage';
+	import { refreshCode } from '../stores/refreshCode';
 
 	let poemProps = {
 		poem: $poemStorage,
@@ -19,20 +21,42 @@
 
 	async function stashPoem() {
 		if ($poemStorage !== '' && $poemNameStorage !== '') {
-			try {
-				await db.poems.add({
-					note: $noteStorage,
-					poem: $poemStorage,
-					name: $poemNameStorage,
-					timestamp: Date.now()
-				});
-				noteStorage.update(() => '');
-				poemStorage.update(() => '');
-				poemNameStorage.update(() => 'Unnamed');
-			} catch (e) {
-				console.log(e);
+			switch ($storageMode) {
+				case 'gdrive':
+					const auth = JSON.parse($refreshCode);
+					const response = await fetch('/api/gdrive/savepoem', {
+						method: 'POST',
+						body: JSON.stringify({
+							refreshToken: auth.refresh_token,
+							poemName: $poemNameStorage,
+							poemBody: $poemStorage
+						}),
+						headers: {
+							'content-type': 'application/json'
+						}
+					});
+					noteStorage.update(() => '');
+					poemStorage.update(() => '');
+					poemNameStorage.update(() => 'Unnamed');
+					location.reload();
+					break;
+				case 'local':
+					try {
+						await db.poems.add({
+							note: $noteStorage,
+							poem: $poemStorage,
+							name: $poemNameStorage,
+							timestamp: Date.now()
+						});
+						noteStorage.update(() => '');
+						poemStorage.update(() => '');
+						poemNameStorage.update(() => 'Unnamed');
+					} catch (e) {
+						console.log(e);
+					}
+					location.reload();
+					break;
 			}
-			location.reload();
 		} else {
 			alert('You cannot save a poem without a name or... a poem!');
 		}

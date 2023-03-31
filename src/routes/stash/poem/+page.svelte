@@ -42,11 +42,13 @@
 	async function save() {
 		switch ($storageMode) {
 			case 'gdrive':
-				const auth = JSON.parse($refreshCode)
-			const response = await fetch('/api/gdrive/savepoem', {
+				const auth = JSON.parse($refreshCode);
+				const response = await fetch('/api/gdrive/savepoem', {
 					method: 'POST',
 					body: JSON.stringify({
-						refreshToken: auth.refresh_token
+						refreshToken: auth.refresh_token,
+						poemName: poemProps.poemName,
+						poemBody: poemProps.poem
 					}),
 					headers: {
 						'content-type': 'application/json'

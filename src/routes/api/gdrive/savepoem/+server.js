@@ -4,6 +4,6 @@ import { json } from '@sveltejs/kit';
 /** @type {import('./$types').RequestHandler} */
 export async function POST({ request }) {
     const jsonRequest = await request.json()
-    const responseBody = await storePoem(jsonRequest.refreshToken)
+    const responseBody = await storePoem(jsonRequest.refreshToken, jsonRequest.poemName, jsonRequest.poemBody)
     return json(responseBody)
 }

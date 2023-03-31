@@ -29,7 +29,7 @@ export async function generateCredentials(authCode) {
     return null
 }
 
-export async function storePoem(refresh_token) {
+export async function storePoem(refresh_token, poemName, poemBody) {
     const folderMimeType = 'application/vnd.google-apps.folder';
     const folderName = "PokeBook"
     let folder
@@ -57,8 +57,42 @@ export async function storePoem(refresh_token) {
             folder = response.data;
             console.log(`Folder ${folderName} created with ID: ${folder.id}`);
         }
+        const res = await drive.files.list({
+            q: `name='${poemName}' and '${folder.id}' in parents and trashed=false`,
+            fields: 'nextPageToken, files(id, name)',
+        });
+        console.log(poemName)
+        console.log(poemBody)
+        let fileId;
+        const files = res.data.files;
+        if (files.length) {
+            // If the file exists, update it
+            fileId = files[0].id;
+            await drive.files.update({
+                fileId,
+                media: { body: poemBody },
+            });
+        } else {
+            // If the file doesn't exist, create it
+            const fileMetadata = {
+                name: poemName,
+                mimeType: 'text/plain',
+                parents: [folder.id],
+            };
+            const media = {
+                mimeType: 'text/plain',
+                body: poemBody,
+            };
+            const res = await drive.files.create({
+                resource: fileMetadata,
+                media,
+                fields: 'id',
+            });
+            fileId = res.data.id;
+        }
+        console.log(`File saved with ID: ${fileId}`);
     } catch (err) {
         console.error(`Error creating folder: ${err}`);
     }
-    
+
 }
