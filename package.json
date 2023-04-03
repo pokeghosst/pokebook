@@ -38,6 +38,7 @@
 		"@fortawesome/fontawesome-svg-core": "^6.1.1",
 		"@fortawesome/free-solid-svg-icons": "^6.1.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
+		"@sveltejs/adapter-vercel": "^2.4.1",
 		"dexie": "^3.2.3",
 		"dom-to-image": "^2.6.0",
 		"googleapis": "^114.0.0",
