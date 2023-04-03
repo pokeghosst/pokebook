@@ -1,6 +1,6 @@
 <div class="text-center">
 	<p>
-		PokeBook · v0.6.1 - "French Toast With Extra Jam" · <a
+		PokeBook · v0.7.0 - "Mooncake" · <a
 			href="/privacy"
 			class="underline decoration-dotted hover:no-underline">Privacy Policy</a
 		>
