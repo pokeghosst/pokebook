@@ -22,7 +22,6 @@
 					}
 				});
 				const jsonResponse = await response.json();
-				console.log(jsonResponse);
 				refreshCode.update(() => JSON.stringify(jsonResponse));
 			}
 		}
@@ -136,6 +135,12 @@
 			on:change={() => {
 				if ($refreshCode == '' || $refreshCode == null || $refreshCode == 'null') {
 					authNeeded = true;
+					if (confirm("Heads up! You will be redirected to log in with your Google account. Oke?")) {
+						getAuthCode()
+					} else {
+						authNeeded = false;
+						$storageMode = 'local'
+					}
 				}
 			}}
 		>
@@ -146,9 +151,4 @@
 			{/each}
 		</select>
 	</div>
-
-	{#if authNeeded}
-		<button on:click={getAuthCode}>Get Auth URL</button>
-	{/if}
-	{$refreshCode}
 </div>

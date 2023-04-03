@@ -5,6 +5,9 @@
 	import generateImage from '../util/poem2image';
 	import { storageMode } from '../stores/storage';
 	import { refreshCode } from '../stores/refreshCode';
+	import Overlay from '../components/Overlay.svelte';
+
+	let thinking = false;
 
 	let poemProps = {
 		poem: $poemStorage,
@@ -23,22 +26,45 @@
 		if ($poemStorage !== '' && $poemNameStorage !== '') {
 			switch ($storageMode) {
 				case 'gdrive':
+					thinking = true;
 					const auth = JSON.parse($refreshCode);
 					const response = await fetch('/api/gdrive/savepoem', {
 						method: 'POST',
 						body: JSON.stringify({
 							refreshToken: auth.refresh_token,
 							poemName: $poemNameStorage,
-							poemBody: $poemStorage
+							poemBody: $poemStorage,
+							poemNote: $noteStorage,
+							timestamp: Date.now()
 						}),
 						headers: {
 							'content-type': 'application/json'
 						}
 					});
-					noteStorage.update(() => '');
-					poemStorage.update(() => '');
-					poemNameStorage.update(() => 'Unnamed');
-					location.reload();
+					const responseJson = await response.json();
+					if (response.status === 200) {
+						if (responseJson.code === 500) {
+							alert(
+								"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
+									responseJson.message +
+									'"'
+							);
+						} else {
+							noteStorage.update(() => '');
+							poemStorage.update(() => '');
+							poemNameStorage.update(() => 'Unnamed');
+							location.reload();
+						}
+					} else {
+						alert(
+							"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
+								response.status +
+								' ' +
+								response.statusText +
+								'"'
+						);
+					}
+					thinking = false;
 					break;
 				case 'local':
 					try {
@@ -70,7 +96,16 @@
 			location.reload();
 		}
 	}
+
+	function exportPoem() {
+		thinking = true;
+		generateImage($poemNameStorage)
+	}
 </script>
+
+{#if thinking}
+	<Overlay />
+{/if}
 
 <div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
 	<button
@@ -78,7 +113,7 @@
 		on:click={stashPoem}>New poem (&save this one)</button
 	>
 	<button
-		on:click={() => generateImage($poemNameStorage)}
+		on:click={exportPoem}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
 		>Export as image</button
 	>

@@ -1,15 +1,63 @@
 <script>
-	import { liveQuery } from 'dexie';
 	import { db } from '../../stores/db';
-	import { browser } from '$app/environment';
 	import { currentPoem } from '../../stores/poemId';
 	import { goto } from '$app/navigation';
+	import { storageMode } from '../../stores/storage';
+	import { onMount } from 'svelte';
+	import { refreshCode } from '../../stores/refreshCode';
+	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 
-	let poems = liveQuery(() => (browser ? db.poems.reverse().toArray() : []));
+	let poems = [];
+	let thinking = false;
+
+	onMount(async () => {
+		switch ($storageMode) {
+			case 'gdrive':
+				thinking = true;
+				let poemsTmp = [];
+				const files = await loadPoemsFromDrive();
+				files.forEach((file) => {
+					if (file.name.split('_')[2] == null) {
+						poemsTmp.push({
+							id: file.id,
+							name: file.name.split('_')[0],
+							timestamp: parseInt(file.name.split('_')[1])
+						});
+					}
+				});
+				poems = poemsTmp;
+				thinking = false;
+				break;
+			case 'local':
+				db.poems
+					.toArray()
+					.then((objects) => {
+						poems = objects;
+					})
+					.catch((error) => {
+						console.error(error);
+					});
+				break;
+		}
+	});
+
+	async function loadPoemsFromDrive() {
+		const auth = JSON.parse($refreshCode);
+		const response = await fetch('/api/gdrive/stash', {
+			method: 'POST',
+			body: JSON.stringify({
+				refreshToken: auth.refresh_token
+			}),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+		return response.json();
+	}
 
 	function openPoem(id) {
 		currentPoem.set(id);
-		goto('/stash/poem', { replaceState: false })
+		goto('/stash/poem', { replaceState: false });
 	}
 </script>
 
@@ -19,8 +67,17 @@
 			<div class="overflow-hidden">
 				<table class="min-w-full text-left table-fixed">
 					<tbody>
-						{#if $poems}
-							{#each $poems as poem (poem.id)}
+						{#if thinking}
+							<div class="pt-10 flex items-center justify-center">
+								<Skeleton>
+									<rect width="100%" height="20" x="0" y="0" rx="5" ry="5" />
+									<rect width="100%" height="20" x="0" y="45" rx="5" ry="5" />
+									<rect width="100%" height="20" x="0" y="85" rx="5" ry="5" />
+									<rect width="100%" height="20" x="0" y="125" rx="5" ry="5" />
+								</Skeleton>
+							</div>
+						{:else if poems}
+							{#each poems as poem (poem.id)}
 								<tr class="border-b">
 									<button on:click={openPoem(poem.id)}
 										><td

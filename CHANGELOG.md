@@ -5,6 +5,7 @@
 ## Added
 - Black Lobelia theme
 - Lemon tart theme
+- Google Drive storage option
 
 ## Fixed
 - Switcher for night themes
