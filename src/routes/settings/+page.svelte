@@ -133,13 +133,17 @@
 		<select
 			bind:value={$storageMode}
 			on:change={() => {
-				if ($refreshCode == '' || $refreshCode == null || $refreshCode == 'null') {
-					authNeeded = true;
-					if (confirm("Heads up! You will be redirected to log in with your Google account. Oke?")) {
-						getAuthCode()
-					} else {
-						authNeeded = false;
-						$storageMode = 'local'
+				if ($storageMode == 'gdrive') {
+					if ($refreshCode == '' || $refreshCode == null || $refreshCode == 'null') {
+						authNeeded = true;
+						if (
+							confirm('Heads up! You will be redirected to log in with your Google account. Oke?')
+						) {
+							getAuthCode();
+						} else {
+							authNeeded = false;
+							$storageMode = 'local';
+						}
 					}
 				}
 			}}
