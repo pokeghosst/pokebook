@@ -9,6 +9,7 @@
 	import { refreshCode } from '../../../stores/refreshCode';
 	import Overlay from '../../../components/Overlay.svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
+	import { preventTabClose } from '../../../util/preventTabClose';
 
 	let response;
 	let editMode;
@@ -147,7 +148,7 @@
 	<Overlay />
 {/if}
 
-<div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
+<div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto" use:preventTabClose={editMode}>
 	<button
 		on:click={() => generateImage(poemProps.poemName)}
 		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"

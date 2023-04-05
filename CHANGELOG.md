@@ -1,5 +1,10 @@
 # Changelog
 
+# [UNRELEASED]
+
+## Added
+- Confirmation when trying to close the page with unsaved changes to the poem
+
 # [0.7.0] - 2023-04-03
 
 ## Added
@@ -76,6 +81,6 @@
 - More convenient layout on small screens
 - Poem page includes both notes and poem on one screen
 
-## [0.1.0] 
+# [0.1.0] 
 ## Added
 - Welcome to Poke!Book~
