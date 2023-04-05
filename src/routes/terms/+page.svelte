@@ -1,5 +1,5 @@
 <div class="w-7/12 mt-10 mx-auto">
-	<h1 class="text-4xl text-center">Privacy Policy</h1>
+	<h1 class="text-4xl text-center">Terms of Service</h1>
 	<br />
 	<p class="font-bold">Last updated April 03, 2023</p>
 	<br />
