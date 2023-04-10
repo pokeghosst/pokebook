@@ -4,6 +4,11 @@
 
 ## Added
 - Confirmation when trying to close the page with unsaved changes to the poem
+- PokeHelp mode: highlighting rhymes, syllable counter, text counters (words, characters, lines)
+
+## Fixed
+- Broken notebook panes when resizing
+- Wrong order in Poem Stash
 
 # [0.7.0] - 2023-04-03
 

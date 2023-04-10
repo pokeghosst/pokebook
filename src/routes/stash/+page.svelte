@@ -30,6 +30,7 @@
 				break;
 			case 'local':
 				db.poems
+					.reverse()
 					.toArray()
 					.then((objects) => {
 						poems = objects;
