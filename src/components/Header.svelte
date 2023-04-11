@@ -18,7 +18,7 @@
 
 <div class="w-11/12 mx-auto mt-5 text-center md:text-left" id="header-menu">
 	<div class="md:pr-5 md:inline-block">
-		<a href="/"><img alt="Poke!Book" src="/logo.png" class="mx-auto w-[200px] opacity-80" /></a>
+		<a href="/"><img alt="Poke!Book" id="logo" src="/logo.png" class="mx-auto w-[200px] opacity-80" /></a>
 	</div>
 	<ul class="inline-flex items-center mx-auto pt-5 pr-5 md:pt-0 md:leading-[60px] md:align-bottom">
 		<li class="pr-5">

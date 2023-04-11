@@ -232,7 +232,7 @@ body:focus-visible {
     color: #333333;
 }
 
-/* June Sunset */
+/* Lemon Tart */
 
 .lemon body,
 .lemon .poem-list {
@@ -258,6 +258,44 @@ body:focus-visible {
 .lemon textarea:disabled {
     -webkit-text-fill-color: #422006;
     opacity: 1;
+}
+
+/* Cookie Dough */
+
+.cookie body,
+.cookie .poem-list {
+    background-color: #FFF5E5;
+}
+
+.cookie .top {
+    background-color: #745F4F;
+    color: #F8E8D5;
+}
+
+.cookie .paper {
+    background: repeating-linear-gradient(#F8E8D5, #F8E8D5 31px, #E8B68B 31px, #E8B68B 32px);
+    box-shadow:
+        0 1px 1px rgba(131, 24, 67, 0.15),
+        0 10px 0 -5px #F8E8D5,
+        0 10px 1px -4px rgba(131, 24, 67, 0.15),
+        0 20px 0 -10px #F8E8D5,
+        0 20px 1px -9px rgba(131, 24, 67, 0.15);
+    color: #422006;
+}
+
+.cookie #logo {
+    filter: sepia(14%);
+}
+
+.cookie textarea:disabled {
+    -webkit-text-fill-color: #422006;
+    opacity: 1;
+}
+
+.cookie a,
+.cookie p,
+.cookie svg {
+    color: #422006;
 }
 
 /* Global Dark */

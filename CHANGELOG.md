@@ -6,6 +6,7 @@
 - Confirmation when trying to close the page with unsaved changes to the poem
 - PokeHelp mode: highlighting rhymes, syllable counter, text counters (words, characters, lines)
 - PokeMarkov
+- Cookie Dough theme
 
 ## Fixed
 - Broken notebook panes when resizing
