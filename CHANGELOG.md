@@ -1,6 +1,6 @@
 # Changelog
 
-## [UNRELEASED]
+## [1.0.0] - 2023-04-11
 
 ### Added
 - Confirmation when trying to close the page with unsaved changes to the poem
