@@ -8,23 +8,27 @@
 ![Version](https://img.shields.io/github/v/release/pokegh0st/pokebook)
 ![GitHub last commit](https://img.shields.io/github/last-commit/pokegh0st/pokebook)
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/e7d89e1a-3c25-47e9-82e6-23acd668e75e/deploy-status)](https://app.netlify.com/sites/dancing-axolotl-36cfbd/deploys)
 
 > PokeBook is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
 
 ## What makes PokeBook so cool?
 
-- Workspace split into two independent notepads – jot down notes in one and write the poem in another
+- Workspace split into two independent notepads – jot down notes in one and write the poem in another!
 - Endless notebook that grows as you write!
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
+- Optional Google Drive integration for backing up and synchronizing your poems!
 - The draft is autosaved with every single character written – don't worry about crashes or blackouts so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous poem is saved in the Poem Stash™!
-- View, edit and delete your previously written poems and store as many as your computer can handle!
+- View, edit and delete your previously written poems and store as many as your computer (or Google Drive) can handle!
 - Express yourself with a selection of themes and fonts!
+- Write your best with PokeHelp mode! PokeHelp provides highlighting rhymes, syllable counter, and text counters (words, characters, lines)
+- Want something more... unconventional? PokeMarkov will help you generate prose, poems, and any other kind of text using Markov chains
 
 ## PokeBook desktop app
 
-PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS produced with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
+PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS generated with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
+
+> Latest supported Tauri build is v0.6.1 - "French Toast With Extra Jam". At the moment there are no builds for later versions. I'm working on it, though!
 
 ## Installing / Getting started
 
@@ -39,13 +43,13 @@ yarn
 yarn run build
 ```
 
-PokeBook can be easily deployed on many app platforms (such as Netlify or DigitalOcean) with zero configuration required. For example:
+PokeBook can be easily deployed on many app platforms (such as Netlify, Vercel, or DigitalOcean) with zero configuration required. For example:
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/pokegh0st/pokebook)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokegh0st%2Fpokebook&env=GOOGLE_DRIVE_CLIENT_ID,GOOGLE_DRIVE_CLIENT_SECRET,GOOGLE_DRIVE_REDIRECT_URI)
 
 Bare-metal deployment with custom domain will need more configuration depending on how you do it (e.g., setting up Nginx with certbot SSL, etc.).
 
-*Docker image coming soon*
+*Docker image coming soon* (I promise!!)
 
 ## Developing
 
