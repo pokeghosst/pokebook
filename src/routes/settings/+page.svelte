@@ -54,7 +54,8 @@
 	const dayThemes = [
 		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
 		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
-		{ themeClass: 'lemon', displayName: 'Lemon Tart' }
+		{ themeClass: 'lemon', displayName: 'Lemon Tart' },
+		{ themeClass: 'cookie', displayName: 'Cookie Dough' }
 	];
 
 	const nightThemes = [
