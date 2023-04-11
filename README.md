@@ -8,6 +8,7 @@
 ![Version](https://img.shields.io/github/v/release/pokegh0st/pokebook)
 ![GitHub last commit](https://img.shields.io/github/last-commit/pokegh0st/pokebook)
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
+[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/4280-shield.svg)](https://madewithsvelte.com/p/pokebook/shield-link)
 
 > PokeBook is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
 
