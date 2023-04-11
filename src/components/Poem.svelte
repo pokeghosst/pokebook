@@ -93,7 +93,7 @@
 			const color = colors[colorIndex];
 			forEach(words, (word) => {
 				const pattern = new RegExp('( |^)' + word + '(\\n|$|[.,!?:;]+\\n)', 'gm');
-				result = result.replace(
+				result = result.replace('\'','').replace(
 					pattern,
 					` <span style="background-color:${color}">${word}</span>\n`
 				);
