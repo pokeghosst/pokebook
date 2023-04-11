@@ -22,7 +22,7 @@
 	</div>
 	<ul class="inline-flex items-center mx-auto pt-5 pr-5 md:pt-0 md:leading-[60px] md:align-bottom">
 		<li class="pr-5">
-			<a href="/" class="underline decoration-dotted hover:no-underline block">PokeMarkov</a>
+			<a href="/markov" class="underline decoration-dotted hover:no-underline block">PokeMarkov</a>
 		</li>
 		<li class="pr-5">
 			<a href="/stash" class="underline decoration-dotted hover:no-underline block">Poem Stash</a>
@@ -30,12 +30,12 @@
 		<li class="pr-5">
 			<a href="/settings" class="underline decoration-dotted hover:no-underline block">Settings</a>
 		</li>
-		<li>
+		<!-- <li>
 			<a href="https://ko-fi.com/pokeghost" target="_blank" rel="noreferrer" class="block"
 				><span class="underline decoration-dotted hover:no-underline">Donate</span>
 				<span class="text-xs align-sub">(pwease?)</span></a
 			>
-		</li>
+		</li> -->
 	</ul>
 	<button class="absolute right-14 top-6 p-2" id="pencil" on:click={() => togglePokeHelp()}
 		><FontAwesomeIcon icon={faHeartCirclePlus} class="text-2xl" />
