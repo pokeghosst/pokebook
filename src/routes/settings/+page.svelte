@@ -60,7 +60,8 @@
 
 	const nightThemes = [
 		{ themeClass: 'chocolate', displayName: 'Chocolate' },
-		{ themeClass: 'black-lobelia', displayName: 'Black Lobelia' }
+		{ themeClass: 'black-lobelia', displayName: 'Black Lobelia' },
+		{ themeClass: 'red-velvet', displayName: 'Red Velvet' }
 	];
 
 	const storageOptions = [
