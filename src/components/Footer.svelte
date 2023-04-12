@@ -1,6 +1,6 @@
 <div class="text-center">
 	<p>
-		v1.0.0 - "Fortune Cookie" · <a
+		v1.1.0 - "Red Velvet" · <a
 			href="/privacy"
 			class="underline decoration-dotted hover:no-underline">Privacy Policy</a
 		>
