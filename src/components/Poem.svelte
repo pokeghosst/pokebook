@@ -92,11 +92,13 @@
 		forEach(rhymeGroups, (words, colorIndex) => {
 			const color = colors[colorIndex];
 			forEach(words, (word) => {
-				const pattern = new RegExp('( |^)' + word + '(\\n|$|[.,!?:;]+\\n)', 'gm');
-				result = result.replace('\'','').replace(
-					pattern,
-					` <span style="background-color:${color}">${word}</span>\n`
-				);
+				const pattern = new RegExp('( |^)' + word + '(\\n|$|[ .,!?:;]+\\n|[ .,!?:;]+$)', 'gm');
+				result = result
+					.replace("'", '')
+					.replace(
+						pattern,
+						` <span style="background-color:${color}; filter: blur(4px)">${word}</span>\n`
+					);
 			});
 		});
 		return result;
@@ -191,7 +193,7 @@
 		<div class="relative">
 			{#if $pokehelp == 'true'}
 				<div
-					class="absolute text-transparent whitespace-pre-wrap w-full leading-[32px] pt-[35px] px-[20px] {$font} {$poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none "
+					class="absolute text-transparent whitespace-pre-wrap w-full leading-[32px] pt-[35px] px-[35px] {$font} {$poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none "
 					aria-hidden="true"
 				>
 					{@html highlightedWords}

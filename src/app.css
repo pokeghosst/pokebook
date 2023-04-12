@@ -182,7 +182,7 @@ body:focus-visible {
 
 .paper {
     width: 100%;
-    padding: 35px 20px;
+    padding: 35px 35px;
     line-height: 32px;
 }
 
@@ -373,6 +373,50 @@ body:focus-visible {
 .black-lobelia textarea:disabled {
     -webkit-text-fill-color: #211b2c;
     opacity: 1;
+}
+
+/* Red Velvet */
+
+.red-velvet body,
+.red-velvet .poem-list {
+    background-color: #240309;
+}
+
+.red-velvet .top {
+    background-color: #51040f;
+    color: #F7ECE1;
+}
+
+.red-velvet .paper {
+    background: repeating-linear-gradient(#a88c8e, #a88c8e 31px, #664646 31px, #664646 32px);
+    box-shadow:
+        0 1px 1px rgba(131, 24, 67, 0.15),
+        0 10px 0 -5px #a88c8e,
+        0 10px 1px -4px rgba(131, 24, 67, 0.15),
+        0 20px 0 -10px #a88c8e,
+        0 20px 1px -9px rgba(131, 24, 67, 0.15);
+    color: #360202;
+}
+
+.red-velvet textarea:disabled {
+    -webkit-text-fill-color: #360202;
+    opacity: 1;
+}
+
+.red-velvet #swap svg {
+    background-color: #F7ECE1;
+    color: #360202;
+}
+
+.red-velvet a,
+.red-velvet .toolbelt,
+.red-velvet p,
+.red-velvet svg {
+    color: #F7ECE1;
+}
+
+.cookie #logo {
+    filter: hue-rotate(2);
 }
 
 @media only screen and (max-width: 768px) {

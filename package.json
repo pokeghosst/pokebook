@@ -15,7 +15,6 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-static": "^1.0.0-next.50",
 		"@sveltejs/kit": "^1.15.2",
-		"@tauri-apps/cli": "^1.2.3",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.13",

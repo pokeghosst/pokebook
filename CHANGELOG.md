@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0] - 2023-04-12
+
+### Added
+- Saving contents of edited poems. Delete or save -- you decide
+- Red Velvet night theme
+
+### Fixed
+- Rhyme coloring issues
+- Poem padding so it doesn't get smushed with syllables
+
+### Changed
+- Removed Tauri
+- Made rhyme highlights blurry
+
 ## [1.0.0] - 2023-04-11
 
 ### Added
