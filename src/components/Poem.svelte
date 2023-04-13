@@ -27,6 +27,7 @@
 	let syllables;
 	let highlightedWords;
 	let poemTextarea;
+	let markerLetter;
 
 	const LEVENSHTEIN_THRESHOLD = 1;
 	// Hash-based approach with salt allows us to deterministically define colors
@@ -160,12 +161,20 @@
 	}
 
 	function autoHeight() {
+		let deFactoLines = lines.length;
+		const charWidth = markerLetter.scrollWidth;
+		lines.forEach((line) => {
+			if (line.length * charWidth > poemTextarea.scrollWidth) {
+				deFactoLines += Math.round((line.length * charWidth) / poemTextarea.scrollWidth) - 1;
+			}
+		});
+
 		// Three lines to have some space
-		const linesHeight = (lines.length + 3) * 32;
+		const linesHeight = (deFactoLines + 3) * 32;
 		poemTextarea.style.height = `${linesHeight}px`;
 	}
 </script>
-
+<span bind:this={markerLetter} class="{$font} absolute left-[-9999px]">m</span>
 <div class="notebook" id="poem-notebook">
 	<input
 		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
@@ -203,7 +212,7 @@
 				bind:value={props.poem}
 				on:keyup={updateTextareaHeight}
 				disabled={!editable}
-				class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment}"
+				class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
 				id="poem-textarea"
 			/>
 		</div>

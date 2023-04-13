@@ -29,9 +29,8 @@
 		}, 600);
 	}
 </script>
-
 <div class="notebook-container w-11/12 mb-20 md:grid md:grid-cols-2 md:gap-4 mx-auto mt-5 {currentState}">
-	<div class="w-max md:w-full md:col-span-1 inline-block align-top">
+	<div class="w-max md:w-full md:col-span-1 mb-6 inline-block align-top">
 		<div class="relative">
 			<button class="absolute right-2 top-2 z-10" id="swap" on:click={swapViews}
 				><FontAwesomeIcon
@@ -42,7 +41,7 @@
 		</div>
 		<svelte:component this={views[state[0]]} bind:editable bind:props={props[state[0]]} />
 	</div>
-	<div class="w-max md:w-full md:col-span-1 inline-block align-top">
+	<div class="w-max md:w-full mb-6 md:col-span-1 inline-block align-top">
 		<svelte:component this={views[state[1]]} bind:editable bind:props={props[state[1]]} />
 	</div>
 </div>

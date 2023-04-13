@@ -147,7 +147,6 @@ ol {
 }
 
 textarea {
-    max-height: 98%;
     outline: none !important;
     position: relative;
 }
@@ -422,14 +421,13 @@ body:focus-visible {
 @media only screen and (max-width: 768px) {
 
     .notebook-container {
-        overflow-x: scroll;
+        /* overflow-x: scroll; */
         overflow-y: hidden;
         white-space: nowrap;
     }
 
     .notebook {
         width: 87vw;
-        height: 90vh;
         flex: none;
     }
 }

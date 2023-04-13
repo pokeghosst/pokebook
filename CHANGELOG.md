@@ -1,5 +1,11 @@
 # Changelog
 
+## [UNRELEASED]
+
+### Fixed
+- Notebooks being cut off when poem/notes are too long
+- Notebooks going goblin mode with very long lines
+
 ## [1.1.0] - 2023-04-12
 
 ### Added
