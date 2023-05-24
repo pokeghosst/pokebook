@@ -2,6 +2,14 @@
 
 ## [UNRELEASED]
 
+### Added
+- Log out of Google Drive
+
+### Fixed
+- Line syllable counters being displayed in wrong places when lines are very long
+- Line syllable counters clashing with the poem
+- Possibly inadequate notebook auto height behavior
+
 ### Fixed
 - Notebooks being cut off when poem/notes are too long
 - Notebooks going goblin mode with very long lines

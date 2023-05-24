@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { font } from '../stores/font';
 	import { dayTheme } from '../stores/mode';
 
@@ -12,28 +12,18 @@
 
 	onMount(() => {
 		lines = props.note.split('\n');
-		noteTextarea = document.getElementById('note-textarea');
-		autoHeight();
+		autoResize();
 	});
 
 	$: lines = props.note.split('\n');
+	$: lines, autoResize();
 
-	function updateTextareaHeight() {
-		autoHeight();
-	}
-
-	function autoHeight() {
-		let deFactoLines = lines.length;
-		const charWidth = markerLetter.scrollWidth;
-		lines.forEach((line) => {
-			if (line.length * charWidth > noteTextarea.scrollWidth) {
-				deFactoLines += Math.round((line.length * charWidth) / noteTextarea.scrollWidth) - 1;
-			}
-		});
-
-		// Three lines to have some space
-		const linesHeight = (deFactoLines + 3) * 32;
-		noteTextarea.style.height = `${linesHeight}px`;
+	async function autoResize() {
+		await tick();
+		const scrollPosition = window.scrollY;
+		noteTextarea.style.height = 'auto';
+		noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
+		window.scrollTo(0, scrollPosition);
 	}
 </script>
 
@@ -43,10 +33,10 @@
 	<div class="w-full">
 		<textarea
 			bind:value={props.note}
-			on:keyup={updateTextareaHeight}
 			disabled={!editable}
 			class="paper rounded-none overflow-y-hidden resize-none {$font} min-h-[480px]"
 			id="note-textarea"
+			bind:this={noteTextarea}
 		/>
 	</div>
 </div>

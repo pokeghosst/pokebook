@@ -30,12 +30,12 @@
 		<li class="pr-5">
 			<a href="/settings" class="underline decoration-dotted hover:no-underline block">Settings</a>
 		</li>
-		<!-- <li>
-			<a href="https://ko-fi.com/pokeghost" target="_blank" rel="noreferrer" class="block"
+		<li>
+			<a href="https://www.buymeacoffee.com/pokegh0st" target="_blank" rel="noreferrer" class="block"
 				><span class="underline decoration-dotted hover:no-underline">Donate</span>
 				<span class="text-xs align-sub">(pwease?)</span></a
 			>
-		</li> -->
+		</li>
 	</ul>
 	<button class="absolute right-14 top-6 p-2" id="pencil" on:click={() => togglePokeHelp()}
 		><FontAwesomeIcon icon={faHeartCirclePlus} class="text-2xl" />

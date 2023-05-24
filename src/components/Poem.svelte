@@ -16,7 +16,7 @@
 	import rita from 'rita';
 	import wd from 'wink-distance';
 	import { SHA256 } from 'crypto-js';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { pokehelp } from '../stores/pokehelp';
 
 	export let props;
@@ -26,8 +26,9 @@
 	let lines = props.poem.split('\n');
 	let syllables;
 	let highlightedWords;
+	let highlightedWordsWrapper;
 	let poemTextarea;
-	let markerLetter;
+	let syllablePoem;
 
 	const LEVENSHTEIN_THRESHOLD = 1;
 	// Hash-based approach with salt allows us to deterministically define colors
@@ -45,16 +46,39 @@
 			syllables = tmp;
 			highlightedWords = highlightWords(lines);
 			stats = count(props.poem);
+			syllablePoem = putSyllables(lines, syllables);
 		}
 	}
+
+	$: $pokehelp, autoResize();
+	$: lines, autoResize();
 
 	onMount(() => {
 		if ($pokehelp == 'true') {
 			highlightedWords = highlightWords(lines);
 		}
-		poemTextarea = document.getElementById('poem-textarea');
-		autoHeight();
+		autoResize();
 	});
+
+	async function autoResize() {
+		await tick();
+		const scrollPosition = window.scrollY;
+		poemTextarea.style.height = 'auto';
+		poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
+		window.scrollTo(0, scrollPosition);
+	}
+
+	function putSyllables(lines, syllables) {
+		const result = lines.map((line, i) => {
+			if (syllables[i] > 0) {
+				return (
+					`<span style="position: absolute; margin-left: -53px;">(${syllables[i]})</span> ` +
+					`<span style="color: transparent;">${line}</span>`
+				);
+			}
+		});
+		return result.join('<br>');
+	}
 
 	function hashToColor(str) {
 		const hash = SHA256(str + SALT_FOR_COLORS).toString();
@@ -156,25 +180,9 @@
 		props.poemName = props.poemName.replace(forbiddenChars, '');
 	}
 
-	function updateTextareaHeight() {
-		autoHeight();
-	}
-
-	function autoHeight() {
-		let deFactoLines = lines.length;
-		const charWidth = markerLetter.scrollWidth;
-		lines.forEach((line) => {
-			if (line.length * charWidth > poemTextarea.scrollWidth) {
-				deFactoLines += Math.round((line.length * charWidth) / poemTextarea.scrollWidth) - 1;
-			}
-		});
-
-		// Three lines to have some space
-		const linesHeight = (deFactoLines + 3) * 32;
-		poemTextarea.style.height = `${linesHeight}px`;
-	}
 </script>
-<span bind:this={markerLetter} class="{$font} absolute left-[-9999px]">m</span>
+
+<!-- <span bind:this={markerLetter} class="{$font}">m</span> -->
 <div class="notebook" id="poem-notebook">
 	<input
 		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
@@ -187,34 +195,43 @@
 			<div class="absolute z-10 right-[5px] top-[5px]">
 				Words: {stats.words} | Characters: {stats.chars} | Lines: {stats.lines}
 			</div>
+			<div
+				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {$font} resize-none z-10 h-auto pointer-events-none"
+				disabled="true"
+				aria-hidden="true"
+			>
+				{@html syllablePoem}
+			</div>
 		{/if}
-		<div class="absolute z-10 left-[5px] top-[32px] leading-[32px] opacity-70">
-			{#if $pokehelp == 'true'}
-				{#each syllables as syl}
-					{#if syl > 0}
-						({syl})<br />
-					{:else}
-						<br />
-					{/if}
-				{/each}
-			{/if}
-		</div>
 		<div class="relative">
 			{#if $pokehelp == 'true'}
 				<div
-					class="absolute text-transparent whitespace-pre-wrap w-full leading-[32px] pt-[35px] px-[35px] {$font} {$poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none "
+					class="absolute select-none text-transparent whitespace-pre-wrap h-full w-full leading-[32px] pt-[35px] pl-[64px] pr-[35px] {$font} {$poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none"
 					aria-hidden="true"
+					bind:this={highlightedWordsWrapper}
 				>
 					{@html highlightedWords}
 				</div>
 			{/if}
-			<textarea
-				bind:value={props.poem}
-				on:keyup={updateTextareaHeight}
-				disabled={!editable}
-				class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
-				id="poem-textarea"
-			/>
+			<!-- I know I'm gonna hate myself for this  -->
+			{#if $pokehelp == 'true'}
+				<textarea
+					bind:value={props.poem}
+					disabled={!editable}
+					class="paper overflow-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
+					style="padding-left: 64px"
+					id="poem-textarea"
+					bind:this={poemTextarea}
+				/>
+			{:else}
+				<textarea
+					bind:value={props.poem}
+					disabled={!editable}
+					class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
+					id="poem-textarea"
+					bind:this={poemTextarea}
+				/>
+			{/if}
 		</div>
 	</div>
 </div>

@@ -4,6 +4,8 @@ import { json } from '@sveltejs/kit';
 
 dotenv.config()
 
+console.log(process.env.GOOGLE_DRIVE_CLIENT_ID)
+
 const gAuth = new google.auth.OAuth2(
     process.env.GOOGLE_DRIVE_CLIENT_ID,
     process.env.GOOGLE_DRIVE_CLIENT_SECRET,

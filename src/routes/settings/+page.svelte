@@ -32,6 +32,13 @@
 		window.location.href = await response.json();
 	}
 
+	function gDriveLogout() {
+		if (confirm('You sure?')) {
+			$refreshCode = '';
+			$storageMode = 'local';
+		}
+	}
+
 	const fonts = [
 		{ family: 'halogen', displayName: 'Halogen' },
 		{ family: 'hashtag', displayName: 'Hashtag' },
@@ -156,5 +163,8 @@
 				</option>
 			{/each}
 		</select>
+		{#if $storageMode == 'gdrive'}
+			<button on:click={() => gDriveLogout()}>Log out</button>
+		{/if}
 	</div>
 </div>
