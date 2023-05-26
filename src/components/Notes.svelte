@@ -34,7 +34,7 @@
 		<textarea
 			bind:value={props.note}
 			disabled={!editable}
-			class="paper rounded-none overflow-y-hidden resize-none {$font} min-h-[480px]"
+			class="paper rounded-none overflow-y-hidden resize-none {$font} min-h-[490px]"
 			id="note-textarea"
 			bind:this={noteTextarea}
 		/>

@@ -6,6 +6,7 @@
 	import { storageMode } from '../stores/storage';
 	import { refreshCode } from '../stores/refreshCode';
 	import Overlay from '../components/Overlay.svelte';
+	import { useMediaQuery } from 'svelte-breakpoints';
 
 	let thinking = false;
 
@@ -21,6 +22,8 @@
 	$: $poemStorage = poemProps.poem;
 	$: $poemNameStorage = poemProps.poemName;
 	$: $noteStorage = noteProps.note;
+
+	const isMobile = useMediaQuery('(max-width: 488px)');
 
 	async function stashPoem() {
 		if ($poemStorage !== '' && $poemNameStorage !== '') {
@@ -109,16 +112,16 @@
 
 <div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
 	<button
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 		on:click={stashPoem}>New poem (&save this one)</button
 	>
 	<button
 		on:click={exportPoem}
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 		>Export as image</button
 	>
 	<button
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block"
+		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block"
 		on:click={forgetDraft}>Forget poem</button
 	>
 </div>

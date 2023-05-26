@@ -14,20 +14,33 @@
 		switch ($storageMode) {
 			case 'gdrive':
 				thinking = true;
+				const tokenExpiryDate = JSON.parse($refreshCode).expiry_date;
+				console.log();
+				if (Date.now() > tokenExpiryDate) {
+					alert('Heads up! Your session expired, log out and log in again!');
+					break;
+				}
 				let poemsTmp = [];
 				const files = await loadPoemsFromDrive();
-				files.forEach((file) => {
-					if (file.name.split('_')[2] == null) {
-						poemsTmp.push({
-							id: file.id,
-							name: file.name.split('_')[0],
-							timestamp: parseInt(file.name.split('_')[1])
-						});
+				try {
+					files.forEach((file) => {
+						if (file.name.split('_')[2] == null) {
+							poemsTmp.push({
+								id: file.id,
+								name: file.name.split('_')[0],
+								timestamp: parseInt(file.name.split('_')[1])
+							});
+						}
+					});
+					poems = poemsTmp;
+					thinking = false;
+					break;
+				} catch (e) {
+					if (files.errorData.error == 'invalid_grant') {
+						alert("There's an issue with your credentials. Please, log out and log in again!");
 					}
-				});
-				poems = poemsTmp;
-				thinking = false;
-				break;
+					break;
+				}
 			case 'local':
 				db.poems
 					.reverse()
@@ -53,7 +66,14 @@
 				'content-type': 'application/json'
 			}
 		});
-		return response.json();
+		if (response.status != 200) {
+			return {
+				message: response.statusText,
+				code: response.status
+			};
+		} else {
+			return response.json();
+		}
 	}
 
 	function openPoem(id) {
@@ -62,7 +82,7 @@
 	}
 </script>
 
-<div class="poem-list flex flex-col w-11/12 md:w-7/12 mx-auto">
+<div class="poem-list mt-5 flex flex-col w-11/12 md:w-7/12 mx-auto">
 	<div class="overflow-x-auto">
 		<div class="inline-block min-w-full">
 			<div class="overflow-hidden">
@@ -78,24 +98,28 @@
 								</Skeleton>
 							</div>
 						{:else if poems}
-							{#each poems as poem (poem.id)}
-								<tr class="border-b">
-									<button on:click={openPoem(poem.id)}
-										><td
-											class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted hover:no-underline"
-											>{poem.name}</td
-										></button
-									>
-									<td class="w-1/12 whitespace-nowrap px-6 py-4 text-right"
-										>{new Date(poem.timestamp).toLocaleDateString('en-US', {
-											weekday: 'short',
-											year: 'numeric',
-											month: 'short',
-											day: 'numeric'
-										})}</td
-									>
-								</tr>
-							{/each}
+							{#if poems.length == 0}
+								<div class="flex justify-center items-center mt-12 text-center text-zinc-700">Your stage is ready and the spotlight's on, but the verses are yet to bloom</div>
+							{:else}
+								{#each poems as poem (poem.id)}
+									<tr class="border-b">
+										<button on:click={openPoem(poem.id)}
+											><td
+												class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted decoration-1 hover:no-underline"
+												>{poem.name}</td
+											></button
+										>
+										<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
+											>{new Date(poem.timestamp).toLocaleDateString('en-US', {
+												weekday: 'short',
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric'
+											})}</td
+										>
+									</tr>
+								{/each}
+							{/if}
 						{/if}
 					</tbody>
 				</table>

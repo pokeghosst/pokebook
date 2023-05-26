@@ -218,7 +218,7 @@
 				<textarea
 					bind:value={props.poem}
 					disabled={!editable}
-					class="paper overflow-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
+					class="paper overflow-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[490px]"
 					style="padding-left: 64px"
 					id="poem-textarea"
 					bind:this={poemTextarea}
@@ -227,7 +227,7 @@
 				<textarea
 					bind:value={props.poem}
 					disabled={!editable}
-					class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[480px]"
+					class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[490px]"
 					id="poem-textarea"
 					bind:this={poemTextarea}
 				/>

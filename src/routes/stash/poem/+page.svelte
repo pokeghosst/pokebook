@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { db } from '../../../stores/db';
 	import { currentPoem } from '../../../stores/poemId';
+	import { currentNote } from '../../../stores/noteId';
+	import { backupTimestamp } from '../../../stores/timestamp';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
 	import generateImage from '../../../util/poem2image';
@@ -27,10 +29,6 @@
 	let noteProps = {
 		note: $noteStorageBackup
 	};
-
-	let timestamp;
-
-	let noteId;
 
 	let loaded = false;
 	let thinking = false;
@@ -95,7 +93,7 @@
 			}
 		});
 		const responseJson = await response.json();
-		timestamp = responseJson.poemName.split('_')[1];
+		$backupTimestamp = responseJson.poemName.split('_')[1];
 		poemProps = {
 			poem: responseJson.poemContents,
 			poemName: responseJson.poemName.split('_')[0]
@@ -103,7 +101,7 @@
 		noteProps = {
 			note: responseJson.poemNote.note
 		};
-		noteId = responseJson.poemNote.noteId;
+		$currentNote = responseJson.poemNote.noteId;
 	}
 
 	async function loadLocal() {
@@ -139,9 +137,9 @@
 					body: JSON.stringify({
 						refreshToken: auth.refresh_token,
 						poemId: $currentPoem,
-						poemName: poemProps.poemName + '_' + timestamp,
+						poemName: poemProps.poemName + '_' + $backupTimestamp,
 						poemBody: poemProps.poem,
-						noteId: noteId,
+						noteId: $currentNote,
 						note: noteProps.note
 					}),
 					headers: {
@@ -181,7 +179,7 @@
 						body: JSON.stringify({
 							refreshToken: auth.refresh_token,
 							poemId: $currentPoem,
-							noteId: noteId
+							noteId: $currentNote
 						}),
 						headers: {
 							'content-type': 'application/json'
@@ -221,7 +219,7 @@
 			</p>
 			<button
 				on:click={save}
-				class="mb-1 cursor-pointer underline font-bold decoration-dotted hover:no-underline mr-2"
+				class="mb-1 cursor-pointer underline font-bold decoration-dotted decoration-1 hover:no-underline mr-2"
 			>
 				Save them!
 			</button>
@@ -230,7 +228,7 @@
 					discard();
 					location.reload();
 				}}
-				class="mb-1 cursor-pointer underline font-bold decoration-dotted hover:no-underline mr-2"
+				class="mb-1 cursor-pointer underline font-bold decoration-dotted decoration-1 hover:no-underline mr-2"
 			>
 				Meh, I don't care.
 			</button>
@@ -238,24 +236,24 @@
 	{/if}
 	<button
 		on:click={() => generateImage(poemProps.poemName)}
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline md:inline-block mr-2"
+		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline md:inline-block mr-2"
 		>Export as image</button
 	>
 	{#if !editMode && !unsavedChanges}
 		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+			class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 			on:click={toggleEdit}>Edit</button
 		>
 	{:else if !unsavedChanges}
 		<button
-			class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline inline-block mr-2"
+			class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 			on:click={save}>Save</button
 		>
 	{/if}
 
 	<button
 		on:click={() => deletePoem()}
-		class="mb-1 cursor-pointer underline decoration-dotted hover:no-underline md:inline-block"
+		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline md:inline-block"
 		>Forget poem</button
 	>
 </div>

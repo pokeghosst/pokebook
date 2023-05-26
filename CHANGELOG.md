@@ -1,18 +1,26 @@
 # Changelog
 
-## [UNRELEASED]
+## [1.2.0] - 2023-05-26
 
 ### Added
 - Log out of Google Drive
+- Minimalistic logo that adapts to the theme
+- Burger menu on small screens
+- New day theme: Cherry Blossom
 
 ### Fixed
 - Line syllable counters being displayed in wrong places when lines are very long
 - Line syllable counters clashing with the poem
 - Possibly inadequate notebook auto height behavior
-
-### Fixed
+- Oversized text underline
+- Incorrect Poem Stash behavior with Google Drive in some cases
+- Invalid date and inaccessible when saving previously unsaved poem to Google Drive
 - Notebooks being cut off when poem/notes are too long
 - Notebooks going goblin mode with very long lines
+- Incorrect styling of disabled fields in Safari on iOS for non-default themes
+
+### Changed
+- Tweaks for added visual appeal and delight
 
 ## [1.1.0] - 2023-04-12
 

@@ -4,8 +4,6 @@ import { json } from '@sveltejs/kit';
 
 dotenv.config()
 
-console.log(process.env.GOOGLE_DRIVE_CLIENT_ID)
-
 const gAuth = new google.auth.OAuth2(
     process.env.GOOGLE_DRIVE_CLIENT_ID,
     process.env.GOOGLE_DRIVE_CLIENT_SECRET,
@@ -38,20 +36,29 @@ export async function loadPoems(request) {
     gAuth.setCredentials({ refresh_token: request.refreshToken })
     const drive = google.drive({ version: 'v3', auth: gAuth });
 
-    const res = await drive.files.list({
-        q: `name='${folderName}' and trashed=false and mimeType='application/vnd.google-apps.folder'`,
-        fields: 'nextPageToken, files(id, name)',
-    });
-    const folders = res.data.files;
-    if (folders.length) {
-        const folderId = folders[0].id;
+    try {
         const res = await drive.files.list({
-            q: `trashed=false and '${folderId}' in parents`,
+            q: `name='${folderName}' and trashed=false and mimeType='application/vnd.google-apps.folder'`,
             fields: 'nextPageToken, files(id, name)',
         });
-        files = res.data.files;
+        const folders = res.data.files;
+        if (folders.length) {
+            const folderId = folders[0].id;
+            const res = await drive.files.list({
+                q: `trashed=false and '${folderId}' in parents`,
+                fields: 'nextPageToken, files(id, name)',
+            });
+            files = res.data.files;
+        }
+        return files;
+    } catch (e) {
+        console.log(e)
+        return {
+            status: e.response.status,
+            errorData: e.response.data,
+        }
     }
-    return files;
+
 }
 
 export async function deletePoem(request) {
@@ -172,7 +179,7 @@ async function loadNote(refreshToken, originalFilename) {
 }
 
 export async function updatePoem(request) {
-    
+
     gAuth.setCredentials({ refresh_token: request.refreshToken })
     const drive = google.drive({ version: 'v3', auth: gAuth });
 

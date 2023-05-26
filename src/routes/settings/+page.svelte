@@ -62,7 +62,8 @@
 		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
 		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
 		{ themeClass: 'lemon', displayName: 'Lemon Tart' },
-		{ themeClass: 'cookie', displayName: 'Cookie Dough' }
+		{ themeClass: 'cookie', displayName: 'Cookie Dough' },
+		{ themeClass: 'cherry', displayName: 'Cherry Blossom' }
 	];
 
 	const nightThemes = [
