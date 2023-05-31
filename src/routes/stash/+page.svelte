@@ -36,6 +36,7 @@
 					thinking = false;
 					break;
 				} catch (e) {
+					console.log(e);
 					if (files.errorData.error == 'invalid_grant') {
 						alert("There's an issue with your credentials. Please, log out and log in again!");
 					}
