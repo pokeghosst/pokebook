@@ -36,9 +36,12 @@
 					thinking = false;
 					break;
 				} catch (e) {
-					console.log(e);
-					if (files.errorData.error == 'invalid_grant') {
-						alert("There's an issue with your credentials. Please, log out and log in again!");
+					try {
+						if (files.errorData.error == 'invalid_grant') {
+							alert("There's an issue with your credentials. Please, log out and log in again!");
+						}
+					} catch (err) {
+						alert("Uh-oh! We messed up big time. Show this to Poke:\n" + e + "\n" + JSON.stringify(files) + "\nTimestamp: " + Date.now());
 					}
 					break;
 				}
@@ -56,12 +59,13 @@
 		}
 	});
 
-	async function loadPoemsFromDrive() {
+	async function loadPoemsFromDrive() {		
 		const auth = JSON.parse($refreshCode);
+		console.log(auth)
 		const response = await fetch('/api/gdrive/stash', {
 			method: 'POST',
 			body: JSON.stringify({
-				refreshToken: auth.refresh_token
+				refreshToken: auth.access_token
 			}),
 			headers: {
 				'content-type': 'application/json'
@@ -100,7 +104,9 @@
 							</div>
 						{:else if poems}
 							{#if poems.length == 0}
-								<div class="flex justify-center items-center mt-12 text-center text-zinc-700">Your stage is ready and the spotlight's on, but the verses are yet to bloom</div>
+								<div class="flex justify-center items-center mt-12 text-center text-zinc-700">
+									Your stage is ready and the spotlight's on, but the verses are yet to bloom
+								</div>
 							{:else}
 								{#each poems as poem (poem.id)}
 									<tr class="border-b">
