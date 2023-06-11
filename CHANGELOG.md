@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1] - 2023-06-11
+
+### Fixed
+- Unable to load poems from Google Drive
+
+### Changed
+- Bump vite from 4.1.4 to 4.1.5
+
 ## [1.2.0] - 2023-05-26
 
 ### Added
