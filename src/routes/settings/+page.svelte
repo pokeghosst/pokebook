@@ -40,12 +40,12 @@
 	}
 
 	const fonts = [
-		{ family: 'halogen', displayName: 'Halogen' },
-		{ family: 'hashtag', displayName: 'Hashtag' },
-		{ family: 'ammys', displayName: 'Ammys Handwriting' },
-		{ family: 'journal', displayName: 'Journal' },
-		{ family: 'damagrafik', displayName: 'Damagrafik Script' },
-		{ family: 'jphand', displayName: 'JP Hand' },
+		{ family: 'halogen', displayName: 'Halogen (MC)' },
+		{ family: 'hashtag', displayName: 'Hashtag (Sayori)' },
+		{ family: 'ammys', displayName: 'Ammys Handwriting (Natsuki)' },
+		{ family: 'journal', displayName: 'Journal (Monika)' },
+		{ family: 'damagrafik', displayName: 'Damagrafik Script (Yuri Act 2)' },
+		{ family: 'jphand', displayName: 'JP Hand (Yuri)' },
 		{ family: 'arial', displayName: 'Arial' },
 		{ family: 'oldattic', displayName: 'Times Old Attic Bold' },
 		{ family: 'crimson', displayName: 'Crimson Roman' },
