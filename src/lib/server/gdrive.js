@@ -73,16 +73,12 @@ export async function deletePoem(request) {
                 code: 500,
                 message: `${err}`
             })
-        } else {
-            console.log(`File ${request.poemId} deleted successfully.`);
         }
     });
 
     drive.files.delete({ fileId: request.noteId }, (err, res) => {
         if (err) {
             console.error(err);
-        } else {
-            console.log(`File ${request.noteId} deleted successfully.`);
         }
     });
     return ({
@@ -238,7 +234,6 @@ export async function storePoem(request) {
         });
         if (response.data.files.length > 0) {
             folder = response.data.files[0];
-            console.log(`Folder ${folderName} already exists with ID: ${folder.id}`);
         } else {
             const fileMetadata = {
                 name: folderName,
@@ -249,7 +244,6 @@ export async function storePoem(request) {
                 fields: 'id',
             });
             folder = response.data;
-            console.log(`Folder ${folderName} created with ID: ${folder.id}`);
         }
         const res = await drive.files.list({
             q: `name='${request.poemName + "_" + request.timestamp}' and '${folder.id}' in parents and trashed=false`,

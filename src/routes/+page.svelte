@@ -34,7 +34,7 @@
 					const response = await fetch('/api/gdrive/savepoem', {
 						method: 'POST',
 						body: JSON.stringify({
-							refreshToken: auth.refresh_token,
+							refreshToken: auth.access_token,
 							poemName: $poemNameStorage,
 							poemBody: $poemStorage,
 							poemNote: $noteStorage,

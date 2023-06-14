@@ -15,7 +15,6 @@
 			case 'gdrive':
 				thinking = true;
 				const tokenExpiryDate = JSON.parse($refreshCode).expiry_date;
-				console.log();
 				if (Date.now() > tokenExpiryDate) {
 					alert('Heads up! Your session expired, log out and log in again!');
 					break;
@@ -61,7 +60,6 @@
 
 	async function loadPoemsFromDrive() {		
 		const auth = JSON.parse($refreshCode);
-		console.log(auth)
 		const response = await fetch('/api/gdrive/stash', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -104,7 +102,7 @@
 							</div>
 						{:else if poems}
 							{#if poems.length == 0}
-								<div class="flex justify-center items-center mt-12 text-center text-zinc-700">
+								<div class="flex justify-center items-center mt-12 text-center text-zinc-700" id="poem-list-placeholder">
 									Your stage is ready and the spotlight's on, but the verses are yet to bloom
 								</div>
 							{:else}

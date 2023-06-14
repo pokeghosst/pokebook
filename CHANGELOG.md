@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.2] - 2023-06-14
+
+### Fixed
+- Errors with Google Drive integration
+- Poem stash placeholder text wrong color in dark mode
+
+### Changed
+
+- Removed non-exception prints to console
+
 ## [1.2.1] - 2023-06-11
 
 ### Fixed

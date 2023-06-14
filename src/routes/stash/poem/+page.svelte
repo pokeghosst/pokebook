@@ -85,7 +85,7 @@
 		const response = await fetch('/api/gdrive/poem', {
 			method: 'POST',
 			body: JSON.stringify({
-				refreshToken: auth.refresh_token,
+				refreshToken: auth.access_token,
 				poemId: $currentPoem
 			}),
 			headers: {
@@ -135,7 +135,7 @@
 				const response = await fetch('/api/gdrive/updatepoem', {
 					method: 'POST',
 					body: JSON.stringify({
-						refreshToken: auth.refresh_token,
+						refreshToken: auth.access_token,
 						poemId: $currentPoem,
 						poemName: poemProps.poemName + '_' + $backupTimestamp,
 						poemBody: poemProps.poem,
@@ -177,7 +177,7 @@
 					const response = await fetch('/api/gdrive/delete', {
 						method: 'POST',
 						body: JSON.stringify({
-							refreshToken: auth.refresh_token,
+							refreshToken: auth.access_token,
 							poemId: $currentPoem,
 							noteId: $currentNote
 						}),

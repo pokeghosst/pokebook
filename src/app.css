@@ -429,7 +429,8 @@ body:focus-visible {
 .dark h3,
 .dark p,
 .dark #burger-button svg,
-.dark button {
+.dark button,
+#poem-list-placeholder {
     color: #f5f5f4;
 }
 
