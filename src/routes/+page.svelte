@@ -1,44 +1,76 @@
 <script>
 	import Workspace from '../components/Workspace.svelte';
-	import { poemStorage, poemNameStorage, noteStorage } from '../stores/poemStore.js';
-	import { db } from '../stores/db.js';
 	import generateImage from '../util/poem2image';
-	import { storageMode } from '../stores/storage';
-	import { refreshCode } from '../stores/refreshCode';
 	import Overlay from '../components/Overlay.svelte';
-	import { useMediaQuery } from 'svelte-breakpoints';
+	import { onMount } from 'svelte';
+	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+	import { Preferences } from '@capacitor/preferences';
 
 	let thinking = false;
 
-	let poemProps = {
-		poem: $poemStorage,
-		poemName: $poemNameStorage
-	};
+	let poemProps;
+	let noteProps;
+	let storageMode;
+	let refreshCode;
 
-	let noteProps = {
-		note: $noteStorage
-	};
+	$: if (poemProps) {
+		Preferences.set({
+			key: 'draft_poem_text',
+			value: poemProps.poem
+		});
+		Preferences.set({
+			key: 'draft_poem_name',
+			value: poemProps.poemName
+		});
+	}
 
-	$: $poemStorage = poemProps.poem;
-	$: $poemNameStorage = poemProps.poemName;
-	$: $noteStorage = noteProps.note;
+	$: if (noteProps) {
+		Preferences.set({
+			key: 'draft_poem_note',
+			value: noteProps.note
+		});
+	}
 
-	const isMobile = useMediaQuery('(max-width: 488px)');
+	onMount(async () => {
+		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
+		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
+		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
+
+		poemProps = {
+			poem: poemDraftText.value || '',
+			poemName: poemDraftName.value || 'Unnamed'
+		};
+		noteProps = {
+			note: poemDraftNote.value || ''
+		};
+
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+		const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
+		refreshCode = refreshCodePref.value || '';
+	});
 
 	async function stashPoem() {
-		if ($poemStorage !== '' && $poemNameStorage !== '') {
-			switch ($storageMode) {
+		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
+		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
+		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
+
+		if (poemDraftText !== '' && poemDraftName !== '') {
+			const nowDate = new Date(Date.now());
+			switch (storageMode) {
 				case 'gdrive':
 					thinking = true;
-					const auth = JSON.parse($refreshCode);
+					const auth = JSON.parse(refreshCode);
 					const response = await fetch('/api/gdrive/savepoem', {
 						method: 'POST',
 						body: JSON.stringify({
 							refreshToken: auth.access_token,
-							poemName: $poemNameStorage,
-							poemBody: $poemStorage,
-							poemNote: $noteStorage,
-							timestamp: Date.now()
+							poemName: poemDraftName.value,
+							poemBody: poemDraftText.value,
+							poemNote: poemDraftNote.value,
+							timestamp: `${nowDate.getFullYear()}-${
+								nowDate.getMonth() + 1
+							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
 						}),
 						headers: {
 							'content-type': 'application/json'
@@ -52,11 +84,6 @@
 									responseJson.message +
 									'"'
 							);
-						} else {
-							noteStorage.update(() => '');
-							poemStorage.update(() => '');
-							poemNameStorage.update(() => 'Unnamed');
-							location.reload();
 						}
 					} else {
 						alert(
@@ -70,22 +97,37 @@
 					thinking = false;
 					break;
 				case 'local':
-					try {
-						await db.poems.add({
-							note: $noteStorage,
-							poem: $poemStorage,
-							name: $poemNameStorage,
-							timestamp: Date.now()
-						});
-						noteStorage.update(() => '');
-						poemStorage.update(() => '');
-						poemNameStorage.update(() => 'Unnamed');
-					} catch (e) {
-						console.log(e);
-					}
-					location.reload();
+					await Filesystem.writeFile({
+						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+							nowDate.getMonth() + 1
+						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
+						data: poemDraftText.value,
+						directory: Directory.Documents,
+						encoding: Encoding.UTF8
+					});
+					await Filesystem.writeFile({
+						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+							nowDate.getMonth() + 1
+						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
+						data: poemDraftNote.value,
+						directory: Directory.Documents,
+						encoding: Encoding.UTF8
+					});
 					break;
 			}
+			Preferences.set({
+				key: 'draft_poem_text',
+				value: ''
+			});
+			Preferences.set({
+				key: 'draft_poem_name',
+				value: 'Unnamed'
+			});
+			Preferences.set({
+				key: 'draft_poem_note',
+				value: ''
+			});
+			location.reload();
 		} else {
 			alert('You cannot save a poem without a name or... a poem!');
 		}
@@ -93,16 +135,25 @@
 
 	function forgetDraft() {
 		if (confirm('Heads up! You sure want to forget this poem?')) {
-			noteStorage.update(() => '');
-			poemStorage.update(() => '');
-			poemNameStorage.update(() => 'Unnamed');
+			Preferences.set({
+				key: 'draft_poem_text',
+				value: ''
+			});
+			Preferences.set({
+				key: 'draft_poem_name',
+				value: 'Unnamed'
+			});
+			Preferences.set({
+				key: 'draft_poem_note',
+				value: ''
+			});
 			location.reload();
 		}
 	}
 
 	function exportPoem() {
 		thinking = true;
-		generateImage($poemNameStorage)
+		generateImage(poemProps.poemName);
 	}
 </script>
 
@@ -125,4 +176,6 @@
 		on:click={forgetDraft}>Forget poem</button
 	>
 </div>
-<Workspace bind:poemProps bind:noteProps />
+{#if poemProps != null && noteProps != null}
+	<Workspace bind:poemProps bind:noteProps />
+{/if}

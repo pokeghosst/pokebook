@@ -1,6 +1,6 @@
 <script>
 	import { count } from 'letter-count';
-	import { font, poemAlignment } from '../stores/font';
+	import { Preferences } from '@capacitor/preferences';
 	// TODO: Refactor to use RiTa for counting syllables
 	import { syllable } from 'syllable';
 	import {
@@ -29,6 +29,9 @@
 	let highlightedWordsWrapper;
 	let poemTextarea;
 	let syllablePoem;
+	let poemAlignment;
+
+	let font;
 
 	const LEVENSHTEIN_THRESHOLD = 1;
 	// Hash-based approach with salt allows us to deterministically define colors
@@ -53,10 +56,11 @@
 	$: $pokehelp, autoResize();
 	$: lines, autoResize();
 
-	onMount(() => {
-		if ($pokehelp == 'true') {
-			highlightedWords = highlightWords(lines);
-		}
+	onMount(async () => {
+		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
+		poemAlignment = poemAlignmentPref.value || 'left';
+		const fontPref = await Preferences.get({ key: 'notebook_font' });
+		font = fontPref.value || 'halogen';
 		autoResize();
 	});
 
@@ -179,10 +183,8 @@
 		const forbiddenChars = /_/g;
 		props.poemName = props.poemName.replace(forbiddenChars, '');
 	}
-
 </script>
 
-<!-- <span bind:this={markerLetter} class="{$font}">m</span> -->
 <div class="notebook" id="poem-notebook">
 	<input
 		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
@@ -196,7 +198,7 @@
 				Words: {stats.words} | Characters: {stats.chars} | Lines: {stats.lines}
 			</div>
 			<div
-				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {$font} resize-none z-10 h-auto pointer-events-none"
+				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {font} resize-none z-10 h-auto pointer-events-none"
 				disabled="true"
 				aria-hidden="true"
 			>
@@ -206,7 +208,7 @@
 		<div class="relative">
 			{#if $pokehelp == 'true'}
 				<div
-					class="absolute select-none text-transparent whitespace-pre-wrap h-full w-full leading-[32px] pt-[35px] pl-[64px] pr-[35px] {$font} {$poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none"
+					class="absolute select-none text-transparent whitespace-pre-wrap h-full w-full leading-[32px] pt-[35px] pl-[64px] pr-[35px] {font} {poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none"
 					aria-hidden="true"
 					bind:this={highlightedWordsWrapper}
 				>
@@ -214,11 +216,13 @@
 				</div>
 			{/if}
 			<!-- I know I'm gonna hate myself for this  -->
+			<!-- Yeah, I definitely hate myself. For this included.  -->
+			<!-- In fact, in the light of the latest events I hate myself even more. Just look at this mess  -->
 			{#if $pokehelp == 'true'}
 				<textarea
 					bind:value={props.poem}
 					disabled={!editable}
-					class="paper overflow-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[490px]"
+					class="paper overflow-hidden resize-none rounded-none {font} {poemAlignment} min-h-[490px]"
 					style="padding-left: 64px"
 					id="poem-textarea"
 					bind:this={poemTextarea}
@@ -227,7 +231,7 @@
 				<textarea
 					bind:value={props.poem}
 					disabled={!editable}
-					class="paper overflow-y-hidden resize-none rounded-none {$font} {$poemAlignment} min-h-[490px]"
+					class="paper overflow-y-hidden resize-none rounded-none {font} {poemAlignment} min-h-[490px]"
 					id="poem-textarea"
 					bind:this={poemTextarea}
 				/>

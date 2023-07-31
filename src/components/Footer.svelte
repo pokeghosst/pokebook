@@ -1,6 +1,6 @@
 <div class="text-center">
 	<p>
-		v1.2.2 - "Cherry Blossom" · <a
+		v2.0.0-rc - "" · <a
 			href="/privacy"
 			class="underline decoration-dotted decoration-1 hover:no-underline">Privacy Policy</a
 		>

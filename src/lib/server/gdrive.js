@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-import { json } from '@sveltejs/kit';
 
 dotenv.config()
 
@@ -141,7 +140,7 @@ async function loadNote(refreshToken, originalFilename) {
         }
 
         const res = await drive.files.list({
-            q: `name='${originalFilename + "_notes"}' and '${folder.id}' in parents and trashed=false`,
+            q: `name='${originalFilename + "_note"}' and '${folder.id}' in parents and trashed=false`,
             fields: 'nextPageToken, files(id, name)',
         });
 
@@ -200,7 +199,7 @@ export async function updatePoem(request) {
     await drive.files.update({
         fileId: request.noteId,
         resource: {
-            name: request.poemName + "_notes"
+            name: request.poemName + "_note"
         }
     });
 
@@ -275,7 +274,7 @@ export async function storePoem(request) {
                 fields: 'id',
             });
             const noteFileMetadata = {
-                name: request.poemName + "_" + request.timestamp + "_notes",
+                name: request.poemName + "_" + request.timestamp + "_note",
                 mimeType: 'text/plain',
                 parents: [folder.id],
             };

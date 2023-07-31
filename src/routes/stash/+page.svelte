@@ -1,37 +1,36 @@
 <script>
-	import { db } from '../../stores/db';
-	import { currentPoem } from '../../stores/poemId';
 	import { goto } from '$app/navigation';
-	import { storageMode } from '../../stores/storage';
 	import { onMount } from 'svelte';
-	import { refreshCode } from '../../stores/refreshCode';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
+	import { Preferences } from '@capacitor/preferences';
+	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 	let poems = [];
 	let thinking = false;
+	let storageMode = null;
+	let refreshCode = null;
 
 	onMount(async () => {
-		switch ($storageMode) {
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+		const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
+		refreshCode = refreshCodePref.value || '';
+
+		Preferences.remove({
+			key: 'current_poem_uri'
+		});
+
+		switch (storageMode) {
 			case 'gdrive':
 				thinking = true;
-				const tokenExpiryDate = JSON.parse($refreshCode).expiry_date;
+				const tokenExpiryDate = JSON.parse(refreshCode).expiry_date;
 				if (Date.now() > tokenExpiryDate) {
 					alert('Heads up! Your session expired, log out and log in again!');
 					break;
 				}
-				let poemsTmp = [];
-				const files = await loadPoemsFromDrive();
 				try {
-					files.forEach((file) => {
-						if (file.name.split('_')[2] == null) {
-							poemsTmp.push({
-								id: file.id,
-								name: file.name.split('_')[0],
-								timestamp: parseInt(file.name.split('_')[1])
-							});
-						}
-					});
-					poems = poemsTmp;
+					poems = await loadPoemsFromDrive();
+					console.log(poems);
 					thinking = false;
 					break;
 				} catch (e) {
@@ -40,26 +39,29 @@
 							alert("There's an issue with your credentials. Please, log out and log in again!");
 						}
 					} catch (err) {
-						alert("Uh-oh! We messed up big time. Show this to Poke:\n" + e + "\n" + JSON.stringify(files) + "\nTimestamp: " + Date.now());
+						alert(
+							'Uh-oh! We messed up big time. Show this to Poke:\n' +
+								e +
+								'\n' +
+								JSON.stringify(files) +
+								'\nTimestamp: ' +
+								Date.now()
+						);
 					}
 					break;
 				}
 			case 'local':
-				db.poems
-					.reverse()
-					.toArray()
-					.then((objects) => {
-						poems = objects;
-					})
-					.catch((error) => {
-						console.error(error);
-					});
+				const storedFiles = await Filesystem.readdir({
+					path: 'poems',
+					directory: Directory.Documents
+				});
+				poems = storedFiles.files;
 				break;
 		}
 	});
 
-	async function loadPoemsFromDrive() {		
-		const auth = JSON.parse($refreshCode);
+	async function loadPoemsFromDrive() {
+		const auth = JSON.parse(refreshCode);
 		const response = await fetch('/api/gdrive/stash', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -79,8 +81,19 @@
 		}
 	}
 
-	function openPoem(id) {
-		currentPoem.set(id);
+	function openPoem(poem) {
+		console.log(poem);
+		if (storageMode == 'gdrive') {
+			Preferences.set({
+				key: 'gdrive_poem_id',
+				value: poem.id
+			});
+		} else {
+			Preferences.set({
+				key: 'current_poem_uri',
+				value: poem.uri
+			});
+		}
 		goto('/stash/poem', { replaceState: false });
 	}
 </script>
@@ -102,27 +115,32 @@
 							</div>
 						{:else if poems}
 							{#if poems.length == 0}
-								<div class="flex justify-center items-center mt-12 text-center text-zinc-700" id="poem-list-placeholder">
-									Your stage is ready and the spotlight's on, but the verses are yet to bloom
+								<div
+									class="flex justify-center items-center mt-12 text-center"
+									id="poem-list-placeholder"
+								>
+									Your stage is ready and the spotlight's on, but the verses are yet to bloom.
 								</div>
 							{:else}
-								{#each poems as poem (poem.id)}
-									<tr class="border-b">
-										<button on:click={openPoem(poem.id)}
-											><td
-												class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted decoration-1 hover:no-underline"
-												>{poem.name}</td
-											></button
-										>
-										<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
-											>{new Date(poem.timestamp).toLocaleDateString('en-US', {
-												weekday: 'short',
-												year: 'numeric',
-												month: 'short',
-												day: 'numeric'
-											})}</td
-										>
-									</tr>
+								{#each poems as poem}
+									{#if poem.name.split('_')[3] == null}
+										<tr class="border-b">
+											<button on:click={openPoem(poem)}
+												><td
+													class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted decoration-1 hover:no-underline"
+													>{poem.name.split('_')[0]}</td
+												></button
+											>
+											<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
+												>{new Date(poem.name.split('_')[1]).toLocaleDateString('en-US', {
+													weekday: 'short',
+													year: 'numeric',
+													month: 'short',
+													day: 'numeric'
+												})}</td
+											>
+										</tr>
+									{/if}
 								{/each}
 							{/if}
 						{/if}
