@@ -1,12 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
 	import rita from 'rita';
-	import { poemAlignment } from '../../stores/font';
 	import { Preferences } from '@capacitor/preferences';
 
 	let fileContent = null;
 	let loaded = false;
 	let lines;
+	let poemAlignment;
 
 	let n = 3;
 	let temperature = 0.1;
@@ -17,6 +17,8 @@
 	onMount(async () => {
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
 		font = fontPref.value || 'halogen';
+		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
+		poemAlignment = poemAlignmentPref.value || 'left';
 	});
 
 	function handleFileUpload(event) {
@@ -94,7 +96,7 @@
 		<div class="w-6/12 mx-auto mt-10">
 			<div class="top text-white leading-[50px] pl-5 font-bold" />
 			<div class="paper">
-				<p class="leading-[32px] {font} {$poemAlignment} text-center mx-auto">
+				<p class="leading-[32px] {font} {poemAlignment} text-center mx-auto">
 					{#each lines as line}
 						{line}<br />
 					{/each}
