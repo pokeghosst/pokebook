@@ -2,16 +2,18 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
+	import { Browser } from '@capacitor/browser';
+	import { CapacitorHttp } from '@capacitor/core';
+	import {
+		PUBLIC_POKEDRIVE_BASE_URL
+	} from '$env/static/public';
 
 	let storageMode = null;
-	let refreshCode = null;
 	let font = null;
 	let dayTheme = null;
 	let nightTheme = null;
 	let poemAlignment = null;
-
-	let authCode = $page.url.searchParams.get('code');
-	let authNeeded = false;
+	let gDriveAuth = false;
 
 	$: if (storageMode != null) {
 		Preferences.set({
@@ -51,8 +53,8 @@
 	onMount(async () => {
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
-		const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
-		refreshCode = refreshCodePref.value || '';
+		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
+		gDriveAuth = gDriveAuthPref.value || 'false';
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
 		font = fontPref.value || 'halogen';
 		const dayThemePref = await Preferences.get({ key: 'day_theme' });
@@ -60,39 +62,19 @@
 		const nightThemePref = await Preferences.get({ key: 'night_theme' });
 		nightTheme = nightThemePref.value || 'chocolate';
 		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
-		poemAlignment = poemAlignmentPref.value || 'left';
-
-
-		if (refreshCode == '' || refreshCode == null || refreshCode == 'null') {
-			if (authCode !== null) {
-				const response = await fetch('/api/gdrive/drive', {
-					method: 'POST',
-					body: JSON.stringify({
-						authCode: authCode
-					}),
-					headers: {
-						'content-type': 'application/json'
-					}
-				});
-				const jsonResponse = await response.json();
-				console.log(jsonResponse);
-				Preferences.set({
-					key: 'refresh_code',
-					value: JSON.stringify(jsonResponse)
-				});
-			}
-		}
+		poemAlignment = poemAlignmentPref.value || 'text-left';
 	});
 
-	async function getAuthCode() {
-		const response = await fetch('/api/gdrive/auth');
-		window.location.href = await response.json();
+	async function authorize() {
+		await Browser.open({ url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth`});
 	}
 
 	function gDriveLogout() {
+		// TODO: Don't forget to actually log out!
 		if (confirm('You sure?')) {
-			Preferences.remove({
-				key: 'refresh_code'
+			Preferences.set({
+				key: 'gdrive_auth',
+				value: 'false'
 			});
 			storageMode = 'local';
 			location.reload();
@@ -204,14 +186,12 @@
 			bind:value={storageMode}
 			on:change={() => {
 				if (storageMode == 'gdrive') {
-					if (refreshCode == '' || refreshCode == null || refreshCode == 'null') {
-						authNeeded = true;
+					if (gDriveAuth == 'false') {
 						if (
 							confirm('Heads up! You will be redirected to log in with your Google account. Oke?')
 						) {
-							getAuthCode();
+							authorize();
 						} else {
-							authNeeded = false;
 							storageMode = 'local';
 						}
 					}

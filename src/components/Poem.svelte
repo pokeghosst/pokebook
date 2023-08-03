@@ -180,7 +180,7 @@
 	}
 
 	function preventChars(event) {
-		const forbiddenChars = /_/g;
+		const forbiddenChars = /[./_]/g;
 		props.poemName = props.poemName.replace(forbiddenChars, '');
 	}
 </script>

@@ -5,13 +5,14 @@
 	import { onMount } from 'svelte';
 	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 	import { Preferences } from '@capacitor/preferences';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 
 	let thinking = false;
 
 	let poemProps;
 	let noteProps;
 	let storageMode;
-	let refreshCode;
 
 	$: if (poemProps) {
 		Preferences.set({
@@ -46,8 +47,6 @@
 
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
-		const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
-		refreshCode = refreshCodePref.value || '';
 	});
 
 	async function stashPoem() {
@@ -60,38 +59,25 @@
 			switch (storageMode) {
 				case 'gdrive':
 					thinking = true;
-					const auth = JSON.parse(refreshCode);
-					const response = await fetch('/api/gdrive/savepoem', {
-						method: 'POST',
-						body: JSON.stringify({
-							refreshToken: auth.access_token,
-							poemName: poemDraftName.value,
-							poemBody: poemDraftText.value,
-							poemNote: poemDraftNote.value,
-							timestamp: `${nowDate.getFullYear()}-${
+					const options = {
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
+						data: {
+							poem_name: poemDraftName.value,
+							poem_body: poemDraftText.value,
+							poem_note: poemDraftNote.value,
+							poem_timestamp: `${nowDate.getFullYear()}-${
 								nowDate.getMonth() + 1
 							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
-						}),
-						headers: {
-							'content-type': 'application/json'
 						}
-					});
-					const responseJson = await response.json();
+					};
+					const response = await CapacitorHttp.request({ ...options, method: 'POST' });
+					console.log(response);
+					
 					if (response.status === 200) {
-						if (responseJson.code === 500) {
-							alert(
-								"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-									responseJson.message +
-									'"'
-							);
-						}
+						thinking = false;
 					} else {
 						alert(
-							"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-								response.status +
-								' ' +
-								response.statusText +
-								'"'
+							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
 						);
 					}
 					thinking = false;
@@ -102,16 +88,18 @@
 							nowDate.getMonth() + 1
 						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
 						data: poemDraftText.value,
-						directory: Directory.Documents,
-						encoding: Encoding.UTF8
+						directory: Directory.Data,
+						encoding: Encoding.UTF8,
+						recursive: true
 					});
 					await Filesystem.writeFile({
 						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
 							nowDate.getMonth() + 1
 						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
 						data: poemDraftNote.value,
-						directory: Directory.Documents,
-						encoding: Encoding.UTF8
+						directory: Directory.Data,
+						encoding: Encoding.UTF8,
+						recursive: true
 					});
 					break;
 			}

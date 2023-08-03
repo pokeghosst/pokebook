@@ -6,9 +6,10 @@
 	import Overlay from '../../../components/Overlay.svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 	import { preventTabClose } from '../../../util/preventTabClose';
-
 	import { Filesystem, Encoding } from '@capacitor/filesystem';
 	import { Preferences } from '@capacitor/preferences';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 
 	let editMode;
 
@@ -23,10 +24,7 @@
 	let poemUri = null;
 	let noteUri = null;
 	let gDrivePoemId = null;
-	let gDriveNoteId = null;
 	let gDrivePoemTime = null;
-
-	let refreshCode = null;
 
 	$: if (poemProps) {
 		Preferences.set({
@@ -54,9 +52,6 @@
 
 		switch (storageMode) {
 			case 'gdrive':
-				const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
-				refreshCode = refreshCodePref.value || '';
-
 				const gDrivePoemIdPref = await Preferences.get({ key: 'gdrive_poem_id' });
 				gDrivePoemId = gDrivePoemIdPref.value;
 
@@ -142,10 +137,6 @@
 				value: gDrivePoemId
 			});
 			Preferences.set({
-				key: 'unsaved_note_id',
-				value: gDriveNoteId
-			});
-			Preferences.set({
 				key: 'unsaved_poem_time',
 				value: gDrivePoemTime
 			});
@@ -153,30 +144,21 @@
 	}
 
 	async function loadPoemFromDrive() {
-		const auth = JSON.parse(refreshCode);
-		console.log(auth.access_token);
 		console.log(gDrivePoemId);
-		const response = await fetch('/api/gdrive/poem', {
-			method: 'POST',
-			body: JSON.stringify({
-				refreshToken: auth.access_token,
-				poemId: gDrivePoemId
-			}),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-		const responseJson = await response.json();
-		console.log(responseJson);
+		const options = {
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`
+		};
+		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+		console.log(response);
+
 		poemProps = {
-			poem: responseJson.poemContents,
-			poemName: responseJson.poemName.split('_')[0]
+			poem: response.data.poem,
+			poemName: response.data.poem_name.split('_')[0]
 		};
 		noteProps = {
-			note: responseJson.poemNote.note
+			note: response.data.note
 		};
-		gDriveNoteId = responseJson.poemNote.noteId;
-		gDrivePoemTime = responseJson.poemName.split('_').slice(1, 3).join('_');
+		gDrivePoemTime = response.data.poem_name.split('_').slice(1, 3).join('_');
 	}
 
 	async function loadLocal() {
@@ -185,7 +167,7 @@
 			encoding: Encoding.UTF8
 		});
 		const poemName = poemUri.split('/')[3].split('_')[0];
-		const noteUriSplit = poemUri.split('.');
+		const noteUriSplit = poemUri.split('.txt');
 		noteUri = `${noteUriSplit[0]}_note.txt`;
 		const noteContents = await Filesystem.readFile({
 			path: noteUri,
@@ -219,9 +201,6 @@
 			const gDrivePoemIdPref = await Preferences.get({ key: 'unsaved_poem_id' });
 			gDrivePoemId = gDrivePoemIdPref.value;
 
-			const gDriveNoteIdPref = await Preferences.get({ key: 'unsaved_note_id' });
-			gDriveNoteId = gDriveNoteIdPref.value;
-
 			const gDrivePoemTimePref = await Preferences.get({ key: 'unsaved_poem_time' });
 			gDrivePoemTime = gDrivePoemTimePref.value;
 		}
@@ -231,21 +210,23 @@
 		switch (storageMode) {
 			case 'gdrive':
 				thinking = true;
-				const auth = JSON.parse(refreshCode);
-				const response = await fetch('/api/gdrive/updatepoem', {
-					method: 'POST',
-					body: JSON.stringify({
-						refreshToken: auth.access_token,
-						poemId: gDrivePoemId,
-						poemName: poemProps.poemName + `_${gDrivePoemTime}`,
-						poemBody: poemProps.poem,
-						noteId: gDriveNoteId,
-						note: noteProps.note
-					}),
-					headers: {
-						'content-type': 'application/json'
+				const options = {
+					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
+					data: {
+						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
+						poem_body: poemProps.poem,
+						poem_note: noteProps.note
 					}
-				});
+				};
+				console.log(poemProps.poemName);
+				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
+				if (response.status === 200) {
+					thinking = false;
+				} else {
+					alert(
+						`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
+					);
+				}
 				thinking = false;
 				break;
 			case 'local':
@@ -313,27 +294,18 @@
 			switch (storageMode) {
 				case 'gdrive':
 					thinking = true;
-					const auth = JSON.parse(refreshCode);
-					const response = await fetch('/api/gdrive/delete', {
-						method: 'POST',
-						body: JSON.stringify({
-							refreshToken: auth.access_token,
-							poemId: gDrivePoemId,
-							noteId: gDriveNoteId
-						}),
-						headers: {
-							'content-type': 'application/json'
-						}
-					});
-					const responseJson = await response.json();
-					if (responseJson.code === 500) {
+					const options = {
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`
+					};
+					const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
+
+					if (response.status != 200) {
 						alert(
-							"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-								responseJson.message +
-								'"'
+							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
 						);
+					} else {
+						goto('/stash', { replaceState: false });
 					}
-					goto('/stash', { replaceState: false });
 					break;
 				case 'local':
 					Filesystem.deleteFile({

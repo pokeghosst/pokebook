@@ -3,18 +3,17 @@
 	import { onMount } from 'svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 	import { Preferences } from '@capacitor/preferences';
-	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+	import { Filesystem, Directory } from '@capacitor/filesystem';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 
 	let poems = [];
 	let thinking = false;
 	let storageMode = null;
-	let refreshCode = null;
 
 	onMount(async () => {
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
-		const refreshCodePref = await Preferences.get({ key: 'refresh_code' });
-		refreshCode = refreshCodePref.value || '';
 
 		Preferences.remove({
 			key: 'current_poem_uri'
@@ -23,11 +22,6 @@
 		switch (storageMode) {
 			case 'gdrive':
 				thinking = true;
-				const tokenExpiryDate = JSON.parse(refreshCode).expiry_date;
-				if (Date.now() > tokenExpiryDate) {
-					alert('Heads up! Your session expired, log out and log in again!');
-					break;
-				}
 				try {
 					poems = await loadPoemsFromDrive();
 					console.log(poems);
@@ -53,31 +47,24 @@
 			case 'local':
 				const storedFiles = await Filesystem.readdir({
 					path: 'poems',
-					directory: Directory.Documents
+					directory: Directory.Data
 				});
-				poems = storedFiles.files;
+				poems = storedFiles.files.sort((a,b) => b.ctime - a.ctime);
 				break;
 		}
 	});
 
 	async function loadPoemsFromDrive() {
-		const auth = JSON.parse(refreshCode);
-		const response = await fetch('/api/gdrive/stash', {
-			method: 'POST',
-			body: JSON.stringify({
-				refreshToken: auth.access_token
-			}),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
+		const options = {
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`
+		};
+		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
 		if (response.status != 200) {
 			return {
-				message: response.statusText,
 				code: response.status
 			};
 		} else {
-			return response.json();
+			return response.data.files;
 		}
 	}
 
