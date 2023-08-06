@@ -4,9 +4,8 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { Browser } from '@capacitor/browser';
 	import { CapacitorHttp } from '@capacitor/core';
-	import {
-		PUBLIC_POKEDRIVE_BASE_URL
-	} from '$env/static/public';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { v4 as uuidv4 } from 'uuid';
 
 	let storageMode = null;
 	let font = null;
@@ -66,16 +65,35 @@
 	});
 
 	async function authorize() {
-		await Browser.open({ url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth`});
+		const gDriveUuid = uuidv4();
+		Preferences.set({
+			key: 'gdrive_uuid',
+			value: gDriveUuid
+		});
+		await Browser.open({
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth?uuid=${gDriveUuid}`,
+			windowName: '_self'
+		});
 	}
 
-	function gDriveLogout() {
-		// TODO: Don't forget to actually log out!
+	async function gDriveLogout() {
 		if (confirm('You sure?')) {
 			Preferences.set({
 				key: 'gdrive_auth',
 				value: 'false'
 			});
+			const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+			const options = {
+				url: `${PUBLIC_POKEDRIVE_BASE_URL}/logout`,
+				headers: {
+					Authorization: gDriveUuidPref.value
+				}
+			};
+			const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+			if (response.status == 400) {
+				`Something went wrong! But don't fret. You was logged out and can log in again when you want to. If this looks too weird, better report this: Error code ${response.status} Additional information: ${response.data}`;
+			}
+			Preferences.remove({ key: 'gdrive_uuid' });
 			storageMode = 'local';
 			location.reload();
 		}

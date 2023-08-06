@@ -22,54 +22,45 @@
 		switch (storageMode) {
 			case 'gdrive':
 				thinking = true;
-				try {
-					poems = await loadPoemsFromDrive();
-					console.log(poems);
-					thinking = false;
-					break;
-				} catch (e) {
-					try {
-						if (files.errorData.error == 'invalid_grant') {
-							alert("There's an issue with your credentials. Please, log out and log in again!");
-						}
-					} catch (err) {
+				const response = await loadPoemsFromDrive();
+				switch (response.status) {
+					case 200:
+						poems = response.data.files;
+						break;
+					case 401:
+						alert('Unauthorized! Try to log out and log in again!');
+						break;
+					default:
 						alert(
-							'Uh-oh! We messed up big time. Show this to Poke:\n' +
-								e +
-								'\n' +
-								JSON.stringify(files) +
-								'\nTimestamp: ' +
-								Date.now()
+							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
 						);
-					}
-					break;
+						break;
 				}
+				thinking = false;
+				break;
 			case 'local':
 				const storedFiles = await Filesystem.readdir({
 					path: 'poems',
 					directory: Directory.Data
 				});
-				poems = storedFiles.files.sort((a,b) => b.ctime - a.ctime);
+				poems = storedFiles.files.sort((a, b) => b.ctime - a.ctime);
 				break;
 		}
 	});
 
 	async function loadPoemsFromDrive() {
+		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
 		const options = {
-			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
+			headers: {
+				Authorization: gDriveUuidPref.value,
+			}
 		};
 		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
-		if (response.status != 200) {
-			return {
-				code: response.status
-			};
-		} else {
-			return response.data.files;
-		}
+		return response
 	}
 
 	function openPoem(poem) {
-		console.log(poem);
 		if (storageMode == 'gdrive') {
 			Preferences.set({
 				key: 'gdrive_poem_id',

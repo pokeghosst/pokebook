@@ -26,6 +26,8 @@
 	let gDrivePoemId = null;
 	let gDrivePoemTime = null;
 
+	let gDriveUuidPref;
+
 	$: if (poemProps) {
 		Preferences.set({
 			key: 'backup_poem_text',
@@ -52,6 +54,7 @@
 
 		switch (storageMode) {
 			case 'gdrive':
+				gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
 				const gDrivePoemIdPref = await Preferences.get({ key: 'gdrive_poem_id' });
 				gDrivePoemId = gDrivePoemIdPref.value;
 
@@ -86,7 +89,6 @@
 			case 'local':
 				const poemUriPref = await Preferences.get({ key: 'current_poem_uri' });
 				poemUri = poemUriPref.value;
-				console.log(`Current poem URI ${poemUri}`);
 				if (unsavedChangesPref.value == 'true') {
 					const unsavedPoemUriPref = await Preferences.get({ key: 'unsaved_poem_uri' });
 					const unsavedPoemUri = unsavedPoemUriPref.value;
@@ -144,12 +146,13 @@
 	}
 
 	async function loadPoemFromDrive() {
-		console.log(gDrivePoemId);
 		const options = {
-			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
+			headers: {
+				Authorization: gDriveUuidPref.value
+			}
 		};
 		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
-		console.log(response);
 
 		poemProps = {
 			poem: response.data.poem,
@@ -212,13 +215,16 @@
 				thinking = true;
 				const options = {
 					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
+					headers: {
+						Authorization: gDriveUuidPref.value
+					},
 					data: {
 						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
 						poem_body: poemProps.poem,
 						poem_note: noteProps.note
 					}
 				};
-				console.log(poemProps.poemName);
+		
 				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
 				if (response.status === 200) {
 					thinking = false;
@@ -295,7 +301,10 @@
 				case 'gdrive':
 					thinking = true;
 					const options = {
-						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
+						headers: {
+							Authorization: gDriveUuidPref.value
+						}
 					};
 					const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
 

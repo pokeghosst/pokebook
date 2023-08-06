@@ -54,6 +54,8 @@
 		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
 		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
 
+		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+
 		if (poemDraftText !== '' && poemDraftName !== '') {
 			const nowDate = new Date(Date.now());
 			switch (storageMode) {
@@ -61,6 +63,9 @@
 					thinking = true;
 					const options = {
 						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
+						headers: {
+							Authorization: gDriveUuidPref.value
+						},
 						data: {
 							poem_name: poemDraftName.value,
 							poem_body: poemDraftText.value,
