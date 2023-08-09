@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-import { json } from '@sveltejs/kit';
 
 dotenv.config()
 
@@ -36,20 +35,29 @@ export async function loadPoems(request) {
     gAuth.setCredentials({ refresh_token: request.refreshToken })
     const drive = google.drive({ version: 'v3', auth: gAuth });
 
-    const res = await drive.files.list({
-        q: `name='${folderName}' and trashed=false and mimeType='application/vnd.google-apps.folder'`,
-        fields: 'nextPageToken, files(id, name)',
-    });
-    const folders = res.data.files;
-    if (folders.length) {
-        const folderId = folders[0].id;
+    try {
         const res = await drive.files.list({
-            q: `trashed=false and '${folderId}' in parents`,
+            q: `name='${folderName}' and trashed=false and mimeType='application/vnd.google-apps.folder'`,
             fields: 'nextPageToken, files(id, name)',
         });
-        files = res.data.files;
+        const folders = res.data.files;
+        if (folders.length) {
+            const folderId = folders[0].id;
+            const res = await drive.files.list({
+                q: `trashed=false and '${folderId}' in parents`,
+                fields: 'nextPageToken, files(id, name)',
+            });
+            files = res.data.files;
+        }
+        return files;
+    } catch (e) {
+        console.log(e)
+        return {
+            status: e.response.status,
+            errorData: e.response.data,
+        }
     }
-    return files;
+
 }
 
 export async function deletePoem(request) {
@@ -64,16 +72,12 @@ export async function deletePoem(request) {
                 code: 500,
                 message: `${err}`
             })
-        } else {
-            console.log(`File ${request.poemId} deleted successfully.`);
         }
     });
 
     drive.files.delete({ fileId: request.noteId }, (err, res) => {
         if (err) {
             console.error(err);
-        } else {
-            console.log(`File ${request.noteId} deleted successfully.`);
         }
     });
     return ({
@@ -136,7 +140,7 @@ async function loadNote(refreshToken, originalFilename) {
         }
 
         const res = await drive.files.list({
-            q: `name='${originalFilename + "_notes"}' and '${folder.id}' in parents and trashed=false`,
+            q: `name='${originalFilename + "_note"}' and '${folder.id}' in parents and trashed=false`,
             fields: 'nextPageToken, files(id, name)',
         });
 
@@ -170,7 +174,7 @@ async function loadNote(refreshToken, originalFilename) {
 }
 
 export async function updatePoem(request) {
-    
+
     gAuth.setCredentials({ refresh_token: request.refreshToken })
     const drive = google.drive({ version: 'v3', auth: gAuth });
 
@@ -195,7 +199,7 @@ export async function updatePoem(request) {
     await drive.files.update({
         fileId: request.noteId,
         resource: {
-            name: request.poemName + "_notes"
+            name: request.poemName + "_note"
         }
     });
 
@@ -229,7 +233,6 @@ export async function storePoem(request) {
         });
         if (response.data.files.length > 0) {
             folder = response.data.files[0];
-            console.log(`Folder ${folderName} already exists with ID: ${folder.id}`);
         } else {
             const fileMetadata = {
                 name: folderName,
@@ -240,7 +243,6 @@ export async function storePoem(request) {
                 fields: 'id',
             });
             folder = response.data;
-            console.log(`Folder ${folderName} created with ID: ${folder.id}`);
         }
         const res = await drive.files.list({
             q: `name='${request.poemName + "_" + request.timestamp}' and '${folder.id}' in parents and trashed=false`,
@@ -272,7 +274,7 @@ export async function storePoem(request) {
                 fields: 'id',
             });
             const noteFileMetadata = {
-                name: request.poemName + "_" + request.timestamp + "_notes",
+                name: request.poemName + "_" + request.timestamp + "_note",
                 mimeType: 'text/plain',
                 parents: [folder.id],
             };

@@ -90,12 +90,6 @@
 			<td>Denotes whether the dark mode is active or not</td>
 		</tr>
 		<tr>
-			<td>refreshCode</td>
-			<td
-				>Refresh code used to generate authentication tokens for making requests to Google Drive</td
-			>
-		</tr>
-		<tr>
 			<td>viewsState</td>
 			<td>Used to remember the location of "Poem" and "Notes" panes</td>
 		</tr>

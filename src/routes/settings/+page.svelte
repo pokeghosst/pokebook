@@ -1,44 +1,111 @@
 <script>
-	import { font, poemAlignment } from '../../stores/font';
-	import { dayTheme, nightTheme } from '../../stores/mode';
-	import { storageMode } from '../../stores/storage';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { refreshCode } from '../../stores/refreshCode';
+	import { Preferences } from '@capacitor/preferences';
+	import { Browser } from '@capacitor/browser';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { v4 as uuidv4 } from 'uuid';
 
-	let authCode = $page.url.searchParams.get('code');
-	let authNeeded = false;
+	let storageMode = null;
+	let font = null;
+	let dayTheme = null;
+	let nightTheme = null;
+	let poemAlignment = null;
+	let gDriveAuth = false;
+
+	$: if (storageMode != null) {
+		Preferences.set({
+			key: 'storage_mode',
+			value: storageMode
+		});
+	}
+
+	$: if (font != null) {
+		Preferences.set({
+			key: 'notebook_font',
+			value: font
+		});
+	}
+
+	$: if (dayTheme != null) {
+		Preferences.set({
+			key: 'day_theme',
+			value: dayTheme
+		});
+	}
+
+	$: if (nightTheme != null) {
+		Preferences.set({
+			key: 'night_theme',
+			value: nightTheme
+		});
+	}
+
+	$: if (poemAlignment != null) {
+		Preferences.set({
+			key: 'poem_alignment',
+			value: poemAlignment
+		});
+	}
 
 	onMount(async () => {
-		if ($refreshCode == '' || $refreshCode == null || $refreshCode == 'null') {
-			if (authCode !== null) {
-				const response = await fetch('/api/gdrive/drive', {
-					method: 'POST',
-					body: JSON.stringify({
-						authCode: authCode
-					}),
-					headers: {
-						'content-type': 'application/json'
-					}
-				});
-				const jsonResponse = await response.json();
-				refreshCode.update(() => JSON.stringify(jsonResponse));
-			}
-		}
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
+		gDriveAuth = gDriveAuthPref.value || 'false';
+		const fontPref = await Preferences.get({ key: 'notebook_font' });
+		font = fontPref.value || 'halogen';
+		const dayThemePref = await Preferences.get({ key: 'day_theme' });
+		dayTheme = dayThemePref.value || 'vanilla';
+		const nightThemePref = await Preferences.get({ key: 'night_theme' });
+		nightTheme = nightThemePref.value || 'chocolate';
+		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
+		poemAlignment = poemAlignmentPref.value || 'text-left';
 	});
 
-	async function getAuthCode() {
-		const response = await fetch('/api/gdrive/auth');
-		window.location.href = await response.json();
+	async function authorize() {
+		const gDriveUuid = uuidv4();
+		Preferences.set({
+			key: 'gdrive_uuid',
+			value: gDriveUuid
+		});
+		await Browser.open({
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth?uuid=${gDriveUuid}`,
+			windowName: '_self'
+		});
+	}
+
+	async function gDriveLogout() {
+		if (confirm('You sure?')) {
+			Preferences.set({
+				key: 'gdrive_auth',
+				value: 'false'
+			});
+			const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+			const options = {
+				url: `${PUBLIC_POKEDRIVE_BASE_URL}/logout`,
+				headers: {
+					Authorization: gDriveUuidPref.value
+				}
+			};
+			const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+			if (response.status == 400) {
+				`Something went wrong! But don't fret. You was logged out and can log in again when you want to. If this looks too weird, better report this: Error code ${response.status} Additional information: ${response.data}`;
+			}
+			Preferences.remove({ key: 'gdrive_uuid' });
+			storageMode = 'local';
+			location.reload();
+		}
 	}
 
 	const fonts = [
-		{ family: 'halogen', displayName: 'Halogen' },
-		{ family: 'hashtag', displayName: 'Hashtag' },
-		{ family: 'ammys', displayName: 'Ammys Handwriting' },
-		{ family: 'journal', displayName: 'Journal' },
-		{ family: 'damagrafik', displayName: 'Damagrafik Script' },
-		{ family: 'jphand', displayName: 'JP Hand' },
+		{ family: 'halogen', displayName: 'Halogen (MC)' },
+		{ family: 'hashtag', displayName: 'Hashtag (Sayori)' },
+		{ family: 'ammys', displayName: 'Ammys Handwriting (Natsuki)' },
+		{ family: 'journal', displayName: 'Journal (Monika)' },
+		{ family: 'damagrafik', displayName: 'Damagrafik Script (Yuri Act 2)' },
+		{ family: 'jphand', displayName: 'JP Hand (Yuri)' },
 		{ family: 'arial', displayName: 'Arial' },
 		{ family: 'oldattic', displayName: 'Times Old Attic Bold' },
 		{ family: 'crimson', displayName: 'Crimson Roman' },
@@ -55,7 +122,8 @@
 		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
 		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
 		{ themeClass: 'lemon', displayName: 'Lemon Tart' },
-		{ themeClass: 'cookie', displayName: 'Cookie Dough' }
+		{ themeClass: 'cookie', displayName: 'Cookie Dough' },
+		{ themeClass: 'cherry', displayName: 'Cherry Blossom' }
 	];
 
 	const nightThemes = [
@@ -74,10 +142,10 @@
 	<div class="mb-5">
 		<label for="font">Notebook font:</label>
 
-		<select bind:value={$font}>
-			{#each fonts as font}
-				<option value={font.family}>
-					{font.displayName}
+		<select bind:value={font}>
+			{#each fonts as selected_font}
+				<option value={selected_font.family}>
+					{selected_font.displayName}
 				</option>
 			{/each}
 		</select>
@@ -85,7 +153,7 @@
 	<div class="mb-5">
 		<label for="font">Poem alignment:</label>
 
-		<select bind:value={$poemAlignment}>
+		<select bind:value={poemAlignment}>
 			{#each alignments as alignment}
 				<option value={alignment.alignmentClass}>
 					{alignment.displayName}
@@ -97,10 +165,10 @@
 		<label for="dayTheme">Day theme:</label>
 
 		<select
-			bind:value={$dayTheme}
+			bind:value={dayTheme}
 			on:change={() => {
 				if (!document.documentElement.classList.contains('dark')) {
-					document.documentElement.classList.value = $dayTheme;
+					document.documentElement.classList.value = dayTheme;
 				}
 			}}
 		>
@@ -115,10 +183,10 @@
 		<label for="nightTheme">Night theme:</label>
 
 		<select
-			bind:value={$nightTheme}
+			bind:value={nightTheme}
 			on:change={() => {
 				if (document.documentElement.classList.contains('dark')) {
-					document.documentElement.classList.value = 'dark ' + $nightTheme;
+					document.documentElement.classList.value = 'dark ' + nightTheme;
 				}
 			}}
 		>
@@ -133,18 +201,16 @@
 		<label for="storageMode">Storage:</label>
 
 		<select
-			bind:value={$storageMode}
+			bind:value={storageMode}
 			on:change={() => {
-				if ($storageMode == 'gdrive') {
-					if ($refreshCode == '' || $refreshCode == null || $refreshCode == 'null') {
-						authNeeded = true;
+				if (storageMode == 'gdrive') {
+					if (gDriveAuth == 'false') {
 						if (
 							confirm('Heads up! You will be redirected to log in with your Google account. Oke?')
 						) {
-							getAuthCode();
+							authorize();
 						} else {
-							authNeeded = false;
-							$storageMode = 'local';
+							storageMode = 'local';
 						}
 					}
 				}
@@ -156,5 +222,8 @@
 				</option>
 			{/each}
 		</select>
+		{#if storageMode == 'gdrive'}
+			<button on:click={() => gDriveLogout()}>Log out</button>
+		{/if}
 	</div>
 </div>

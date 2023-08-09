@@ -92,6 +92,15 @@
         url('/fonts/LDFComicSans.ttf') format('truetype'),
 }
 
+@font-face {
+    font-family: 'Tiki Tropic';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/TikiTropic.ttf');
+    src: local(''),
+        url('/fonts/TikiTropic.ttf') format('truetype'),
+}
+
 ol {
     list-style: inherit;
 }
@@ -146,8 +155,11 @@ ol {
     font-size: 22px;
 }
 
+#logo-text {
+    font-family: "Tiki Tropic";
+}
+
 textarea {
-    max-height: 98%;
     outline: none !important;
     position: relative;
 }
@@ -194,6 +206,11 @@ body:focus-visible {
     background: #333;
 }
 
+.vanilla #logo-text,
+.vanilla #poem-list-placeholder {
+    color: #333
+}
+
 .vanilla .paper {
     background: repeating-linear-gradient(#F7F3EC, #F7F3EC 31px, #94ACD4 31px, #94ACD4 32px);
     box-shadow:
@@ -204,16 +221,43 @@ body:focus-visible {
         0 20px 1px -9px rgba(0, 0, 0, 0.15);
 }
 
+.vanilla #burger-bar {
+    background: #FFFFFF;
+}
+
+#moon,
+#pencil {
+    color: #333333;
+}
+
 /* Strawberry Sundae */
 
-.strawberry .top {
+.strawberry .top,
+.strawberry .top textarea:disabled {
     background: #f9a8d4;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
 }
 
-.strawberry body {
-    background: #fdf2f8;
+.strawberry textarea,
+.strawberry textarea:disabled {
+    color: #333333;
+    -webkit-text-fill-color: #333333;
+    -webkit-opacity: 1;
+    opacity: 1;
 }
 
+.strawberry #header-menu,
+.strawberry #header-menu svg,
+.strawberry .toolbelt,
+.strawberry footer {
+    color: #C71585;
+}
+
+.strawberry body,
+.strawberry #burger-bar,
 .strawberry .poem-list {
     background: #fdf2f8;
 }
@@ -228,19 +272,23 @@ body:focus-visible {
         0 20px 1px -9px rgba(131, 24, 67, 0.15)
 }
 
-#moon {
-    color: #333333;
-}
-
 /* Lemon Tart */
 
 .lemon body,
-.lemon .poem-list {
+.lemon .poem-list,
+.lemon #burger-bar {
     background-color: #fefce8;
 }
 
 .lemon .top {
     background-color: #fef9c3;
+    color: #422006;
+}
+
+.lemon #header-menu,
+.lemon #header-menu svg,
+.lemon .toolbelt,
+.lemon footer {
     color: #422006;
 }
 
@@ -255,16 +303,36 @@ body:focus-visible {
     color: #422006;
 }
 
-.lemon textarea:disabled {
+.lemon .top,
+.lemon .top textarea:disabled {
+    background: #fef9c3;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #422006;
     -webkit-text-fill-color: #422006;
+}
+
+.lemon textarea,
+.lemon textarea:disabled {
+    color: #422006;
+    -webkit-text-fill-color: #422006;
+    -webkit-opacity: 1;
     opacity: 1;
 }
 
 /* Cookie Dough */
 
 .cookie body,
-.cookie .poem-list {
+.cookie .poem-list,
+.cookie #burger-bar {
     background-color: #FFF5E5;
+}
+
+.cookie #header-menu,
+.cookie #header-menu svg,
+.cookie .toolbelt,
+.cookie footer {
+    color: #422006;
 }
 
 .cookie .top {
@@ -283,19 +351,69 @@ body:focus-visible {
     color: #422006;
 }
 
-.cookie #logo {
-    filter: sepia(14%);
+.cookie .top,
+.cookie .top textarea:disabled {
+    background: #745F4F;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #F8E8D5;
+    -webkit-text-fill-color: #F8E8D5;
 }
 
+.cookie textarea,
 .cookie textarea:disabled {
+    color: #422006;
     -webkit-text-fill-color: #422006;
+    -webkit-opacity: 1;
     opacity: 1;
 }
 
-.cookie a,
-.cookie p,
-.cookie svg {
-    color: #422006;
+/* Summer Cherry */
+
+.cherry body,
+.cherry .poem-list,
+.cherry #burger-bar {
+    background-color: #FFE9F3;
+}
+
+.cherry #header-menu,
+.cherry #header-menu svg,
+.cherry .toolbelt,
+.cherry footer,
+.cherry table {
+    color: #B34261;
+}
+
+.cherry .burger-border {
+    border-color: #E6A4A8;
+}
+
+.cherry .paper {
+    background: repeating-linear-gradient(#FFF2E6, #FFF2E6 31px, #E6A4A8 31px, #E6A4A8 32px);
+    box-shadow:
+        0 1px 1px rgba(230, 164, 168, 0.3),
+        0 10px 0 -5px #FFF2E6,
+        0 10px 1px -4px rgba(230, 164, 168, 0.3),
+        0 20px 0 -10px #FFF2E6,
+        0 20px 1px -9px rgba(230, 164, 168, 0.3);
+    color: #8B2C3D;
+}
+
+.cherry .top,
+.cherry .top textarea:disabled {
+    background: #B34261;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+.cherry textarea,
+.cherry textarea:disabled {
+    color: #8B2C3D;
+    -webkit-text-fill-color: #8B2C3D;
+    -webkit-opacity: 1;
+    opacity: 1;
 }
 
 /* Global Dark */
@@ -310,7 +428,10 @@ body:focus-visible {
 .dark h1,
 .dark h2,
 .dark h3,
-.dark p {
+.dark p,
+.dark #burger-button svg,
+.dark button,
+#poem-list-placeholder {
     color: #f5f5f4;
 }
 
@@ -339,7 +460,8 @@ body:focus-visible {
     background-color: #292524;
 }
 
-.chocolate body {
+.chocolate body,
+.chocolate #burger-bar {
     background-color: #292524;
 }
 
@@ -351,7 +473,8 @@ body:focus-visible {
 /* Black Lobelia */
 
 .black-lobelia body,
-.black-lobelia tr {
+.black-lobelia tr,
+.black-lobelia #burger-bar {
     background-color: #211b2c;
 }
 
@@ -370,15 +493,28 @@ body:focus-visible {
     color: #211b2c;
 }
 
+.black-lobelia .top,
+.black-lobelia .top textarea:disabled {
+    background: #413655;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+.black-lobelia textarea,
 .black-lobelia textarea:disabled {
+    color: #211b2c;
     -webkit-text-fill-color: #211b2c;
+    -webkit-opacity: 1;
     opacity: 1;
 }
 
 /* Red Velvet */
 
 .red-velvet body,
-.red-velvet .poem-list {
+.red-velvet .poem-list,
+.red-velvet #burger-bar {
     background-color: #240309;
 }
 
@@ -408,28 +544,46 @@ body:focus-visible {
     color: #360202;
 }
 
-.red-velvet a,
+.red-velvet #header-menu,
+.red-velvet #header-menu svg,
 .red-velvet .toolbelt,
-.red-velvet p,
-.red-velvet svg {
+.red-velvet footer,
+.red-velvet #logo-text,
+.red-velvet #poem-list-placeholder {
     color: #F7ECE1;
 }
 
-.cookie #logo {
-    filter: hue-rotate(2);
+.red-velvet .top,
+.red-velvet .top textarea:disabled {
+    background: #51040f;
+    -webkit-opacity: 1;
+    opacity: 1;
+    color: #F7ECE1;
+    -webkit-text-fill-color: #F7ECE1;
 }
 
-@media only screen and (max-width: 768px) {
+.red-velvet textarea,
+.red-velvet textarea:disabled {
+    color: #360202;
+    -webkit-text-fill-color: #360202;
+    -webkit-opacity: 1;
+    opacity: 1;
+}
+
+@media only screen and (max-width: 767px) {
 
     .notebook-container {
-        overflow-x: scroll;
+        /* overflow-x: scroll; */
         overflow-y: hidden;
         white-space: nowrap;
     }
 
     .notebook {
         width: 87vw;
-        height: 90vh;
         flex: none;
+    }
+
+    #logo-text {
+        margin-top: 1.75rem;
     }
 }

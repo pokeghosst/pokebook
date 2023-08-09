@@ -12,8 +12,9 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@capacitor/assets": "^2.0.4",
 		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/adapter-static": "^1.0.0-next.50",
+		"@sveltejs/adapter-static": "^1.0.6",
 		"@sveltejs/kit": "^1.15.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
@@ -26,14 +27,21 @@
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
 		"svelte": "^3.54.0",
+		"svelte-breakpoints": "^0.2.0",
 		"svelte-check": "^3.0.1",
 		"tailwindcss": "^3.2.7",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
-		"vite": "^4.0.0"
+		"vite": "^4.1.5"
 	},
 	"type": "module",
 	"dependencies": {
+		"@capacitor/android": "^5.2.2",
+		"@capacitor/browser": "^5.0.6",
+		"@capacitor/cli": "^5.2.2",
+		"@capacitor/core": "^5.2.2",
+		"@capacitor/filesystem": "^5.1.1",
+		"@capacitor/preferences": "^5.0.6",
 		"@fortawesome/fontawesome-svg-core": "^6.1.1",
 		"@fortawesome/free-solid-svg-icons": "^6.1.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
@@ -59,6 +67,7 @@
 		"svelte-skeleton": "^1.3.1",
 		"syllable": "^5.0.1",
 		"utils-google-drive": "^5.0.3",
+		"uuid": "^9.0.0",
 		"wink-distance": "^2.0.2"
 	}
 }
