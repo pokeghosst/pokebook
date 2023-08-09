@@ -5,7 +5,13 @@ const config: CapacitorConfig = {
   appName: 'PokeBook',
   webDir: 'build',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    hostname: 'book.pokeghost.org'
+  },
+  plugins: {
+    CapacitorCookies: {
+      enabled: true
+    }
   }
 };
 
