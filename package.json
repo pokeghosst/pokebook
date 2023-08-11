@@ -45,7 +45,7 @@
 		"@fortawesome/fontawesome-svg-core": "^6.1.1",
 		"@fortawesome/free-solid-svg-icons": "^6.1.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
-		"@sveltejs/adapter-vercel": "^2.4.1",
+		"@sveltejs/adapter-vercel": "^2.4.3",
 		"cmu-pronouncing-dictionary": "^3.0.0",
 		"compromise": "^14.8.2",
 		"compromise-speech": "^0.1.0",
