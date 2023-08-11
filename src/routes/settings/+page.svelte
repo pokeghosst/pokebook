@@ -4,7 +4,7 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { Browser } from '@capacitor/browser';
 	import { CapacitorHttp } from '@capacitor/core';
-	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { PUBLIC_POKEDRIVE_BASE_URL, PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let storageMode = null;
@@ -71,7 +71,7 @@
 			value: gDriveUuid
 		});
 		await Browser.open({
-			url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth?uuid=${gDriveUuid}`,
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth?uuid=${gDriveUuid}&pokebook_base=${PUBLIC_POKEBOOK_BASE_URL}`,
 			windowName: '_self'
 		});
 	}
