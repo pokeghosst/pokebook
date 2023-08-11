@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"static": "cross-env ADAPTER=static vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -20,6 +21,7 @@
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.13",
 		"dotenv": "^16.0.3",
+		"cross-env": "^7.0.3",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
