@@ -16,7 +16,6 @@
 
 PokeBook is supported by these awesome people!
 
-|                                                       |                                             |                                                             |
 |-------------------------------------------------------|---------------------------------------------|-------------------------------------------------------------|
 |                                                       | [GlueBall](https://twitter.com/MrThernlund) | *"Better to execute what is, than to never compile at all"* |
 |<img src="./patrons/j33.png" width="50px" alt="J33"/>  | J33                                         |                                                             |
