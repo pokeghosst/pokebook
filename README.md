@@ -10,6 +10,8 @@
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
 [![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/4280-shield.svg)](https://madewithsvelte.com/p/pokebook/shield-link)
 
+<a href="https://www.buymeacoffee.com/pokegh0st" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;" ></a>
+
 > PokeBook is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
 
 # Patrons
