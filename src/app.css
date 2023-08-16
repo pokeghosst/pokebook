@@ -206,7 +206,8 @@ body:focus-visible {
     background: #333;
 }
 
-.vanilla #logo-text {
+.vanilla #logo-text,
+.vanilla #poem-list-placeholder {
     color: #333
 }
 
@@ -547,7 +548,8 @@ body:focus-visible {
 .red-velvet #header-menu svg,
 .red-velvet .toolbelt,
 .red-velvet footer,
-.red-velvet #logo-text {
+.red-velvet #logo-text,
+.red-velvet #poem-list-placeholder {
     color: #F7ECE1;
 }
 

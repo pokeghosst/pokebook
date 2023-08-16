@@ -1,91 +1,126 @@
 <script>
 	import Workspace from '../components/Workspace.svelte';
-	import { poemStorage, poemNameStorage, noteStorage } from '../stores/poemStore.js';
-	import { db } from '../stores/db.js';
 	import generateImage from '../util/poem2image';
-	import { storageMode } from '../stores/storage';
-	import { refreshCode } from '../stores/refreshCode';
 	import Overlay from '../components/Overlay.svelte';
-	import { useMediaQuery } from 'svelte-breakpoints';
+	import { onMount } from 'svelte';
+	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+	import { Preferences } from '@capacitor/preferences';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 
 	let thinking = false;
 
-	let poemProps = {
-		poem: $poemStorage,
-		poemName: $poemNameStorage
-	};
+	let poemProps;
+	let noteProps;
+	let storageMode;
 
-	let noteProps = {
-		note: $noteStorage
-	};
+	$: if (poemProps) {
+		Preferences.set({
+			key: 'draft_poem_text',
+			value: poemProps.poem
+		});
+		Preferences.set({
+			key: 'draft_poem_name',
+			value: poemProps.poemName
+		});
+	}
 
-	$: $poemStorage = poemProps.poem;
-	$: $poemNameStorage = poemProps.poemName;
-	$: $noteStorage = noteProps.note;
+	$: if (noteProps) {
+		Preferences.set({
+			key: 'draft_poem_note',
+			value: noteProps.note
+		});
+	}
 
-	const isMobile = useMediaQuery('(max-width: 488px)');
+	onMount(async () => {
+		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
+		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
+		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
+
+		poemProps = {
+			poem: poemDraftText.value || '',
+			poemName: poemDraftName.value || 'Unnamed'
+		};
+		noteProps = {
+			note: poemDraftNote.value || ''
+		};
+
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+	});
 
 	async function stashPoem() {
-		if ($poemStorage !== '' && $poemNameStorage !== '') {
-			switch ($storageMode) {
+		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
+		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
+		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
+
+		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+
+		if (poemDraftText !== '' && poemDraftName !== '') {
+			const nowDate = new Date(Date.now());
+			switch (storageMode) {
 				case 'gdrive':
 					thinking = true;
-					const auth = JSON.parse($refreshCode);
-					const response = await fetch('/api/gdrive/savepoem', {
-						method: 'POST',
-						body: JSON.stringify({
-							refreshToken: auth.access_token,
-							poemName: $poemNameStorage,
-							poemBody: $poemStorage,
-							poemNote: $noteStorage,
-							timestamp: Date.now()
-						}),
+					const options = {
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
 						headers: {
-							'content-type': 'application/json'
+							Authorization: gDriveUuidPref.value
+						},
+						data: {
+							poem_name: poemDraftName.value,
+							poem_body: poemDraftText.value,
+							poem_note: poemDraftNote.value,
+							poem_timestamp: `${nowDate.getFullYear()}-${
+								nowDate.getMonth() + 1
+							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
 						}
-					});
-					const responseJson = await response.json();
+					};
+					const response = await CapacitorHttp.request({ ...options, method: 'POST' });
+					console.log(response);
+					
 					if (response.status === 200) {
-						if (responseJson.code === 500) {
-							alert(
-								"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-									responseJson.message +
-									'"'
-							);
-						} else {
-							noteStorage.update(() => '');
-							poemStorage.update(() => '');
-							poemNameStorage.update(() => 'Unnamed');
-							location.reload();
-						}
+						thinking = false;
 					} else {
 						alert(
-							"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-								response.status +
-								' ' +
-								response.statusText +
-								'"'
+							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
 						);
 					}
 					thinking = false;
 					break;
 				case 'local':
-					try {
-						await db.poems.add({
-							note: $noteStorage,
-							poem: $poemStorage,
-							name: $poemNameStorage,
-							timestamp: Date.now()
-						});
-						noteStorage.update(() => '');
-						poemStorage.update(() => '');
-						poemNameStorage.update(() => 'Unnamed');
-					} catch (e) {
-						console.log(e);
-					}
-					location.reload();
+					await Filesystem.writeFile({
+						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+							nowDate.getMonth() + 1
+						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
+						data: poemDraftText.value,
+						directory: Directory.Data,
+						encoding: Encoding.UTF8,
+						recursive: true
+					});
+					await Filesystem.writeFile({
+						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+							nowDate.getMonth() + 1
+						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
+						data: poemDraftNote.value,
+						directory: Directory.Data,
+						encoding: Encoding.UTF8,
+						recursive: true
+					});
 					break;
 			}
+			Preferences.set({
+				key: 'draft_poem_text',
+				value: ''
+			});
+			Preferences.set({
+				key: 'draft_poem_name',
+				value: 'Unnamed'
+			});
+			Preferences.set({
+				key: 'draft_poem_note',
+				value: ''
+			});
+			location.reload();
 		} else {
 			alert('You cannot save a poem without a name or... a poem!');
 		}
@@ -93,16 +128,25 @@
 
 	function forgetDraft() {
 		if (confirm('Heads up! You sure want to forget this poem?')) {
-			noteStorage.update(() => '');
-			poemStorage.update(() => '');
-			poemNameStorage.update(() => 'Unnamed');
+			Preferences.set({
+				key: 'draft_poem_text',
+				value: ''
+			});
+			Preferences.set({
+				key: 'draft_poem_name',
+				value: 'Unnamed'
+			});
+			Preferences.set({
+				key: 'draft_poem_note',
+				value: ''
+			});
 			location.reload();
 		}
 	}
 
 	function exportPoem() {
 		thinking = true;
-		generateImage($poemNameStorage)
+		generateImage(poemProps.poemName);
 	}
 </script>
 
@@ -125,4 +169,6 @@
 		on:click={forgetDraft}>Forget poem</button
 	>
 </div>
-<Workspace bind:poemProps bind:noteProps />
+{#if poemProps != null && noteProps != null}
+	<Workspace bind:poemProps bind:noteProps />
+{/if}

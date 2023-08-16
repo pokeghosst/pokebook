@@ -1,158 +1,273 @@
 <script>
 	import { onMount } from 'svelte';
-	import { db } from '../../../stores/db';
-	import { currentPoem } from '../../../stores/poemId';
-	import { currentNote } from '../../../stores/noteId';
-	import { backupTimestamp } from '../../../stores/timestamp';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
 	import generateImage from '../../../util/poem2image';
-	import { storageMode } from '../../../stores/storage';
-	import { refreshCode } from '../../../stores/refreshCode';
 	import Overlay from '../../../components/Overlay.svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 	import { preventTabClose } from '../../../util/preventTabClose';
-	import {
-		poemStorageBackup,
-		noteStorageBackup,
-		poemNameStorageBackup,
-		tmpPoemId
-	} from '../../../stores/currentEditPoem';
+	import { Filesystem, Encoding } from '@capacitor/filesystem';
+	import { Preferences } from '@capacitor/preferences';
+	import { CapacitorHttp } from '@capacitor/core';
+	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 
-	let response;
 	let editMode;
 
-	let poemProps = {
-		poem: $poemStorageBackup,
-		poemName: $poemNameStorageBackup
-	};
-	let noteProps = {
-		note: $noteStorageBackup
-	};
+	let poemProps;
+	let noteProps;
 
 	let loaded = false;
 	let thinking = false;
 	let unsavedChanges = false;
 
-	$: $poemStorageBackup = poemProps.poem;
-	$: $poemNameStorageBackup = poemProps.poemName;
-	$: $noteStorageBackup = noteProps.note;
+	let storageMode;
+	let poemUri = null;
+	let noteUri = null;
+	let gDrivePoemId = null;
+	let gDrivePoemTime = null;
+
+	let gDriveUuidPref;
+
+	$: if (poemProps) {
+		Preferences.set({
+			key: 'backup_poem_text',
+			value: poemProps.poem
+		});
+		Preferences.set({
+			key: 'backup_poem_name',
+			value: poemProps.poemName
+		});
+	}
+
+	$: if (noteProps) {
+		Preferences.set({
+			key: 'backup_poem_note',
+			value: noteProps.note
+		});
+	}
 
 	onMount(async () => {
 		editMode = false;
-		if ($tmpPoemId != -1) {
-			if ($currentPoem == $tmpPoemId) {
-				unsavedChanges = true;
-				loadBackup();
-			}
-			if ($currentPoem != $tmpPoemId) {
-				if (
-					confirm(
-						"Heads up! You're trying to edit a poem without properly saving another one? Proceed? Unsaved data will be lost!"
-					)
-				) {
-					discard();
-					location.reload();
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+		const unsavedChangesPref = await Preferences.get({ key: 'unsaved_changes' });
+
+		switch (storageMode) {
+			case 'gdrive':
+				gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+				const gDrivePoemIdPref = await Preferences.get({ key: 'gdrive_poem_id' });
+				gDrivePoemId = gDrivePoemIdPref.value;
+
+				if (unsavedChangesPref.value == 'true') {
+					const unsavedPoemIdPref = await Preferences.get({ key: 'unsaved_poem_id' });
+					const unsavedPoemId = unsavedPoemIdPref.value;
+
+					if (gDrivePoemId == unsavedPoemId) {
+						unsavedChanges = true;
+						loadBackup();
+					} else {
+						if (
+							confirm(
+								"Heads up! You're trying to edit a poem without properly saving another one? Proceed? Unsaved data will be lost!"
+							)
+						) {
+							discard();
+							location.reload();
+						} else {
+							Preferences.set({
+								key: 'gdrive_poem_id',
+								value: unsavedPoemId
+							});
+							loadBackup();
+							unsavedChanges = true;
+						}
+					}
 				} else {
-					$currentPoem = $tmpPoemId;
-					loadBackup();
-					unsavedChanges = true;
-				}
-			}
-		} else {
-			switch ($storageMode) {
-				case 'gdrive':
 					await loadPoemFromDrive();
-					break;
-				case 'local':
+				}
+				break;
+			case 'local':
+				const poemUriPref = await Preferences.get({ key: 'current_poem_uri' });
+				poemUri = poemUriPref.value;
+				if (unsavedChangesPref.value == 'true') {
+					const unsavedPoemUriPref = await Preferences.get({ key: 'unsaved_poem_uri' });
+					const unsavedPoemUri = unsavedPoemUriPref.value;
+
+					if (poemUri == unsavedPoemUri) {
+						unsavedChanges = true;
+						loadBackup();
+					} else {
+						if (
+							confirm(
+								"Heads up! You're trying to edit a poem without properly saving another one? Proceed? Unsaved data will be lost!"
+							)
+						) {
+							discard();
+							location.reload();
+						} else {
+							Preferences.set({
+								key: 'current_poem_uri',
+								value: unsavedPoemUri
+							});
+							poemUri = unsavedPoemUri;
+							loadBackup();
+							unsavedChanges = true;
+						}
+					}
+				} else {
 					await loadLocal();
-					break;
-			}
+				}
+				break;
 		}
 		loaded = true;
 	});
 
 	function toggleEdit() {
 		editMode = !editMode;
-		poemStorageBackup.update(() => poemProps.poem);
-		poemNameStorageBackup.update(() => poemProps.poemName);
-		noteStorageBackup.update(() => noteProps.note);
-		tmpPoemId.update(() => $currentPoem);
+		Preferences.set({
+			key: 'unsaved_changes',
+			value: true
+		});
+		if (storageMode == 'local') {
+			Preferences.set({
+				key: 'unsaved_poem_uri',
+				value: poemUri
+			});
+		} else {
+			Preferences.set({
+				key: 'unsaved_poem_id',
+				value: gDrivePoemId
+			});
+			Preferences.set({
+				key: 'unsaved_poem_time',
+				value: gDrivePoemTime
+			});
+		}
 	}
 
 	async function loadPoemFromDrive() {
-		const auth = JSON.parse($refreshCode);
-		const response = await fetch('/api/gdrive/poem', {
-			method: 'POST',
-			body: JSON.stringify({
-				refreshToken: auth.access_token,
-				poemId: $currentPoem
-			}),
+		const options = {
+			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 			headers: {
-				'content-type': 'application/json'
+				Authorization: gDriveUuidPref.value
 			}
-		});
-		const responseJson = await response.json();
-		$backupTimestamp = responseJson.poemName.split('_')[1];
+		};
+		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+
 		poemProps = {
-			poem: responseJson.poemContents,
-			poemName: responseJson.poemName.split('_')[0]
+			poem: response.data.poem,
+			poemName: response.data.poem_name.split('_')[0]
 		};
 		noteProps = {
-			note: responseJson.poemNote.note
+			note: response.data.note
 		};
-		$currentNote = responseJson.poemNote.noteId;
+		gDrivePoemTime = response.data.poem_name.split('_').slice(1, 3).join('_');
 	}
 
 	async function loadLocal() {
-		response = await db.poems.get({ id: Number($currentPoem) });
-		poemProps = {
-			poem: response.poem,
-			poemName: response.name
-		};
+		const contents = await Filesystem.readFile({
+			path: poemUri,
+			encoding: Encoding.UTF8
+		});
+		const poemName = poemUri.split('/')[3].split('_')[0];
+		const noteUriSplit = poemUri.split('.txt');
+		noteUri = `${noteUriSplit[0]}_note.txt`;
+		const noteContents = await Filesystem.readFile({
+			path: noteUri,
+			encoding: Encoding.UTF8
+		});
 
+		poemProps = {
+			poem: contents.data,
+			poemName: poemName
+		};
 		noteProps = {
-			note: response.note
+			note: noteContents.data
 		};
 	}
 
-	function loadBackup() {
+	async function loadBackup() {
+		const backupPoemText = await Preferences.get({ key: 'backup_poem_text' });
+		const backupPoemName = await Preferences.get({ key: 'backup_poem_name' });
+		const backupPoemNote = await Preferences.get({ key: 'backup_poem_note' });
+
 		poemProps = {
-			poem: $poemStorageBackup,
-			poemName: $poemNameStorageBackup
+			poem: backupPoemText.value,
+			poemName: backupPoemName.value
 		};
 
 		noteProps = {
-			note: $noteStorageBackup
+			note: backupPoemNote.value
 		};
+
+		if (storageMode == 'gdrive') {
+			const gDrivePoemIdPref = await Preferences.get({ key: 'unsaved_poem_id' });
+			gDrivePoemId = gDrivePoemIdPref.value;
+
+			const gDrivePoemTimePref = await Preferences.get({ key: 'unsaved_poem_time' });
+			gDrivePoemTime = gDrivePoemTimePref.value;
+		}
 	}
 
 	async function save() {
-		switch ($storageMode) {
+		switch (storageMode) {
 			case 'gdrive':
 				thinking = true;
-				const auth = JSON.parse($refreshCode);
-				const response = await fetch('/api/gdrive/updatepoem', {
-					method: 'POST',
-					body: JSON.stringify({
-						refreshToken: auth.access_token,
-						poemId: $currentPoem,
-						poemName: poemProps.poemName + '_' + $backupTimestamp,
-						poemBody: poemProps.poem,
-						noteId: $currentNote,
-						note: noteProps.note
-					}),
+				const options = {
+					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 					headers: {
-						'content-type': 'application/json'
+						Authorization: gDriveUuidPref.value
+					},
+					data: {
+						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
+						poem_body: poemProps.poem,
+						poem_note: noteProps.note
 					}
-				});
+				};
+		
+				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
+				if (response.status === 200) {
+					thinking = false;
+				} else {
+					alert(
+						`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
+					);
+				}
 				thinking = false;
 				break;
 			case 'local':
-				await db.poems.where('id').equals(Number($currentPoem)).modify({
-					note: noteProps.note,
-					poem: poemProps.poem,
-					name: poemProps.poemName
+				const oldPoemUri = poemUri;
+				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
+				const newPoemUri = poemUri.replace(
+					new RegExp(poemUri.split('/')[3].split('_')[0], 'i'),
+					poemProps.poemName
+				);
+				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
+				await Filesystem.rename({
+					from: oldPoemUri,
+					to: newPoemUri
+				});
+				await Filesystem.writeFile({
+					path: newPoemUri,
+					data: poemProps.poem,
+					encoding: Encoding.UTF8
+				});
+				await Filesystem.rename({
+					from: oldNoteUri,
+					to: newNoteUri
+				});
+				await Filesystem.writeFile({
+					path: newNoteUri,
+					data: noteProps.note,
+					encoding: Encoding.UTF8
+				});
+				Preferences.set({
+					key: 'unsaved_changes',
+					value: false
+				});
+				Preferences.set({
+					key: 'current_poem_uri',
+					value: newPoemUri
 				});
 				break;
 		}
@@ -161,42 +276,53 @@
 	}
 
 	function discard() {
-		poemStorageBackup.update(() => '');
-		poemNameStorageBackup.update(() => '');
-		noteStorageBackup.update(() => '');
-		tmpPoemId.update(() => -1);
 		unsavedChanges = false;
+		Preferences.set({
+			key: 'unsaved_changes',
+			value: false
+		});
+		Preferences.remove({
+			key: 'unsaved_poem_uri'
+		});
+		Preferences.remove({
+			key: 'backup_poem_text'
+		});
+		Preferences.remove({
+			key: 'backup_poem_name'
+		});
+		Preferences.remove({
+			key: 'backup_poem_note'
+		});
 	}
 
 	async function deletePoem() {
 		if (confirm('Heads up! You sure want to delete this poem?')) {
-			switch ($storageMode) {
+			switch (storageMode) {
 				case 'gdrive':
 					thinking = true;
-					const auth = JSON.parse($refreshCode);
-					const response = await fetch('/api/gdrive/delete', {
-						method: 'POST',
-						body: JSON.stringify({
-							refreshToken: auth.access_token,
-							poemId: $currentPoem,
-							noteId: $currentNote
-						}),
+					const options = {
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 						headers: {
-							'content-type': 'application/json'
+							Authorization: gDriveUuidPref.value
 						}
-					});
-					const responseJson = await response.json();
-					if (responseJson.code === 500) {
+					};
+					const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
+
+					if (response.status != 200) {
 						alert(
-							"Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: \"" +
-								responseJson.message +
-								'"'
+							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
 						);
+					} else {
+						goto('/stash', { replaceState: false });
 					}
-					goto('/stash', { replaceState: false });
 					break;
 				case 'local':
-					db.poems.where('id').equals(Number($currentPoem)).delete();
+					Filesystem.deleteFile({
+						path: poemUri
+					});
+					Filesystem.deleteFile({
+						path: noteUri
+					});
 					goto('/stash', { replaceState: false });
 					break;
 			}
@@ -258,7 +384,9 @@
 	>
 </div>
 {#if loaded}
-	<Workspace bind:poemProps bind:noteProps editable={editMode} />
+	{#if poemProps != null && noteProps != null}
+		<Workspace bind:poemProps bind:noteProps editable={editMode} />
+	{/if}
 {:else}
 	<div class="pt-10 flex items-center justify-center">
 		<Skeleton>

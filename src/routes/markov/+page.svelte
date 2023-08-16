@@ -1,17 +1,25 @@
 <script>
 	import { onMount } from 'svelte';
 	import rita from 'rita';
-	import { font, poemAlignment } from '../../stores/font';
+	import { Preferences } from '@capacitor/preferences';
 
 	let fileContent = null;
 	let loaded = false;
 	let lines;
+	let poemAlignment;
 
 	let n = 3;
 	let temperature = 0.1;
 	let nSentences = 2;
 
-	onMount(async () => {});
+	let font;
+
+	onMount(async () => {
+		const fontPref = await Preferences.get({ key: 'notebook_font' });
+		font = fontPref.value || 'halogen';
+		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
+		poemAlignment = poemAlignmentPref.value || 'left';
+	});
 
 	function handleFileUpload(event) {
 		const file = event.target.files[0];
@@ -79,14 +87,16 @@
 			</div>
 		</div>
 		<div class="text-center mx-auto mt-5">
-			<button id="markov-talk" class="font-semibold" disabled={!loaded} on:click={generatePoem}>Generate</button>
+			<button id="markov-talk" class="font-semibold" disabled={!loaded} on:click={generatePoem}
+				>Generate</button
+			>
 		</div>
 	{/if}
 	{#if lines != null}
 		<div class="w-6/12 mx-auto mt-10">
-			<div class="top text-white leading-[50px] pl-5 font-bold"/>
+			<div class="top text-white leading-[50px] pl-5 font-bold" />
 			<div class="paper">
-				<p class="leading-[32px] {$font} {$poemAlignment} text-center mx-auto">
+				<p class="leading-[32px] {font} {poemAlignment} text-center mx-auto">
 					{#each lines as line}
 						{line}<br />
 					{/each}

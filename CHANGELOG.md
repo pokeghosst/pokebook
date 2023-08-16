@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0-rc1] - 2023-08-21
+
+### Added
+- Android application
+
+### Changed
+- Moved Google Drive integration out
+- Refactored app settings to Capacitor Preferences API
+- Refactored poem storage to Capacitor Filesystem API
+- Proper static site generation with server-side rendering
+
 ## [1.2.2] - 2023-06-14
 
 ### Fixed

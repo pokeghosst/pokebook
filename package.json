@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"static": "cross-env ADAPTER=static vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -12,13 +13,15 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@capacitor/assets": "^2.0.4",
 		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/adapter-static": "^1.0.0-next.50",
+		"@sveltejs/adapter-static": "^1.0.6",
 		"@sveltejs/kit": "^1.15.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.13",
 		"dotenv": "^16.0.3",
+		"cross-env": "^7.0.3",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
@@ -35,10 +38,16 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@capacitor/android": "^5.2.2",
+		"@capacitor/browser": "^5.0.6",
+		"@capacitor/cli": "^5.2.2",
+		"@capacitor/core": "^5.2.2",
+		"@capacitor/filesystem": "^5.1.1",
+		"@capacitor/preferences": "^5.0.6",
 		"@fortawesome/fontawesome-svg-core": "^6.1.1",
 		"@fortawesome/free-solid-svg-icons": "^6.1.1",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",
-		"@sveltejs/adapter-vercel": "^2.4.1",
+		"@sveltejs/adapter-vercel": "^2.4.3",
 		"cmu-pronouncing-dictionary": "^3.0.0",
 		"compromise": "^14.8.2",
 		"compromise-speech": "^0.1.0",
@@ -60,6 +69,7 @@
 		"svelte-skeleton": "^1.3.1",
 		"syllable": "^5.0.1",
 		"utils-google-drive": "^5.0.3",
+		"uuid": "^9.0.0",
 		"wink-distance": "^2.0.2"
 	}
 }

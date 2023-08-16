@@ -1,18 +1,46 @@
 <script>
+	import { onMount } from 'svelte';
+	import { Preferences } from '@capacitor/preferences';
 	import { useMediaQuery } from 'svelte-breakpoints';
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 	import { faMoon, faHeartCirclePlus } from '@fortawesome/free-solid-svg-icons';
-	import { darkMode, dayTheme, nightTheme } from '../stores/mode.js';
 	import { pokehelp } from '../stores/pokehelp.js';
 	import Burger from './Burger.svelte';
 
 	const isMobile = useMediaQuery('(max-width: 488px)');
 
+	let darkMode = null;
+	let dayTheme = null;
+	let nightTheme = null;
+
+	$: if (darkMode != null) {
+		Preferences.set({
+			key: 'dark_mode',
+			value: darkMode
+		});
+	}
+
+	$: if (pokehelp != null) {
+		Preferences.set({
+			key: 'poke_help',
+			value: pokehelp
+		});
+	}
+
+	onMount(async () => {
+		const dayThemePref = await Preferences.get({ key: 'day_theme' });
+		dayTheme = dayThemePref.value || 'vanilla';
+		const nightThemePref = await Preferences.get({ key: 'night_theme' });
+		nightTheme = nightThemePref.value || 'chocolate';
+		const darkModePref = await Preferences.get({ key: 'dark_mode' });
+		darkMode = darkModePref.value || '';
+	});
+
 	function toggleDarkMode() {
-		$darkMode == 'dark' ? darkMode.update(() => '') : darkMode.update(() => 'dark');
+		darkMode == 'dark' ? (darkMode = '') : (darkMode = 'dark');
 		document.documentElement.classList.toggle('dark');
-		document.documentElement.classList.toggle($nightTheme);
-		document.documentElement.classList.toggle($dayTheme);
+		document.documentElement.classList.toggle(nightTheme);
+		document.documentElement.classList.toggle(dayTheme);
 	}
 
 	function togglePokeHelp() {

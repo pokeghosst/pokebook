@@ -1,6 +1,6 @@
 <div class="text-center">
 	<p>
-		v1.2.2 - "Cherry Blossom" [EXPORT MODE] · <a
+		v2.0.0 - "Canned Cake" · <a
 			href="/privacy"
 			class="underline decoration-dotted decoration-1 hover:no-underline">Privacy Policy</a
 		>
