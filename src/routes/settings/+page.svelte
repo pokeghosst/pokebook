@@ -226,4 +226,7 @@
 			<button on:click={() => gDriveLogout()}>Log out</button>
 		{/if}
 	</div>
+
+	<p class="underline italic"><a href="/exporttxt">EXPORT</a></p>
+
 </div>

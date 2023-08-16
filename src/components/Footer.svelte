@@ -1,6 +1,6 @@
 <div class="text-center">
 	<p>
-		v2.0.0-rc1 - "Canned Cake" · <a
+		v2.0.0 - "Canned Cake" · <a
 			href="/privacy"
 			class="underline decoration-dotted decoration-1 hover:no-underline">Privacy Policy</a
 		>

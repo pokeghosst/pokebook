@@ -6,7 +6,7 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN yarn
 COPY . ./
-RUN yarn run build
+RUN yarn run static
 
 FROM nginx:1.19-alpine
 COPY --from=build /app/public /usr/share/nginx/html
