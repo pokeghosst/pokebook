@@ -94,10 +94,6 @@ If you'd like to contribute, please fork the repository and use a feature branch
 
 For bugs and feature requests, don't hesitate to open issues!
 
-# Known limitations
-
-- You cannot save poems in private browser window (guess why, duh!)
-
 # License
 
 GNU Affero General Public License v3.0 (see `LICENSE` for details).
