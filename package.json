@@ -61,7 +61,7 @@
 		"inherits": "^2.0.4",
 		"letter-count": "^4.0.1",
 		"lodash": "^4.17.21",
-		"natural": "6.5.0",
+		"natural": "6.7.1",
 		"randomcolor": "^0.6.2",
 		"rita": "^2.8.31",
 		"slate": "^0.93.0",
