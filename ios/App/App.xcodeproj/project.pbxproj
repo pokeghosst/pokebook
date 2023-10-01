@@ -91,7 +91,7 @@
 				82CA2BBF371048BF35F16E22 /* Pods-App.debug.xcconfig */,
 				971A90A5768C744D93258C50 /* Pods-App.release.xcconfig */,
 			);
-			path = Pods;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
