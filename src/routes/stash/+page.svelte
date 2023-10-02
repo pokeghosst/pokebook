@@ -109,14 +109,18 @@
 													>{poem.name.split('_')[0]}</td
 												></button
 											>
-											<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
+											<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right">
+												<!-- TODO: iPhone date format cannot be parsed, standardize date formats when saving? -->
+												{poem.name.split('_')[1]}
+											</td>
+											<!-- <td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
 												>{new Date(poem.name.split('_')[1]).toLocaleDateString('en-US', {
 													weekday: 'short',
 													year: 'numeric',
 													month: 'short',
 													day: 'numeric'
 												})}</td
-											>
+											> -->
 										</tr>
 									{/if}
 								{/each}
