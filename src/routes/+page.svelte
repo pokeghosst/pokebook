@@ -62,22 +62,21 @@
 				case 'gdrive':
 					thinking = true;
 					const options = {
-						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
+						url: encodeURI(`${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`),
 						headers: {
 							Authorization: gDriveUuidPref.value
 						},
-						data: {
+						data: JSON.stringify({
 							poem_name: poemDraftName.value,
 							poem_body: poemDraftText.value,
 							poem_note: poemDraftNote.value,
 							poem_timestamp: `${nowDate.getFullYear()}-${
 								nowDate.getMonth() + 1
 							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
-						}
+						})
 					};
-					const response = await CapacitorHttp.request({ ...options, method: 'POST' });
+					const response = await CapacitorHttp.post(options);
 					console.log(response);
-					
 					if (response.status === 200) {
 						thinking = false;
 					} else {

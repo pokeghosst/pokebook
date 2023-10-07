@@ -103,7 +103,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash/poem')
 						} else {
 							Preferences.set({
 								key: 'current_poem_uri',
@@ -119,6 +119,7 @@
 				}
 				break;
 		}
+		poemProps.poemName = poemProps.poemName.replaceAll("%20", " ")
 		loaded = true;
 	});
 
@@ -237,12 +238,12 @@
 				thinking = false;
 				break;
 			case 'local':
-				const oldPoemUri = poemUri;
+				const oldPoemUri = poemUri.replaceAll(" ", "%20");
 				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
 				const newPoemUri = poemUri.replace(
 					new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'),
 					poemProps.poemName
-				);
+				).replaceAll(" ", "%20");
 				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
 				await Filesystem.rename({
 					from: oldPoemUri,
@@ -334,7 +335,7 @@
 {#if thinking}
 	<Overlay />
 {/if}
-{ unsavedChanges }
+
 <div
 	class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto"
 	use:preventTabClose={editMode}

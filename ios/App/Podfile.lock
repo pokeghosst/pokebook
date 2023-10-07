@@ -1,9 +1,9 @@
 PODS:
-  - Capacitor (5.4.1):
+  - Capacitor (5.4.2):
     - CapacitorCordova
   - CapacitorBrowser (5.0.6):
     - Capacitor
-  - CapacitorCordova (5.4.1)
+  - CapacitorCordova (5.4.2)
   - CapacitorFilesystem (5.1.1):
     - Capacitor
   - CapacitorPreferences (5.0.6):
@@ -29,12 +29,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/preferences"
 
 SPEC CHECKSUMS:
-  Capacitor: 4c0681b47eebeba1f902093d24149cf2f518393e
+  Capacitor: 8a9db42d105f55843cd8ed2a3cb54e2b78e7f102
   CapacitorBrowser: 6192948e0ce804fd72aaf77f4114a3ad2e08c760
-  CapacitorCordova: 1222fdd78bfd0d323cc22bf254eed1484fe6c92a
+  CapacitorCordova: cfcc06b698481da655415985eeb2b8da363f8451
   CapacitorFilesystem: 38e85e56818420bed3f0aa1b77128f503a960821
   CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
 
 PODFILE CHECKSUM: 1df90115c515a3c5a0c1eac92941679a4e9512e6
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.13.0

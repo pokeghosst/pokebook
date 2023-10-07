@@ -159,6 +159,10 @@ ol {
     font-family: "Tiki Tropic";
 }
 
+input {
+    opacity: 1;
+}
+
 textarea {
     outline: none !important;
     position: relative;
