@@ -2,7 +2,7 @@
 	<h1 class="text-2xl">Getting help</h1>
 	<br />
 	<p>
-		Encountered an issued when using PokeBook? No worries! You can use the following channels to get
+		Encountered an issue when using PokeBook? No worries! You can use the following channels to get
 		support.
 	</p>
     <br>
