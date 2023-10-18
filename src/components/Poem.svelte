@@ -16,8 +16,9 @@
 	import rita from 'rita';
 	import wd from 'wink-distance';
 	import { SHA256 } from 'crypto-js';
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onMount, tick, getContext } from 'svelte';
 	import { pokehelp } from '../stores/pokehelp';
+	import { t } from '$lib/translations';
 
 	export let props;
 	export let editable;
@@ -30,6 +31,8 @@
 	let poemTextarea;
 	let syllablePoem;
 	let poemAlignment;
+
+	let translationPromise = getContext('translationPromise');
 
 	let font;
 
@@ -57,6 +60,7 @@
 	$: lines, autoResize();
 
 	onMount(async () => {
+		await translationPromise;
 		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
 		poemAlignment = poemAlignmentPref.value || 'left';
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
@@ -194,11 +198,11 @@
 	/>
 	<div class="w-full relative">
 		{#if $pokehelp == 'true'}
-			<div class="absolute z-10 right-[5px] top-[5px]">
-				Words: {stats.words} | Characters: {stats.chars} | Lines: {stats.lines}
+			<div class="absolute z-[1] right-[5px] top-[5px]">
+				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t('workspace.lines')}: {stats.lines}
 			</div>
 			<div
-				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {font} resize-none z-10 h-auto pointer-events-none"
+				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {font} resize-none z-[1] h-auto pointer-events-none"
 				disabled="true"
 				aria-hidden="true"
 			>
@@ -208,7 +212,7 @@
 		<div class="relative">
 			{#if $pokehelp == 'true'}
 				<div
-					class="absolute select-none text-transparent whitespace-pre-wrap h-full w-full leading-[32px] pt-[35px] pl-[64px] pr-[35px] {font} {poemAlignment} z-10 top-0 right-0 bottom-0 left-0 pointer-events-none"
+					class="absolute select-none text-transparent whitespace-pre-wrap h-full w-full leading-[32px] pt-[35px] pl-[64px] pr-[35px] {font} {poemAlignment} z-[1] top-0 right-0 bottom-0 left-0 pointer-events-none"
 					aria-hidden="true"
 					bind:this={highlightedWordsWrapper}
 				>
