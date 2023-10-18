@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- New settings dropdown design
+- Localization functionality
+- New languages: Japanese, Spanish
+- Full-width writing pad
+
+### Changed
+- Removed FontAwesome icons
+- UI improvements for small screens, more spacious UI
+
+### Fixed
+- Updated vulnerable dependencies
+- Improved theme switching
+
 ## [2.0.0-rc1] - 2023-08-21
 
 ### Added

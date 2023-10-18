@@ -2,18 +2,23 @@
 	import Workspace from '../components/Workspace.svelte';
 	import generateImage from '../util/poem2image';
 	import Overlay from '../components/Overlay.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
 	import { Share } from '@capacitor/share'
+	import { t } from '$lib/translations';
 
 	let thinking = false;
 
 	let poemProps;
 	let noteProps;
 	let storageMode;
+
+	let translationPromise = getContext('translationPromise');
+
+	let actions = [];
 
 	$: if (poemProps) {
 		Preferences.set({
@@ -34,13 +39,14 @@
 	}
 
 	onMount(async () => {
+		await translationPromise;
 		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
 		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
 		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
 
 		poemProps = {
 			poem: poemDraftText.value || '',
-			poemName: poemDraftName.value || 'Unnamed'
+			poemName: poemDraftName.value || $t('workspace.unnamed')
 		};
 		noteProps = {
 			note: poemDraftNote.value || ''
@@ -48,6 +54,12 @@
 
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
+
+		actions = [
+			{ action: stashPoem, label: $t('workspace.newPoem') },
+			{ action: exportPoem, label: $t('workspace.exportPoem') },
+			{ action: forgetDraft, label: $t('workspace.forgetPoem') }
+		];
 	});
 
 	async function stashPoem() {
@@ -57,7 +69,7 @@
 
 		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
 
-		if (poemDraftText !== '' && poemDraftName !== '') {
+		if (poemDraftText.value !== '' && poemDraftName.value !== '') {
 			const nowDate = new Date(Date.now());
 			switch (storageMode) {
 				case 'gdrive':
@@ -78,12 +90,11 @@
 						})
 					};
 					const response = await CapacitorHttp.post(options);
-					console.log(response);
 					if (response.status === 200) {
 						thinking = false;
 					} else {
 						alert(
-							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
+							$t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`
 						);
 					}
 					thinking = false;
@@ -115,7 +126,7 @@
 			});
 			Preferences.set({
 				key: 'draft_poem_name',
-				value: 'Unnamed'
+				value: $t('workspace.unnamed')
 			});
 			Preferences.set({
 				key: 'draft_poem_note',
@@ -123,19 +134,19 @@
 			});
 			location.reload();
 		} else {
-			alert('You cannot save a poem without a name or... a poem!');
+			alert($t('popups.cannotSaveEmptyPoem'));
 		}
 	}
 
 	function forgetDraft() {
-		if (confirm('Heads up! You sure want to forget this poem?')) {
+		if (confirm($t('popups.forgetConfirm'))) {
 			Preferences.set({
 				key: 'draft_poem_text',
 				value: ''
 			});
 			Preferences.set({
 				key: 'draft_poem_name',
-				value: 'Unnamed'
+				value: $t('workspace.unnamed')
 			});
 			Preferences.set({
 				key: 'draft_poem_note',
@@ -161,22 +172,6 @@
 {#if thinking}
 	<Overlay />
 {/if}
-
-<div class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto">
-	<button
-		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
-		on:click={stashPoem}>New poem (&save this one)</button
-	>
-	<!-- <button
-		on:click={exportPoem}
-		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
-		>Export as image</button
-	> -->
-	<button
-		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block"
-		on:click={forgetDraft}>Forget poem</button
-	>
-</div>
 {#if poemProps != null && noteProps != null}
-	<Workspace bind:poemProps bind:noteProps />
+	<Workspace bind:poemProps bind:noteProps {actions} />
 {/if}
