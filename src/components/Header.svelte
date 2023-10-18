@@ -75,16 +75,6 @@
 					class="underline decoration-dotted decoration-1 hover:no-underline block">Settings</a
 				>
 			</li>
-			<li>
-				<a
-					href="https://www.buymeacoffee.com/pokegh0st"
-					target="_blank"
-					rel="noreferrer"
-					class="block"
-					><span class="underline decoration-dotted decoration-1 hover:no-underline">Donate</span>
-					<span class="text-xs align-sub">(pwease?)</span></a
-				>
-			</li>
 		</ul>
 	{/if}
 	<button class="absolute right-14 top-8 p-2" id="pencil" on:click={() => togglePokeHelp()}

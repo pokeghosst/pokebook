@@ -197,7 +197,7 @@
 			{/each}
 		</select>
 	</div>
-	<!-- <div class="mb-5">
+	<div class="mb-5">
 		<label for="storageMode">Storage:</label>
 
 		<select
@@ -225,6 +225,6 @@
 		{#if storageMode == 'gdrive'}
 			<button on:click={() => gDriveLogout()}>Log out</button>
 		{/if}
-	</div> -->
+	</div>
 
 </div>

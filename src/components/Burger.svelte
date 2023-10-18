@@ -61,17 +61,5 @@
 				on:click={closeMenu}>Settings</a
 			>
 		</div>
-		<div class="burger-border border-t border-gray-100" />
-		<div class="block px-4 py-2 ">
-			<a
-				href="https://www.buymeacoffee.com/pokegh0st"
-				target="_blank"
-				rel="noreferrer"
-				class="block text-xl"
-				on:click={closeMenu}
-				><span class="underline decoration-dotted decoration-1 hover:no-underline">Donate</span>
-				<span class="text-xs align-sub">(pwease?)</span></a
-			>
-		</div>
 	</div>
 </div>

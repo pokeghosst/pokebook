@@ -45,6 +45,7 @@
 		"@capacitor/filesystem": "^5.1.1",
 		"@capacitor/ios": "^5.4.2",
 		"@capacitor/preferences": "^5.0.6",
+		"@capacitor/share": "^5.0.6",
 		"@fortawesome/fontawesome-svg-core": "^6.4.0",
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
 		"@fortawesome/svelte-fontawesome": "^0.2.0",

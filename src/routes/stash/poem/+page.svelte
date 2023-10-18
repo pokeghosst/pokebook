@@ -72,7 +72,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash', { replaceState: false });
 						} else {
 							Preferences.set({
 								key: 'gdrive_poem_id',
@@ -103,7 +103,7 @@
 							)
 						) {
 							discard();
-							goto('/stash/poem')
+							goto('/stash')
 						} else {
 							Preferences.set({
 								key: 'current_poem_uri',
@@ -119,7 +119,6 @@
 				}
 				break;
 		}
-		poemProps.poemName = poemProps.poemName.replaceAll("%20", " ")
 		loaded = true;
 	});
 
@@ -186,6 +185,7 @@
 		noteProps = {
 			note: noteContents.data
 		};
+		poemProps.poemName = poemProps.poemName.replaceAll("%20", " ")
 	}
 
 	async function loadBackup() {
@@ -209,6 +209,7 @@
 			const gDrivePoemTimePref = await Preferences.get({ key: 'unsaved_poem_time' });
 			gDrivePoemTime = gDrivePoemTimePref.value;
 		}
+		loaded = true;
 	}
 
 	async function save() {
@@ -218,13 +219,14 @@
 				const options = {
 					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 					headers: {
-						Authorization: gDriveUuidPref.value
+						"Authorization": gDriveUuidPref.value,
+						"content-type": "application/json"
 					},
-					data: {
+					data: JSON.stringify({
 						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
 						poem_body: poemProps.poem,
 						poem_note: noteProps.note
-					}
+					})
 				};
 		
 				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
@@ -354,7 +356,7 @@
 			<button
 				on:click={() => {
 					discard();
-					location.reload();
+					goto('/stash', { replaceState: false });
 				}}
 				class="mb-1 cursor-pointer underline font-bold decoration-dotted decoration-1 hover:no-underline mr-2"
 			>
@@ -362,11 +364,11 @@
 			</button>
 		</div>
 	{/if}
-	<button
+	<!-- <button
 		on:click={() => generateImage(poemProps.poemName)}
 		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline md:inline-block mr-2"
 		>Export as image</button
-	>
+	> -->
 	{#if !editMode && !unsavedChanges}
 		<button
 			class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"

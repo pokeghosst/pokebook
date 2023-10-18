@@ -7,6 +7,7 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { Share } from '@capacitor/share'
 
 	let thinking = false;
 
@@ -62,9 +63,10 @@
 				case 'gdrive':
 					thinking = true;
 					const options = {
-						url: encodeURI(`${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`),
+						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
 						headers: {
-							Authorization: gDriveUuidPref.value
+							Authorization: gDriveUuidPref.value,
+							'content-type': 'application/json'
 						},
 						data: JSON.stringify({
 							poem_name: poemDraftName.value,
@@ -143,9 +145,16 @@
 		}
 	}
 
-	function exportPoem() {
-		thinking = true;
-		generateImage(poemProps.poemName);
+	async function exportPoem() {
+		// TODO: This is so bad but I have no time
+		// thinking = true;
+		// generateImage(poemProps.poemName);
+		await Share.share({
+			title: poemProps.poemName,
+			text: poemProps.poem,
+			url: 'https://book.pokeghost.org',
+			dialogTitle: 'Share your poem with the world!'
+		})
 	}
 </script>
 
@@ -158,11 +167,11 @@
 		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 		on:click={stashPoem}>New poem (&save this one)</button
 	>
-	<button
+	<!-- <button
 		on:click={exportPoem}
 		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
 		>Export as image</button
-	>
+	> -->
 	<button
 		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block"
 		on:click={forgetDraft}>Forget poem</button
