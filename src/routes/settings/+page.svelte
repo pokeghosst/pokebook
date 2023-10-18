@@ -1,11 +1,15 @@
 <script>
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
 	import { Browser } from '@capacitor/browser';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL, PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 	import { v4 as uuidv4 } from 'uuid';
+	import Select from '../../components/Select.svelte';
+	import { t } from '$lib/translations';
+	import { activeLang } from '../../stores/lang';
+
+	let translationPromise = getContext('translationPromise');
 
 	let storageMode = null;
 	let font = null;
@@ -14,11 +18,30 @@
 	let poemAlignment = null;
 	let gDriveAuth = false;
 
+	let alignments = [];
+	let dayThemes = [];
+	let nightThemes = [];
+	let storageModes = [];
+	let languages = [];
+
 	$: if (storageMode != null) {
 		Preferences.set({
 			key: 'storage_mode',
 			value: storageMode
 		});
+		if (storageMode == 'gdrive') {
+			if (gDriveAuth == 'false') {
+				if (confirm($t('popups.gDriveRedirect'))) {
+					authorize();
+				} else {
+					storageMode = 'local';
+					Preferences.set({
+						key: 'storage_mode',
+						value: storageMode
+					});
+				}
+			}
+		}
 	}
 
 	$: if (font != null) {
@@ -33,6 +56,9 @@
 			key: 'day_theme',
 			value: dayTheme
 		});
+		if (!document.documentElement.classList.contains('dark')) {
+			document.documentElement.classList.value = dayTheme;
+		}
 	}
 
 	$: if (nightTheme != null) {
@@ -40,6 +66,9 @@
 			key: 'night_theme',
 			value: nightTheme
 		});
+		if (document.documentElement.classList.contains('dark')) {
+			document.documentElement.classList.value = 'dark ' + nightTheme;
+		}
 	}
 
 	$: if (poemAlignment != null) {
@@ -50,6 +79,7 @@
 	}
 
 	onMount(async () => {
+		await translationPromise;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
 		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
@@ -62,6 +92,37 @@
 		nightTheme = nightThemePref.value || 'chocolate';
 		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
 		poemAlignment = poemAlignmentPref.value || 'text-left';
+
+		alignments = [
+			{ value: 'text-left', label: $t('settings.left') },
+			{ value: 'text-center', label: $t('settings.center') },
+			{ value: 'text-right', label: $t('settings.right') }
+		];
+
+		dayThemes = [
+			{ value: 'vanilla', label: $t('themes.vanilla') },
+			{ value: 'strawberry', label: $t('themes.strawberry') },
+			{ value: 'lemon', label: $t('themes.lemon') },
+			{ value: 'cookie', label: $t('themes.cookie') },
+			{ value: 'cherry', label: $t('themes.cherry') }
+		];
+
+		nightThemes = [
+			{ value: 'chocolate', label: $t('themes.chocolate') },
+			{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
+			{ value: 'red-velvet', label: $t('themes.redVelvet') }
+		];
+
+		storageModes = [
+			{ value: 'gdrive', label: $t('settings.gdrive') },
+			{ value: 'local', label: $t('settings.local') }
+		];
+
+		languages = [
+			{ value: 'en', label: 'English' },
+			{ value: 'ja', label: '日本語' },
+			{ value: 'es', label: 'Español' }
+		];
 	});
 
 	async function authorize() {
@@ -91,7 +152,7 @@
 			};
 			const response = await CapacitorHttp.request({ ...options, method: 'GET' });
 			if (response.status == 400) {
-				`Something went wrong! But don't fret. You was logged out and can log in again when you want to. If this looks too weird, better report this: Error code ${response.status} Additional information: ${response.data}`;
+				alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 			}
 			Preferences.remove({ key: 'gdrive_uuid' });
 			storageMode = 'local';
@@ -100,131 +161,59 @@
 	}
 
 	const fonts = [
-		{ family: 'halogen', displayName: 'Halogen (MC)' },
-		{ family: 'hashtag', displayName: 'Hashtag (Sayori)' },
-		{ family: 'ammys', displayName: 'Ammys Handwriting (Natsuki)' },
-		{ family: 'journal', displayName: 'Journal (Monika)' },
-		{ family: 'damagrafik', displayName: 'Damagrafik Script (Yuri Act 2)' },
-		{ family: 'jphand', displayName: 'JP Hand (Yuri)' },
-		{ family: 'arial', displayName: 'Arial' },
-		{ family: 'oldattic', displayName: 'Times Old Attic Bold' },
-		{ family: 'crimson', displayName: 'Crimson Roman' },
-		{ family: 'comic', displayName: 'Comic Sans MS' }
-	];
-
-	const alignments = [
-		{ alignmentClass: 'text-left', displayName: 'Left' },
-		{ alignmentClass: 'text-center', displayName: 'Centered' },
-		{ alignmentClass: 'text-right', displayName: 'Right' }
-	];
-
-	const dayThemes = [
-		{ themeClass: 'vanilla', displayName: 'Plain Vanilla' },
-		{ themeClass: 'strawberry', displayName: 'Strawberry Sundae' },
-		{ themeClass: 'lemon', displayName: 'Lemon Tart' },
-		{ themeClass: 'cookie', displayName: 'Cookie Dough' },
-		{ themeClass: 'cherry', displayName: 'Cherry Blossom' }
-	];
-
-	const nightThemes = [
-		{ themeClass: 'chocolate', displayName: 'Chocolate' },
-		{ themeClass: 'black-lobelia', displayName: 'Black Lobelia' },
-		{ themeClass: 'red-velvet', displayName: 'Red Velvet' }
-	];
-
-	const storageOptions = [
-		{ storage: 'gdrive', displayName: 'Google Drive' },
-		{ storage: 'local', displayName: 'Local Storage' }
+		{ value: 'halogen', label: 'Halogen (MC)' },
+		{ value: 'hashtag', label: 'Hashtag (Sayori)' },
+		{ value: 'ammys', label: 'Ammys Handwriting (Natsuki)' },
+		{ value: 'journal', label: 'Journal (Monika)' },
+		{ value: 'damagrafik', label: 'Damagrafik Script (Yuri Act 2)' },
+		{ value: 'jphand', label: 'JP Hand (Yuri)' },
+		{ value: 'arial', label: 'Arial' },
+		{ value: 'oldattic', label: 'Times Old Attic Bold' },
+		{ value: 'crimson', label: 'Crimson Roman' },
+		{ value: 'comic', label: 'Comic Sans MS' }
 	];
 </script>
 
-<div class="w-11/12 mt-10 mx-auto">
-	<div class="mb-5">
-		<label for="font">Notebook font:</label>
-
-		<select bind:value={font}>
-			{#each fonts as selected_font}
-				<option value={selected_font.family}>
-					{selected_font.displayName}
-				</option>
-			{/each}
-		</select>
-	</div>
-	<div class="mb-5">
-		<label for="font">Poem alignment:</label>
-
-		<select bind:value={poemAlignment}>
-			{#each alignments as alignment}
-				<option value={alignment.alignmentClass}>
-					{alignment.displayName}
-				</option>
-			{/each}
-		</select>
-	</div>
-	<div class="mb-5">
-		<label for="dayTheme">Day theme:</label>
-
-		<select
-			bind:value={dayTheme}
-			on:change={() => {
-				if (!document.documentElement.classList.contains('dark')) {
-					document.documentElement.classList.value = dayTheme;
-				}
-			}}
-		>
-			{#each dayThemes as theme}
-				<option value={theme.themeClass}>
-					{theme.displayName}
-				</option>
-			{/each}
-		</select>
-	</div>
-	<div class="mb-5">
-		<label for="nightTheme">Night theme:</label>
-
-		<select
-			bind:value={nightTheme}
-			on:change={() => {
-				if (document.documentElement.classList.contains('dark')) {
-					document.documentElement.classList.value = 'dark ' + nightTheme;
-				}
-			}}
-		>
-			{#each nightThemes as theme}
-				<option value={theme.themeClass}>
-					{theme.displayName}
-				</option>
-			{/each}
-		</select>
-	</div>
-	<div class="mb-5">
-		<label for="storageMode">Storage:</label>
-
-		<select
-			bind:value={storageMode}
-			on:change={() => {
-				if (storageMode == 'gdrive') {
-					if (gDriveAuth == 'false') {
-						if (
-							confirm('Heads up! You will be redirected to log in with your Google account. Oke?')
-						) {
-							authorize();
-						} else {
-							storageMode = 'local';
-						}
-					}
-				}
-			}}
-		>
-			{#each storageOptions as mode}
-				<option value={mode.storage}>
-					{mode.displayName}
-				</option>
-			{/each}
-		</select>
+{#if translationPromise != null}
+	<div class="w-11/12 mt-10 mx-auto">
+		<Select
+			parameterName="font"
+			labelName={$t('settings.font')}
+			bind:bindParameter={font}
+			options={fonts}
+		/>
+		<Select
+			parameterName="alignment"
+			labelName={$t('settings.alignment')}
+			bind:bindParameter={poemAlignment}
+			options={alignments}
+		/>
+		<Select
+			parameterName="dayTheme"
+			labelName={$t('settings.dayTheme')}
+			bind:bindParameter={dayTheme}
+			options={dayThemes}
+		/>
+		<Select
+			parameterName="nightTheme"
+			labelName={$t('settings.nightTheme')}
+			bind:bindParameter={nightTheme}
+			options={nightThemes}
+		/>
+		<Select
+			parameterName="storageMode"
+			labelName={$t('settings.storage')}
+			bind:bindParameter={storageMode}
+			options={storageModes}
+		/>
+		<Select
+			parameterName="language"
+			labelName={$t('settings.language')}
+			bind:bindParameter={$activeLang}
+			options={languages}
+		/>
 		{#if storageMode == 'gdrive'}
-			<button on:click={() => gDriveLogout()}>Log out</button>
+			<button on:click={() => gDriveLogout()}>{$t('settings.logout')}</button>
 		{/if}
 	</div>
-
-</div>
+{/if}
