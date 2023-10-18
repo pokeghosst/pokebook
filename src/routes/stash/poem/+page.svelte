@@ -142,11 +142,11 @@
 		loaded = true;
 	});
 
-	function toggleEdit() {
+	async function toggleEdit() {
 		editMode = !editMode;
 		Preferences.set({
 			key: 'unsaved_changes',
-			value: true
+			value: 'true'
 		});
 		if (storageMode == 'local') {
 			Preferences.set({
@@ -189,7 +189,8 @@
 			path: poemUri,
 			encoding: Encoding.UTF8
 		});
-		const poemName = poemUri.split('/')[3].split('_')[0];
+		// const poemName = poemUri.split('/')[3].split('_')[0];
+		const poemName = poemUri.split('poems/')[1].split('_')[0];
 		const noteUriSplit = poemUri.split('.txt');
 		noteUri = `${noteUriSplit[0]}_note.txt`;
 		const noteContents = await Filesystem.readFile({
@@ -257,7 +258,7 @@
 				const oldPoemUri = poemUri;
 				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
 				const newPoemUri = poemUri.replace(
-					new RegExp(poemUri.split('/')[3].split('_')[0], 'i'),
+					new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'),
 					poemProps.poemName
 				);
 				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
@@ -281,7 +282,7 @@
 				});
 				Preferences.set({
 					key: 'unsaved_changes',
-					value: false
+					value: 'false'
 				});
 				Preferences.set({
 					key: 'current_poem_uri',
@@ -297,7 +298,7 @@
 		unsavedChanges = false;
 		Preferences.set({
 			key: 'unsaved_changes',
-			value: false
+			value: 'false'
 		});
 		Preferences.remove({
 			key: 'unsaved_poem_uri'
@@ -349,7 +350,6 @@
 {#if thinking}
 	<Overlay />
 {/if}
-
 <div class="toolbelt w-11/12 text-center md:text-right mx-auto" use:preventTabClose={editMode}>
 	{#if unsavedChanges}
 		<div class="block text-center">

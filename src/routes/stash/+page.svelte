@@ -104,7 +104,8 @@
 							{#if poem.name.split('_')[3] == null}
 								<div class="poem-list__item w-full">
 									<button on:click={openPoem(poem)} class="w-full flex justify-between p-5">
-										<div>{poem.name.split('_')[0]}</div>
+                    <!-- TODO: iPhone date format cannot be parsed, standardize date formats when saving? -->
+										<div>{poem.name.split('_')[1]}</div>
 										<div class="">
 											{new Date(poem.name.split('_')[1]).toLocaleDateString('en-US', {
 												weekday: 'short',
