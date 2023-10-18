@@ -1,17 +1,21 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 	import { Preferences } from '@capacitor/preferences';
 	import { Filesystem, Directory } from '@capacitor/filesystem';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { t } from '$lib/translations';
 
 	let poems = [];
 	let thinking = false;
 	let storageMode = null;
 
+	let translationPromise = getContext('translationPromise');
+
 	onMount(async () => {
+		await translationPromise;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
 
@@ -28,12 +32,10 @@
 						poems = response.data.files;
 						break;
 					case 401:
-						alert('Unauthorized! Try to log out and log in again!');
+						alert($t('popups.unauthorized'));
 						break;
 					default:
-						alert(
-							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
-						);
+						alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 						break;
 				}
 				thinking = false;
@@ -53,11 +55,11 @@
 		const options = {
 			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
 			headers: {
-				Authorization: gDriveUuidPref.value,
+				Authorization: gDriveUuidPref.value
 			}
 		};
 		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
-		return response
+		return response;
 	}
 
 	function openPoem(poem) {
@@ -80,54 +82,44 @@
 	<div class="overflow-x-auto">
 		<div class="inline-block min-w-full">
 			<div class="overflow-hidden">
-				<table class="min-w-full text-left table-fixed">
-					<tbody>
-						{#if thinking}
-							<div class="pt-10 flex items-center justify-center">
-								<Skeleton>
-									<rect width="100%" height="20" x="0" y="0" rx="5" ry="5" />
-									<rect width="100%" height="20" x="0" y="45" rx="5" ry="5" />
-									<rect width="100%" height="20" x="0" y="85" rx="5" ry="5" />
-									<rect width="100%" height="20" x="0" y="125" rx="5" ry="5" />
-								</Skeleton>
-							</div>
-						{:else if poems}
-							{#if poems.length == 0}
-								<div
-									class="flex justify-center items-center mt-12 text-center"
-									id="poem-list-placeholder"
-								>
-									Your stage is ready and the spotlight's on, but the verses are yet to bloom.
+				{#if thinking}
+					<div class="pt-10 flex items-center justify-center">
+						<Skeleton>
+							<rect width="100%" height="20" x="0" y="0" rx="5" ry="5" />
+							<rect width="100%" height="20" x="0" y="45" rx="5" ry="5" />
+							<rect width="100%" height="20" x="0" y="85" rx="5" ry="5" />
+							<rect width="100%" height="20" x="0" y="125" rx="5" ry="5" />
+						</Skeleton>
+					</div>
+				{:else if poems}
+					{#if poems.length == 0}
+						<div
+							class="flex justify-center items-center mt-12 text-center"
+							id="poem-list-placeholder"
+						>
+							Your stage is ready and the spotlight's on, but the verses are yet to bloom.
+						</div>
+					{:else}
+						{#each poems as poem}
+							{#if poem.name.split('_')[3] == null}
+								<div class="poem-list__item w-full">
+									<button on:click={openPoem(poem)} class="w-full flex justify-between p-5">
+                    <!-- TODO: iPhone date format cannot be parsed, standardize date formats when saving? -->
+										<div>{poem.name.split('_')[1]}</div>
+										<div class="">
+											{new Date(poem.name.split('_')[1]).toLocaleDateString('en-US', {
+												weekday: 'short',
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric'
+											})}
+										</div>
+									</button>
 								</div>
-							{:else}
-								{#each poems as poem}
-									{#if poem.name.split('_')[3] == null}
-										<tr class="border-b">
-											<button on:click={openPoem(poem)}
-												><td
-													class="w-10/12 whitespace-nowrap py-4 underline decoration-dotted decoration-1 hover:no-underline"
-													>{poem.name.split('_')[0]}</td
-												></button
-											>
-											<td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right">
-												<!-- TODO: iPhone date format cannot be parsed, standardize date formats when saving? -->
-												{poem.name.split('_')[1]}
-											</td>
-											<!-- <td class="w-1/12 whitespace-nowrap pl-6 py-4 text-right"
-												>{new Date(poem.name.split('_')[1]).toLocaleDateString('en-US', {
-													weekday: 'short',
-													year: 'numeric',
-													month: 'short',
-													day: 'numeric'
-												})}</td
-											> -->
-										</tr>
-									{/if}
-								{/each}
 							{/if}
-						{/if}
-					</tbody>
-				</table>
+						{/each}
+					{/if}
+				{/if}
 			</div>
 		</div>
 	</div>
