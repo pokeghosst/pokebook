@@ -149,7 +149,7 @@ ol {
 }
 
 input {
-    opacity: 1;
+	opacity: 1;
 }
 
 textarea {
@@ -297,7 +297,10 @@ select {
 .strawberry #header-menu,
 .strawberry #header-menu svg,
 .strawberry .toolbelt,
-.strawberry footer {
+.strawberry footer,
+.strawberry label,
+.strawberry select,
+.strawberry .dropdown-arrow {
 	color: #c71585;
 }
 
@@ -320,6 +323,11 @@ select {
 	border-color: #c71585;
 }
 
+.strawberry select {
+	background: #fce7f3;
+	outline: 1px solid #f9a8d4;
+}
+
 /* Lemon Tart */
 
 .lemon body,
@@ -336,7 +344,10 @@ select {
 .lemon #header-menu,
 .lemon #header-menu svg,
 .lemon .toolbelt,
-.lemon footer {
+.lemon footer,
+.lemon label,
+.lemon select,
+.lemon .dropdown-arrow {
 	color: #422006;
 }
 
@@ -371,6 +382,11 @@ select {
 	border-color: #fde047;
 }
 
+.lemon select {
+	background: #fffcdb;
+	outline: 1px solid #fde047;
+}
+
 /* Cookie Dough */
 
 .cookie body,
@@ -382,7 +398,10 @@ select {
 .cookie #header-menu,
 .cookie #header-menu svg,
 .cookie .toolbelt,
-.cookie footer {
+.cookie footer,
+.cookie label,
+.cookie select,
+.cookie .dropdown-arrow {
 	color: #422006;
 }
 
@@ -422,6 +441,11 @@ select {
 	border-color: #e8b68b;
 }
 
+.cookie select {
+	background: #f8e8d5;
+	outline: 1px solid #e8b68b;
+}
+
 /* Summer Cherry */
 
 .cherry body,
@@ -434,7 +458,10 @@ select {
 .cherry #header-menu svg,
 .cherry .toolbelt,
 .cherry footer,
-.cherry table {
+.cherry table,
+.cherry label,
+.cherry select,
+.cherry .dropdown-arrow {
 	color: #b34261;
 }
 
@@ -473,6 +500,11 @@ select {
 	border-color: #e6a4a8;
 }
 
+.cherry select {
+	background: #fff2e6;
+	outline: 1px solid #b34261;
+}
+
 /* Global Dark */
 
 .dark a,
@@ -488,7 +520,8 @@ select {
 .dark p,
 .dark #burger-button svg,
 .dark button,
-#poem-list-placeholder {
+#poem-list-placeholder,
+.logo-text {
 	color: #f5f5f4;
 }
 
@@ -501,6 +534,11 @@ select {
 }
 
 /* Chocolate */
+
+.chocolate select,
+.chocolate .dropdown-arrow {
+	color: #1c1917;
+}
 
 .chocolate .paper {
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 10px 0 -5px #a8a29e,
@@ -529,7 +567,17 @@ select {
 	border-color: #a8a29e;
 }
 
+.chocolate select {
+	background: #a8a29e;
+	outline: 1px solid #292524;
+}
+
 /* Black Lobelia */
+
+.black-lobelia select,
+.black-lobelia .dropdown-arrow {
+	color: #211b2c;
+}
 
 .black-lobelia body,
 .black-lobelia tr,
@@ -571,7 +619,17 @@ select {
 	border-color: #8f8ca8;
 }
 
+.black-lobelia select {
+	background: #8f8ca8;
+	outline: 1px solid #211b2c;
+}
+
 /* Red Velvet */
+
+.red-velvet select,
+.red-velvet .dropdown-arrow {
+	color: #240309;
+}
 
 .red-velvet body,
 .red-velvet .poem-list,
@@ -634,6 +692,11 @@ select {
 	border-color: #a88c8e;
 }
 
+.red-velvet select {
+	background: #a88c8e;
+	outline: 1px solid #360202;
+}
+
 @media only screen and (max-width: 767px) {
 	.notebook-container {
 		/* overflow-x: scroll; */
@@ -645,7 +708,6 @@ select {
 		/* width: 87vw; */
 		flex: none;
 	}
-
 }
 
 @media only screen and (max-width: 640px) {

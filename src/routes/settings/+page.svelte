@@ -51,6 +51,7 @@
 		});
 	}
 
+	// TODO: Bug related to reacitivy when reading classList. Might be useful to refactor this part completely if possible
 	$: if (dayTheme != null) {
 		Preferences.set({
 			key: 'day_theme',

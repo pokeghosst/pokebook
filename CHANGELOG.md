@@ -15,6 +15,7 @@
 ### Fixed
 - Updated vulnerable dependencies
 - Improved theme switching
+- Security patches
 
 ## [2.0.0-rc1] - 2023-08-21
 
