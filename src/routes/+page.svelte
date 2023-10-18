@@ -7,6 +7,7 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { Share } from '@capacitor/share'
 	import { t } from '$lib/translations';
 
 	let thinking = false;
@@ -76,19 +77,19 @@
 					const options = {
 						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
 						headers: {
-							Authorization: gDriveUuidPref.value
+							Authorization: gDriveUuidPref.value,
+							'content-type': 'application/json'
 						},
-						data: {
+						data: JSON.stringify({
 							poem_name: poemDraftName.value,
 							poem_body: poemDraftText.value,
 							poem_note: poemDraftNote.value,
 							poem_timestamp: `${nowDate.getFullYear()}-${
 								nowDate.getMonth() + 1
 							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
-						}
+						})
 					};
-					const response = await CapacitorHttp.request({ ...options, method: 'POST' });
-
+					const response = await CapacitorHttp.post(options);
 					if (response.status === 200) {
 						thinking = false;
 					} else {
@@ -155,16 +156,22 @@
 		}
 	}
 
-	function exportPoem() {
-		thinking = true;
-		generateImage(poemProps.poemName);
+	async function exportPoem() {
+		// TODO: This is so bad but I have no time
+		// thinking = true;
+		// generateImage(poemProps.poemName);
+		await Share.share({
+			title: poemProps.poemName,
+			text: poemProps.poem,
+			url: 'https://book.pokeghost.org',
+			dialogTitle: 'Share your poem with the world!'
+		})
 	}
 </script>
 
 {#if thinking}
 	<Overlay />
 {/if}
-
 {#if poemProps != null && noteProps != null}
 	<Workspace bind:poemProps bind:noteProps {actions} />
 {/if}
