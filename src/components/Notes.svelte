@@ -1,6 +1,7 @@
 <script>
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, getContext } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
+	import { t } from '$lib/translations';
 
 	export let props;
 	export let editable;
@@ -11,7 +12,10 @@
 
 	let font;
 
+	let translationPromise = getContext('translationPromise');
+
 	onMount(async () => {
+		await translationPromise;
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
 		font = fontPref.value || 'halogen';
 		lines = props.note.split('\n');
@@ -32,7 +36,7 @@
 
 <span bind:this={markerLetter} class="{font} absolute left-[-9999px]">m</span>
 <div class="notebook">
-	<div class="top text-white leading-[50px] pl-5 font-bold">Note</div>
+	<div class="top text-white leading-[50px] pl-5 font-bold">{$t('workspace.note')}</div>
 	<div class="w-full">
 		<textarea
 			bind:value={props.note}

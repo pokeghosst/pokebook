@@ -53,7 +53,7 @@
 		First, upload the corpus (Only .txt files are supported).
 	</p>
 	<div class="flex justify-center text-center mx-auto mt-5">
-		<input class="text-center" type="file" id="file-upload" on:change={handleFileUpload} />
+		<input class="text-center" type="file" accept=".txt" id="file-upload" on:change={handleFileUpload} />
 	</div>
 	{#if loaded}
 		<p class="text-center w-6/12 mx-auto text-lg mt-5">
