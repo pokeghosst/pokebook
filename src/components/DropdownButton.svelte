@@ -42,11 +42,11 @@
 	>
 </button>
 {#if isOpen}
-	<div class="origin-top-right absolute right-0 mt-12 w-48 rounded-md shadow-lg">
-		<div class="rounded-md bg-white shadow-xs">
+	<div class="dropdown-menu origin-top-right absolute right-0 mt-12 w-48">
+		<div class="rounded-md">
 			{#each actions as action}
 				<button
-					class="block px-4 py-2 text-sm border-b border-b-gray-200 text-gray-700 hover:bg-gray-100 w-full focus:outline-none"
+					class="dropdown-menu__item block px-4 py-2 text-sm border-b w-full focus:outline-none"
 					on:click={action.action}
 				>
 					{action.label}
