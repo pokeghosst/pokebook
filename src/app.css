@@ -92,6 +92,22 @@
 	src: local(''), url('/fonts/TikiTropic.ttf') format('truetype');
 }
 
+@font-face {
+	font-family: 'Lucida Console';
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/LucidaConsoleRegular.ttf');
+	src: local(''), url('/fonts/LucidaConsoleRegular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Consolas';
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/Consolas.woff');
+	src: local(''), url('/fonts/Consolas.woff') format('woff');
+}
+
 ol {
 	list-style: inherit;
 }
@@ -143,6 +159,16 @@ ol {
 
 .comic {
 	font-family: 'Comic Sans';
+	font-size: 22px;
+}
+
+.lucida {
+	font-family: 'Lucida Console';
+	font-size: 22px;
+}
+
+.consolas {
+	font-family: 'Consolas';
 	font-size: 22px;
 }
 
@@ -584,6 +610,67 @@ select {
 	background-color: #fff2e6;
 }
 
+/* Coral Pink */
+
+.coral body,
+.coral tr,
+.coral #burger-bar {
+	background-color: #fdedeb;
+}
+
+.coral #header-menu svg {
+	fill: #9e4244;
+}
+
+.coral button svg {
+	fill: #fdedeb;
+}
+
+.coral #header-menu,
+.coral #header-menu svg,
+.coral .toolbelt,
+.coral footer,
+.coral label,
+.coral select,
+.coral .dropdown-arrow {
+	color: #9e4244;
+}
+
+.coral select {
+	background-color: #ffe9c7;
+}
+
+.coral .paper {
+	background: repeating-linear-gradient(#ffe9c7, #ffe9c7 31px, #f06071 31px, #f06071 32px);
+	box-shadow: 0 1px 1px rgba(131, 24, 67, 0.15), 0 10px 0 -5px #ffe9c7,
+		0 10px 1px -4px rgba(131, 24, 67, 0.15), 0 20px 0 -10px #ffe9c7,
+		0 20px 1px -9px rgba(131, 24, 67, 0.15);
+	color: #000000;
+}
+
+.coral .top,
+.coral .top textarea:disabled {
+	background-color: #ee8470;
+	color: #ffffff;
+	-webkit-text-fill-color: #ffffff;
+	-webkit-opacity: 1;
+	opacity: 1;
+}
+
+.coral .dropdown-menu {
+	background-color: #fdedeb;
+	box-shadow: 0 10px 15px -3px rgb(179 66 97 / 0.1), 0 4px 6px -4px rgb(179 66 97 / 0.1);
+}
+
+.coral .dropdown-menu__item {
+	color: #ee8470;
+	border-color: #ee8470;
+}
+
+.coral .dropdown-menu__item:hover {
+	background-color: #ffe9c7;
+}
+
 /* Global Dark */
 
 .dark a,
@@ -819,6 +906,85 @@ select {
 .red-velvet .dropdown-menu__item:hover {
 	background-color: #a88c8e;
 	color: #51040f;
+}
+
+/* Terminal */
+
+.terminal select,
+.terminal .dropdown-arrow {
+	color: #f5f5f4;
+	background-color: #000;
+}
+
+.terminal select {
+	outline: 1px solid #24b023;
+}
+
+.terminal body,
+.terminal .poem-list,
+.terminal #burger-bar {
+	background-color: #3c3c3c;
+}
+
+.terminal .paper {
+	background: repeating-linear-gradient(#000000, #000000 31px, #24b023 31px, #24b023 32px);
+	box-shadow: 0 1px 1px rgba(131, 24, 67, 0.15), 0 10px 0 -5px #000000,
+		0 10px 1px -4px rgba(131, 24, 67, 0.15), 0 20px 0 -10px #000000,
+		0 20px 1px -9px rgba(131, 24, 67, 0.15);
+	color: #24b023;
+}
+
+.terminal textarea:disabled {
+	-webkit-text-fill-color: #24b023;
+	opacity: 1;
+}
+
+.terminal #header-menu,
+.terminal #header-menu svg,
+.terminal .toolbelt,
+.terminal footer,
+.terminal #logo-text,
+.terminal #poem-list-placeholder,
+.terminal .stats {
+	color: #f5f5f4;
+}
+
+.terminal .top,
+.terminal .top textarea:disabled {
+	background: #000000;
+	-webkit-opacity: 1;
+	opacity: 1;
+	color: #f5f5f4;
+	-webkit-text-fill-color: #f5f5f4;
+}
+
+.terminal textarea,
+.terminal textarea:disabled {
+	color: #f5f5f4;
+	-webkit-text-fill-color: #f5f5f4;
+	-webkit-opacity: 1;
+	opacity: 1;
+}
+
+.terminal .round-button {
+	background: #000;
+	fill: #24b023;
+	border-color: #24b023;
+}
+
+.terminal .dropdown-menu {
+	background-color: #3c3c3c;
+	box-shadow: 0 10px 15px -3px rgb(81 4 15 / 0.3), 0 4px 6px -4px rgb(81 4 15 / 0.3);
+}
+
+.terminal .dropdown-menu__item {
+	color: #24b023;
+	border-color: #24b023;
+}
+
+.terminal .dropdown-menu__item:hover {
+	background-color: #000;
+	color: #f5f5f4;
 }
 
 @media only screen and (max-width: 767px) {

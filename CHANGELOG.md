@@ -7,6 +7,8 @@
 - Localization functionality
 - New languages: Japanese, Spanish
 - Full-width writing pad
+- New day theme: Coral Pink by Twilights
+- New night theme: Terminal by J33
 
 ### Changed
 - Removed FontAwesome icons

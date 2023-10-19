@@ -105,13 +105,16 @@
 			{ value: 'strawberry', label: $t('themes.strawberry') },
 			{ value: 'lemon', label: $t('themes.lemon') },
 			{ value: 'cookie', label: $t('themes.cookie') },
-			{ value: 'cherry', label: $t('themes.cherry') }
+			{ value: 'cherry', label: $t('themes.cherry') },
+			{ value: 'coral', label: $t('themes.coral') }
 		];
 
 		nightThemes = [
 			{ value: 'chocolate', label: $t('themes.chocolate') },
 			{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
-			{ value: 'red-velvet', label: $t('themes.redVelvet') }
+			{ value: 'red-velvet', label: $t('themes.redVelvet') },
+			{ value: 'terminal', label: $t('themes.terminal') }
+
 		];
 
 		storageModes = [
@@ -171,7 +174,9 @@
 		{ value: 'arial', label: 'Arial' },
 		{ value: 'oldattic', label: 'Times Old Attic Bold' },
 		{ value: 'crimson', label: 'Crimson Roman' },
-		{ value: 'comic', label: 'Comic Sans MS' }
+		{ value: 'comic', label: 'Comic Sans MS' },
+		{ value: 'consolas', label: 'Consolas' },
+		{ value: 'lucida', label: 'Lucida Console' }
 	];
 </script>
 

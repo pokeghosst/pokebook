@@ -198,7 +198,7 @@
 	/>
 	<div class="w-full relative">
 		{#if $pokehelp == 'true'}
-			<div class="absolute z-[1] right-[5px] top-[5px]">
+			<div class="absolute z-[1] right-[5px] top-[5px] stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t('workspace.lines')}: {stats.lines}
 			</div>
 			<div
