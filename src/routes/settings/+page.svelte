@@ -79,21 +79,7 @@
 		});
 	}
 
-	onMount(async () => {
-		await translationPromise;
-		const storageModePref = await Preferences.get({ key: 'storage_mode' });
-		storageMode = storageModePref.value || 'local';
-		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
-		gDriveAuth = gDriveAuthPref.value || 'false';
-		const fontPref = await Preferences.get({ key: 'notebook_font' });
-		font = fontPref.value || 'halogen';
-		const dayThemePref = await Preferences.get({ key: 'day_theme' });
-		dayTheme = dayThemePref.value || 'vanilla';
-		const nightThemePref = await Preferences.get({ key: 'night_theme' });
-		nightTheme = nightThemePref.value || 'chocolate';
-		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
-		poemAlignment = poemAlignmentPref.value || 'text-left';
-
+	$: if (translationPromise != null) {
 		alignments = [
 			{ value: 'text-left', label: $t('settings.left') },
 			{ value: 'text-center', label: $t('settings.center') },
@@ -114,7 +100,6 @@
 			{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
 			{ value: 'red-velvet', label: $t('themes.redVelvet') },
 			{ value: 'terminal', label: $t('themes.terminal') }
-
 		];
 
 		storageModes = [
@@ -127,6 +112,22 @@
 			{ value: 'ja', label: '日本語' },
 			{ value: 'es', label: 'Español' }
 		];
+	}
+
+	onMount(async () => {
+		await translationPromise;
+		const storageModePref = await Preferences.get({ key: 'storage_mode' });
+		storageMode = storageModePref.value || 'local';
+		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
+		gDriveAuth = gDriveAuthPref.value || 'false';
+		const fontPref = await Preferences.get({ key: 'notebook_font' });
+		font = fontPref.value || 'halogen';
+		const dayThemePref = await Preferences.get({ key: 'day_theme' });
+		dayTheme = dayThemePref.value || 'vanilla';
+		const nightThemePref = await Preferences.get({ key: 'night_theme' });
+		nightTheme = nightThemePref.value || 'chocolate';
+		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
+		poemAlignment = poemAlignmentPref.value || 'text-left';
 	});
 
 	async function authorize() {
