@@ -4,7 +4,7 @@ PODS:
   - CapacitorBrowser (5.0.6):
     - Capacitor
   - CapacitorCordova (5.4.2)
-  - CapacitorFilesystem (5.1.1):
+  - CapacitorFilesystem (5.1.3):
     - Capacitor
   - CapacitorPreferences (5.0.6):
     - Capacitor
@@ -37,7 +37,7 @@ SPEC CHECKSUMS:
   Capacitor: 8a9db42d105f55843cd8ed2a3cb54e2b78e7f102
   CapacitorBrowser: 6192948e0ce804fd72aaf77f4114a3ad2e08c760
   CapacitorCordova: cfcc06b698481da655415985eeb2b8da363f8451
-  CapacitorFilesystem: 38e85e56818420bed3f0aa1b77128f503a960821
+  CapacitorFilesystem: 9b4641db3d6d62b6cc1bf0a6a09681ebaea696b7
   CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
   CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
 
