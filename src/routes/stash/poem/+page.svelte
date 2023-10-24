@@ -205,6 +205,7 @@
 		noteProps = {
 			note: noteContents.data
 		};
+		poemProps.poemName = poemProps.poemName.replaceAll('%20', ' ');
 	}
 
 	async function loadBackup() {
