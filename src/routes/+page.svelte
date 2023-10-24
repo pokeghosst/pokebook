@@ -57,7 +57,7 @@
 
 		actions = [
 			{ action: stashPoem, label: $t('workspace.newPoem') },
-			{ action: exportPoem, label: $t('workspace.exportPoem') },
+			// { action: exportPoem, label: $t('workspace.exportPoem') },
 			{ action: forgetDraft, label: $t('workspace.forgetPoem') }
 		];
 	});

@@ -34,10 +34,12 @@
 		if (darkMode == 'dark') {
 			darkMode = '';
 			document.documentElement.classList.add(dayTheme);
+			StatusBar.setStyle({ style: Style.Light }).catch(() => {});
 		} else {
 			darkMode = 'dark';
 			document.documentElement.classList.add(darkMode);
 			document.documentElement.classList.add(nightTheme);
+			StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
 		}
 	}
 

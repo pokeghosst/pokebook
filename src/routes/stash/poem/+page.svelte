@@ -35,7 +35,7 @@
 	let actions = [
 		{ action: editOrSaveAction, label: editOrSaveLabel },
 		{ action: deletePoem, label: 'Forget poem' },
-		{ action: generateImage, label: 'Export poem' }
+		// { action: generateImage, label: 'Export poem' }
 	];
 
 	let gDriveUuidPref;
@@ -189,7 +189,6 @@
 			path: poemUri,
 			encoding: Encoding.UTF8
 		});
-		// const poemName = poemUri.split('/')[3].split('_')[0];
 		const poemName = poemUri.split('poems/')[1].split('_')[0];
 		const noteUriSplit = poemUri.split('.txt');
 		noteUri = `${noteUriSplit[0]}_note.txt`;
@@ -205,7 +204,7 @@
 		noteProps = {
 			note: noteContents.data
 		};
-		poemProps.poemName = poemProps.poemName.replaceAll('%20', ' ');
+		poemProps.poemName = poemProps.poemName.replace(/%20/g, ' ');
 	}
 
 	async function loadBackup() {
@@ -256,12 +255,11 @@
 				thinking = false;
 				break;
 			case 'local':
-				const oldPoemUri = poemUri;
+				const oldPoemUri = poemUri.replace(/ /g, '%20');
 				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
-				const newPoemUri = poemUri.replace(
-					new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'),
-					poemProps.poemName
-				);
+				const newPoemUri = poemUri
+					.replace(new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'), poemProps.poemName)
+					.replace(/ /g, '%20');
 				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
 				await Filesystem.rename({
 					from: oldPoemUri,
