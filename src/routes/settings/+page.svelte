@@ -3,7 +3,6 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { Browser } from '@capacitor/browser';
 	import { CapacitorHttp } from '@capacitor/core';
-	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { PUBLIC_POKEDRIVE_BASE_URL, PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 	import { v4 as uuidv4 } from 'uuid';
 	import Select from '../../components/Select.svelte';
