@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+		/>
+		<title>Poke!Book</title>
+		<meta
+			property="og:description"
+			content="Poke!Book is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!"
+		/>
+		<meta property="og:title" content="Poke!Book" />
+		<meta property="og:image" content="%sveltekit.assets%/poke_splash.png" />
+		<meta name="apple-itunes-app" content="app-id=6468378717" />
+		%sveltekit.head%
+	</head>
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-	<meta name="viewport" content="width=device-width" />
-	<title>Poke!Book</title>
-	<meta property="og:description" content="Poke!Book is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!" />
-	<meta property="og:title" content="Poke!Book" />
-	<meta property="og:image" content="%sveltekit.assets%/poke_splash.png" />
-	%sveltekit.head%
-</head>
-
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
 </html>
