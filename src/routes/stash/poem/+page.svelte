@@ -34,7 +34,7 @@
 
 	let actions = [
 		{ action: editOrSaveAction, label: editOrSaveLabel },
-		{ action: deletePoem, label: 'Forget poem' },
+		{ action: deletePoem, label: 'Forget poem' }
 		// { action: generateImage, label: 'Export poem' }
 	];
 
@@ -169,7 +169,8 @@
 		const options = {
 			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 			headers: {
-				Authorization: gDriveUuidPref.value
+				Authorization: gDriveUuidPref.value,
+				'content-type': 'application/json'
 			}
 		};
 		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
@@ -237,16 +238,17 @@
 				const options = {
 					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 					headers: {
-						Authorization: gDriveUuidPref.value
+						Authorization: gDriveUuidPref.value,
+						'content-type': 'application/json'
 					},
-					data: {
+					data: JSON.stringify({
 						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
 						poem_body: poemProps.poem,
 						poem_note: noteProps.note
-					}
+					})
 				};
 
-				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
+				const response = await CapacitorHttp.put(options);
 				if (response.status === 200) {
 					thinking = false;
 				} else {
@@ -321,7 +323,8 @@
 					const options = {
 						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 						headers: {
-							Authorization: gDriveUuidPref.value
+							Authorization: gDriveUuidPref.value,
+							'content-type': 'application/json'
 						}
 					};
 					const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
