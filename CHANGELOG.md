@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [v2.1.0] - 2023-10-25
 
 ### Added
 - New settings dropdown design
