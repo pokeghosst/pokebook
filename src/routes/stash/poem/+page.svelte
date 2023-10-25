@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
 	import generateImage from '../../../util/poem2image';
@@ -10,6 +10,7 @@
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { t } from '$lib/translations';
 
 	let editMode;
 
@@ -26,7 +27,25 @@
 	let gDrivePoemId = null;
 	let gDrivePoemTime = null;
 
+	let editOrSaveLabel = 'Edit poem';
+	let editOrSaveAction = toggleEdit;
+
+	let translationPromise = getContext('translationPromise');
+
+	let actions = [
+		{ action: editOrSaveAction, label: editOrSaveLabel },
+		{ action: deletePoem, label: 'Forget poem' }
+		// { action: generateImage, label: 'Export poem' }
+	];
+
 	let gDriveUuidPref;
+
+	$: {
+		editMode == true ? (editOrSaveLabel = 'Save poem') : (editOrSaveLabel = 'Edit poem');
+		editMode == true ? (editOrSaveAction = save) : (editOrSaveAction = toggleEdit);
+		actions[0].label = editOrSaveLabel;
+		actions[0].action = editOrSaveAction;
+	}
 
 	$: if (poemProps) {
 		Preferences.set({
@@ -47,6 +66,7 @@
 	}
 
 	onMount(async () => {
+		await translationPromise;
 		editMode = false;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
@@ -72,7 +92,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash', { replaceState: false });
 						} else {
 							Preferences.set({
 								key: 'gdrive_poem_id',
@@ -103,7 +123,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash', { replaceState: false });
 						} else {
 							Preferences.set({
 								key: 'current_poem_uri',
@@ -122,11 +142,11 @@
 		loaded = true;
 	});
 
-	function toggleEdit() {
+	async function toggleEdit() {
 		editMode = !editMode;
 		Preferences.set({
 			key: 'unsaved_changes',
-			value: true
+			value: 'true'
 		});
 		if (storageMode == 'local') {
 			Preferences.set({
@@ -149,7 +169,8 @@
 		const options = {
 			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 			headers: {
-				Authorization: gDriveUuidPref.value
+				Authorization: gDriveUuidPref.value,
+				'content-type': 'application/json'
 			}
 		};
 		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
@@ -169,7 +190,7 @@
 			path: poemUri,
 			encoding: Encoding.UTF8
 		});
-		const poemName = poemUri.split('/')[3].split('_')[0];
+		const poemName = poemUri.split('poems/')[1].split('_')[0];
 		const noteUriSplit = poemUri.split('.txt');
 		noteUri = `${noteUriSplit[0]}_note.txt`;
 		const noteContents = await Filesystem.readFile({
@@ -184,6 +205,7 @@
 		noteProps = {
 			note: noteContents.data
 		};
+		poemProps.poemName = poemProps.poemName.replace(/%20/g, ' ');
 	}
 
 	async function loadBackup() {
@@ -216,33 +238,31 @@
 				const options = {
 					url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 					headers: {
-						Authorization: gDriveUuidPref.value
+						Authorization: gDriveUuidPref.value,
+						'content-type': 'application/json'
 					},
-					data: {
+					data: JSON.stringify({
 						poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
 						poem_body: poemProps.poem,
 						poem_note: noteProps.note
-					}
+					})
 				};
-		
-				const response = await CapacitorHttp.request({ ...options, method: 'PUT' });
+
+				const response = await CapacitorHttp.put(options);
 				if (response.status === 200) {
 					thinking = false;
 				} else {
-					alert(
-						`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
-					);
+					alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 				}
 				thinking = false;
 				break;
 			case 'local':
-				const oldPoemUri = poemUri;
-				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
-				const newPoemUri = poemUri.replace(
-					new RegExp(poemUri.split('/')[3].split('_')[0], 'i'),
-					poemProps.poemName
-				);
-				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
+				const oldPoemUri = poemUri.replace(/ /g, '%20');
+				const oldNoteUri = `${oldPoemUri.split('.txt')[0]}_note.txt`;
+				const newPoemUri = poemUri
+					.replace(new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'), poemProps.poemName)
+					.replace(/ /g, '%20');
+				const newNoteUri = `${newPoemUri.split('.txt')[0]}_note.txt`;
 				await Filesystem.rename({
 					from: oldPoemUri,
 					to: newPoemUri
@@ -263,7 +283,7 @@
 				});
 				Preferences.set({
 					key: 'unsaved_changes',
-					value: false
+					value: 'false'
 				});
 				Preferences.set({
 					key: 'current_poem_uri',
@@ -279,7 +299,7 @@
 		unsavedChanges = false;
 		Preferences.set({
 			key: 'unsaved_changes',
-			value: false
+			value: 'false'
 		});
 		Preferences.remove({
 			key: 'unsaved_poem_uri'
@@ -303,15 +323,14 @@
 					const options = {
 						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
 						headers: {
-							Authorization: gDriveUuidPref.value
+							Authorization: gDriveUuidPref.value,
+							'content-type': 'application/json'
 						}
 					};
 					const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
 
 					if (response.status != 200) {
-						alert(
-							`Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info: Error code ${response.status} Additional information: ${response.data}`
-						);
+						alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 					} else {
 						goto('/stash', { replaceState: false });
 					}
@@ -333,59 +352,28 @@
 {#if thinking}
 	<Overlay />
 {/if}
-
-<div
-	class="toolbelt w-11/12 pt-5 md:pt-0 text-center md:text-right mx-auto"
-	use:preventTabClose={editMode}
->
+<div class="toolbelt w-11/12 text-center md:text-right mx-auto" use:preventTabClose={editMode}>
 	{#if unsavedChanges}
 		<div class="block text-center">
-			<p class="mb-1 font-bold mr-2">
-				You may have unsaved changes here. Save or discard them before proceeding.
+			<p class="mb-5 mr-2">
+				You may have unsaved changes here.<br />Save or discard them before proceeding.
 			</p>
-			<button
-				on:click={save}
-				class="mb-1 cursor-pointer underline font-bold decoration-dotted decoration-1 hover:no-underline mr-2"
-			>
-				Save them!
-			</button>
+			<button on:click={save} class="action-button action-button--primary"> Save them! </button>
 			<button
 				on:click={() => {
 					discard();
-					location.reload();
+					goto('/stash', { replaceState: false });
 				}}
-				class="mb-1 cursor-pointer underline font-bold decoration-dotted decoration-1 hover:no-underline mr-2"
+				class="action-button action-button--secondary"
 			>
-				Meh, I don't care.
+				Discard, I don't care!
 			</button>
 		</div>
 	{/if}
-	<button
-		on:click={() => generateImage(poemProps.poemName)}
-		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline md:inline-block mr-2"
-		>Export as image</button
-	>
-	{#if !editMode && !unsavedChanges}
-		<button
-			class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
-			on:click={toggleEdit}>Edit</button
-		>
-	{:else if !unsavedChanges}
-		<button
-			class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline inline-block mr-2"
-			on:click={save}>Save</button
-		>
-	{/if}
-
-	<button
-		on:click={() => deletePoem()}
-		class="mb-1 cursor-pointer underline decoration-dotted decoration-1 hover:no-underline md:inline-block"
-		>Forget poem</button
-	>
 </div>
 {#if loaded}
 	{#if poemProps != null && noteProps != null}
-		<Workspace bind:poemProps bind:noteProps editable={editMode} />
+		<Workspace bind:poemProps bind:noteProps editable={editMode} {actions} />
 	{/if}
 {:else}
 	<div class="pt-10 flex items-center justify-center">
