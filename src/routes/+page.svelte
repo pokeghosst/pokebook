@@ -101,7 +101,7 @@
 					break;
 				case 'local':
 					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
 							nowDate.getMonth() + 1
 						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
 						data: poemDraftText.value,
@@ -110,7 +110,7 @@
 						recursive: true
 					});
 					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value}_${nowDate.getFullYear()}-${
+						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
 							nowDate.getMonth() + 1
 						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
 						data: poemDraftNote.value,
