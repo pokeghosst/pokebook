@@ -92,7 +92,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash', { replaceState: false });
 						} else {
 							Preferences.set({
 								key: 'gdrive_poem_id',
@@ -123,7 +123,7 @@
 							)
 						) {
 							discard();
-							location.reload();
+							goto('/stash', { replaceState: false });
 						} else {
 							Preferences.set({
 								key: 'current_poem_uri',
@@ -256,11 +256,11 @@
 				break;
 			case 'local':
 				const oldPoemUri = poemUri.replace(/ /g, '%20');
-				const oldNoteUri = `${oldPoemUri.split('.')[0]}_note.txt`;
+				const oldNoteUri = `${oldPoemUri.split('.txt')[0]}_note.txt`;
 				const newPoemUri = poemUri
 					.replace(new RegExp(poemUri.split('poems/')[1].split('_')[0], 'i'), poemProps.poemName)
 					.replace(/ /g, '%20');
-				const newNoteUri = `${newPoemUri.split('.')[0]}_note.txt`;
+				const newNoteUri = `${newPoemUri.split('.txt')[0]}_note.txt`;
 				await Filesystem.rename({
 					from: oldPoemUri,
 					to: newPoemUri
@@ -359,7 +359,7 @@
 			<button
 				on:click={() => {
 					discard();
-					location.reload();
+					goto('/stash', { replaceState: false });
 				}}
 				class="action-button action-button--secondary"
 			>
