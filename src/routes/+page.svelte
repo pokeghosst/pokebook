@@ -21,12 +21,9 @@
 	let noteProps;
 	let storageMode;
 
-	let translationPromise = getContext('translationPromise');
-
 	let actions = [];
 
 	onMount(async () => {
-		await translationPromise;
 		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
 		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
 		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });

@@ -12,10 +12,7 @@
 
 	let font;
 
-	let translationPromise = getContext('translationPromise');
-
 	onMount(async () => {
-		await translationPromise;
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
 		font = fontPref.value || 'halogen';
 		lines = $draftPoemNoteStore.split('\n');
