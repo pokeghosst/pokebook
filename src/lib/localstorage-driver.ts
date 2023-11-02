@@ -1,12 +1,5 @@
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
-
-interface Poem {
-	poem: {
-		name: string;
-		body: string;
-	};
-	note: string;
-}
+import type { Poem } from './types/poem';
 
 export async function localSavePoem(poem: Poem) {
 	const date = new Date(Date.now());
@@ -32,5 +25,3 @@ export async function localSavePoem(poem: Poem) {
 }
 
 export async function localLoadPoem() {}
-
-export type { Poem };
