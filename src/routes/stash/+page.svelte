@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
 	import { Preferences } from '@capacitor/preferences';
 	import { Filesystem, Directory } from '@capacitor/filesystem';
@@ -12,10 +12,7 @@
 	let thinking = false;
 	let storageMode = null;
 
-	let translationPromise = getContext('translationPromise');
-
 	onMount(async () => {
-		await translationPromise;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
 

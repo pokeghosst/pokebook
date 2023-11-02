@@ -16,23 +16,21 @@
 	import rita from 'rita';
 	import wd from 'wink-distance';
 	import { SHA256 } from 'crypto-js';
-	import { onMount, tick, getContext } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { pokehelp } from '../stores/pokehelp';
 	import { t } from '$lib/translations';
+	import { draftPoemNameStore, draftPoemBodyStore } from '../stores/draft-store';
 
-	export let props;
 	export let editable;
 
 	let stats;
-	let lines = props.poem.split('\n');
+	let lines = $draftPoemBodyStore.split('\n');
 	let syllables;
 	let highlightedWords;
 	let highlightedWordsWrapper;
 	let poemTextarea;
 	let syllablePoem;
 	let poemAlignment;
-
-	let translationPromise = getContext('translationPromise');
 
 	let font;
 
@@ -41,7 +39,7 @@
 	// Since the number of phonemes is limited it is possible to find salt which would produce more or less pleasant colors for all phonemes
 	const SALT_FOR_COLORS = 'pokeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
-	$: lines = props.poem.split('\n');
+	$: lines = $draftPoemBodyStore.split('\n');
 
 	$: {
 		if ($pokehelp == 'true') {
@@ -51,7 +49,7 @@
 			});
 			syllables = tmp;
 			highlightedWords = highlightWords(lines);
-			stats = count(props.poem);
+			stats = count($draftPoemBodyStore);
 			syllablePoem = putSyllables(lines, syllables);
 		}
 	}
@@ -60,7 +58,6 @@
 	$: lines, autoResize();
 
 	onMount(async () => {
-		await translationPromise;
 		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
 		poemAlignment = poemAlignmentPref.value || 'left';
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
@@ -108,7 +105,7 @@
 		let rhymeGroups = groupBy(lastWords, findRhyme);
 		let merged = mergeRhymes(rhymeGroups);
 		let colors = generateColorfulRhymes(merged);
-		return colorCodeWords(props.poem, merged, colors);
+		return colorCodeWords($draftPoemBodyStore, merged, colors);
 	}
 
 	function generateColorfulRhymes(rhymeGroups) {
@@ -185,7 +182,7 @@
 
 	function preventChars(event) {
 		const forbiddenChars = /[./_]/g;
-		props.poemName = props.poemName.replace(forbiddenChars, '');
+		$draftPoemNameStore = $draftPoemNameStore.replace(forbiddenChars, '');
 	}
 </script>
 
@@ -193,13 +190,15 @@
 	<input
 		class="top text-white leading-[50px] pl-5 font-bold overflow-hidden"
 		disabled={!editable}
-		bind:value={props.poemName}
+		bind:value={$draftPoemNameStore}
 		on:input={preventChars}
 	/>
 	<div class="w-full relative">
 		{#if $pokehelp == 'true'}
 			<div class="absolute z-[1] right-[5px] top-[5px] stats">
-				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t('workspace.lines')}: {stats.lines}
+				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
+					'workspace.lines'
+				)}: {stats.lines}
 			</div>
 			<div
 				class="absolute select-none w-full whitespace-pre-wrap top-[32px] pl-[64px] pr-[35px] leading-[32px] overflow-y-hidden {font} resize-none z-[1] h-auto pointer-events-none"
@@ -224,7 +223,7 @@
 			<!-- In fact, in the light of the latest events I hate myself even more. Just look at this mess  -->
 			{#if $pokehelp == 'true'}
 				<textarea
-					bind:value={props.poem}
+					bind:value={$draftPoemBodyStore}
 					disabled={!editable}
 					class="paper overflow-hidden resize-none rounded-none {font} {poemAlignment} min-h-[490px]"
 					style="padding-left: 64px"
@@ -233,7 +232,7 @@
 				/>
 			{:else}
 				<textarea
-					bind:value={props.poem}
+					bind:value={$draftPoemBodyStore}
 					disabled={!editable}
 					class="paper overflow-y-hidden resize-none rounded-none {font} {poemAlignment} min-h-[490px]"
 					id="poem-textarea"

@@ -2,18 +2,8 @@
 	import '../app.css';
 	import Footer from '../components/Footer.svelte';
 	import Header from '../components/Header.svelte';
-	import { onMount, setContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
-	import { loadTranslations } from '$lib/translations';
-	import { activeLang } from '../stores/lang';
-
-	const translationPromise = loadTranslations($activeLang);
-	setContext('translationPromise', translationPromise);
-
-	$: {
-		const translationPromise = loadTranslations($activeLang);
-		setContext('translationPromise', translationPromise);
-	}
 
 	onMount(async () => {
 		const darkModePref = await Preferences.get({ key: 'dark_mode' });

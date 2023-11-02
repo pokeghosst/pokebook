@@ -1,5 +1,5 @@
 <script>
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
 	import { Browser } from '@capacitor/browser';
 	import { CapacitorHttp } from '@capacitor/core';
@@ -9,8 +9,6 @@
 	import { t } from '$lib/translations';
 	import { activeLang } from '../../stores/lang';
 
-	let translationPromise = getContext('translationPromise');
-
 	let storageMode = null;
 	let font = null;
 	let dayTheme = null;
@@ -18,11 +16,38 @@
 	let poemAlignment = null;
 	let gDriveAuth = false;
 
-	let alignments = [];
-	let dayThemes = [];
-	let nightThemes = [];
-	let storageModes = [];
-	let languages = [];
+	const alignments = [
+		{ value: 'text-left', label: $t('settings.left') },
+		{ value: 'text-center', label: $t('settings.center') },
+		{ value: 'text-right', label: $t('settings.right') }
+	];
+
+	const dayThemes = [
+		{ value: 'vanilla', label: $t('themes.vanilla') },
+		{ value: 'strawberry', label: $t('themes.strawberry') },
+		{ value: 'lemon', label: $t('themes.lemon') },
+		{ value: 'cookie', label: $t('themes.cookie') },
+		{ value: 'cherry', label: $t('themes.cherry') },
+		{ value: 'coral', label: $t('themes.coral') }
+	];
+
+	const nightThemes = [
+		{ value: 'chocolate', label: $t('themes.chocolate') },
+		{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
+		{ value: 'red-velvet', label: $t('themes.redVelvet') },
+		{ value: 'terminal', label: $t('themes.terminal') }
+	];
+
+	const storageModes = [
+		{ value: 'gdrive', label: $t('settings.gdrive') },
+		{ value: 'local', label: $t('settings.local') }
+	];
+
+	const languages = [
+		{ value: 'en', label: 'English' },
+		{ value: 'ja', label: '日本語' },
+		{ value: 'es', label: 'Español' }
+	];
 
 	$: if (storageMode != null) {
 		Preferences.set({
@@ -79,43 +104,7 @@
 		});
 	}
 
-	$: if (translationPromise != null) {
-		alignments = [
-			{ value: 'text-left', label: $t('settings.left') },
-			{ value: 'text-center', label: $t('settings.center') },
-			{ value: 'text-right', label: $t('settings.right') }
-		];
-
-		dayThemes = [
-			{ value: 'vanilla', label: $t('themes.vanilla') },
-			{ value: 'strawberry', label: $t('themes.strawberry') },
-			{ value: 'lemon', label: $t('themes.lemon') },
-			{ value: 'cookie', label: $t('themes.cookie') },
-			{ value: 'cherry', label: $t('themes.cherry') },
-			{ value: 'coral', label: $t('themes.coral') }
-		];
-
-		nightThemes = [
-			{ value: 'chocolate', label: $t('themes.chocolate') },
-			{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
-			{ value: 'red-velvet', label: $t('themes.redVelvet') },
-			{ value: 'terminal', label: $t('themes.terminal') }
-		];
-
-		storageModes = [
-			{ value: 'gdrive', label: $t('settings.gdrive') },
-			{ value: 'local', label: $t('settings.local') }
-		];
-
-		languages = [
-			{ value: 'en', label: 'English' },
-			{ value: 'ja', label: '日本語' },
-			{ value: 'es', label: 'Español' }
-		];
-	}
-
 	onMount(async () => {
-		await translationPromise;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';
 		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
@@ -181,46 +170,44 @@
 	];
 </script>
 
-{#if translationPromise != null}
-	<div class="w-11/12 mt-10 mx-auto">
-		<Select
-			parameterName="font"
-			labelName={$t('settings.font')}
-			bind:bindParameter={font}
-			options={fonts}
-		/>
-		<Select
-			parameterName="alignment"
-			labelName={$t('settings.alignment')}
-			bind:bindParameter={poemAlignment}
-			options={alignments}
-		/>
-		<Select
-			parameterName="dayTheme"
-			labelName={$t('settings.dayTheme')}
-			bind:bindParameter={dayTheme}
-			options={dayThemes}
-		/>
-		<Select
-			parameterName="nightTheme"
-			labelName={$t('settings.nightTheme')}
-			bind:bindParameter={nightTheme}
-			options={nightThemes}
-		/>
-		<Select
-			parameterName="storageMode"
-			labelName={$t('settings.storage')}
-			bind:bindParameter={storageMode}
-			options={storageModes}
-		/>
-		<Select
-			parameterName="language"
-			labelName={$t('settings.language')}
-			bind:bindParameter={$activeLang}
-			options={languages}
-		/>
-		{#if storageMode == 'gdrive'}
-			<button on:click={() => gDriveLogout()}>{$t('settings.logout')}</button>
-		{/if}
-	</div>
-{/if}
+<div class="w-11/12 mt-10 mx-auto">
+	<Select
+		parameterName="font"
+		labelName={$t('settings.font')}
+		bind:bindParameter={font}
+		options={fonts}
+	/>
+	<Select
+		parameterName="alignment"
+		labelName={$t('settings.alignment')}
+		bind:bindParameter={poemAlignment}
+		options={alignments}
+	/>
+	<Select
+		parameterName="dayTheme"
+		labelName={$t('settings.dayTheme')}
+		bind:bindParameter={dayTheme}
+		options={dayThemes}
+	/>
+	<Select
+		parameterName="nightTheme"
+		labelName={$t('settings.nightTheme')}
+		bind:bindParameter={nightTheme}
+		options={nightThemes}
+	/>
+	<Select
+		parameterName="storageMode"
+		labelName={$t('settings.storage')}
+		bind:bindParameter={storageMode}
+		options={storageModes}
+	/>
+	<Select
+		parameterName="language"
+		labelName={$t('settings.language')}
+		bind:bindParameter={$activeLang}
+		options={languages}
+	/>
+	{#if storageMode == 'gdrive'}
+		<button on:click={() => gDriveLogout()}>{$t('settings.logout')}</button>
+	{/if}
+</div>

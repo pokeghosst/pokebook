@@ -108,6 +108,28 @@
 	src: local(''), url('/fonts/Consolas.woff') format('woff');
 }
 
+a {
+	text-decoration-line: underline;
+	text-decoration-style: dotted;
+	text-decoration-thickness: 1px;
+}
+
+a:hover {
+	text-decoration-line: none;
+}
+
+.footer {
+	text-align: center;
+}
+
+.footer ul > li {
+	display: inline;
+}
+
+footer li + li::before {
+	content: ' · ';
+}
+
 ol {
 	list-style: inherit;
 }
@@ -691,6 +713,7 @@ select {
 .dark h2,
 .dark h3,
 .dark p,
+.dark ul,
 .dark #burger-button svg,
 .dark button,
 #poem-list-placeholder,

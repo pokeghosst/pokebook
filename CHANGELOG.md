@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Refactored storage functions into separate TypeScript modules
+- Poor internationalization implementation
+
 ## [v2.1.0] - 2023-10-25
 
 ### Added

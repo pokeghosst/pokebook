@@ -1,14 +1,19 @@
 <script>
 	import Workspace from '../components/Workspace.svelte';
-	import generateImage from '../util/poem2image';
 	import Overlay from '../components/Overlay.svelte';
 	import { onMount, getContext } from 'svelte';
 	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 	import { Preferences } from '@capacitor/preferences';
 	import { CapacitorHttp } from '@capacitor/core';
 	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
-	import { Share } from '@capacitor/share'
+	import { Share } from '@capacitor/share';
 	import { t } from '$lib/translations';
+	import { localSavePoem } from '$lib/localstorage-driver';
+	import {
+		draftPoemNameStore,
+		draftPoemBodyStore,
+		draftPoemNoteStore
+	} from '../stores/draft-store';
 
 	let thinking = false;
 
@@ -19,24 +24,6 @@
 	let translationPromise = getContext('translationPromise');
 
 	let actions = [];
-
-	$: if (poemProps) {
-		Preferences.set({
-			key: 'draft_poem_text',
-			value: poemProps.poem
-		});
-		Preferences.set({
-			key: 'draft_poem_name',
-			value: poemProps.poemName
-		});
-	}
-
-	$: if (noteProps) {
-		Preferences.set({
-			key: 'draft_poem_note',
-			value: noteProps.note
-		});
-	}
 
 	onMount(async () => {
 		await translationPromise;
@@ -93,45 +80,21 @@
 					if (response.status === 200) {
 						thinking = false;
 					} else {
-						alert(
-							$t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`
-						);
+						alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 					}
 					thinking = false;
 					break;
 				case 'local':
-					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
-							nowDate.getMonth() + 1
-						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
-						data: poemDraftText.value,
-						directory: Directory.Data,
-						encoding: Encoding.UTF8,
-						recursive: true
-					});
-					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
-							nowDate.getMonth() + 1
-						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
-						data: poemDraftNote.value,
-						directory: Directory.Data,
-						encoding: Encoding.UTF8,
-						recursive: true
+					localSavePoem({
+						poem: {
+							name: '',
+							body: ''
+						},
+						note: ''
 					});
 					break;
 			}
-			Preferences.set({
-				key: 'draft_poem_text',
-				value: ''
-			});
-			Preferences.set({
-				key: 'draft_poem_name',
-				value: $t('workspace.unnamed')
-			});
-			Preferences.set({
-				key: 'draft_poem_note',
-				value: ''
-			});
+
 			location.reload();
 		} else {
 			alert($t('popups.cannotSaveEmptyPoem'));
@@ -165,13 +128,12 @@
 			text: poemProps.poem,
 			url: 'https://book.pokeghost.org',
 			dialogTitle: 'Share your poem with the world!'
-		})
+		});
 	}
 </script>
 
 {#if thinking}
 	<Overlay />
 {/if}
-{#if poemProps != null && noteProps != null}
-	<Workspace bind:poemProps bind:noteProps {actions} />
-{/if}
+
+<Workspace {actions} />

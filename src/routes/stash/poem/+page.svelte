@@ -1,5 +1,5 @@
 <script>
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Workspace from '../../../components/Workspace.svelte';
 	import generateImage from '../../../util/poem2image';
@@ -29,8 +29,6 @@
 
 	let editOrSaveLabel = 'Edit poem';
 	let editOrSaveAction = toggleEdit;
-
-	let translationPromise = getContext('translationPromise');
 
 	let actions = [
 		{ action: editOrSaveAction, label: editOrSaveLabel },
@@ -66,7 +64,6 @@
 	}
 
 	onMount(async () => {
-		await translationPromise;
 		editMode = false;
 		const storageModePref = await Preferences.get({ key: 'storage_mode' });
 		storageMode = storageModePref.value || 'local';

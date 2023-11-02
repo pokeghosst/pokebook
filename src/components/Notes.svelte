@@ -2,8 +2,8 @@
 	import { onMount, tick, getContext } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
 	import { t } from '$lib/translations';
+	import { draftPoemNoteStore } from '../stores/draft-store';
 
-	export let props;
 	export let editable;
 
 	let lines;
@@ -18,11 +18,11 @@
 		await translationPromise;
 		const fontPref = await Preferences.get({ key: 'notebook_font' });
 		font = fontPref.value || 'halogen';
-		lines = props.note.split('\n');
+		lines = $draftPoemNoteStore.split('\n');
 		autoResize();
 	});
 
-	$: lines = props.note.split('\n');
+	$: lines = $draftPoemNoteStore.split('\n');
 	$: lines, autoResize();
 
 	async function autoResize() {
@@ -39,7 +39,7 @@
 	<div class="top text-white leading-[50px] pl-5 font-bold">{$t('workspace.note')}</div>
 	<div class="w-full">
 		<textarea
-			bind:value={props.note}
+			bind:value={$draftPoemNoteStore}
 			disabled={!editable}
 			class="paper rounded-none overflow-y-hidden resize-none {font} min-h-[490px]"
 			id="note-textarea"

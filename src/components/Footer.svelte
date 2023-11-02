@@ -1,33 +1,36 @@
 <script>
-	import { getContext } from 'svelte';
 	import { t } from '$lib/translations';
 	import { PUBLIC_POKEBOOK_WEB_VERSION } from '$env/static/public';
 
-	let translationPromise = getContext('translationPromise');
+	const footerItems = [
+		{
+			href: '/privacy',
+			target: '_self',
+			text: $t('menu.privacy')
+		},
+		{
+			href: '/terms',
+			target: '_self',
+			text: $t('menu.tos')
+		},
+		{
+			href: '/support',
+			target: '_self',
+			text: $t('menu.support')
+		},
+		{
+			href: 'https://github.com/pokegh0st/pokebook',
+			target: '_blank',
+			text: $t('menu.sourceCode')
+		}
+	];
 </script>
 
-<div class="footer text-center">
-	{#if translationPromise != null}
-		<p>
-			{PUBLIC_POKEBOOK_WEB_VERSION} ·
-			<a href="/privacy" class="underline decoration-dotted decoration-1 hover:no-underline"
-				>{$t('menu.privacy')}</a
-			>
-			·
-			<a href="/terms" class="underline decoration-dotted decoration-1 hover:no-underline"
-				>{$t('menu.tos')}</a
-			>
-			·
-			<a href="/support" class="underline decoration-dotted decoration-1 hover:no-underline"
-				>{$t('menu.support')}</a
-			>
-			·
-			<a
-				href="https://github.com/pokegh0st/pokebook"
-				class="underline decoration-dotted decoration-1 hover:no-underline"
-				target="_blank"
-				rel="noreferrer">{$t('menu.sourceCode')}</a
-			>
-		</p>
-	{/if}
+<div class="footer">
+	<ul>
+		<li>{PUBLIC_POKEBOOK_WEB_VERSION}</li>
+		{#each footerItems as item}
+			<li><a href={item.href} target={item.target}>{item.text}</a></li>
+		{/each}
+	</ul>
 </div>
