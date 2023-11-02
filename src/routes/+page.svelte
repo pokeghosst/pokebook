@@ -69,8 +69,8 @@
 
 	async function exportPoem() {
 		await Share.share({
-			title: poemProps.poemName,
-			text: poemProps.poem,
+			title: $draftPoemNameStore,
+			text: $draftPoemBodyStore,
 			url: 'https://book.pokeghost.org',
 			dialogTitle: 'Share your poem with the world!'
 		});

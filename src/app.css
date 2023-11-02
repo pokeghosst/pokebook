@@ -1,5 +1,7 @@
 /* TODO: REFACTOR ALL THEMES INTO SEPARATE FILES W/ VARIABLES FOR COLORS */
 
+@import url('./main.scss');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1017,21 +1019,4 @@ select {
 	color: #f5f5f4;
 }
 
-@media only screen and (max-width: 767px) {
-	.notebook-container {
-		/* overflow-x: scroll; */
-		overflow-y: hidden;
-		white-space: nowrap;
-	}
 
-	.notebook {
-		/* width: 87vw; */
-		flex: none;
-	}
-}
-
-@media only screen and (max-width: 640px) {
-	.footer {
-		display: none;
-	}
-}

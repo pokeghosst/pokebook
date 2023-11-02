@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import { Preferences } from '@capacitor/preferences';
 	import Notes from '../components/Notes.svelte';
 	import Poem from '../components/Poem.svelte';
 	import { viewsState } from '../stores/views';
@@ -10,16 +11,14 @@
 	export let editable = true;
 	export let actions;
 
-	let isHiddenClass = '';
-	let isGrid = 'md:grid';
-	let activePadWidth = 'w-[87vw]';
+	let isFullWidth: boolean;
+	let state;
 
 	let views = [Poem, Notes];
 
-	let state;
-
 	onMount(async () => {
 		state = JSON.parse($viewsState);
+		isFullWidth = (await Preferences.get({ key: 'full_width_pad' })).value === 'true';
 	});
 
 	let currentState = 'transition-opacity duration-500 ease-out opacity-100';
@@ -34,27 +33,27 @@
 	}
 
 	function expandPoemPad() {
-		isHiddenClass == 'hidden' ? (isHiddenClass = '') : (isHiddenClass = 'hidden');
-		isGrid == 'md:grid' ? (isGrid = '') : (isGrid = 'md:grid');
-		activePadWidth == 'w-[87vw]' ? (activePadWidth = 'w-full') : (activePadWidth = 'w-[87vw]');
+		isFullWidth = !isFullWidth;
+		Preferences.set({
+			key: 'full_width_pad',
+			value: isFullWidth.toString()
+		});
 	}
 </script>
 
 {#if state}
-	<div
-		class="notebook-container w-11/12 mb-20 {isGrid} md:grid-cols-2 md:gap-4 mx-auto mt-5 {currentState}"
-	>
-		<div class="{activePadWidth} md:w-full md:col-span-1 mb-6 inline-block align-top relative">
-			<div class="absolute right-2 top-2 z-10">
-				<div class="flex">
-					<button class="mr-1" on:click={expandPoemPad}><ArrowsExpand /></button>
-					<button class="mr-1" on:click={swapViews}><ArrowsSwap /></button>
+	<div class="workspace {isFullWidth ? 'l-full-width' : ''} {currentState}">
+		<div class="workspace-pad">
+			<div class="workspace-pad-toolbar">
+				<div>
+					<button on:click={expandPoemPad}><ArrowsExpand /></button>
+					<button on:click={swapViews}><ArrowsSwap /></button>
 					<NotepadDropdownMenu {actions} />
 				</div>
 			</div>
 			<svelte:component this={views[state[0]]} bind:editable />
 		</div>
-		<div class="w-[87vw] md:w-full mb-6 md:col-span-1 inline-block align-top {isHiddenClass}">
+		<div class="workspace-pad">
 			<svelte:component this={views[state[1]]} bind:editable />
 		</div>
 	</div>
