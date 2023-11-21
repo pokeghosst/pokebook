@@ -1,0 +1,21 @@
+@use '../vendors/mq';
+
+.footer {
+	text-align: center;
+
+	@include mq.mq($until: seedling) {
+		display: none;
+	}
+
+	ul > {
+		li {
+			display: inline;
+		}
+	}
+
+	li + {
+		li:before {
+			content: ' · ';
+		}
+	}
+}

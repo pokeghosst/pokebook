@@ -1,6 +1,38 @@
 import { CapacitorHttp } from '@capacitor/core';
 import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
-import type { Poem } from './types/poem';
+import type { Poem } from './types/Poem';
+
+// async function loadPoemsFromDrive() {
+// 	const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
+// 	const options = {
+// 		url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
+// 		headers: {
+// 			Authorization: gDriveUuidPref.value
+// 		}
+// 	};
+// 	const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+// 	return response;
+// }
+
+// async function loadPoemFromDrive() {
+// 	const options = {
+// 		url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
+// 		headers: {
+// 			Authorization: gDriveUuidPref.value,
+// 			'content-type': 'application/json'
+// 		}
+// 	};
+// 	const response = await CapacitorHttp.request({ ...options, method: 'GET' });
+
+// 	poemProps = {
+// 		poem: response.data.poem,
+// 		poemName: response.data.poem_name.split('_')[0]
+// 	};
+// 	noteProps = {
+// 		note: response.data.note
+// 	};
+// 	gDrivePoemTime = response.data.poem_name.split('_').slice(1, 3).join('_');
+// }
 
 export function intercloudGDriveAuth() {}
 

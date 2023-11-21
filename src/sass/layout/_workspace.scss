@@ -1,0 +1,35 @@
+@use '../vendors/mq';
+
+.workspace {
+	width: 92%;
+	margin: 1.25rem auto 5rem auto;
+	overflow-y: hidden;
+	white-space: nowrap;
+	display: block;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+	transition-property: opacity;
+	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+	transition-duration: 500ms;
+	opacity: 1;
+
+	@include mq.mq(seedling) {
+		display: grid;
+	}
+
+	&.l-full-width {
+		display: inherit;
+
+		.notebook-container:first-child {
+			width: 100%;
+		}
+
+		.notebook-container:last-child {
+			display: none;
+		}
+	}
+
+	&.transitioning {
+		opacity: 0;
+	}
+}

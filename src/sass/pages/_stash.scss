@@ -1,0 +1,15 @@
+.poem-list {
+	padding-left: 2rem;
+	padding-right: 2rem;
+
+	button {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		padding: 1rem;
+	}
+
+	.list-item {
+		padding: 0;
+	}
+}

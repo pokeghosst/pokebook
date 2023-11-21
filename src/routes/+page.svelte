@@ -1,33 +1,27 @@
-<script>
+<script lang="ts">
+	import { Share } from '@capacitor/share';
 	import Workspace from '../components/Workspace.svelte';
 	import Overlay from '../components/Overlay.svelte';
-	import { onMount } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
-	import { Share } from '@capacitor/share';
+	import { draftPoemNameStore, draftPoemBodyStore, draftPoemNoteStore } from '../stores/poemDraft';
+	import { storageMode } from '../stores/storageMode';
+	import { intercloudGDriveSavePoem } from '$lib/intercloud-gdrive';
 	import { t } from '$lib/translations';
-	import { localSavePoem } from '$lib/localstorage-driver';
-	import {
-		draftPoemNameStore,
-		draftPoemBodyStore,
-		draftPoemNoteStore
-	} from '../stores/draft-store';
+	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 
 	let thinking = false;
-	let storageMode;
 
-	let actions = [
+	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
+	const noteProps = draftPoemNoteStore;
+
+	const actions = [
 		{ action: stashPoem, label: $t('workspace.newPoem') },
 		// { action: exportPoem, label: $t('workspace.exportPoem') },
 		{ action: forgetDraft, label: $t('workspace.forgetPoem') }
 	];
 
-	onMount(async () => {
-		storageMode = (await Preferences.get({ key: 'storage_mode' })).value || 'local';
-	});
-
 	async function stashPoem() {
-		if ($draftPoemNameStore !== '' && draftPoemBodyStore !== '') {
-			switch (storageMode) {
+		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
+			switch ($storageMode) {
 				case 'gdrive':
 					thinking = true;
 					intercloudGDriveSavePoem({
@@ -40,7 +34,7 @@
 					thinking = false;
 					break;
 				case 'local':
-					localSavePoem({
+					PoemLocalStorageDriver.savePoem({
 						poem: {
 							name: $draftPoemNameStore,
 							body: $draftPoemBodyStore
@@ -81,4 +75,4 @@
 	<Overlay />
 {/if}
 
-<Workspace {actions} />
+<Workspace {poemProps} {noteProps} {actions} />
