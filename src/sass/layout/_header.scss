@@ -1,0 +1,53 @@
+@use '../vendors/mq';
+
+.header-nav-wrapper {
+	width: 91%;
+	margin: 1.25rem auto 1.5rem auto;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	button {
+		align-self: center;
+
+		&:focus {
+			outline: none;
+		}
+
+		svg {
+			width: 24px;
+			height: 24px;
+		}
+	}
+}
+
+.logo {
+	font-family: 'Tiki Tropic';
+	font-size: 2.25rem;
+	line-height: 2.5rem;
+	margin-right: -28px;
+	text-decoration: none;
+}
+
+.header-nav {
+	// display: none;
+	display: flex;
+
+	li:not(:last-child) {
+		padding-right: 1.25rem;
+	}
+
+	@include mq.mq(seedling) {
+		display: flex;
+	}
+}
+
+.header-icons {
+	display: flex;
+	margin-top: 0.25rem;
+
+	button:first-child {
+		margin-right: 0.75rem;
+	}
+}

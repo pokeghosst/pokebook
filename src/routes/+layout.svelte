@@ -1,44 +1,40 @@
-<script>
-	import '../app.css';
-	import Footer from '../components/Footer.svelte';
+<script lang="ts">
+	import { darkMode } from '../lib/stores/darkMode';
+	import { dayTheme } from '../lib/stores/dayTheme';
+	import { nightTheme } from '../lib/stores/nightTheme';
 	import Header from '../components/Header.svelte';
-	import { onMount, setContext } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
-	import { loadTranslations } from '$lib/translations';
-	import { activeLang } from '../stores/lang';
+	import { onMount } from 'svelte';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { isSidebarOpen } from '../lib/stores/isSidebarOpen';
+	import Sidebar from '../components/Sidebar.svelte';
 
-	const translationPromise = loadTranslations($activeLang);
-	setContext('translationPromise', translationPromise);
+	$: $darkMode, updateTheme();
 
-	$: {
-		const translationPromise = loadTranslations($activeLang);
-		setContext('translationPromise', translationPromise);
-	}
-
-	onMount(async () => {
-		const darkModePref = await Preferences.get({ key: 'dark_mode' });
-		const darkMode = darkModePref.value || '';
-
-		if (darkMode != '') {
-			const nightThemePref = await Preferences.get({ key: 'night_theme' });
-			const nightTheme = nightThemePref.value || 'chocolate';
-			document.documentElement.classList.add(darkMode);
-			document.documentElement.classList.add(nightTheme);
-		} else {
-			const dayThemePref = await Preferences.get({ key: 'day_theme' });
-			const dayTheme = dayThemePref.value || 'vanilla';
-			document.documentElement.classList.add(dayTheme);
-		}
+	onMount(() => {
+		updateTheme();
 	});
+
+	function updateTheme() {
+		try {
+			document.documentElement.className = '';
+			if ($darkMode !== '') {
+				document.documentElement.classList.add($darkMode || '');
+				document.documentElement.classList.add($nightTheme || 'chocolate');
+				StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+			} else {
+				document.documentElement.classList.add($dayTheme || 'vanilla');
+				StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+			}
+		} catch (e) {}
+	}
 </script>
 
-<div class="flex flex-col min-h-screen">
-	<main class="flex-1">
-		<Header />
-		<slot />
+<Sidebar />
+<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+	<main>
+		<div>
+			<Header />
+			<slot />
+		</div>
 	</main>
-
-	<footer class="py-4">
-		<Footer />
-	</footer>
 </div>

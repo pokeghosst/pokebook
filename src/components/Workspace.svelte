@@ -1,61 +1,65 @@
-<script>
-	import Notes from '../components/Notes.svelte';
-	import Poem from '../components/Poem.svelte';
-	import { viewsState } from '../stores/views';
-	import DropdownButton from './DropdownButton.svelte';
-	import ArrowsSwap from './ArrowsSwap.svelte';
-	import ArrowsExpand from './ArrowsExpand.svelte';
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { Preferences } from '@capacitor/preferences';
+	import NotePad from './NotePad.svelte';
+	import PoemPad from './PoemPad.svelte';
+	import ArrowsSwap from './svg/ArrowsSwap.svelte';
+	import ArrowsExpand from './svg/ArrowsExpand.svelte';
+	import PadDropdownMenu from './PadDropdownMenu.svelte';
+	import { viewsState } from '../lib/stores/views';
+	import type { Writable } from 'svelte/store';
 
-	export let poemProps;
-	export let noteProps;
+	export let poemProps: { name: Writable<string>; body: Writable<string> };
+	export let noteProps: Writable<string>;
+	export let actions: { action: Function; label: string }[];
 	export let editable = true;
-	export let actions;
 
-	let isHiddenClass = '';
-	let isGrid = 'md:grid';
-	let activePadWidth = 'w-[87vw]';
+	let isFullWidth: boolean;
+	let state: number[];
+	let views = [PoemPad, NotePad];
+	let props: any = [poemProps, noteProps];
+	let font: string;
 
-	let views = [Poem, Notes];
-	let props = [poemProps, noteProps];
+	let currentState = '';
 
-	let state = JSON.parse($viewsState);
-
-	$: poemProps.poem = props[0].poem;
-	$: poemProps.poemName = props[0].poemName;
-	$: noteProps.note = props[1].note;
-
-	let currentState = 'transition-opacity duration-500 ease-out opacity-100';
+	onMount(async () => {
+		state = JSON.parse($viewsState);
+		isFullWidth = (await Preferences.get({ key: 'full_width_pad' })).value === 'true';
+		font = (await Preferences.get({ key: 'notebook_font' })).value || 'halogen';
+	});
 
 	function swapViews() {
-		currentState = 'transition-opacity duration-500 ease-out opacity-0';
+		currentState = 'transitioning';
 		setTimeout(function () {
 			[state[0], state[1]] = [state[1], state[0]];
 			$viewsState = JSON.stringify(state);
-			currentState = 'transition-opacity duration-500 ease-out opacity-100';
+			currentState = '';
 		}, 600);
 	}
 
 	function expandPoemPad() {
-		isHiddenClass == 'hidden' ? (isHiddenClass = '') : (isHiddenClass = 'hidden');
-		isGrid == 'md:grid' ? (isGrid = '') : (isGrid = 'md:grid');
-		activePadWidth == 'w-[87vw]' ? (activePadWidth = 'w-full') : (activePadWidth = 'w-[87vw]');
+		isFullWidth = !isFullWidth;
+		Preferences.set({
+			key: 'full_width_pad',
+			value: isFullWidth.toString()
+		});
 	}
 </script>
 
-<div
-	class="notebook-container w-11/12 mb-20 {isGrid} md:grid-cols-2 md:gap-4 mx-auto mt-5 {currentState}"
->
-	<div class="{activePadWidth} md:w-full md:col-span-1 mb-6 inline-block align-top relative">
-		<div class="absolute right-2 top-2 z-10">
-			<div class="flex">
-				<button class="mr-1" on:click={expandPoemPad}><ArrowsExpand /></button>
-				<button class="mr-1" on:click={swapViews}><ArrowsSwap /></button>
-				<DropdownButton {actions} />
+{#if state}
+	<div class="workspace {isFullWidth ? 'l-full-width' : ''} {currentState} {font}">
+		<div class="notebook-container">
+			<div class="notebook-container-toolbar">
+				<div>
+					<button on:click={expandPoemPad}><ArrowsExpand /></button>
+					<button on:click={swapViews}><ArrowsSwap /></button>
+					<PadDropdownMenu {actions} />
+				</div>
 			</div>
+			<svelte:component this={views[state[0]]} {editable} bind:props={props[state[0]]} />
 		</div>
-		<svelte:component this={views[state[0]]} bind:editable bind:props={props[state[0]]} />
+		<div class="notebook-container">
+			<svelte:component this={views[state[1]]} {editable} bind:props={props[state[1]]} />
+		</div>
 	</div>
-	<div class="w-[87vw] md:w-full mb-6 md:col-span-1 inline-block align-top {isHiddenClass}">
-		<svelte:component this={views[state[1]]} bind:editable bind:props={props[state[1]]} />
-	</div>
-</div>
+{/if}
