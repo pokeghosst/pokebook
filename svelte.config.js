@@ -18,7 +18,7 @@ const config = {
 			assets: 'build',
 			fallback: null,
 			precompress: false,
-			strict: true
+			strict: false
 		})
 		: adapteVercel(),
 		alias: { 'lib/': './src/lib/' }

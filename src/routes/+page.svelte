@@ -2,11 +2,18 @@
 	import { Share } from '@capacitor/share';
 	import Workspace from '../components/Workspace.svelte';
 	import Overlay from '../components/Overlay.svelte';
-	import { draftPoemNameStore, draftPoemBodyStore, draftPoemNoteStore } from '../lib/stores/poemDraft';
+	import {
+		draftPoemNameStore,
+		draftPoemBodyStore,
+		draftPoemNoteStore
+	} from '../lib/stores/poemDraft';
 	import { storageMode } from '../lib/stores/storageMode';
 	import { intercloudGDriveSavePoem } from '$lib/intercloud-gdrive';
 	import { t } from '$lib/translations';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { onMount } from 'svelte';
+	import { Capacitor } from '@capacitor/core';
+	import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 
 	let thinking = false;
 
@@ -18,6 +25,11 @@
 		// { action: exportPoem, label: $t('workspace.exportPoem') },
 		{ action: forgetDraft, label: $t('workspace.forgetPoem') }
 	];
+
+	onMount(async () => {
+		const routeUrl = '/api/roll';
+		console.log(await fetch(`PUBLIC_POKEBOOK_BASE_URL${routeUrl}`));
+	});
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
