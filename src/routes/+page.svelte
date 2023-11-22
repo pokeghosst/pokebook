@@ -2,8 +2,8 @@
 	import { Share } from '@capacitor/share';
 	import Workspace from '../components/Workspace.svelte';
 	import Overlay from '../components/Overlay.svelte';
-	import { draftPoemNameStore, draftPoemBodyStore, draftPoemNoteStore } from '../stores/poemDraft';
-	import { storageMode } from '../stores/storageMode';
+	import { draftPoemNameStore, draftPoemBodyStore, draftPoemNoteStore } from '../lib/stores/poemDraft';
+	import { storageMode } from '../lib/stores/storageMode';
 	import { intercloudGDriveSavePoem } from '$lib/intercloud-gdrive';
 	import { t } from '$lib/translations';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';

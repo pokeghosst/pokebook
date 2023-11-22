@@ -8,13 +8,13 @@
 	import { dayThemes } from '$lib/constants/DayThemes';
 	import { padFonts } from '$lib/constants/PadFonts';
 
-	import { activeLanguage } from '../../stores/activeLanguage';
-	import { storageMode } from '../../stores/storageMode';
-	import { writingPadFont } from '../../stores/writingPadFont';
-	import { poemPadJustification } from '../../stores/poemPadJustification';
-	import { dayTheme } from '../../stores/dayTheme';
-	import { nightTheme } from '../../stores/nightTheme';
-	import { darkMode } from '../../stores/darkMode';
+	import { activeLanguage } from '../../lib/stores/activeLanguage';
+	import { storageMode } from '../../lib/stores/storageMode';
+	import { writingPadFont } from '../../lib/stores/writingPadFont';
+	import { poemPadJustification } from '../../lib/stores/poemPadJustification';
+	import { dayTheme } from '../../lib/stores/dayTheme';
+	import { nightTheme } from '../../lib/stores/nightTheme';
+	import { darkMode } from '../../lib/stores/darkMode';
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 

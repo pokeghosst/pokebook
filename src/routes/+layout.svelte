@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { darkMode } from '../stores/darkMode';
-	import { dayTheme } from '../stores/dayTheme';
-	import { nightTheme } from '../stores/nightTheme';
-
-	import Footer from '../components/Footer.svelte';
+	import { darkMode } from '../lib/stores/darkMode';
+	import { dayTheme } from '../lib/stores/dayTheme';
+	import { nightTheme } from '../lib/stores/nightTheme';
 	import Header from '../components/Header.svelte';
-
 	import { onMount } from 'svelte';
 	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { isSidebarOpen } from '../lib/stores/isSidebarOpen';
+	import Sidebar from '../components/Sidebar.svelte';
 
 	$: $darkMode, updateTheme();
 
@@ -30,13 +29,12 @@
 	}
 </script>
 
-<div class="main-wrapper">
+<Sidebar />
+<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
 	<main>
-		<Header />
-		<slot />
+		<div>
+			<Header />
+			<slot />
+		</div>
 	</main>
-
-	<footer>
-		<Footer />
-	</footer>
 </div>

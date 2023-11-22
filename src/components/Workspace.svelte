@@ -6,7 +6,7 @@
 	import ArrowsSwap from './svg/ArrowsSwap.svelte';
 	import ArrowsExpand from './svg/ArrowsExpand.svelte';
 	import PadDropdownMenu from './PadDropdownMenu.svelte';
-	import { viewsState } from '../stores/views';
+	import { viewsState } from '../lib/stores/views';
 	import type { Writable } from 'svelte/store';
 
 	export let poemProps: { name: Writable<string>; body: Writable<string> };

@@ -8,9 +8,17 @@
 	align-items: center;
 	justify-content: space-between;
 
-	@include mq.mq(seedling) {
-		text-align: left;
-		margin-bottom: 2.5rem;
+	button {
+		align-self: center;
+
+		&:focus {
+			outline: none;
+		}
+
+		svg {
+			width: 24px;
+			height: 24px;
+		}
 	}
 }
 
@@ -23,7 +31,8 @@
 }
 
 .header-nav {
-	display: none;
+	// display: none;
+	display: flex;
 
 	li:not(:last-child) {
 		padding-right: 1.25rem;

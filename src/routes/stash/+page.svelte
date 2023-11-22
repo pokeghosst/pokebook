@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { Preferences } from '@capacitor/preferences';
-	import { storageMode } from '../../stores/storageMode';
+	import { storageMode } from '../../lib/stores/storageMode';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 	import {
 		currentPoemName,
@@ -11,7 +11,7 @@
 		currentPoemUri,
 		currentPoemNoteUri,
 		currentPoemUnsavedChanges
-	} from '../../stores/currentPoem';
+	} from '../../lib/stores/currentPoem';
 	import type { PoemFile } from '$lib/types/PoemFile';
 
 	let poems: PoemFile[] = [];

@@ -3,7 +3,7 @@
 	import Workspace from '../../../components/Workspace.svelte';
 	import Overlay from '../../../components/Overlay.svelte';
 	import { preventTabClose } from '../../../util/preventTabClose';
-	import { storageMode } from '../../../stores/storageMode';
+	import { storageMode } from '../../../lib/stores/storageMode';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -11,7 +11,7 @@
 		currentPoemUri,
 		currentPoemNoteUri,
 		currentPoemUnsavedChanges
-	} from '../../../stores/currentPoem';
+	} from '../../../lib/stores/currentPoem';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 	import Toast from '../../../components/Toast.svelte';
 	import PoemPad from '../../../components/PoemPad.svelte';
