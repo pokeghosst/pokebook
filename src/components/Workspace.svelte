@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
 	import NotePad from './NotePad.svelte';
 	import PoemPad from './PoemPad.svelte';
 	import ArrowsSwap from './svg/ArrowsSwap.svelte';
@@ -8,25 +6,19 @@
 	import PadDropdownMenu from './PadDropdownMenu.svelte';
 	import { viewsState } from '../lib/stores/views';
 	import type { Writable } from 'svelte/store';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
 	export let actions: { action: Function; label: string }[];
 	export let editable = true;
 
-	let isFullWidth: boolean;
-	let state: number[];
+	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
 	let props: any = [poemProps, noteProps];
-	let font: string;
 
 	let currentState = '';
-
-	onMount(async () => {
-		state = JSON.parse($viewsState);
-		isFullWidth = (await Preferences.get({ key: 'full_width_pad' })).value === 'true';
-		font = (await Preferences.get({ key: 'notebook_font' })).value || 'halogen';
-	});
 
 	function swapViews() {
 		currentState = 'transitioning';
@@ -38,16 +30,16 @@
 	}
 
 	function expandPoemPad() {
-		isFullWidth = !isFullWidth;
-		Preferences.set({
-			key: 'full_width_pad',
-			value: isFullWidth.toString()
-		});
+		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
 	}
 </script>
 
 {#if state}
-	<div class="workspace {isFullWidth ? 'l-full-width' : ''} {currentState} {font}">
+	<div
+		class="workspace {$isFullWidthPad === 'true'
+			? 'l-full-width'
+			: ''} {currentState} {$writingPadFont}"
+	>
 		<div class="notebook-container">
 			<div class="notebook-container-toolbar">
 				<div>

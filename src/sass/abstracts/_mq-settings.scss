@@ -5,6 +5,9 @@ $breakpoints: (
 	plant: 1600px
 );
 
+$show-breakpoints: (seed, seedling, sprout, plant);
+
 @use '../vendors/mq' with (
 	$breakpoints: $breakpoints,
+	$show-breakpoints: $show-breakpoints
 );

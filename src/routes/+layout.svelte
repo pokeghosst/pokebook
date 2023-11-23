@@ -2,11 +2,17 @@
 	import { darkMode } from '../lib/stores/darkMode';
 	import { dayTheme } from '../lib/stores/dayTheme';
 	import { nightTheme } from '../lib/stores/nightTheme';
-	import Header from '../components/Header.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { StatusBar, Style } from '@capacitor/status-bar';
-	import { isSidebarOpen } from '../lib/stores/isSidebarOpen';
+	import { Router, Route, useFocus } from 'svelte-navigator';
+	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import Sidebar from '../components/Sidebar.svelte';
+	import DraftPoem from '../pages/DraftPoem.svelte';
+	import PoemStash from '../pages/PoemStash.svelte';
+	import Header from '../components/Header.svelte';
+	import Settings from '../pages/Settings.svelte';
+	import PoemPage from '../pages/PoemPage.svelte';
+	import PokeLab from '../pages/PokeLab.svelte';
 
 	$: $darkMode, updateTheme();
 
@@ -29,12 +35,34 @@
 	}
 </script>
 
-<Sidebar />
-<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
-	<main>
-		<div>
-			<Header />
-			<slot />
-		</div>
-	</main>
-</div>
+<Router>
+	<Sidebar />
+	<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+		<main>
+			<div>
+				<Header />
+				<Route path="/">
+					<h2 class="sr-only">Poem Draft</h2>
+					<DraftPoem />
+				</Route>
+				<Route path="/stash">
+					<h2 class="sr-only">Poem Stash</h2>
+					<PoemStash />
+				</Route>
+				<Route path="/stash/poem">
+					<h2 class="sr-only">Individual poem page</h2>
+					<PoemPage />
+				</Route>
+				<Route path="/settings">
+					<h2 class="sr-only">Settings</h2>
+					<Settings />
+				</Route>
+				<Route path="/settings">
+					<h2 class="sr-only">Poke!Lab</h2>
+					<PokeLab />
+				</Route>
+			</div>
+		</main>
+	</div>
+</Router>
+<slot/>

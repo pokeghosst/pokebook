@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Workspace from '../../../components/Workspace.svelte';
-	import Overlay from '../../../components/Overlay.svelte';
-	import { preventTabClose } from '../../../util/preventTabClose';
-	import { storageMode } from '../../../lib/stores/storageMode';
+	import Workspace from '../components/Workspace.svelte';
+	import { preventTabClose } from '../util/preventTabClose';
+	import { storageMode } from '$lib/stores/storageMode';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -11,16 +10,14 @@
 		currentPoemUri,
 		currentPoemNoteUri,
 		currentPoemUnsavedChanges
-	} from '../../../lib/stores/currentPoem';
+	} from '$lib/stores/currentPoem';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
-	import Toast from '../../../components/Toast.svelte';
-	import PoemPad from '../../../components/PoemPad.svelte';
+	import Toast from '../components/Toast.svelte';
 
 	let editMode = false;
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
-	let thinking = false;
 
 	let editOrSaveLabel = 'Edit poem';
 	let editOrSaveAction = toggleEdit;
@@ -65,7 +62,6 @@
 				// } else {
 				// 	alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
 				// }
-				thinking = false;
 				break;
 			case 'local':
 				try {
@@ -131,9 +127,6 @@
 	}
 </script>
 
-{#if thinking}
-	<Overlay />
-{/if}
 <div use:preventTabClose={editMode} />
 
 <Workspace {poemProps} {noteProps} editable={editMode} {actions} />

@@ -1,14 +1,13 @@
+import { browser } from '$app/environment';
 import { loadTranslations } from '$lib/translations';
+import { Preferences } from '@capacitor/preferences';
 import '../sass/main.scss';
 
-export const prerender = true;
+export const prerender = false;
 export const ssr = false;
 
-/** @type { import('@sveltejs/kit').Load } */
 export const load = async () => {
-	const lang = 'en'
+	const lang = browser ? (await Preferences.get({ key: 'active_language' })).value ?? 'en' : 'en';
 
 	loadTranslations(lang);
-
-	return { lang };
 };

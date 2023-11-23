@@ -6,6 +6,7 @@
 	export let labelName: string;
 	export let bindParameter: string | undefined;
 	export let options: { value: string; label: string }[] = [];
+	export let localizeLabel = true;
 </script>
 
 <div class="settings-select">
@@ -13,7 +14,7 @@
 	<select bind:value={bindParameter} name={parameterName}>
 		{#each options as option}
 			<option value={option.value}>
-				{$t(option.label)}
+				{localizeLabel ? $t(option.label) : option.label}
 			</option>
 		{/each}
 	</select>

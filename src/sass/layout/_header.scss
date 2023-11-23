@@ -31,15 +31,10 @@
 }
 
 .header-nav {
-	// display: none;
 	display: flex;
 
 	li:not(:last-child) {
 		padding-right: 1.25rem;
-	}
-
-	@include mq.mq(seedling) {
-		display: flex;
 	}
 }
 

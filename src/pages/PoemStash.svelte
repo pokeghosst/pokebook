@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
-	import { storageMode } from '../../lib/stores/storageMode';
+	import { storageMode } from '$lib/stores/storageMode';
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 	import {
 		currentPoemName,
@@ -11,8 +9,9 @@
 		currentPoemUri,
 		currentPoemNoteUri,
 		currentPoemUnsavedChanges
-	} from '../../lib/stores/currentPoem';
+	} from '$lib/stores/currentPoem';
 	import type { PoemFile } from '$lib/types/PoemFile';
+    import { navigate } from "svelte-navigator";
 
 	let poems: PoemFile[] = [];
 	let thinking = true;
@@ -55,7 +54,7 @@
 				if ($currentPoemUnsavedChanges === 'true') {
 					if ($currentPoemUri === poemFile.poemUri) {
 						console.log('Unsaved changes, no need to reload poem');
-						goto('/stash/poem', { replaceState: false });
+						navigate('/stash/poem', { replace: true });
 					} else {
 						alert(`You have unsaved changes in '${$currentPoemName}'`);
 					}
@@ -65,7 +64,7 @@
 					$currentPoemNote = poem.note;
 					$currentPoemUri = poemFile.poemUri;
 					$currentPoemNoteUri = poemFile.noteUri;
-					goto('/stash/poem', { replaceState: false });
+					navigate('/stash/poem', { replace: true });
 				}
 				break;
 		}

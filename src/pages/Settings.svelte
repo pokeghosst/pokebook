@@ -8,17 +8,19 @@
 	import { dayThemes } from '$lib/constants/DayThemes';
 	import { padFonts } from '$lib/constants/PadFonts';
 
-	import { activeLanguage } from '../../lib/stores/activeLanguage';
-	import { storageMode } from '../../lib/stores/storageMode';
-	import { writingPadFont } from '../../lib/stores/writingPadFont';
-	import { poemPadJustification } from '../../lib/stores/poemPadJustification';
-	import { dayTheme } from '../../lib/stores/dayTheme';
-	import { nightTheme } from '../../lib/stores/nightTheme';
-	import { darkMode } from '../../lib/stores/darkMode';
+	import { activeLanguage } from '$lib/stores/activeLanguage';
+	import { storageMode } from '$lib/stores/storageMode';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { dayTheme } from '$lib/stores/dayTheme';
+	import { nightTheme } from '$lib/stores/nightTheme';
+	import { darkMode } from '$lib/stores/darkMode';
 
-	import SettingsSelect from '../../components/SettingsSelect.svelte';
+	import SettingsSelect from '../components/SettingsSelect.svelte';
 
 	import { StatusBar, Style } from '@capacitor/status-bar';
+
+	import { useFocus } from 'svelte-navigator';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
@@ -51,6 +53,7 @@
 		labelName={$t('settings.font')}
 		bind:bindParameter={$writingPadFont}
 		options={padFonts}
+		localizeLabel={false}
 	/>
 	<SettingsSelect
 		parameterName="alignment"
@@ -81,5 +84,6 @@
 		labelName={$t('settings.language')}
 		bind:bindParameter={$activeLanguage}
 		options={localizationLanguages}
+		localizeLabel={false}
 	/>
 </div>

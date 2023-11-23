@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { CountOption, count } from 'letter-count';
-	import { Preferences } from '@capacitor/preferences';
 	import { onMount } from 'svelte';
 	import { isPokehelpActive } from '../lib/stores/pokehelpMode';
 	import type { Writable } from 'svelte/store';
 	import { t } from '$lib/translations';
 	import { putSyllables, highlightWords } from '$lib/pokehelp-util';
 	import { poemPadJustification } from '../lib/stores/poemPadJustification';
+	import { useFocus } from 'svelte-navigator';
 
 	export let editable: boolean;
 	export let props: { name: Writable<string>; body: Writable<string> };

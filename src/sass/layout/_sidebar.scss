@@ -1,17 +1,22 @@
+@use '../vendors/mq';
+
 .sidebar-nav-wrapper {
-	z-index: 50;
+	z-index: 20;
 	display: flex;
 }
 
 .sidebar-close-area {
-	position: fixed;
-	background-color: transparent;
-	top: 0;
-	right: 0;
-	height: 100%;
-	width: 100%;
-	transition-duration: 200ms;
-	transform: translateX(100%);
+	@include mq.mq($until: sprout) {
+		position: fixed;
+		background-color: var(--base-color);
+		opacity: 0.25;
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 100%;
+		transform: translateX(100%);
+		z-index: inherit;
+	}
 }
 
 .sidebar {
@@ -22,8 +27,7 @@
 	height: 100%;
 	width: 250px;
 	border-right: 1px solid var(--list-item-border-color);
-	// transition-duration: 200ms;
-	// transform: translateX(
+	z-index: inherit;
 }
 
 .sidebar-nav--open {
