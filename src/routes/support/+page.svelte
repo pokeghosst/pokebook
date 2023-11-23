@@ -1,7 +1,3 @@
-<script>
-	import { PUBLIC_POKEBOOK_WEB_VERSION } from '$env/static/public';
-</script>
-
 <div class="w-11/12 mt-10 mx-auto">
 	<h1 class="text-2xl">Getting help</h1>
 	<br />

@@ -10,5 +10,5 @@ export interface IPoemStorageDriver {
 		poemUri: string,
 		noteUri: string
 	): Promise<{ newPoemUri: string; newNoteUri: string }>;
-    deletePoem(poemUri: string, noteUri: string): void;
+	deletePoem(poemUri: string, noteUri: string): void;
 }

@@ -1,26 +1,20 @@
 <script lang="ts">
-	import { t } from '$lib/translations';
-
-	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
-	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	import { storageOptions } from '$lib/constants/StorageOptions';
-	import { nightThemes } from '$lib/constants/NightThemes';
 	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
 	import { padFonts } from '$lib/constants/PadFonts';
-
+	import { storageOptions } from '$lib/constants/StorageOptions';
+	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
-	import { storageMode } from '$lib/stores/storageMode';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
-	import { darkMode } from '$lib/stores/darkMode';
-
-	import SettingsSelect from '../components/SettingsSelect.svelte';
-
+	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { storageMode } from '$lib/stores/storageMode';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { t } from '$lib/translations';
 	import { StatusBar, Style } from '@capacitor/status-bar';
-
-	import { useFocus } from 'svelte-navigator';
+	import SettingsSelect from '../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();

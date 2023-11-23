@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { darkMode } from '../lib/stores/darkMode';
-	import { dayTheme } from '../lib/stores/dayTheme';
-	import { nightTheme } from '../lib/stores/nightTheme';
-	import { onDestroy, onMount } from 'svelte';
+	import { darkMode } from '$lib/stores/darkMode';
+	import { dayTheme } from '$lib/stores/dayTheme';
+	import { nightTheme } from '$lib/stores/nightTheme';
 	import { StatusBar, Style } from '@capacitor/status-bar';
-	import { Router, Route, useFocus } from 'svelte-navigator';
+	import { Router, Route } from 'svelte-navigator';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import Sidebar from '../components/Sidebar.svelte';
 	import DraftPoem from '../pages/DraftPoem.svelte';
@@ -13,25 +12,24 @@
 	import Settings from '../pages/Settings.svelte';
 	import PoemPage from '../pages/PoemPage.svelte';
 	import PokeLab from '../pages/PokeLab.svelte';
+	import { Capacitor } from '@capacitor/core';
 
 	$: $darkMode, updateTheme();
 
-	onMount(() => {
-		updateTheme();
-	});
-
 	function updateTheme() {
-		try {
-			document.documentElement.className = '';
-			if ($darkMode !== '') {
-				document.documentElement.classList.add($darkMode || '');
-				document.documentElement.classList.add($nightTheme || 'chocolate');
-				StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
-			} else {
-				document.documentElement.classList.add($dayTheme || 'vanilla');
-				StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+		document.documentElement.className = '';
+		if ($darkMode !== '') {
+			document.documentElement.classList.add($darkMode || '');
+			document.documentElement.classList.add($nightTheme || 'chocolate');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Dark });
 			}
-		} catch (e) {}
+		} else {
+			document.documentElement.classList.add($dayTheme || 'vanilla');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Light });
+			}
+		}
 	}
 </script>
 
@@ -65,4 +63,4 @@
 		</main>
 	</div>
 </Router>
-<slot/>
+<slot />

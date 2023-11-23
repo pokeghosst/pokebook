@@ -1,7 +1,6 @@
 @use '../vendors/mq';
 
 .notebook {
-
 	@include mq.mq($until: seedling) {
 		flex: none;
 	}

@@ -48,10 +48,9 @@ export function colorCodeWords(text, rhymeGroups, colors) {
 					pattern,
 					` <span style="background-color:${color}; filter: blur(4px)">${word}</span>\n`
 				);
-			
 		});
 	});
-	
+
 	return result;
 }
 

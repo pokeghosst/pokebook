@@ -1,18 +1,18 @@
 <script lang="ts">
-	import NotePad from './NotePad.svelte';
-	import PoemPad from './PoemPad.svelte';
-	import ArrowsSwap from './svg/ArrowsSwap.svelte';
-	import ArrowsExpand from './svg/ArrowsExpand.svelte';
-	import PadDropdownMenu from './PadDropdownMenu.svelte';
-	import { viewsState } from '../lib/stores/views';
-	import type { Writable } from 'svelte/store';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
 	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import type { Writable } from 'svelte/store';
+	import { viewsState } from '../lib/stores/views';
+	import NotePad from './NotePad.svelte';
+	import PadDropdownMenu from './PadDropdownMenu.svelte';
+	import PoemPad from './PoemPad.svelte';
+	import ArrowsExpand from './svg/ArrowsExpand.svelte';
+	import ArrowsSwap from './svg/ArrowsSwap.svelte';
 
-	export let poemProps: { name: Writable<string>; body: Writable<string> };
-	export let noteProps: Writable<string>;
 	export let actions: { action: Function; label: string }[];
 	export let editable = true;
+	export let poemProps: { name: Writable<string>; body: Writable<string> };
+	export let noteProps: Writable<string>;
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];

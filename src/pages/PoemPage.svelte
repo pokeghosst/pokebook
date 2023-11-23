@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Workspace from '../components/Workspace.svelte';
-	import { preventTabClose } from '../util/preventTabClose';
-	import { storageMode } from '$lib/stores/storageMode';
+	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 	import {
 		currentPoemBody,
 		currentPoemName,
 		currentPoemNote,
-		currentPoemUri,
 		currentPoemNoteUri,
-		currentPoemUnsavedChanges
+		currentPoemUnsavedChanges,
+		currentPoemUri
 	} from '$lib/stores/currentPoem';
-	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { storageMode } from '$lib/stores/storageMode';
 	import Toast from '../components/Toast.svelte';
+	import Workspace from '../components/Workspace.svelte';
+	import { preventTabClose } from '../util/preventTabClose';
 
 	let editMode = false;
 

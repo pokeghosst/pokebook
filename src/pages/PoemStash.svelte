@@ -11,7 +11,7 @@
 		currentPoemUnsavedChanges
 	} from '$lib/stores/currentPoem';
 	import type { PoemFile } from '$lib/types/PoemFile';
-    import { navigate } from "svelte-navigator";
+	import { navigate } from 'svelte-navigator';
 
 	let poems: PoemFile[] = [];
 	let thinking = true;

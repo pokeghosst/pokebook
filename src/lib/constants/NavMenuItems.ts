@@ -1,18 +1,18 @@
 export const navMenuItems = [
 	{
 		label: 'menu.draft',
-		url: '/',
+		url: '/'
 	},
 	{
 		label: 'menu.stash',
-		url: '/stash',
+		url: '/stash'
 	},
 	{
 		label: 'menu.settings',
-		url: '/settings',
+		url: '/settings'
 	},
 	{
 		label: 'menu.lab',
-		url: '/lab',
+		url: '/lab'
 	}
 ];
