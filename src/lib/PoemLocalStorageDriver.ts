@@ -1,5 +1,5 @@
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
-import { getFileContentsAsString } from './filesystemUtil';
+import { getFileContentsAsString } from './util/filesystemUtil';
 import type { Poem } from './types/Poem';
 import type { PoemFile } from './types/PoemFile';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';

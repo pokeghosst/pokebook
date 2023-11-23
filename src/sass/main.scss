@@ -81,10 +81,6 @@
 	@include spread-map($font-family-consolas);
 }
 
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities;
-
 textarea:disabled {
 	-webkit-text-fill-color: #1c1917;
 }

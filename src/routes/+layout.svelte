@@ -38,34 +38,3 @@
 		</div>
 	</main>
 </div>
-
-<!-- <Router>
-	<Sidebar />
-	<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
-		<main>
-			<div>
-				<Header />
-				<Route path="/">
-					<h2 class="sr-only">Poem Draft</h2>
-					<DraftPoem />
-				</Route>
-				<Route path="/stash">
-					<h2 class="sr-only">Poem Stash</h2>
-					<PoemStash />
-				</Route>
-				<Route path="/stash/poem">
-					<h2 class="sr-only">Individual poem page</h2>
-					<PoemPage />
-				</Route>
-				<Route path="/settings">
-					<h2 class="sr-only">Settings</h2>
-					<Settings />
-				</Route>
-				<Route path="/settings">
-					<h2 class="sr-only">Poke!Lab</h2>
-					<PokeLab />
-				</Route>
-			</div>
-		</main>
-	</div>
-</Router> -->
