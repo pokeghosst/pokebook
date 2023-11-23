@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { CountOption, count } from 'letter-count';
 	import { onMount } from 'svelte';
-	import { isPokehelpActive } from '../lib/stores/pokehelpMode';
 	import type { Writable } from 'svelte/store';
+
+	import { count } from 'letter-count';
+
+	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
+
+	import { highlightWords, putSyllables } from '$lib/pokehelp-util';
 	import { t } from '$lib/translations';
-	import { putSyllables, highlightWords } from '$lib/pokehelp-util';
-	import { poemPadJustification } from '../lib/stores/poemPadJustification';
-	import { useFocus } from 'svelte-navigator';
 
 	export let editable: boolean;
 	export let props: { name: Writable<string>; body: Writable<string> };
@@ -48,7 +50,7 @@
 	});
 
 	function updatePokeHelpOverlays() {
-		stats = count(CountOption['--all'], $poemBodyStoreProp);
+		stats = count($poemBodyStoreProp);
 		syllableRows = putSyllables(lines);
 		highlightedWords = highlightWords($poemBodyStoreProp, lines);
 	}
@@ -78,33 +80,31 @@
 		on:input={sanitizePoemTitle}
 	/>
 	<div class="notebook-inner-wrapper">
-		<div class="relative">
-			{#if $isPokehelpActive == 'true'}
-				<div class="poem-stats">
-					{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
-						'workspace.lines'
-					)}: {stats.lines}
-				</div>
-				<div
-					class="notebook-paper-overlay paper-highlight-overlay {$poemPadJustification}"
-					aria-hidden="true"
-					bind:this={poemOverlay}
-				>
-					{@html highlightedWords}
-				</div>
-				<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-					{@html syllableRows}
-				</div>
-			{/if}
-			<textarea
-				bind:value={$poemBodyStoreProp}
-				disabled={!editable}
-				class="paper {$poemPadJustification} {$isPokehelpActive == 'true'
-					? 'l-padded-for-pokehelp'
-					: ''}"
-				id="poem-textarea"
-				bind:this={poemTextarea}
-			/>
-		</div>
+		{#if $isPokehelpActive == 'true'}
+			<div class="poem-stats">
+				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
+					'workspace.lines'
+				)}: {stats.lines}
+			</div>
+			<div
+				class="notebook-paper-overlay paper-highlight-overlay {$poemPadJustification}"
+				aria-hidden="true"
+				bind:this={poemOverlay}
+			>
+				{@html highlightedWords}
+			</div>
+			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
+				{@html syllableRows}
+			</div>
+		{/if}
+		<textarea
+			bind:value={$poemBodyStoreProp}
+			disabled={!editable}
+			class="paper {$poemPadJustification} {$isPokehelpActive == 'true'
+				? 'l-padded-for-pokehelp'
+				: ''}"
+			id="poem-textarea"
+			bind:this={poemTextarea}
+		/>
 	</div>
 </div>

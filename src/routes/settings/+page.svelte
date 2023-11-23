@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { dayThemes } from '$lib/constants/DayThemes';
-	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	import { nightThemes } from '$lib/constants/NightThemes';
-	import { padFonts } from '$lib/constants/PadFonts';
-	import { storageOptions } from '$lib/constants/StorageOptions';
-	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
+	import { Capacitor } from '@capacitor/core';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -12,32 +9,39 @@
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { storageMode } from '$lib/stores/storageMode';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
+
+	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
+	import { padFonts } from '$lib/constants/PadFonts';
+	import { storageOptions } from '$lib/constants/StorageOptions';
+	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
 	import { t } from '$lib/translations';
-	import { StatusBar, Style } from '@capacitor/status-bar';
-	import SettingsSelect from '../components/SettingsSelect.svelte';
+
+	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
 
 	function setDayTheme() {
-		try {
-			if ($darkMode === '') {
-				document.documentElement.className = '';
-				document.documentElement.classList.add($dayTheme || 'vanilla');
-				StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+		if ($darkMode === '') {
+			document.documentElement.className = '';
+			document.documentElement.classList.add($dayTheme || 'vanilla');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Light });
 			}
-		} catch (e) {}
+		}
 	}
 
 	function setNightTheme() {
-		try {
-			if ($darkMode === 'dark') {
-				document.documentElement.className = '';
-				document.documentElement.classList.add($darkMode || '');
-				document.documentElement.classList.add($nightTheme || 'chocolate');
-				StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+		if ($darkMode === 'dark') {
+			document.documentElement.className = '';
+			document.documentElement.classList.add($darkMode || '');
+			document.documentElement.classList.add($nightTheme || 'chocolate');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Dark });
 			}
-		} catch (e) {}
+		}
 	}
 </script>
 

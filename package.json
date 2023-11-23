@@ -64,11 +64,10 @@
 		"@capacitor/status-bar": "^5.0.6",
 		"@sveltejs/adapter-vercel": "^2.4.3",
 		"crypto-js": "^4.1.1",
-		"letter-count": "^4.0.1",
+		"letter-count": "^5.2.1",
 		"lodash": "^4.17.21",
 		"randomcolor": "^0.6.2",
 		"rita": "^2.8.31",
-		"svelte-navigator": "^3.2.2",
 		"sveltekit-i18n": "^2.4.2",
 		"syllable": "^5.0.1",
 		"wink-distance": "^2.0.2"

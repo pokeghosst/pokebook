@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+
 	import ThreeDots from './svg/ThreeDots.svelte';
-	export let actions: { action: Function; label: string }[];
+
+	export let actions: { action: () => void; label: string }[];
 
 	let isOpen = false;
 

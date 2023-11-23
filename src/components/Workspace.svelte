@@ -1,22 +1,26 @@
 <script lang="ts">
-	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
 	import type { Writable } from 'svelte/store';
-	import { viewsState } from '../lib/stores/views';
+
+	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
+	import { viewsState } from '$lib/stores/views';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+
 	import NotePad from './NotePad.svelte';
 	import PadDropdownMenu from './PadDropdownMenu.svelte';
 	import PoemPad from './PoemPad.svelte';
+
 	import ArrowsExpand from './svg/ArrowsExpand.svelte';
 	import ArrowsSwap from './svg/ArrowsSwap.svelte';
 
-	export let actions: { action: Function; label: string }[];
 	export let editable = true;
+	export let actions: { action: () => void; label: string }[];
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
-	let props: any = [poemProps, noteProps];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let props: [any, any] = [poemProps, noteProps];
 
 	let currentState = '';
 

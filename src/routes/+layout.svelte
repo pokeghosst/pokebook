@@ -1,18 +1,14 @@
 <script lang="ts">
+	import { Capacitor } from '@capacitor/core';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
-	import { nightTheme } from '$lib/stores/nightTheme';
-	import { StatusBar, Style } from '@capacitor/status-bar';
-	import { Router, Route } from 'svelte-navigator';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import Sidebar from '../components/Sidebar.svelte';
-	import DraftPoem from '../pages/DraftPoem.svelte';
-	import PoemStash from '../pages/PoemStash.svelte';
+	import { nightTheme } from '$lib/stores/nightTheme';
+
 	import Header from '../components/Header.svelte';
-	import Settings from '../pages/Settings.svelte';
-	import PoemPage from '../pages/PoemPage.svelte';
-	import PokeLab from '../pages/PokeLab.svelte';
-	import { Capacitor } from '@capacitor/core';
+	import Sidebar from '../components/Sidebar.svelte';
 
 	$: $darkMode, updateTheme();
 
@@ -33,7 +29,17 @@
 	}
 </script>
 
-<Router>
+<Sidebar />
+<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+	<main>
+		<div>
+			<Header />
+			<slot />
+		</div>
+	</main>
+</div>
+
+<!-- <Router>
 	<Sidebar />
 	<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
 		<main>
@@ -62,5 +68,4 @@
 			</div>
 		</main>
 	</div>
-</Router>
-<slot />
+</Router> -->

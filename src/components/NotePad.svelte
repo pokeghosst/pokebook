@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { t } from '$lib/translations';
 	import type { Writable } from 'svelte/store';
+
+	import { t } from '$lib/translations';
 
 	export let editable: boolean;
 	export let props: Writable<string>;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/translations';
+
 	import ChevronDown from './svg/ChevronDown.svelte';
 
 	export let parameterName: string;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -10,9 +10,12 @@
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
-	import Toast from '../components/Toast.svelte';
-	import Workspace from '../components/Workspace.svelte';
-	import { preventTabClose } from '../util/preventTabClose';
+
+	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { preventTabClose } from '$lib/util/preventTabClose';
+
+	import Toast from '../../../components/Toast.svelte';
+	import Workspace from '../../../components/Workspace.svelte';
 
 	let editMode = false;
 
@@ -42,26 +45,6 @@
 	async function save() {
 		switch ($storageMode) {
 			case 'gdrive':
-				// thinking = true;
-				// const options = {
-				// 	url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
-				// 	headers: {
-				// 		Authorization: gDriveUuidPref.value,
-				// 		'content-type': 'application/json'
-				// 	},
-				// 	data: JSON.stringify({
-				// 		poem_name: `${poemProps.poemName}_${gDrivePoemTime}`,
-				// 		poem_body: poemProps.poem,
-				// 		poem_note: noteProps.note
-				// 	})
-				// };
-
-				// const response = await CapacitorHttp.put(options);
-				// if (response.status === 200) {
-				// 	thinking = false;
-				// } else {
-				// 	alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
-				// }
 				break;
 			case 'local':
 				try {
@@ -91,21 +74,6 @@
 		if (confirm('Heads up! You sure want to delete this poem?')) {
 			switch ($storageMode) {
 				case 'gdrive':
-					// thinking = true;
-					// const options = {
-					// 	url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem/${gDrivePoemId}`,
-					// 	headers: {
-					// 		Authorization: gDriveUuidPref.value,
-					// 		'content-type': 'application/json'
-					// 	}
-					// };
-					// const response = await CapacitorHttp.request({ ...options, method: 'DELETE' });
-
-					// if (response.status != 200) {
-					// 	alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
-					// } else {
-					// 	goto('/stash', { replaceState: false });
-					// }
 					break;
 				case 'local':
 					PoemLocalStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);

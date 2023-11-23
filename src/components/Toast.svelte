@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
-	import { quartOut } from 'svelte/easing';
-	import CloseCircle from './svg/CloseCircle.svelte';
 	import { onMount } from 'svelte';
+	import CloseCircle from './svg/CloseCircle.svelte';
 
 	export let isCloseable = true;
 	let nodeRef: Node;

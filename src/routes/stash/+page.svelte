@@ -1,17 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { storageMode } from '$lib/stores/storageMode';
+
 	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
 	import {
-		currentPoemName,
 		currentPoemBody,
+		currentPoemName,
 		currentPoemNote,
-		currentPoemUri,
 		currentPoemNoteUri,
-		currentPoemUnsavedChanges
+		currentPoemUnsavedChanges,
+		currentPoemUri
 	} from '$lib/stores/currentPoem';
+	import { storageMode } from '$lib/stores/storageMode';
+
 	import type { PoemFile } from '$lib/types/PoemFile';
-	import { navigate } from 'svelte-navigator';
+	import { goto } from '$app/navigation';
 
 	let poems: PoemFile[] = [];
 	let thinking = true;
@@ -19,19 +21,6 @@
 	onMount(async () => {
 		switch ($storageMode) {
 			case 'gdrive':
-				// thinking = true;
-				// const response = await loadPoemsFromDrive();
-				// switch (response.status) {
-				// 	case 200:
-				// 		poems = response.data.files;
-				// 		break;
-				// 	case 401:
-				// 		alert($t('popups.unauthorized'));
-				// 		break;
-				// 	default:
-				// 		alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
-				// 		break;
-				// }
 				thinking = false;
 				break;
 			case 'local':
@@ -49,12 +38,12 @@
 		switch ($storageMode) {
 			case 'gdrive':
 				break;
-			case 'local':
+			case 'local': {
 				const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
 				if ($currentPoemUnsavedChanges === 'true') {
 					if ($currentPoemUri === poemFile.poemUri) {
 						console.log('Unsaved changes, no need to reload poem');
-						navigate('/stash/poem', { replace: true });
+						goto('/stash/poem');
 					} else {
 						alert(`You have unsaved changes in '${$currentPoemName}'`);
 					}
@@ -64,9 +53,10 @@
 					$currentPoemNote = poem.note;
 					$currentPoemUri = poemFile.poemUri;
 					$currentPoemNoteUri = poemFile.noteUri;
-					navigate('/stash/poem', { replace: true });
+					goto('/stash/poem');
 				}
 				break;
+			}
 		}
 	}
 </script>
