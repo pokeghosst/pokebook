@@ -10,6 +10,9 @@
 	border-radius: 8px;
 	margin-top: 0.5rem;
 	margin-bottom: 1rem;
+	outline: 1px solid var(--border-color-darker);
+	background-color: var(--select-background);
+	color: var(--select-text-color);
 }
 
 .settings-select-chevron-wrapper {
@@ -26,7 +29,7 @@
 }
 
 .settings-select svg {
-	fill: var(--base-color);
 	width: 22px;
 	height: 22px;
+	fill: var(--select-text-color);
 }

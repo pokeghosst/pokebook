@@ -1,3 +1,17 @@
 $theme-dark-chocolate: (
-	$--notebook-header-bg: blue
+        $--base-background: #292524,
+        $--base-color: #f5f5f4,
+        $--notebook-header-bg: #1c1917,
+        $--notebook-header-color: #f5f5f4,
+        $--notebook-paper-background: #a8a29e,
+        $--notebook-paper-line: #57534e,
+        $--notebook-text-color: #1c1917,
+        $--list-item-hover-color: #a8a29e,
+        $--border-color: #6e6e6e,
+        $--border-color-darker: #332b28,
+        $--notebook-box-shadow-bg: #a8a29e,
+        $--notebook-box-shadow-line: rgba(0, 0, 0, 0.15),
+        $--select-background: #a8a29e,
+        $--select-text-color: #1c1917,
+        $--round-button-background: #292524,
 );

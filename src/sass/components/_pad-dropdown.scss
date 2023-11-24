@@ -15,6 +15,7 @@
 
 		&:not(:last-of-type) {
 			border-bottom-width: 1px;
+			border-bottom-color: var(--border-color);
 		}
 
 		&:hover {

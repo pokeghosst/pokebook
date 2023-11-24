@@ -35,12 +35,10 @@
 </button>
 {#if isOpen}
 	<div class="pad-dropdown-menu">
-		<div class="rounded-md">
-			{#each actions as action}
-				<button on:click={() => action.action()}>
-					{action.label}
-				</button>
-			{/each}
-		</div>
+		{#each actions as action}
+			<button on:click={() => action.action()}>
+				{action.label}
+			</button>
+		{/each}
 	</div>
 {/if}
