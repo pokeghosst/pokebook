@@ -24,11 +24,7 @@
 				thinking = false;
 				break;
 			case 'local':
-				try {
-					poems = await PoemLocalStorageDriver.listPoems();
-				} catch (e: unknown) {
-					alert(e);
-				}
+				poems = await PoemLocalStorageDriver.listPoems();
 				thinking = false;
 				break;
 		}
