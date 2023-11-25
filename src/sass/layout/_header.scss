@@ -22,22 +22,6 @@
 	}
 }
 
-.logo {
-	font-family: 'Tiki Tropic';
-	font-size: 2.25rem;
-	line-height: 2.5rem;
-	margin-right: -28px;
-	text-decoration: none;
-}
-
-.header-nav {
-	display: flex;
-
-	li:not(:last-child) {
-		padding-right: 1.25rem;
-	}
-}
-
 .header-icons {
 	display: flex;
 	margin-top: 0.25rem;

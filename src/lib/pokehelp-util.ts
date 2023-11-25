@@ -1,14 +1,4 @@
-import {
-	findLastIndex,
-	findKey,
-	last,
-	groupBy,
-	reduce,
-	startsWith,
-	concat,
-	forEach,
-	type Dictionary
-} from 'lodash';
+import { concat, findKey, findLastIndex, forEach, groupBy, last, reduce, startsWith } from 'lodash';
 import wd from 'wink-distance';
 import { SHA256 } from 'crypto-js';
 import rita from 'rita';
@@ -20,7 +10,7 @@ const LEVENSHTEIN_THRESHOLD = 1;
 const SALT_FOR_COLORS = 'pokeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 export function highlightWords(text: string, lines: string[]): string[] {
-	let lastWords = lines.map((line) =>
+	const lastWords = lines.map((line) =>
 		last(
 			line
 				.trim()
@@ -30,9 +20,9 @@ export function highlightWords(text: string, lines: string[]): string[] {
 				.split(/\s+/)
 		)
 	);
-	let rhymeGroups = groupBy(lastWords, findRhyme);
-	let merged = reduceRhymeGroups(rhymeGroups);
-	let colors = rhymeGroupsToColors(merged);
+	const rhymeGroups = groupBy(lastWords, findRhyme);
+	const merged = reduceRhymeGroups(rhymeGroups);
+	const colors = rhymeGroupsToColors(merged);
 	return colorCodeWords(text, merged, colors);
 }
 
@@ -64,7 +54,7 @@ export function reduceRhymeGroups(rhymeGroups) {
 			);
 			// Then we calculate Levenshtein distance between these groups
 			// LEVENSHTEIN_THRESHOLD of 1 means that we have some consonant in the middle or at the end
-			// Eg., "more" ("ao,r") and "bored" ("ao,r,d") have distance of 1
+			// E.g., "more" ("ao,r") and "bored" ("ao,r,d") have distance of 1
 			// On the other hand, "ghost" ("ow,s,t") and "hope" ("ow,p"), despite having same starting phoneme, have distance of 2 and do not rhyme
 			// Although arguably they sound similar, dealing with such cases is out of scope (at least for now)
 			const diffStringKey = findKey(
@@ -96,8 +86,7 @@ function hashToColor(str) {
 export function rhymeGroupsToColors(rhymeGroups) {
 	const colors = {};
 	Object.keys(rhymeGroups).forEach((rhyme, i) => {
-		const color = hashToColor(rhyme);
-		colors[rhyme] = color;
+		colors[rhyme] = hashToColor(rhyme);
 	});
 	return colors;
 }

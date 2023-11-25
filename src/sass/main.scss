@@ -1,6 +1,6 @@
 @use './abstracts/mq-settings';
 
-@import './variables/variables';
+@import 'variables/font-variables';
 @import './abstracts/mixins';
 
 @import './base/base';
@@ -21,7 +21,6 @@
 @import './themes/colors.terminal';
 
 @import './layout/header';
-@import './layout/footer';
 @import './layout/workspace';
 @import './layout/sidebar';
 @import './layout/wrapper';

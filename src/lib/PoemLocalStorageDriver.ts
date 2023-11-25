@@ -94,11 +94,11 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 			newNoteUri: newNoteUri
 		};
 	},
-	deletePoem: function (poemUri: string, noteUri: string): void {
-		Filesystem.deleteFile({
+	deletePoem: async function (poemUri: string, noteUri: string) {
+		await Filesystem.deleteFile({
 			path: poemUri
 		});
-		Filesystem.deleteFile({
+		await Filesystem.deleteFile({
 			path: noteUri
 		});
 	}

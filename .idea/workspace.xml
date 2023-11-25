@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6c2a6928-0c86-4105-ad3c-d100c758c502" name="Changes" comment="fix: Update `CURRENT_PROJECT_VERSION`">
+      <change afterPath="$PROJECT_DIR$/.idea/webResources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/prettier.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.prettierrc" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Header.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Header.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/NotePad.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/NotePad.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/PoemPad.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/PoemPad.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Sidebar.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Sidebar.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Workspace.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Workspace.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/PoemLocalStorageDriver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/PoemLocalStorageDriver.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/pokehelp-util.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/pokehelp-util.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/translations/en/menu.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/translations/en/menu.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/translations/es/menu.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/translations/es/menu.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/translations/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/translations/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/translations/ja/menu.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/translations/ja/menu.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/util/preventTabClose.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/util/preventTabClose.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/privacy/+page.svelte" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/stash/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/stash/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/stash/poem/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/stash/poem/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/terms/+page.svelte" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/components/_notebook-container.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/components/_notebook-container.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/components/_notebook.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/components/_notebook.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/layout/_footer.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/layout/_header.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/layout/_header.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/main.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/main.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.cherry.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.cherry.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.chocolate.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.chocolate.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.cookie.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.cookie.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.coral.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.coral.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.lemon.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.lemon.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.lobelia.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.lobelia.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.strawberry.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.strawberry.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.terminal.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.terminal.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.vanilla.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.vanilla.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_colors.velvet.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_colors.velvet.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sass/themes/_font-classes.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/sass/themes/_font-classes.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/svelte.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/svelte.config.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsBowerSettings">
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2Yc7bbSb2TOlnlbCpUyJe00ZjWL" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "develop",
+    "last_opened_file_path": "/home/alex/Documents/Repositories/pokebook/node_modules/prettier",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "prettierjs.PrettierConfiguration.Package": "/home/alex/Documents/Repositories/pokebook/node_modules/prettier",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "copyright.profiles",
+    "ts.external.directory.path": "/home/alex/Documents/Repositories/pokebook/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Dev" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6c2a6928-0c86-4105-ad3c-d100c758c502" name="Changes" comment="" />
+      <created>1700813087156</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1700813087156</updated>
+      <workItem from="1700813088653" duration="14190000" />
+      <workItem from="1700897771623" duration="11797000" />
+      <workItem from="1700914934089" duration="397000" />
+      <workItem from="1700915341345" duration="2359000" />
+    </task>
+    <task id="LOCAL-00001" summary="chore: Refactor styles and themes">
+      <option name="closed" value="true" />
+      <created>1700834473902</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1700834473902</updated>
+    </task>
+    <task id="LOCAL-00002" summary="chore: Add `ITSAppUsesNonExemptEncryption` to `Info.plist`">
+      <option name="closed" value="true" />
+      <created>1700898118893</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1700898118893</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fix: Change AppFlow build command">
+      <option name="closed" value="true" />
+      <created>1700900596619</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1700900596619</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix: Change AppFlow build command">
+      <option name="closed" value="true" />
+      <created>1700900746722</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1700900746722</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix: Add latest `@swc/core` to `dependencies`">
+      <option name="closed" value="true" />
+      <created>1700901366878</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1700901366878</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix: Try with `@swc/core-darwin-x64`">
+      <option name="closed" value="true" />
+      <created>1700902558420</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1700902558420</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix: Install `@swc/core-darwin-x64` right before build">
+      <option name="closed" value="true" />
+      <created>1700902860202</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1700902860202</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fix: Update `Podfile.lock` to fix failing build">
+      <option name="closed" value="true" />
+      <created>1700903558009</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1700903558009</updated>
+    </task>
+    <task id="LOCAL-00009" summary="fix: Update `CURRENT_PROJECT_VERSION` to fix failing build">
+      <option name="closed" value="true" />
+      <created>1700904263987</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1700904263987</updated>
+    </task>
+    <task id="LOCAL-00010" summary="chore: Update iOS icon">
+      <option name="closed" value="true" />
+      <created>1700904275758</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1700904275758</updated>
+    </task>
+    <task id="LOCAL-00011" summary="chore: Housekeeping">
+      <option name="closed" value="true" />
+      <created>1700904857058</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1700904857058</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Fix: Remove `og:image` with old splash image">
+      <option name="closed" value="true" />
+      <created>1700905242916</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1700905242916</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Fix: Update `CURRENT_PROJECT_VERSION`">
+      <option name="closed" value="true" />
+      <created>1700905527184</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1700905527184</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fix: Update `MARKETING_VERSION`">
+      <option name="closed" value="true" />
+      <created>1700905993262</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1700905993262</updated>
+    </task>
+    <task id="LOCAL-00015" summary="WIP: Alert `storedFiles` when loading poem list">
+      <option name="closed" value="true" />
+      <created>1700912646675</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1700912646675</updated>
+    </task>
+    <task id="LOCAL-00016" summary="WIP fix: Remove try/catch clause when loading poem list">
+      <option name="closed" value="true" />
+      <created>1700913050890</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1700913050890</updated>
+    </task>
+    <task id="LOCAL-00017" summary="fix: Update `CURRENT_PROJECT_VERSION`">
+      <option name="closed" value="true" />
+      <created>1700913169326</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1700913169326</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="chore: Refactor styles and themes" />
+    <MESSAGE value="chore: Add `ITSAppUsesNonExemptEncryption` to `Info.plist`" />
+    <MESSAGE value="fix: Change AppFlow build command" />
+    <MESSAGE value="fix: Add latest `@swc/core` to `dependencies`" />
+    <MESSAGE value="fix: Try with `@swc/core-darwin-x64`" />
+    <MESSAGE value="fix: Install `@swc/core-darwin-x64` right before build" />
+    <MESSAGE value="fix: Update `Podfile.lock` to fix failing build" />
+    <MESSAGE value="fix: Update `CURRENT_PROJECT_VERSION` to fix failing build" />
+    <MESSAGE value="chore: Update iOS icon" />
+    <MESSAGE value="chore: Housekeeping" />
+    <MESSAGE value="Fix: Remove `og:image` with old splash image" />
+    <MESSAGE value="Fix: Update `CURRENT_PROJECT_VERSION`" />
+    <MESSAGE value="Fix: Update `MARKETING_VERSION`" />
+    <MESSAGE value="WIP: Alert `storedFiles` when loading poem list" />
+    <MESSAGE value="WIP fix: Remove try/catch clause when loading poem list" />
+    <MESSAGE value="fix: Update `CURRENT_PROJECT_VERSION`" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: Update `CURRENT_PROJECT_VERSION`" />
+  </component>
+</project>

@@ -26,7 +26,7 @@ PokeBook is supported by these awesome people!
 - Endless notebook that grows as you write!
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
 - Optional Google Drive integration for backing up and synchronizing your poems!
-- The draft is autosaved with every single character written – don't worry about crashes or blackouts so you can focus on the writing!
+- The draft is auto-saved with every single character written – don't worry about crashes or blackouts, so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous poem is saved in the Poem Stash!
 - View, edit and delete your previously written poems and store as many as your computer (or Google Drive) can handle!
 - Express yourself with a selection of themes and fonts!
@@ -35,7 +35,7 @@ PokeBook is supported by these awesome people!
 
 # PokeBook desktop app
 
-PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS generated with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
+PokeBook has builds for Windows, Linux (deb package and AppImage) and macOS generated with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
 
 > Latest supported Tauri build is v0.6.1 - "French Toast With Extra Jam". At the moment there are no builds for later versions. I'm working on it, though!
 
@@ -73,7 +73,7 @@ Bare-metal deployment with custom domain will need more configuration depending 
 
 ## Docker image
 
-The Docker image is _probably_ working but I haven't properly tested it yet.
+The Docker image is _probably_ working, but I haven't properly tested it yet.
 
 # Developing
 

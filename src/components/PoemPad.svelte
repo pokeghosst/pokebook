@@ -62,12 +62,10 @@
 
 	async function autoResizeNotebook() {
 		requestAnimationFrame(() => {
-			if (poemTextarea !== null) {
-				const scrollPosition = window.scrollY;
-				poemTextarea.style.height = 'auto';
-				poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
-				window.scrollTo(0, scrollPosition);
-			}
+			const scrollPosition = window.scrollY;
+			poemTextarea.style.height = 'auto';
+			poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
+			window.scrollTo(0, scrollPosition);
 		});
 	}
 </script>
@@ -80,7 +78,7 @@
 		on:input={sanitizePoemTitle}
 	/>
 	<div class="notebook-inner-wrapper">
-		{#if $isPokehelpActive == 'true'}
+		{#if $isPokehelpActive === 'true'}
 			<div class="poem-stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
@@ -100,7 +98,7 @@
 		<textarea
 			bind:value={$poemBodyStoreProp}
 			disabled={!editable}
-			class="paper {$poemPadJustification} {$isPokehelpActive == 'true'
+			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"

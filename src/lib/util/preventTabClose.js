@@ -9,7 +9,6 @@ export const preventTabClose = (_, enabled) => {
 				: window.removeEventListener('beforeunload', handler);
 	setHandler(enabled);
 	return {
-		update: setHandler,
-		destroy: () => setHandler(false)
+		update: setHandler
 	};
 };

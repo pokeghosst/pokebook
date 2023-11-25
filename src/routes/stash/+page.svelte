@@ -39,7 +39,7 @@
 				if ($currentPoemUnsavedChanges === 'true') {
 					if ($currentPoemUri === poemFile.poemUri) {
 						console.log('Unsaved changes, no need to reload poem');
-						goto('/stash/poem');
+						await goto('/stash/poem');
 					} else {
 						alert(`You have unsaved changes in '${$currentPoemName}'`);
 					}
@@ -49,7 +49,7 @@
 					$currentPoemNote = poem.note;
 					$currentPoemUri = poemFile.poemUri;
 					$currentPoemNoteUri = poemFile.noteUri;
-					goto('/stash/poem');
+					await goto('/stash/poem');
 				}
 				break;
 			}
@@ -66,8 +66,8 @@
 		{#each poems as poem}
 			<div class="list-item">
 				<button on:click={() => loadPoem(poem)}>
-					<div>{poem.name}</div>
-					<div>{new Intl.DateTimeFormat('en-US').format(new Date(poem.timestamp))}</div>
+					<span>{poem.name}</span>
+					<span>{new Intl.DateTimeFormat('en-US').format(new Date(poem.timestamp))}</span>
 				</button>
 			</div>
 		{/each}

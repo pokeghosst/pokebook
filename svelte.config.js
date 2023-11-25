@@ -12,7 +12,7 @@ const config = {
 
 	kit: {
 		adapter:
-			process.env.ADAPTER == 'static'
+			process.env.ADAPTER === 'static'
 				? adapterStatic({
 						pages: 'build',
 						assets: 'build',

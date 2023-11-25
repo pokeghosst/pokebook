@@ -30,12 +30,10 @@
 
 	async function autoResizeNotebook() {
 		requestAnimationFrame(() => {
-			if (noteTextarea !== null) {
 				const scrollPosition = window.scrollY;
 				noteTextarea.style.height = 'auto';
 				noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
 				window.scrollTo(0, scrollPosition);
-			}
 		});
 	}
 </script>

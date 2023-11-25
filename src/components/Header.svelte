@@ -12,7 +12,7 @@
 	}
 
 	function togglePokeHelp() {
-		$isPokehelpActive == 'true' ? ($isPokehelpActive = 'false') : ($isPokehelpActive = 'true');
+		$isPokehelpActive === 'true' ? ($isPokehelpActive = 'false') : ($isPokehelpActive = 'true');
 	}
 
 	function toggleMenu() {

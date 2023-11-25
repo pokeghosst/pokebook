@@ -47,8 +47,12 @@
 		<div class="notebook-container">
 			<div class="notebook-container-toolbar">
 				<div>
-					<button on:click={expandPoemPad}><ArrowsExpand /></button>
-					<button on:click={swapViews}><ArrowsSwap /></button>
+					<button on:click={expandPoemPad}>
+						<ArrowsExpand />
+					</button>
+					<button on:click={swapViews}>
+						<ArrowsSwap />
+					</button>
 					<PadDropdownMenu {actions} />
 				</div>
 			</div>

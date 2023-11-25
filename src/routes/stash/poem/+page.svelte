@@ -80,7 +80,7 @@
 					clearCurrentPoemStorage();
 					break;
 			}
-			goto('/stash', { replaceState: false });
+			await goto('/stash', { replaceState: false });
 		}
 	}
 

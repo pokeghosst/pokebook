@@ -23,7 +23,6 @@
   overflow: hidden;
   position: relative;
   z-index: 1;
-  -webkit-opacity: 1;
   opacity: 1;
   background-color: var(--notebook-header-bg);
   color: var(--notebook-header-color);
@@ -66,7 +65,6 @@
 
 .paper-highlight-overlay {
   color: transparent;
-  // color: red;
 }
 
 .l-padded-for-pokehelp {
