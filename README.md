@@ -1,5 +1,3 @@
-<img src="/static/logo.png" width="300px" alt="PokeBook logo"/>
-
 # Poke!Book (Pokeghost’s poetry noteBook)
 
 [![https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg](https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg)](https://good-labs.github.io/greater-good-affirmation)
