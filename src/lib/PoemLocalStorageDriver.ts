@@ -13,6 +13,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 					directory: Directory.Data
 				})
 			).files;
+			alert(storedFiles);
 			const poemFiles: PoemFile[] = [];
 			storedFiles.forEach((file) => {
 				if (file.name.indexOf('_note.txt') === -1) {
