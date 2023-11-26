@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	import { count } from 'letter-count';
@@ -35,10 +35,6 @@
 	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
 
 	onMount(async () => {
-		requestAnimationFrame(() => {
-			autoResizeNotebook();
-		});
-
 		// Resize the notebook when switching between single/dual panes
 		const resizeObserver = new ResizeObserver(autoResizeNotebook);
 		resizeObserver.observe(poemTextarea);
@@ -61,12 +57,18 @@
 	}
 
 	async function autoResizeNotebook() {
-		requestAnimationFrame(() => {
-			const scrollPosition = window.scrollY;
-			poemTextarea.style.height = 'auto';
-			poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
-			window.scrollTo(0, scrollPosition);
-		});
+		if (poemTextarea) {
+			// Requesting the animation frame twice is the most reliable way to
+			// have correct auto resizing even on long text in MOST cases
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					const scrollPosition = window.scrollY;
+					poemTextarea.style.height = 'auto';
+					poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
+					window.scrollTo(0, scrollPosition);
+				});
+			});
+		}
 	}
 </script>
 

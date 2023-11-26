@@ -11,10 +11,6 @@
 	let noteTextarea: HTMLTextAreaElement;
 
 	onMount(async () => {
-		requestAnimationFrame(() => {
-			autoResizeNotebook();
-		});
-
 		// Resize the notebook when switching between single/dual panes
 		const resizeObserver = new ResizeObserver(autoResizeNotebook);
 		resizeObserver.observe(noteTextarea);
@@ -29,12 +25,18 @@
 	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
-		requestAnimationFrame(() => {
-				const scrollPosition = window.scrollY;
-				noteTextarea.style.height = 'auto';
-				noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
-				window.scrollTo(0, scrollPosition);
-		});
+		if (noteTextarea) {
+			// Requesting the animation frame twice is the most reliable way to
+			// have correct auto resizing even on long text in MOST cases
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					const scrollPosition = window.scrollY;
+					noteTextarea.style.height = 'auto';
+					noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
+					window.scrollTo(0, scrollPosition);
+				});
+			});
+		}
 	}
 </script>
 
