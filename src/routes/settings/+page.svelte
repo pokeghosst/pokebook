@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
 	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { Browser } from '@capacitor/browser';
 
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
@@ -43,6 +44,14 @@
 			}
 		}
 	}
+
+	function gDriveLogin() {
+		fetch('/api/drive/auth', {
+			method: 'GET'
+		})
+			.then((response) => response.json())
+			.then((text) => Browser.open({ url: text }));
+	}
 </script>
 
 <div class="settings-container">
@@ -84,4 +93,5 @@
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
+	<button on:click={() => gDriveLogin()}>Log in Google Drive</button>
 </div>

@@ -1,46 +1,40 @@
-<script>
-	import { page } from '$app/stores';
+<script lang="ts">
+	import { onMount } from 'svelte';
+
 	import { Preferences } from '@capacitor/preferences';
+
+	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+
 	const searchParams = browser && $page.url.searchParams;
 
 	let message = '';
 
-	if (searchParams && searchParams.get('status')) {
-		const status = searchParams.get('status');
-
-		switch (status) {
-			case 'success':
-				Preferences.set({
-					key: 'storage_mode',
-					value: 'gdrive'
+	onMount(async () => {
+		if (searchParams) {
+			const code = searchParams.get('code');
+			if (code) {
+				const response = await fetch('/api/drive/callback', {
+					method: 'POST',
+					body: JSON.stringify({ code }),
+					headers: {
+						'content-type': 'application/json'
+					}
 				});
-				Preferences.set({
-					key: 'gdrive_auth',
-					value: 'true'
+				const result = await response.json();
+				await Preferences.set({
+					key: 'google_access_token',
+					value: result.accessToken
 				});
-				message = 'You have sucessfully authorized Google Drive! Now go write some poems!';
-				break;
-			case 'access_denied':
-				message =
-					'Looks like some access problem. Maybe you cancelled authorization? Go to Settings and try again!';
-				Preferences.set({
-					key: 'storage_mode',
-					value: 'local'
+				await Preferences.set({
+					key: 'google_access_token_expiration',
+					value: result.expiration
 				});
-				break;
-			case 'unknown':
-				message =
-					'OOPSIE WOOPSIE!! Uwu We made a fucky wucky!! A wittle fucko boingo! The code monkeys at our headquarters are working VEWY HAWD to fix this!';
-				Preferences.set({
-					key: 'storage_mode',
-					value: 'local'
-				});
-				break;
+			}
 		}
-	}
+	});
 </script>
 
-<div class="text-center mt-10 mx-10">
+<div>
 	{message}
 </div>

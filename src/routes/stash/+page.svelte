@@ -14,6 +14,8 @@
 
 	import type { PoemFile } from '$lib/types/PoemFile';
 	import { goto } from '$app/navigation';
+	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
+	import { Preferences } from '@capacitor/preferences';
 
 	let poems: PoemFile[] = [];
 	let thinking = true;
@@ -21,6 +23,7 @@
 	onMount(async () => {
 		switch ($storageMode) {
 			case 'gdrive':
+				poems = await PoemGoogleDriveStorageDriver.listPoems();
 				thinking = false;
 				break;
 			case 'local':
@@ -33,6 +36,10 @@
 	async function loadPoem(poemFile: PoemFile) {
 		switch ($storageMode) {
 			case 'gdrive':
+				$currentPoemName = poemFile.name;
+				$currentPoemUri = poemFile.poemUri;
+				$currentPoemNoteUri = poemFile.noteUri;
+				await goto('/stash/poem');
 				break;
 			case 'local': {
 				const poem = await PoemLocalStorageDriver.loadPoem(poemFile);

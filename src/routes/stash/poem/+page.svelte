@@ -16,8 +16,11 @@
 
 	import Toast from '../../../components/Toast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
+	import { onMount } from 'svelte';
+	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
 
 	let editMode = false;
+	let thinking = true;
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
@@ -36,6 +39,17 @@
 		actions[0].label = editOrSaveLabel;
 		actions[0].action = editOrSaveAction;
 	}
+
+	onMount(async () => {
+		const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem({
+			name: $currentPoemName,
+			poemUri: $currentPoemUri,
+			noteUri: $currentPoemNoteUri
+		});
+		$currentPoemBody = poem.body;
+		$currentPoemNote = note;
+		thinking = false;
+	});
 
 	async function toggleEdit() {
 		editMode = true;
@@ -96,26 +110,31 @@
 </script>
 
 <div use:preventTabClose={editMode} />
+{#if thinking}
+	<div class="placeholder-text-wrapper">
+		<p>Loading...</p>
+	</div>
+{:else}
+	<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
 
-<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
-
-{#if $currentPoemUnsavedChanges === 'true' && editMode === false}
-	<Toast isCloseable={false}>
-		<div slot="toast-body">
-			<p>You may have unsaved changes here. Save or discard them before proceeding.</p>
-			<br />
-			<button on:click={() => save()} class="action-button action-button--primary">
-				Save them!
-			</button>
-			<button
-				on:click={() => {
-					$currentPoemUnsavedChanges = 'false';
-					goto('/stash', { replaceState: false });
-				}}
-				class="action-button action-button--secondary"
-			>
-				Discard, I don't care!
-			</button>
-		</div>
-	</Toast>
+	{#if $currentPoemUnsavedChanges === 'true' && editMode === false}
+		<Toast isCloseable={false}>
+			<div slot="toast-body">
+				<p>You may have unsaved changes here. Save or discard them before proceeding.</p>
+				<br />
+				<button on:click={() => save()} class="action-button action-button--primary">
+					Save them!
+				</button>
+				<button
+					on:click={() => {
+						$currentPoemUnsavedChanges = 'false';
+						goto('/stash', { replaceState: false });
+					}}
+					class="action-button action-button--secondary"
+				>
+					Discard, I don't care!
+				</button>
+			</div>
+		</Toast>
+	{/if}
 {/if}
