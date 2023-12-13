@@ -195,8 +195,34 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			throw new Error('Could not retrieve poem');
 		}
 	},
-	savePoem: function (poem: Poem): void {
-		throw new Error('Function not implemented.');
+	savePoem: async function (poem: Poem): Promise<void> {
+		const accessToken = await getAuthCredentials();
+		const { pokeBookFolderId } = await retrievePokebookFolderMetadata();
+
+		if (
+			accessToken !== null &&
+			accessToken !== '' &&
+			pokeBookFolderId !== null &&
+			pokeBookFolderId !== ''
+		) {
+			const date = new Date(Date.now());
+			poem.poem.name = `${poem.poem.name}_${date.getFullYear()}-${
+				date.getMonth() + 1
+			}-${date.getDate()}_${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+			const response = await fetch(`/api/drive/poem?pokebookFolderId=${pokeBookFolderId}`, {
+				method: 'POST',
+				headers: {
+					Authorization: accessToken,
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(poem)
+			});
+			const jsonResponse = await response.json();
+			console.log(jsonResponse);
+		} else {
+			throw new Error('Could not retrieve auth credentials or PokeBook folder ID');
+		}
 	},
 	updatePoem: function (
 		poem: Poem,
