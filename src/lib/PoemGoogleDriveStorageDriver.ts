@@ -24,53 +24,94 @@ import type { IPoemStorageDriver } from './IPoemStorageDriver';
 import type { Poem } from './types/Poem';
 import type { PoemFile } from './types/PoemFile';
 import { cachePoemListToLocalStorage, retrieveCachedPoemList } from './util/GoogleDriveUtil';
-import { error } from '@sveltejs/kit';
-
-let accessToken: string;
-let accessTokenExpiration: string;
 
 async function getAuthCredentials() {
-	accessToken = (await Preferences.get({ key: 'google_access_token' })).value || '';
-	accessTokenExpiration =
-		(await Preferences.get({ key: 'google_access_token_expiration' })).value || '';
+	let accessToken = (await Preferences.get({ key: 'google_access_token' })).value;
+	let accessTokenExpiration = (await Preferences.get({ key: 'google_access_token_expiration' }))
+		.value;
+
 	if (
-		accessToken == '' ||
-		accessTokenExpiration == '' ||
+		accessToken === null ||
+		accessToken === '' ||
+		accessTokenExpiration === null ||
+		accessTokenExpiration === '' ||
 		parseInt(accessTokenExpiration) < Date.now()
 	) {
 		console.log('getting new token...');
+		// TODO
 	}
+
+	return accessToken;
 }
 
 async function retrievePokebookFolderMetadata() {
-
-	let pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value || '';
+	let pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value;
 	let pokebookFolderModifiedTime = (await Preferences.get({ key: 'pokebook_folder_modified_time' }))
-		.value || '';
+		.value;
 
-	if (
-		pokeBookFolderId == null ||
-		pokeBookFolderId === '' ||
-		pokebookFolderModifiedTime == null ||
-		pokebookFolderModifiedTime === ''
-	) {
-		fetch('/api/drive/folder', {
-			headers: {
-				Authorization: accessToken
-			}
-		}).then((response) =>
-			response.json().then((json) => {
-				pokeBookFolderId = json.folderId;
-				pokebookFolderModifiedTime = json.modifiedTime;
-				Preferences.set({ key: 'pokebook_folder_id', value: pokeBookFolderId });
-				Preferences.set({
-					key: 'pokebook_folder_modified_time',
-					value: pokebookFolderModifiedTime
-				});
-			})
-		);
+	const accessToken = await getAuthCredentials();
+
+	if (accessToken !== null && accessToken !== '') {
+		if (
+			pokeBookFolderId === null ||
+			pokeBookFolderId === '' ||
+			pokebookFolderModifiedTime === null ||
+			pokebookFolderModifiedTime === ''
+		) {
+			fetch('/api/drive/folder', {
+				headers: {
+					Authorization: accessToken
+				}
+			}).then((response) =>
+				response.json().then((json) => {
+					pokeBookFolderId = json.folderId;
+					pokebookFolderModifiedTime = json.modifiedTime;
+					if (
+						pokeBookFolderId !== null &&
+						pokeBookFolderId !== '' &&
+						pokebookFolderModifiedTime !== null &&
+						pokebookFolderModifiedTime !== ''
+					) {
+						Preferences.set({ key: 'pokebook_folder_id', value: pokeBookFolderId });
+						Preferences.set({
+							key: 'pokebook_folder_modified_time',
+							value: pokebookFolderModifiedTime
+						});
+					}
+				})
+			);
+		}
 	}
-	return { pokeBookFolderId , pokebookFolderModifiedTime };
+	return { pokeBookFolderId, pokebookFolderModifiedTime };
+}
+
+async function loadPoemList(accessToken: string, pokeBookFolderId: string) {
+	const driveListResponse = await fetch(`/api/drive/list?pokebookFolderId=${pokeBookFolderId}`, {
+		headers: {
+			Authorization: accessToken
+		}
+	});
+
+	const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
+	const poemFiles: PoemFile[] = [];
+
+	storedFiles.forEach((file) => {
+		if (
+			file.name != null &&
+			file.id != null &&
+			file.createdTime != null &&
+			file.properties != null
+		) {
+			poemFiles.push({
+				name: file.name.split('_')[0],
+				poemUri: file.id,
+				noteUri: file.properties.note_id,
+				timestamp: file.createdTime
+			});
+		}
+	});
+
+	return poemFiles;
 }
 
 function getNewAuthToken(): { token: string; expiration: string } {
@@ -81,91 +122,78 @@ function getNewAuthToken(): { token: string; expiration: string } {
 
 export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFile[]> {
-		
-		await getAuthCredentials();
+		const accessToken = await getAuthCredentials();
+		const { pokeBookFolderId, pokebookFolderModifiedTime } = await retrievePokebookFolderMetadata();
 
-		let { pokeBookFolderId, pokebookFolderModifiedTime } = await retrievePokebookFolderMetadata();
-
-		// Even if PokeBook folder ID is present, we still need to get the latest modified date
-		// Maybe some cache invalidation method or even force refresh button would be better
-		// but considering the multi-platform nature of PokeBook, it's the best approach I see now.
-
-		const response = await fetch(
-			`/api/drive/folder/modified?pokebookFolderId=${pokeBookFolderId}`,
-			{
-				headers: {
-					Authorization: accessToken
-				}
-			}
-		);
-		const pokebookFolderModifiedTimeLatest = await response.json();
-		// Now that we have everything we need, a final check.
-		// If the latest modified time is bigger than the stored one, read the list and update the stored time
-		// Otherwise, just serve a cached list
 		if (
-			new Date(pokebookFolderModifiedTimeLatest) > new Date(pokebookFolderModifiedTime) ||
-			localStorage.getItem('cachedGDrivePoemList') == null ||
-			localStorage.getItem('cachedGDrivePoemList') === ''
+			accessToken !== null &&
+			accessToken !== '' &&
+			pokeBookFolderId !== null &&
+			pokeBookFolderId !== ''
 		) {
-			Preferences.set({
-				key: 'pokebook_folder_modified_time',
-				value: pokebookFolderModifiedTimeLatest
-			});
-
-			const driveListResponse = await fetch(
-				`/api/drive/list?pokebookFolderId=${pokeBookFolderId}`,
+			const response = await fetch(
+				`/api/drive/folder/modified?pokebookFolderId=${pokeBookFolderId}`,
 				{
 					headers: {
 						Authorization: accessToken
 					}
 				}
 			);
+			const pokebookFolderModifiedTimeLatest = (await response.json()) as string;
 
-			const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
-			const poemFiles: PoemFile[] = [];
+			if (
+				pokebookFolderModifiedTime === null ||
+				pokebookFolderModifiedTime === '' ||
+				new Date(pokebookFolderModifiedTimeLatest) > new Date(pokebookFolderModifiedTime)
+			) {
+				Preferences.set({
+					key: 'pokebook_folder_modified_time',
+					value: pokebookFolderModifiedTimeLatest
+				});
 
-			storedFiles.forEach((file) => {
-				if (
-					file.name != null &&
-					file.id != null &&
-					file.createdTime != null &&
-					file.properties != null
-				) {
-					poemFiles.push({
-						name: file.name.split('_')[0],
-						poemUri: file.id,
-						noteUri: file.properties.note_id,
-						timestamp: file.createdTime
-					});
+				const poemFiles = await loadPoemList(accessToken, pokeBookFolderId);
+				cachePoemListToLocalStorage(poemFiles);
+
+				return poemFiles;
+			} else {
+				const cachedPoems = await retrieveCachedPoemList();
+				if (cachedPoems.length === 0) {
+					const poemFiles = await loadPoemList(accessToken, pokeBookFolderId);
+					cachePoemListToLocalStorage(poemFiles);
+
+					return poemFiles;
+				} else {
+					return cachedPoems;
 				}
-			});
-
-			cachePoemListToLocalStorage(poemFiles);
-
-			return poemFiles;
+			}
 		} else {
-			return retrieveCachedPoemList();
+			// TODO
+			return [];
 		}
 	},
 	loadPoem: async function (poemFile: PoemFile): Promise<Poem> {
-		await getAuthCredentials();
+		const accessToken = await getAuthCredentials();
 
-		const response = await fetch(
-			`/api/drive/poem?poemId=${poemFile.poemUri}&noteId=${poemFile.noteUri}`,
-			{
-				headers: {
-					Authorization: accessToken
+		if (accessToken !== null && accessToken !== '') {
+			const response = await fetch(
+				`/api/drive/poem?poemId=${poemFile.poemUri}&noteId=${poemFile.noteUri}`,
+				{
+					headers: {
+						Authorization: accessToken
+					}
 				}
-			}
-		);
-		const responseJson = await response.json();
-		return {
-			poem: {
-				name: poemFile.name,
-				body: responseJson.poem
-			},
-			note: responseJson.note
-		};
+			);
+			const responseJson = await response.json();
+			return {
+				poem: {
+					name: poemFile.name,
+					body: responseJson.poem
+				},
+				note: responseJson.note
+			};
+		} else {
+			throw new Error('Could not retrieve poem');
+		}
 	},
 	savePoem: function (poem: Poem): void {
 		throw new Error('Function not implemented.');
