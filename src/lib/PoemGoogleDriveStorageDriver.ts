@@ -1,3 +1,21 @@
+/*
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import type { drive_v3 } from 'googleapis';
 import { Preferences } from '@capacitor/preferences';
 
@@ -6,6 +24,7 @@ import type { IPoemStorageDriver } from './IPoemStorageDriver';
 import type { Poem } from './types/Poem';
 import type { PoemFile } from './types/PoemFile';
 import { cachePoemListToLocalStorage, retrieveCachedPoemList } from './util/GoogleDriveUtil';
+import { error } from '@sveltejs/kit';
 
 let accessToken: string;
 let accessTokenExpiration: string;
@@ -23,6 +42,37 @@ async function getAuthCredentials() {
 	}
 }
 
+async function retrievePokebookFolderMetadata() {
+
+	let pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value || '';
+	let pokebookFolderModifiedTime = (await Preferences.get({ key: 'pokebook_folder_modified_time' }))
+		.value || '';
+
+	if (
+		pokeBookFolderId == null ||
+		pokeBookFolderId === '' ||
+		pokebookFolderModifiedTime == null ||
+		pokebookFolderModifiedTime === ''
+	) {
+		fetch('/api/drive/folder', {
+			headers: {
+				Authorization: accessToken
+			}
+		}).then((response) =>
+			response.json().then((json) => {
+				pokeBookFolderId = json.folderId;
+				pokebookFolderModifiedTime = json.modifiedTime;
+				Preferences.set({ key: 'pokebook_folder_id', value: pokeBookFolderId });
+				Preferences.set({
+					key: 'pokebook_folder_modified_time',
+					value: pokebookFolderModifiedTime
+				});
+			})
+		);
+	}
+	return { pokeBookFolderId , pokebookFolderModifiedTime };
+}
+
 function getNewAuthToken(): { token: string; expiration: string } {
 	const token = 'NEW_TOKEN';
 	const expiration = 'NEW_EXPIRATION';
@@ -31,37 +81,11 @@ function getNewAuthToken(): { token: string; expiration: string } {
 
 export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFile[]> {
+		
 		await getAuthCredentials();
 
-		// Look for PokeBook folder ID
-		let pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value;
-		let pokebookFolderModifiedTime = (
-			await Preferences.get({ key: 'pokebook_folder_modified_time' })
-		).value;
+		let { pokeBookFolderId, pokebookFolderModifiedTime } = await retrievePokebookFolderMetadata();
 
-		// If the ID or last modified date is missing, get them both
-		if (
-			pokeBookFolderId == null ||
-			pokeBookFolderId === '' ||
-			pokebookFolderModifiedTime == null ||
-			pokebookFolderModifiedTime === ''
-		) {
-			fetch('/api/drive/folder', {
-				headers: {
-					Authorization: accessToken
-				}
-			}).then((response) =>
-				response.json().then((json) => {
-					pokeBookFolderId = json.folderId;
-					pokebookFolderModifiedTime = json.modifiedTime;
-					Preferences.set({ key: 'pokebook_folder_id', value: pokeBookFolderId });
-					Preferences.set({
-						key: 'pokebook_folder_modified_time',
-						value: pokebookFolderModifiedTime
-					});
-				})
-			);
-		}
 		// Even if PokeBook folder ID is present, we still need to get the latest modified date
 		// Maybe some cache invalidation method or even force refresh button would be better
 		// but considering the multi-platform nature of PokeBook, it's the best approach I see now.
