@@ -20,10 +20,10 @@ import type { drive_v3 } from 'googleapis';
 import { Preferences } from '@capacitor/preferences';
 
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+import { cachePoemListToLocalStorage, retrieveCachedPoemList } from './util/GoogleDriveUtil';
 
 import type { Poem } from './types/Poem';
 import type { PoemFile } from './types/PoemFile';
-import { cachePoemListToLocalStorage, retrieveCachedPoemList } from './util/GoogleDriveUtil';
 
 async function getAuthCredentials() {
 	const accessToken = (await Preferences.get({ key: 'google_access_token' })).value;
@@ -32,40 +32,42 @@ async function getAuthCredentials() {
 
 	if (
 		accessToken === null ||
-		accessToken === '' ||
 		accessTokenExpiration === null ||
-		accessTokenExpiration === '' ||
 		parseInt(accessTokenExpiration) < Date.now()
 	) {
-		console.log('getting new token...');
-		// TODO
+		const { token, expiration } = getNewAuthToken();
+		Preferences.set({ key: 'google_access_token', value: token });
+		Preferences.set({ key: 'google_access_token_expiration', value: expiration });
+		return token;
+	} else {
+		return accessToken;
 	}
+}
 
-	return accessToken;
+function getNewAuthToken(): { token: string; expiration: string } {
+	const token = 'NEW_TOKEN';
+	const expiration = 'NEW_EXPIRATION';
+	return { token, expiration };
 }
 
 async function retrievePokebookFolderId() {
-	let pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value;
-
+	const pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value;
 	const accessToken = await getAuthCredentials();
 
-	if (accessToken !== null && accessToken !== '') {
-		if (pokeBookFolderId === null || pokeBookFolderId === '') {
-			fetch('/api/drive/folder', {
-				headers: {
-					Authorization: accessToken
-				}
-			}).then((response) =>
-				response.json().then((json) => {
-					pokeBookFolderId = json.folderId;
-					if (pokeBookFolderId !== null && pokeBookFolderId !== '') {
-						Preferences.set({ key: 'pokebook_folder_id', value: pokeBookFolderId });
-					}
-				})
-			);
-		}
+	if (accessToken === null) throw new Error('Could not retrieve access token');
+
+	if (pokeBookFolderId === null) {
+		const folderIdResponse = await fetch('/api/drive/folder', {
+			headers: {
+				Authorization: accessToken
+			}
+		});
+		const folderId = (await folderIdResponse.json()).folderId as string;
+		Preferences.set({ key: 'pokebook_folder_id', value: folderId });
+		return folderId;
+	} else {
+		return pokeBookFolderId;
 	}
-	return pokeBookFolderId;
 }
 
 async function retrievePoemList(accessToken: string, pokeBookFolderId: string) {
@@ -97,92 +99,64 @@ async function retrievePoemList(accessToken: string, pokeBookFolderId: string) {
 	return poemFiles;
 }
 
-function getNewAuthToken(): { token: string; expiration: string } {
-	const token = 'NEW_TOKEN';
-	const expiration = 'NEW_EXPIRATION';
-	return { token, expiration };
-}
-
 export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFile[]> {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
-		if (
-			accessToken !== null &&
-			accessToken !== '' &&
-			pokeBookFolderId !== null &&
-			pokeBookFolderId !== ''
-		) {
-			const poemFiles = await retrievePoemList(accessToken, pokeBookFolderId);
-			cachePoemListToLocalStorage(poemFiles);
+		const poemFiles = await retrievePoemList(accessToken, pokeBookFolderId);
+		cachePoemListToLocalStorage(poemFiles);
 
-			return poemFiles;
-		} else {
-			// TODO
-			return [];
-		}
+		return poemFiles;
 	},
 	loadPoem: async function (poemFile: PoemFile): Promise<Poem> {
 		const accessToken = await getAuthCredentials();
 
-		if (accessToken !== null && accessToken !== '') {
-			const response = await fetch(
-				`/api/drive/poem?poemId=${poemFile.poemUri}&noteId=${poemFile.noteUri}`,
-				{
-					headers: {
-						Authorization: accessToken
-					}
+		const response = await fetch(
+			`/api/drive/poem?poemId=${poemFile.poemUri}&noteId=${poemFile.noteUri}`,
+			{
+				headers: {
+					Authorization: accessToken
 				}
-			);
-			const responseJson = await response.json();
-			return {
-				poem: {
-					name: poemFile.name,
-					body: responseJson.poem
-				},
-				note: responseJson.note
-			};
-		} else {
-			throw new Error('Could not retrieve poem');
-		}
+			}
+		);
+		const responseJson = await response.json();
+		return {
+			poem: {
+				name: poemFile.name,
+				body: responseJson.poem
+			},
+			// If the note is empty, it's returned as {} and cannot be treated as a string
+			note: typeof responseJson.note === 'object' ? '' : responseJson.note
+		};
 	},
 	savePoem: async function (poem: Poem): Promise<void> {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
-		if (
-			accessToken !== null &&
-			accessToken !== '' &&
-			pokeBookFolderId !== null &&
-			pokeBookFolderId !== ''
-		) {
-			const date = new Date(Date.now());
-			poem.poem.name = `${poem.poem.name}_${date.getFullYear()}-${
-				date.getMonth() + 1
-			}-${date.getDate()}_${date.getHours()}:${date.getMinutes()}:${('0' + date.getSeconds()).slice(
-				-2
-			)}`;
-			const response = await fetch(`/api/drive/poem?pokebookFolderId=${pokeBookFolderId}`, {
-				method: 'POST',
-				headers: {
-					Authorization: accessToken,
-					Accept: 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(poem)
-			});
-			console.log(response);
-		} else {
-			throw new Error('Could not retrieve auth credentials or PokeBook folder ID');
-		}
+		const response = await fetch(`/api/drive/poem?pokebookFolderId=${pokeBookFolderId}`, {
+			method: 'POST',
+			headers: {
+				Authorization: accessToken,
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(poem)
+		});
+		console.log(response);
 	},
-	updatePoem: function (
-		poem: Poem,
-		poemUri: string,
-		noteUri: string
-	): Promise<{ newPoemUri: string; newNoteUri: string }> {
-		throw new Error('Function not implemented.');
+	updatePoem: async function (poem: Poem, poemUri: string, noteUri: string) {
+		const accessToken = await getAuthCredentials();
+
+		await fetch(`/api/drive/poem?poemId=${poemUri}&noteId=${noteUri}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: accessToken,
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(poem)
+		});
 	},
 	deletePoem: function (poemUri: string, noteUri: string): void {
 		throw new Error('Function not implemented.');

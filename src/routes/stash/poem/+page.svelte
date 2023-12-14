@@ -1,3 +1,21 @@
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
@@ -18,6 +36,7 @@
 	import Workspace from '../../../components/Workspace.svelte';
 	import { onMount } from 'svelte';
 	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
+	import { json } from '@sveltejs/kit';
 
 	let editMode = false;
 	let thinking = true;
@@ -59,10 +78,21 @@
 	async function save() {
 		switch ($storageMode) {
 			case 'gdrive':
+				PoemGoogleDriveStorageDriver.updatePoem(
+					{
+						poem: {
+							name: $currentPoemName,
+							body: $currentPoemBody
+						},
+						note: $currentPoemNote
+					},
+					$currentPoemUri,
+					$currentPoemNoteUri
+				);
 				break;
 			case 'local':
 				try {
-					const newUris = await PoemLocalStorageDriver.updatePoem(
+					const newUris = (await PoemLocalStorageDriver.updatePoem(
 						{
 							poem: {
 								name: $currentPoemName,
@@ -72,7 +102,7 @@
 						},
 						$currentPoemUri,
 						$currentPoemNoteUri
-					);
+					)) as { newPoemUri: string; newNoteUri: string };
 					$currentPoemUri = newUris.newPoemUri;
 					$currentPoemNoteUri = newUris.newNoteUri;
 				} catch (e: unknown) {

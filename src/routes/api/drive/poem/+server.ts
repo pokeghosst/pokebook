@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
 
@@ -30,29 +30,28 @@ export const GET: RequestHandler = async ({ request, url }) => {
 	const poemId = url.searchParams.get('poemId');
 	const noteId = url.searchParams.get('noteId');
 
-	if (poemId != null && noteId != null) {
-		const drive = google.drive({
-			version: 'v3'
-		});
-		const poemFileResponse = await drive.files.get({
-			fileId: poemId,
-			alt: 'media',
-			auth: googleClient
-		});
-		const noteFileResponse = await drive.files.get({
-			fileId: noteId,
-			alt: 'media',
-			auth: googleClient
-		});
-		return json({
-			poem: poemFileResponse.data,
-			note: noteFileResponse.data
-		});
-	} else {
-		throw error(400, {
-			message: 'PokeBook folder ID missing'
-		});
-	}
+	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
+	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
+
+	const drive = google.drive({
+		version: 'v3'
+	});
+
+	const poemFileResponse = await drive.files.get({
+		fileId: poemId,
+		alt: 'media',
+		auth: googleClient
+	});
+	const noteFileResponse = await drive.files.get({
+		fileId: noteId,
+		alt: 'media',
+		auth: googleClient
+	});
+
+	return json({
+		poem: poemFileResponse.data,
+		note: noteFileResponse.data
+	});
 };
 
 export const POST: RequestHandler = async ({ request, url }) => {
@@ -67,22 +66,26 @@ export const POST: RequestHandler = async ({ request, url }) => {
 	const drive = google.drive({
 		version: 'v3'
 	});
-	const response = await drive.files.create({
-		auth: googleClient,
-		requestBody: {
-			name: `${poem.poem.name}_note`,
-			parents: [pokebookFolderId]
-		},
-		media: {
-			mimeType: 'text/plain',
-			body: poem.note
-		}
-	});
-	const noteId = response.data.id;
+
+	console.log(poem.note);
+
+	const noteId = (
+		await drive.files.create({
+			auth: googleClient,
+			requestBody: {
+				name: `${poem.poem.name}_note`,
+				parents: [pokebookFolderId]
+			},
+			media: {
+				mimeType: 'text/plain',
+				body: poem.note
+			}
+		})
+	).data.id;
 
 	if (noteId === null || noteId === undefined) return new Response('', { status: 500 });
 
-	await drive.files.create({
+	drive.files.create({
 		auth: googleClient,
 		requestBody: {
 			name: poem.poem.name,
@@ -94,6 +97,44 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		media: {
 			mimeType: 'text/plain',
 			body: poem.poem.body
+		}
+	});
+
+	return new Response('', { status: 200 });
+};
+
+export const PATCH: RequestHandler = async ({ request, url }) => {
+	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
+
+	const poemId = url.searchParams.get('poemId');
+	const noteId = url.searchParams.get('noteId');
+	const poem = (await request.json()) as Poem;
+
+	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
+	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
+
+	const drive = google.drive({
+		version: 'v3'
+	});
+
+	drive.files.update({
+		auth: googleClient,
+		fileId: poemId,
+		requestBody: {
+			name: poem.poem.name
+		},
+		media: {
+			mimeType: 'text/plain',
+			body: poem.poem.body
+		}
+	});
+
+	drive.files.update({
+		auth: googleClient,
+		fileId: noteId,
+		media: {
+			mimeType: 'text/plain',
+			body: poem.note
 		}
 	});
 
