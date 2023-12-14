@@ -140,3 +140,29 @@ export const PATCH: RequestHandler = async ({ request, url }) => {
 
 	return new Response('', { status: 200 });
 };
+
+export const DELETE: RequestHandler = async ({ request, url }) => {
+	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
+
+	const poemId = url.searchParams.get('poemId');
+	const noteId = url.searchParams.get('noteId');
+
+	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
+	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
+
+	const drive = google.drive({
+		version: 'v3'
+	});
+
+	drive.files.delete({
+		auth: googleClient,
+		fileId: poemId
+	});
+
+	drive.files.delete({
+		auth: googleClient,
+		fileId: noteId
+	});
+
+	return new Response('', { status: 200 });
+};

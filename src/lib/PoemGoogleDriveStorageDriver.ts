@@ -158,7 +158,14 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			body: JSON.stringify(poem)
 		});
 	},
-	deletePoem: function (poemUri: string, noteUri: string): void {
-		throw new Error('Function not implemented.');
+	deletePoem: async function (poemUri: string, noteUri: string): Promise<void> {
+		const accessToken = await getAuthCredentials();
+
+		await fetch(`/api/drive/poem?poemId=${poemUri}&noteId=${noteUri}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: accessToken
+			}
+		});
 	}
 };

@@ -36,7 +36,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../../../components/Workspace.svelte';
 	import { onMount } from 'svelte';
 	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
-	import { json } from '@sveltejs/kit';
 
 	let editMode = false;
 	let thinking = true;
@@ -118,6 +117,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if (confirm('Heads up! You sure want to delete this poem?')) {
 			switch ($storageMode) {
 				case 'gdrive':
+					PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+					clearCurrentPoemStorage();
 					break;
 				case 'local':
 					PoemLocalStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
