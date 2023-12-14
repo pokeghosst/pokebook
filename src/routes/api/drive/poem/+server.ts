@@ -61,24 +61,41 @@ export const POST: RequestHandler = async ({ request, url }) => {
 	const pokebookFolderId = url.searchParams.get('pokebookFolderId');
 	const poem = (await request.json()) as Poem;
 
-	if (pokebookFolderId !== null) {
-		const drive = google.drive({
-			version: 'v3'
-		});
-		const response = await drive.files.create({
-			auth: googleClient,
-			requestBody: {
-				name: `${poem.poem.name}_note`,
-				parents: [pokebookFolderId]
-			},
-			media: {
-				mimeType: 'text/plain',
-				body: poem.note
-			}
-		});
-		const noteId = response.data.id;
-		console.log(noteId);
-	}
+	if (pokebookFolderId === null)
+		return new Response('Missing `pokebookFolderId` parameter', { status: 400 });
 
-	return json(poem);
+	const drive = google.drive({
+		version: 'v3'
+	});
+	const response = await drive.files.create({
+		auth: googleClient,
+		requestBody: {
+			name: `${poem.poem.name}_note`,
+			parents: [pokebookFolderId]
+		},
+		media: {
+			mimeType: 'text/plain',
+			body: poem.note
+		}
+	});
+	const noteId = response.data.id;
+
+	if (noteId === null || noteId === undefined) return new Response('', { status: 500 });
+
+	await drive.files.create({
+		auth: googleClient,
+		requestBody: {
+			name: poem.poem.name,
+			parents: [pokebookFolderId],
+			properties: {
+				note_id: noteId
+			}
+		},
+		media: {
+			mimeType: 'text/plain',
+			body: poem.poem.body
+		}
+	});
+
+	return new Response('', { status: 200 });
 };

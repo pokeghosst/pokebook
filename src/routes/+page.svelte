@@ -52,7 +52,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			};
 			switch ($storageMode) {
 				case 'gdrive':
-					PoemGoogleDriveStorageDriver.savePoem(poem);
+					try {
+						PoemGoogleDriveStorageDriver.savePoem(poem);
+					} catch (e) {
+						console.log(e);
+					}
 					break;
 				case 'local':
 					PoemLocalStorageDriver.savePoem(poem);
