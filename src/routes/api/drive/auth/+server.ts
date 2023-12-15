@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 
-import googleClient from '$lib/util/GoogleOAuthClient';
+import googleClient from '$lib/client/GoogleOAuthClient';
 
 export function GET() {
 	return json(

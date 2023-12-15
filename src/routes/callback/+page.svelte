@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 
@@ -39,6 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					}
 				});
 				const result = await response.json();
+				console.log(result);
 				await Preferences.set({
 					key: 'google_access_token',
 					value: result.accessToken
@@ -46,6 +48,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				await Preferences.set({
 					key: 'google_access_token_expiration',
 					value: result.expiration
+				});
+				await Preferences.set({
+					key: 'google_refresh_token_id',
+					value: result.refreshTokenId
 				});
 			}
 		}

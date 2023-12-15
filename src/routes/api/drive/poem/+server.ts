@@ -20,7 +20,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
 
-import googleClient from '$lib/util/GoogleOAuthClient';
+import googleClient from '$lib/client/GoogleOAuthClient';
 
 import type { Poem } from '$lib/types/Poem';
 

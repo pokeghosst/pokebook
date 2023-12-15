@@ -20,7 +20,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
 
-import googleClient from '$lib/util/GoogleOAuthClient';
+import googleClient from '$lib/client/GoogleOAuthClient';
 
 export const GET: RequestHandler = async ({ request, url }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });

@@ -2,7 +2,7 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
 
-import googleClient from '$lib/util/GoogleOAuthClient';
+import googleClient from '$lib/client/GoogleOAuthClient';
 
 import { PUBLIC_POKEBOOK_FOLDER_NAME } from '$env/static/public';
 

@@ -29,13 +29,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
 
-	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import { preventTabClose } from '$lib/util/preventTabClose';
 
 	import Toast from '../../../components/Toast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 	import { onMount } from 'svelte';
-	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
+	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 
 	let editMode = false;
 	let thinking = true;

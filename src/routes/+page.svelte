@@ -26,11 +26,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/poemDraft';
 	import { storageMode } from '$lib/stores/storageMode';
 
-	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import { t } from '$lib/translations';
 
 	import Workspace from '../components/Workspace.svelte';
-	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
+	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;

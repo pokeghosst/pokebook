@@ -19,6 +19,8 @@
 	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
 	import { t } from '$lib/translations';
 
+	import { googleDriveLogout } from '$lib/driver/PoemGoogleDriveStorageDriver';
+
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
@@ -94,4 +96,6 @@
 		localizeLabel={false}
 	/>
 	<button on:click={() => gDriveLogin()}>Log in Google Drive</button>
+	<br/>
+	<button on:click={() => googleDriveLogout()}>Log out of Google Drive</button>
 </div>

@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { PoemLocalStorageDriver } from '$lib/PoemLocalStorageDriver';
+	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -32,7 +32,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { PoemFile } from '$lib/types/PoemFile';
 	import { goto } from '$app/navigation';
-	import { PoemGoogleDriveStorageDriver } from '$lib/PoemGoogleDriveStorageDriver';
+	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { Preferences } from '@capacitor/preferences';
 
 	let poems: PoemFile[] = [];
