@@ -1,3 +1,21 @@
+/*
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
@@ -10,18 +28,16 @@ export const GET: RequestHandler = async ({ request }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	let pokebookFolderId;
-	let pokebookFolderModifiedTime;
 
 	const drive = google.drive('v3');
 	const results = await drive.files.list({
 		q: "mimeType='application/vnd.google-apps.folder' and name='PokeBook'",
-		fields: 'files(id,modifiedTime)',
+		fields: 'files(id)',
 		auth: googleClient
 	});
 
 	if (results.data.files && results.data.files.length > 0) {
 		pokebookFolderId = results.data.files[0].id;
-		pokebookFolderModifiedTime = results.data.files[0].modifiedTime;
 	} else {
 		const response = await drive.files.create({
 			requestBody: {
@@ -31,7 +47,6 @@ export const GET: RequestHandler = async ({ request }) => {
 			fields: 'id,modifiedTime'
 		});
 		pokebookFolderId = response.data.id;
-		pokebookFolderModifiedTime = response.data.modifiedTime;
 	}
-	return json({ folderId: pokebookFolderId, modifiedTime: pokebookFolderModifiedTime });
+	return json({ folderId: pokebookFolderId });
 };
