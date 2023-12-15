@@ -22,7 +22,11 @@ import { google } from 'googleapis';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
 
-export const GET: RequestHandler = async ({ request, url }) => {
+export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
+	setHeaders({
+		'cache-control': 'max-age=60'
+	});
+
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	const drive = google.drive('v3');
