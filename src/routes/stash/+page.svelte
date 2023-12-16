@@ -20,7 +20,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
+	import toast from 'svelte-french-toast';
+
 	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
+	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
+	import { t } from '$lib/translations';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -30,10 +34,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import type { PoemFile } from '$lib/types/PoemFile';
-
-	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 
 	const FALLBACK_DELAY = 50; // ms
 
@@ -49,7 +52,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 		switch ($storageMode) {
 			case 'gdrive':
-				poems = await PoemGoogleDriveStorageDriver.listPoems();
+				try {
+					poems = await PoemGoogleDriveStorageDriver.listPoems();
+				} catch (e) {
+					if (e instanceof Error)
+						toast.error($t(e.message), {
+							position: GLOBAL_TOAST_POSITION,
+							style: GLOBAL_TOAST_STYLE
+						});
+				}
 				thinking = false;
 				break;
 			case 'local':
@@ -72,7 +83,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
 				if ($currentPoemUnsavedChanges === 'true') {
 					if ($currentPoemUri === poemFile.poemUri) {
-						console.log('Unsaved changes, no need to reload poem');
 						await goto('/stash/poem');
 					} else {
 						alert(`You have unsaved changes in '${$currentPoemName}'`);

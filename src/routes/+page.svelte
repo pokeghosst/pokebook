@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { Share } from '@capacitor/share';
+	import toast from 'svelte-french-toast';
 
 	import {
 		draftPoemBodyStore,
@@ -27,10 +28,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
+	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
 
 	import Workspace from '../components/Workspace.svelte';
-	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
@@ -53,18 +55,37 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			switch ($storageMode) {
 				case 'gdrive':
 					try {
-						PoemGoogleDriveStorageDriver.savePoem(poem);
+						await toast.promise(
+							PoemGoogleDriveStorageDriver.savePoem(poem),
+							{
+								loading: 'Saving poem...',
+								success: 'Poem saved!',
+								error: 'Could not save the poem'
+							},
+							{
+								position: GLOBAL_TOAST_POSITION,
+								style: GLOBAL_TOAST_STYLE
+							}
+						);
+						clearDraftPoem();
 					} catch (e) {
-						console.log(e);
+						if (e instanceof Error)
+							toast.error($t(e.message), {
+								position: GLOBAL_TOAST_POSITION,
+								style: GLOBAL_TOAST_STYLE
+							});
 					}
 					break;
 				case 'local':
 					PoemLocalStorageDriver.savePoem(poem);
+					clearDraftPoem();
 					break;
 			}
-			clearDraftPoem();
 		} else {
-			alert($t('popups.cannotSaveEmptyPoem'));
+			toast(`☝️🤓 ${$t('popups.cannotSaveEmptyPoem')}`, {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
 		}
 	}
 

@@ -30,14 +30,23 @@ export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	const drive = google.drive('v3');
-	const response = await drive.files.list({
-		q: `'${url.searchParams.get(
-			'pokebookFolderId'
-		)}' in parents and trashed=false and not name contains '_note'`,
-		orderBy: 'createdTime desc',
-		auth: googleClient,
-		fields: 'nextPageToken,files(id,name,createdTime,properties)'
-	});
 
-	return json(response.data.files);
+	try {
+		const response = await drive.files.list({
+			q: `'${url.searchParams.get(
+				'pokebookFolderId'
+			)}' in parents and trashed=false and not name contains '_note'`,
+			orderBy: 'createdTime desc',
+			auth: googleClient,
+			fields: 'nextPageToken,files(id,name,createdTime,properties)'
+		});
+		return json(response.data.files);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (e: any) {
+		if ('status' in e && e.status == '404') {
+			return new Response('', { status: 404 });
+		} else {
+			return new Response('', { status: 500 });
+		}
+	}
 };

@@ -46,7 +46,7 @@ async function getAuthCredentials() {
 async function getNewAuthToken(): Promise<{ token: string; expiration: string }> {
 	const refreshTokenId = (await Preferences.get({ key: 'google_refresh_token_id' })).value;
 
-	if (refreshTokenId === null) throw new Error('');
+	if (refreshTokenId === null) throw new Error('errors.google.efreshToken');
 
 	const res = await fetch('/api/drive/auth/refresh', {
 		headers: {
@@ -58,14 +58,13 @@ async function getNewAuthToken(): Promise<{ token: string; expiration: string }>
 
 	const token = resJson.accessToken;
 	const expiration = resJson.expiration;
+
 	return { token, expiration };
 }
 
 async function retrievePokebookFolderId() {
-	const pokeBookFolderId = (await Preferences.get({ key: 'pokebook_folder_id' })).value;
+	const pokeBookFolderId = (await Preferences.get({ key: 'google_pokebook_folder_id' })).value;
 	const accessToken = await getAuthCredentials();
-
-	if (accessToken === null) throw new Error('Could not retrieve access token');
 
 	if (pokeBookFolderId === null) {
 		const folderIdResponse = await fetch('/api/drive/folder', {
@@ -74,7 +73,10 @@ async function retrievePokebookFolderId() {
 			}
 		});
 		const folderId = (await folderIdResponse.json()).folderId as string;
-		Preferences.set({ key: 'pokebook_folder_id', value: folderId });
+
+		if (folderId === undefined) throw new Error('errors.google.folderId');
+
+		Preferences.set({ key: 'google_pokebook_folder_id', value: folderId });
 		return folderId;
 	} else {
 		return pokeBookFolderId;
@@ -84,16 +86,20 @@ async function retrievePokebookFolderId() {
 export async function googleDriveLogout() {
 	const accessToken = await getAuthCredentials();
 
-	fetch('/api/drive/logout', {
+	await fetch('/api/drive/logout', {
 		headers: {
 			Authorization: accessToken
 		},
 		method: 'GET'
-	}).then((response) => console.log(response.status));
+	});
+	Preferences.remove({ key: 'google_access_token' });
+	Preferences.remove({ key: 'google_access_token_expiration' });
+	Preferences.remove({ key: 'google_refresh_token_id' });
+	Preferences.remove({ key: 'google_pokebook_folder_id' });
 }
 
 export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
-	listPoems: async function (): Promise<PoemFile[]> {
+	listPoems: async function () {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
@@ -112,6 +118,9 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 				}
 			}
 		);
+
+		if (driveListResponse.status === 404) throw new Error('errors.google.poemList')
+		if (driveListResponse.status === 500) throw new Error('errors.unknown')
 
 		const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
 		const poemFiles: PoemFile[] = [];
@@ -134,7 +143,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		return poemFiles;
 	},
-	loadPoem: async function (poemFile: PoemFile): Promise<Poem> {
+	loadPoem: async function (poemFile: PoemFile) {
 		const accessToken = await getAuthCredentials();
 
 		const response = await fetch(
@@ -155,11 +164,11 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			note: typeof responseJson.note === 'object' ? '' : responseJson.note
 		};
 	},
-	savePoem: async function (poem: Poem): Promise<void> {
+	savePoem: async function (poem: Poem) {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
-		const response = await fetch(`/api/drive/poem?pokebookFolderId=${pokeBookFolderId}`, {
+		await fetch(`/api/drive/poem?pokebookFolderId=${pokeBookFolderId}`, {
 			method: 'POST',
 			headers: {
 				Authorization: accessToken,
@@ -168,7 +177,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			},
 			body: JSON.stringify(poem)
 		});
-		console.log(response);
+
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: async function (poem: Poem, poemUri: string, noteUri: string) {
@@ -185,7 +194,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 		});
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	deletePoem: async function (poemUri: string, noteUri: string): Promise<void> {
+	deletePoem: async function (poemUri: string, noteUri: string) {
 		const accessToken = await getAuthCredentials();
 
 		await fetch(`/api/drive/poem?poemId=${poemUri}&noteId=${noteUri}`, {

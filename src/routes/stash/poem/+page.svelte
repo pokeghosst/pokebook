@@ -19,6 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
+	import toast from 'svelte-french-toast';
+
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -28,14 +30,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
+	import { saveFunction, discardFunction } from '$lib/stores/poemFunctionsStore';
 
 	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import { preventTabClose } from '$lib/util/preventTabClose';
 
-	import Toast from '../../../components/Toast.svelte';
+	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	let editMode = false;
 	let thinking = true;
@@ -58,6 +62,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		actions[0].action = editOrSaveAction;
 	}
 
+	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
+	$saveFunction = () => save();
+	$discardFunction = () => {
+		$currentPoemUnsavedChanges = 'false';
+		goto('/stash', { replaceState: false });
+	};
+
 	onMount(async () => {
 		const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem({
 			name: $currentPoemName,
@@ -67,6 +78,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		$currentPoemBody = poem.body;
 		$currentPoemNote = note;
 		thinking = false;
+
+		if ($currentPoemUnsavedChanges === 'true') {
+			toast(UnsavedChangesToast, {
+				duration: Infinity,
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
+		}
+	});
+
+	onDestroy(() => {
+		toast.dismiss();
 	});
 
 	async function toggleEdit() {
@@ -117,7 +140,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if (confirm('Heads up! You sure want to delete this poem?')) {
 			switch ($storageMode) {
 				case 'gdrive':
-					PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+					await toast.promise(
+						PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri),
+						{
+							loading: 'Saving poem...',
+							success: 'Poem saved!',
+							error: 'Could not save the poem'
+						},
+						{
+							position: GLOBAL_TOAST_POSITION,
+							style: GLOBAL_TOAST_STYLE
+						}
+					);
 					clearCurrentPoemStorage();
 					break;
 				case 'local':
@@ -148,7 +182,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:else}
 	<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
 
-	{#if $currentPoemUnsavedChanges === 'true' && editMode === false}
+	<!-- {#if $currentPoemUnsavedChanges === 'true' && editMode === false}
 		<Toast isCloseable={false}>
 			<div slot="toast-body">
 				<p>You may have unsaved changes here. Save or discard them before proceeding.</p>
@@ -167,5 +201,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</Toast>
-	{/if}
+	{/if} -->
 {/if}

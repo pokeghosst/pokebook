@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
 	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { Toaster } from 'svelte-french-toast';
 
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -29,6 +30,7 @@
 	}
 </script>
 
+<Toaster />
 <Sidebar />
 <div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
 	<main>
