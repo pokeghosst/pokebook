@@ -20,7 +20,6 @@ import type { drive_v3 } from 'googleapis';
 import { Preferences } from '@capacitor/preferences';
 
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
-import { cachePoemListToLocalStorage, retrieveCachedPoemList } from '../util/GoogleDriveUtil';
 
 import type { Poem } from '../types/Poem';
 import type { PoemFile } from '../types/PoemFile';
@@ -45,10 +44,9 @@ async function getAuthCredentials() {
 }
 
 async function getNewAuthToken(): Promise<{ token: string; expiration: string }> {
-
 	const refreshTokenId = (await Preferences.get({ key: 'google_refresh_token_id' })).value;
 
-	if (refreshTokenId === null) throw new Error('')
+	if (refreshTokenId === null) throw new Error('');
 
 	const res = await fetch('/api/drive/auth/refresh', {
 		headers: {
@@ -83,35 +81,6 @@ async function retrievePokebookFolderId() {
 	}
 }
 
-async function retrievePoemList(accessToken: string, pokeBookFolderId: string) {
-	const driveListResponse = await fetch(`/api/drive/list?pokebookFolderId=${pokeBookFolderId}`, {
-		headers: {
-			Authorization: accessToken
-		}
-	});
-
-	const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
-	const poemFiles: PoemFile[] = [];
-
-	storedFiles.forEach((file) => {
-		if (
-			file.name != null &&
-			file.id != null &&
-			file.createdTime != null &&
-			file.properties != null
-		) {
-			poemFiles.push({
-				name: file.name.split('_')[0],
-				poemUri: file.id,
-				noteUri: file.properties.note_id,
-				timestamp: file.createdTime
-			});
-		}
-	});
-
-	return poemFiles;
-}
-
 export async function googleDriveLogout() {
 	const accessToken = await getAuthCredentials();
 
@@ -128,8 +97,40 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
-		const poemFiles = await retrievePoemList(accessToken, pokeBookFolderId);
-		cachePoemListToLocalStorage(poemFiles);
+		let requestId = (await Preferences.get({ key: 'poem_list_request_timestamp' })).value;
+
+		if (requestId === null) {
+			requestId = Date.now().toString();
+			Preferences.set({ key: 'poem_list_request_timestamp', value: requestId });
+		}
+
+		const driveListResponse = await fetch(
+			`/api/drive/list?pokebookFolderId=${pokeBookFolderId}&cache=${requestId}`,
+			{
+				headers: {
+					Authorization: accessToken
+				}
+			}
+		);
+
+		const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
+		const poemFiles: PoemFile[] = [];
+
+		storedFiles.forEach((file) => {
+			if (
+				file.name != null &&
+				file.id != null &&
+				file.createdTime != null &&
+				file.properties != null
+			) {
+				poemFiles.push({
+					name: file.name.split('_')[0],
+					poemUri: file.id,
+					noteUri: file.properties.note_id,
+					timestamp: file.createdTime
+				});
+			}
+		});
 
 		return poemFiles;
 	},
@@ -168,6 +169,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			body: JSON.stringify(poem)
 		});
 		console.log(response);
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: async function (poem: Poem, poemUri: string, noteUri: string) {
 		const accessToken = await getAuthCredentials();
@@ -181,6 +183,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			},
 			body: JSON.stringify(poem)
 		});
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	deletePoem: async function (poemUri: string, noteUri: string): Promise<void> {
 		const accessToken = await getAuthCredentials();
@@ -191,5 +194,6 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 				Authorization: accessToken
 			}
 		});
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	}
 };

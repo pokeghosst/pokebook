@@ -24,7 +24,7 @@ import googleClient from '$lib/client/GoogleOAuthClient';
 
 export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
 	setHeaders({
-		'cache-control': 'max-age=60'
+		'cache-control': 'max-age=3600' // seconds
 	});
 
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });

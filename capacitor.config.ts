@@ -9,9 +9,6 @@ const config: CapacitorConfig = {
 		hostname: 'book.pokeghost.org'
 	},
 	plugins: {
-		CapacitorCookies: {
-			enabled: true
-		},
 		CapacitorHttp: {
 			enabled: true
 		}

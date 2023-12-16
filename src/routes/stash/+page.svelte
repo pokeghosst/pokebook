@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import {
@@ -31,14 +32,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import type { PoemFile } from '$lib/types/PoemFile';
-	import { goto } from '$app/navigation';
+
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
-	import { Preferences } from '@capacitor/preferences';
+
+	const FALLBACK_DELAY = 50; // ms
 
 	let poems: PoemFile[] = [];
 	let thinking = true;
+	let showFallback = false;
+	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
 	onMount(async () => {
+		fallbackTimeout = setTimeout(() => {
+			showFallback = true;
+		}, FALLBACK_DELAY);
+
 		switch ($storageMode) {
 			case 'gdrive':
 				poems = await PoemGoogleDriveStorageDriver.listPoems();
@@ -49,6 +57,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				thinking = false;
 				break;
 		}
+		return () => clearTimeout(fallbackTimeout);
 	});
 
 	async function loadPoem(poemFile: PoemFile) {
@@ -83,9 +92,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 {#if thinking}
-	<div class="placeholder-text-wrapper">
-		<p>Loading...</p>
-	</div>
+	{#if showFallback}
+		<div class="placeholder-text-wrapper">
+			<p>Loading...</p>
+		</div>
+	{/if}
 {:else if poems.length > 0}
 	<div class="poem-list">
 		{#each poems as poem}
