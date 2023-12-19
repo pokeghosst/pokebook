@@ -26,9 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
 	import {
-		currentPoemBody,
 		currentPoemName,
-		currentPoemNote,
 		currentPoemNoteUri,
 		currentPoemUnsavedChanges,
 		currentPoemUri
@@ -38,7 +36,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { PoemFile } from '$lib/types/PoemFile';
 
-	const FALLBACK_DELAY = 50; // ms
+	const FALLBACK_DELAY = 60; // ms
 
 	let poems: PoemFile[] = [];
 	let thinking = true;
@@ -72,31 +70,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	async function loadPoem(poemFile: PoemFile) {
-		switch ($storageMode) {
-			case 'gdrive':
-				$currentPoemName = poemFile.name;
-				$currentPoemUri = poemFile.poemUri;
-				$currentPoemNoteUri = poemFile.noteUri;
+		if ($currentPoemUnsavedChanges === 'true') {
+			if ($currentPoemUri === poemFile.poemUri) {
 				await goto('/stash/poem');
-				break;
-			case 'local': {
-				const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
-				if ($currentPoemUnsavedChanges === 'true') {
-					if ($currentPoemUri === poemFile.poemUri) {
-						await goto('/stash/poem');
-					} else {
-						alert(`You have unsaved changes in '${$currentPoemName}'`);
-					}
-				} else {
-					$currentPoemName = poem.poem.name;
-					$currentPoemBody = poem.poem.body;
-					$currentPoemNote = poem.note;
-					$currentPoemUri = poemFile.poemUri;
-					$currentPoemNoteUri = poemFile.noteUri;
-					await goto('/stash/poem');
-				}
-				break;
+			} else {
+				alert(`You have unsaved changes in '${$currentPoemName}'`);
 			}
+		} else {
+			$currentPoemName = poemFile.name;
+			$currentPoemUri = poemFile.poemUri;
+			$currentPoemNoteUri = poemFile.noteUri;
+			await goto('/stash/poem');
 		}
 	}
 </script>

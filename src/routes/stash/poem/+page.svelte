@@ -41,6 +41,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
+	let unsavedChangesToastId: string;
+
 	let editMode = false;
 	let thinking = true;
 
@@ -50,49 +52,91 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let editOrSaveLabel = 'Edit poem';
 	let editOrSaveAction = toggleEdit;
 
-	let actions = [
-		{ action: editOrSaveAction, label: editOrSaveLabel },
-		{ action: deletePoem, label: 'Forget poem' }
-	];
-
-	$: {
-		editMode == true ? (editOrSaveLabel = 'Save poem') : (editOrSaveLabel = 'Edit poem');
-		editMode == true ? (editOrSaveAction = save) : (editOrSaveAction = toggleEdit);
-		actions[0].label = editOrSaveLabel;
-		actions[0].action = editOrSaveAction;
-	}
-
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
-	$saveFunction = () => save();
+	$saveFunction = async () => {
+		await toast.promise(
+			save(),
+			{
+				loading: 'Saving poem...',
+				success: 'Poem saved!',
+				error: 'Could not save the poem'
+			},
+			{
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			}
+		);
+	};
 	$discardFunction = () => {
 		$currentPoemUnsavedChanges = 'false';
 		goto('/stash', { replaceState: false });
 	};
 
+	const deletePoemAction = async () => {
+		if (confirm('Heads up! You sure want to delete this poem?')) {
+			await toast.promise(
+				deletePoem(),
+				{
+					loading: 'Deleting poem...',
+					success: 'Poem deleted!',
+					error: 'Could not  the poem'
+				},
+				{
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				}
+			);
+		}
+	};
+
+	let actions = [
+		{ action: editOrSaveAction, label: editOrSaveLabel },
+		{ action: deletePoemAction, label: 'Forget poem' }
+	];
+
+	$: {
+		editMode == true ? (editOrSaveLabel = 'Save poem') : (editOrSaveLabel = 'Edit poem');
+		editMode == true ? (editOrSaveAction = $saveFunction) : (editOrSaveAction = toggleEdit);
+		actions[0].label = editOrSaveLabel;
+		actions[0].action = editOrSaveAction;
+	}
+
 	onMount(async () => {
-		const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem({
+		const poemFile = {
 			name: $currentPoemName,
 			poemUri: $currentPoemUri,
 			noteUri: $currentPoemNoteUri
-		});
-		$currentPoemBody = poem.body;
-		$currentPoemNote = note;
-		thinking = false;
-
+		};
 		if ($currentPoemUnsavedChanges === 'true') {
-			toast(UnsavedChangesToast, {
+			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
+		} else {
+			switch ($storageMode) {
+				case 'gdrive': {
+					const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem(poemFile);
+					$currentPoemBody = poem.body;
+					$currentPoemNote = note;
+					break;
+				}
+				case 'local': {
+					const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
+					$currentPoemBody = poem.poem.body;
+					$currentPoemNote = poem.note;
+					break;
+				}
+			}
 		}
+		thinking = false;
 	});
 
 	onDestroy(() => {
-		toast.dismiss();
+		toast.dismiss(unsavedChangesToastId);
 	});
 
-	async function toggleEdit() {
+	function toggleEdit() {
 		editMode = true;
 		$currentPoemUnsavedChanges = 'true';
 	}
@@ -100,7 +144,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function save() {
 		switch ($storageMode) {
 			case 'gdrive':
-				PoemGoogleDriveStorageDriver.updatePoem(
+				await PoemGoogleDriveStorageDriver.updatePoem(
 					{
 						poem: {
 							name: $currentPoemName,
@@ -112,55 +156,39 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					$currentPoemNoteUri
 				);
 				break;
-			case 'local':
-				try {
-					const newUris = (await PoemLocalStorageDriver.updatePoem(
-						{
-							poem: {
-								name: $currentPoemName,
-								body: $currentPoemBody
-							},
-							note: $currentPoemNote
+			case 'local': {
+				const newUris = (await PoemLocalStorageDriver.updatePoem(
+					{
+						poem: {
+							name: $currentPoemName,
+							body: $currentPoemBody
 						},
-						$currentPoemUri,
-						$currentPoemNoteUri
-					)) as { newPoemUri: string; newNoteUri: string };
-					$currentPoemUri = newUris.newPoemUri;
-					$currentPoemNoteUri = newUris.newNoteUri;
-				} catch (e: unknown) {
-					alert(e);
-				}
+						note: $currentPoemNote
+					},
+					$currentPoemUri,
+					$currentPoemNoteUri
+				)) as { newPoemUri: string; newNoteUri: string };
+				$currentPoemUri = newUris.newPoemUri;
+				$currentPoemNoteUri = newUris.newNoteUri;
 				break;
+			}
 		}
 		editMode = false;
 		$currentPoemUnsavedChanges = 'false';
 	}
 
 	async function deletePoem() {
-		if (confirm('Heads up! You sure want to delete this poem?')) {
-			switch ($storageMode) {
-				case 'gdrive':
-					await toast.promise(
-						PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri),
-						{
-							loading: 'Saving poem...',
-							success: 'Poem saved!',
-							error: 'Could not save the poem'
-						},
-						{
-							position: GLOBAL_TOAST_POSITION,
-							style: GLOBAL_TOAST_STYLE
-						}
-					);
-					clearCurrentPoemStorage();
-					break;
-				case 'local':
-					PoemLocalStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
-					clearCurrentPoemStorage();
-					break;
-			}
-			await goto('/stash', { replaceState: false });
+		switch ($storageMode) {
+			case 'gdrive':
+				await PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+				clearCurrentPoemStorage();
+				break;
+			case 'local':
+				PoemLocalStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+				clearCurrentPoemStorage();
+				break;
 		}
+		await goto('/stash', { replaceState: false });
 	}
 
 	function clearCurrentPoemStorage() {
@@ -181,25 +209,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</div>
 {:else}
 	<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
-
-	<!-- {#if $currentPoemUnsavedChanges === 'true' && editMode === false}
-		<Toast isCloseable={false}>
-			<div slot="toast-body">
-				<p>You may have unsaved changes here. Save or discard them before proceeding.</p>
-				<br />
-				<button on:click={() => save()} class="action-button action-button--primary">
-					Save them!
-				</button>
-				<button
-					on:click={() => {
-						$currentPoemUnsavedChanges = 'false';
-						goto('/stash', { replaceState: false });
-					}}
-					class="action-button action-button--secondary"
-				>
-					Discard, I don't care!
-				</button>
-			</div>
-		</Toast>
-	{/if} -->
 {/if}

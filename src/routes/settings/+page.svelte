@@ -96,6 +96,6 @@
 		localizeLabel={false}
 	/>
 	<button on:click={() => gDriveLogin()}>Log in Google Drive</button>
-	<br/>
+	<br />
 	<button on:click={() => googleDriveLogout()}>Log out of Google Drive</button>
 </div>

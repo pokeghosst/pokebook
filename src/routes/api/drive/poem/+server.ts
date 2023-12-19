@@ -154,12 +154,12 @@ export const DELETE: RequestHandler = async ({ request, url }) => {
 		version: 'v3'
 	});
 
-	drive.files.delete({
+	await drive.files.delete({
 		auth: googleClient,
 		fileId: poemId
 	});
 
-	drive.files.delete({
+	await drive.files.delete({
 		auth: googleClient,
 		fileId: noteId
 	});

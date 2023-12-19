@@ -46,13 +46,15 @@ async function getAuthCredentials() {
 async function getNewAuthToken(): Promise<{ token: string; expiration: string }> {
 	const refreshTokenId = (await Preferences.get({ key: 'google_refresh_token_id' })).value;
 
-	if (refreshTokenId === null) throw new Error('errors.google.efreshToken');
+	if (refreshTokenId === null) throw new Error('errors.google.refreshToken');
 
 	const res = await fetch('/api/drive/auth/refresh', {
 		headers: {
 			Authorization: refreshTokenId
 		}
 	});
+
+	if (res.status === 500) throw new Error('errors.google.refreshToken');
 
 	const resJson = await res.json();
 
@@ -119,8 +121,8 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			}
 		);
 
-		if (driveListResponse.status === 404) throw new Error('errors.google.poemList')
-		if (driveListResponse.status === 500) throw new Error('errors.unknown')
+		if (driveListResponse.status === 404) throw new Error('errors.google.poemList');
+		if (driveListResponse.status === 500) throw new Error('errors.unknown');
 
 		const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
 		const poemFiles: PoemFile[] = [];
@@ -192,6 +194,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			},
 			body: JSON.stringify(poem)
 		});
+
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	deletePoem: async function (poemUri: string, noteUri: string) {
