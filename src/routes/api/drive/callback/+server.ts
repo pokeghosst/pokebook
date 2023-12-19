@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { RIPEMD160 } from 'crypto-js';
+import RIPEMD160 from 'crypto-js/ripemd160';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
 import { GoogleCredentialCacher } from '$lib/cache/GoogleCredentialCacher';
