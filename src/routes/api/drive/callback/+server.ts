@@ -23,23 +23,28 @@ import googleClient from '$lib/client/GoogleOAuthClient';
 import { GoogleCredentialCacher } from '$lib/cache/GoogleCredentialCacher';
 
 export const POST: RequestHandler = async ({ request }) => {
-	const { code } = await request.json();
-	if (code !== null) {
-		const { tokens } = await googleClient.getToken(code);
+	const code = request.headers.get('Authorization');
+	if (code) {
+		try {
+			const { tokens } = await googleClient.getToken(code);
 
-		let refreshTokenId;
+			let refreshTokenId;
 
-		if (tokens.refresh_token !== undefined && tokens.refresh_token !== null) {
-			refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
-			GoogleCredentialCacher.cacheCredential(refreshTokenId, tokens.refresh_token);
+			if (tokens.refresh_token !== undefined && tokens.refresh_token !== null) {
+				refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
+				GoogleCredentialCacher.cacheCredential(refreshTokenId, tokens.refresh_token);
+			}
+
+			googleClient.setCredentials(tokens);
+			return json({
+				accessToken: tokens.access_token,
+				expiration: tokens.expiry_date,
+				refreshTokenId: refreshTokenId
+			});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (e: any) {
+			return new Response(e.errors, { status: e.response.status });
 		}
-
-		googleClient.setCredentials(tokens);
-		return json({
-			accessToken: tokens.access_token,
-			expiration: tokens.expiry_date,
-			refreshTokenId: refreshTokenId
-		});
 	} else {
 		return new Response('', { status: 401 });
 	}

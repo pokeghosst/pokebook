@@ -37,21 +37,26 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		version: 'v3'
 	});
 
-	const poemFileResponse = await drive.files.get({
-		fileId: poemId,
-		alt: 'media',
-		auth: googleClient
-	});
-	const noteFileResponse = await drive.files.get({
-		fileId: noteId,
-		alt: 'media',
-		auth: googleClient
-	});
+	try {
+		const poemFileResponse = await drive.files.get({
+			fileId: poemId,
+			alt: 'media',
+			auth: googleClient
+		});
+		const noteFileResponse = await drive.files.get({
+			fileId: noteId,
+			alt: 'media',
+			auth: googleClient
+		});
 
-	return json({
-		poem: poemFileResponse.data,
-		note: noteFileResponse.data
-	});
+		return json({
+			poem: poemFileResponse.data,
+			note: noteFileResponse.data
+		});
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (e: any) {
+		return new Response(e.errors, { status: e.response.status });
+	}
 };
 
 export const POST: RequestHandler = async ({ request, url }) => {

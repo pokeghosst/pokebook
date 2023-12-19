@@ -18,11 +18,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-
-	import { Preferences } from '@capacitor/preferences';
-
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
+
+	import toast from 'svelte-french-toast';
+	import { Preferences } from '@capacitor/preferences';
+
+	import { t } from '$lib/translations';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	const searchParams = browser && $page.url.searchParams;
 
@@ -33,26 +36,46 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			const code = searchParams.get('code');
 			if (code) {
 				const response = await fetch('/api/drive/callback', {
-					method: 'POST',
-					body: JSON.stringify({ code }),
 					headers: {
+						Authorization: code,
 						'content-type': 'application/json'
+					},
+					method: 'POST'
+				});
+				switch (response.status) {
+					case 200: {
+						const result = await response.json();
+						await Preferences.set({
+							key: 'google_access_token',
+							value: result.accessToken
+						});
+						await Preferences.set({
+							key: 'google_access_token_expiration',
+							value: result.expiration
+						});
+						await Preferences.set({
+							key: 'google_refresh_token_id',
+							value: result.refreshTokenId
+						});
+						toast.success('Signed in successfully!', {
+							position: GLOBAL_TOAST_POSITION,
+							style: GLOBAL_TOAST_STYLE
+						});
+						break;
 					}
-				});
-				const result = await response.json();
-				console.log(result);
-				await Preferences.set({
-					key: 'google_access_token',
-					value: result.accessToken
-				});
-				await Preferences.set({
-					key: 'google_access_token_expiration',
-					value: result.expiration
-				});
-				await Preferences.set({
-					key: 'google_refresh_token_id',
-					value: result.refreshTokenId
-				});
+					case 400:
+						toast.error($t('errors.google.invalidGrant'), {
+							position: GLOBAL_TOAST_POSITION,
+							style: GLOBAL_TOAST_STYLE
+						});
+						break;
+					default:
+						toast.error($t('errors.unknown'), {
+							position: GLOBAL_TOAST_POSITION,
+							style: GLOBAL_TOAST_STYLE
+						});
+						break;
+				}
 			}
 		}
 	});

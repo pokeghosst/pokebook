@@ -43,10 +43,6 @@ export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
 		return json(response.data.files);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
-		if ('status' in e && e.status == '404') {
-			return new Response('', { status: 404 });
-		} else {
-			return new Response('', { status: 500 });
-		}
+		return new Response(e.errors, { status: e.status });
 	}
 };

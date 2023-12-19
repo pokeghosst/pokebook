@@ -85,6 +85,13 @@ async function retrievePokebookFolderId() {
 	}
 }
 
+export async function getGoogleDriveAuthUrl() {
+	const response = await fetch('/api/drive/auth', {
+		method: 'GET'
+	});
+	return await response.json();
+}
+
 export async function googleDriveLogout() {
 	const accessToken = await getAuthCredentials();
 
@@ -112,7 +119,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			Preferences.set({ key: 'poem_list_request_timestamp', value: requestId });
 		}
 
-		const driveListResponse = await fetch(
+		const response = await fetch(
 			`/api/drive/list?pokebookFolderId=${pokeBookFolderId}&cache=${requestId}`,
 			{
 				headers: {
@@ -121,10 +128,16 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			}
 		);
 
-		if (driveListResponse.status === 404) throw new Error('errors.google.poemList');
-		if (driveListResponse.status === 500) throw new Error('errors.unknown');
+		if (response.status !== 200)
+			switch (response.status) {
+				case 404:
+				case 401:
+					throw new Error('errors.google.poemList');
+				default:
+					throw new Error('errors.unknown');
+			}
 
-		const storedFiles = (await driveListResponse.json()) as drive_v3.Schema$File[];
+		const storedFiles = (await response.json()) as drive_v3.Schema$File[];
 		const poemFiles: PoemFile[] = [];
 
 		storedFiles.forEach((file) => {
@@ -156,6 +169,15 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 				}
 			}
 		);
+
+		if (response.status !== 200)
+			switch (response.status) {
+				case 404:
+					throw new Error('errors.google.poemNotFound');
+				default:
+					throw new Error('errors.unknown');
+			}
+
 		const responseJson = await response.json();
 		return {
 			poem: {

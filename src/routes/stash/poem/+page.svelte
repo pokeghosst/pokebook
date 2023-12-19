@@ -40,6 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onDestroy, onMount } from 'svelte';
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { t } from '$lib/translations';
 
 	let unsavedChangesToastId: string;
 
@@ -116,20 +117,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		} else {
 			switch ($storageMode) {
 				case 'gdrive': {
-					const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem(poemFile);
-					$currentPoemBody = poem.body;
-					$currentPoemNote = note;
+					try {
+						const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem(poemFile);
+						$currentPoemBody = poem.body;
+						$currentPoemNote = note;
+						thinking = false;
+					} catch (e) {
+						if (e instanceof Error) {
+							toast.error($t(e.message), {
+								position: GLOBAL_TOAST_POSITION,
+								style: GLOBAL_TOAST_STYLE
+							});
+						}
+					}
 					break;
 				}
 				case 'local': {
 					const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
 					$currentPoemBody = poem.poem.body;
 					$currentPoemNote = poem.note;
+					thinking = false;
 					break;
 				}
 			}
 		}
-		thinking = false;
 	});
 
 	onDestroy(() => {
