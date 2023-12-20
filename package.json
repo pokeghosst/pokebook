@@ -73,6 +73,7 @@
 		"@capacitor/share": "^5.0.6",
 		"@capacitor/status-bar": "^5.0.6",
 		"crypto-js": "^4.1.1",
+		"dropbox": "^10.34.0",
 		"googleapis": "^128.0.0",
 		"letter-count": "^5.2.1",
 		"lodash": "^4.17.21",

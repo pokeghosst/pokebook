@@ -42,9 +42,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
-	import { error } from '@sveltejs/kit';
 	import toast from 'svelte-french-toast';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
@@ -136,4 +136,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				});
 		}}>Log out of Google Drive</button
 	>
+	<br /><br />
+	<button
+		on:click={() =>
+			getDropboxAuthUrl().then((url) => {
+				Browser.open({ url: url });
+			})}>Log in Dropbox</button
+	>
+	<br />
 </div>
