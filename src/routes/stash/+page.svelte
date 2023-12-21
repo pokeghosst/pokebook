@@ -20,26 +20,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	import toast from 'svelte-french-toast';
-
 	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
-	import { t } from '$lib/translations';
 	import {
 		currentPoemName,
-		currentPoemNoteUri,
 		currentPoemUnsavedChanges,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import type { PoemFile } from '$lib/types/PoemFile';
 
-	const FALLBACK_DELAY = 60; // ms
+	const FALLBACK_DELAY = 100; // ms
 
-	let poems: PoemFile[] = [];
-	let thinking = true;
+	let poemFilesPromise: Promise<PoemFile[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -50,60 +44,54 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 		switch ($storageMode) {
 			case 'gdrive':
-				try {
-					poems = await PoemGoogleDriveStorageDriver.listPoems();
-				} catch (e) {
-					if (e instanceof Error)
-						toast.error($t(e.message), {
-							position: GLOBAL_TOAST_POSITION,
-							style: GLOBAL_TOAST_STYLE
-						});
-				}
-				thinking = false;
+				poemFilesPromise = PoemGoogleDriveStorageDriver.listPoems();
 				break;
 			case 'local':
-				poems = await PoemLocalStorageDriver.listPoems();
-				thinking = false;
+				poemFilesPromise = PoemLocalStorageDriver.listPoems();
 				break;
 		}
 		return () => clearTimeout(fallbackTimeout);
 	});
 
-	async function loadPoem(poemFile: PoemFile) {
+	async function checkUnsavedChangesConflict(poemUri: string) {
 		if ($currentPoemUnsavedChanges === 'true') {
-			if ($currentPoemUri === poemFile.poemUri) {
+			if ($currentPoemUri === poemUri) {
 				await goto('/stash/poem');
 			} else {
 				alert(`You have unsaved changes in '${$currentPoemName}'`);
 			}
 		} else {
-			$currentPoemName = poemFile.name;
-			$currentPoemUri = poemFile.poemUri;
-			$currentPoemNoteUri = poemFile.noteUri;
+			$currentPoemUri = poemUri;
 			await goto('/stash/poem');
 		}
 	}
 </script>
 
-{#if thinking}
+{#await poemFilesPromise}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
 			<p>Loading...</p>
 		</div>
 	{/if}
-{:else if poems.length > 0}
-	<div class="poem-list">
-		{#each poems as poem}
-			<div class="list-item">
-				<button on:click={() => loadPoem(poem)}>
-					<span>{poem.name}</span>
-					<span>{new Intl.DateTimeFormat('en-US').format(new Date(poem.timestamp))}</span>
-				</button>
-			</div>
-		{/each}
-	</div>
-{:else}
+{:then poemFiles}
+	{#if poemFiles && poemFiles.length > 0}
+		<div class="poem-list">
+			{#each poemFiles as poemFile}
+				<div class="list-item">
+					<button on:click={() => checkUnsavedChangesConflict(poemFile.poemUri)}>
+						<span>{poemFile.name}</span>
+						<span>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</span>
+					</button>
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="placeholder-text-wrapper">
+			Your stage is ready and the spotlight's on, but the verses are yet to bloom.
+		</div>
+	{/if}
+{:catch error}
 	<div class="placeholder-text-wrapper">
-		Your stage is ready and the spotlight's on, but the verses are yet to bloom.
+		{error}
 	</div>
-{/if}
+{/await}

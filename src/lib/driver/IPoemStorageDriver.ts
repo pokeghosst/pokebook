@@ -21,12 +21,8 @@ import type { PoemFile } from '../types/PoemFile';
 
 export interface IPoemStorageDriver {
 	listPoems(): Promise<PoemFile[]>;
-	loadPoem(poemFile: PoemFile): Promise<Poem>;
+	loadPoem(poemUri: string): Promise<Poem>;
 	savePoem(poem: Poem): Promise<void>;
-	updatePoem(
-		poem: Poem,
-		poemUri: string,
-		noteUri: string
-	): Promise<{ newPoemUri: string; newNoteUri: string } | void>;
+	updatePoem(poem: Poem, poemUri: string): Promise<string>;
 	deletePoem(poemUri: string, noteUri: string): Promise<void>;
 }
