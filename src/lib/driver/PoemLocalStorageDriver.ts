@@ -68,16 +68,16 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	savePoem: async function (poem: Poem) {
 		await Filesystem.writeFile({
 			path: `poems/${poem.name}_${Date.now()}.xml`,
-			data: new XMLBuilder().build(poem),
+			data: new XMLBuilder({ format: true }).build(poem),
 			directory: Directory.Documents,
 			encoding: Encoding.UTF8,
 			recursive: true
 		});
 	},
-	updatePoem: async function (poem: Poem, poemUri: string) {
+	updatePoem: async function (poem: Poem, poemUri: string): Promise<string> {
 		await Filesystem.writeFile({
 			path: poemUri,
-			data: new XMLBuilder().build(poem),
+			data: new XMLBuilder({ format: true }).build(poem),
 			encoding: Encoding.UTF8
 		});
 		const directory = poemUri.split('poems/')[0];

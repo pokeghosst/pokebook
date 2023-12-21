@@ -23,15 +23,14 @@ import { google } from 'googleapis';
 import googleClient from '$lib/client/GoogleOAuthClient';
 
 import type { Poem } from '$lib/types/Poem';
+import { XMLBuilder } from 'fast-xml-parser';
 
 export const GET: RequestHandler = async ({ request, url }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	const poemId = url.searchParams.get('poemId');
-	const noteId = url.searchParams.get('noteId');
 
 	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
-	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
 
 	const drive = google.drive({
 		version: 'v3'
@@ -43,16 +42,8 @@ export const GET: RequestHandler = async ({ request, url }) => {
 			alt: 'media',
 			auth: googleClient
 		});
-		const noteFileResponse = await drive.files.get({
-			fileId: noteId,
-			alt: 'media',
-			auth: googleClient
-		});
 
-		return json({
-			poem: poemFileResponse.data,
-			note: noteFileResponse.data
-		});
+		return json(poemFileResponse.data);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
 		return new Response(e.errors, { status: e.response.status });
@@ -72,36 +63,15 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		version: 'v3'
 	});
 
-	console.log(poem.note);
-
-	const noteId = (
-		await drive.files.create({
-			auth: googleClient,
-			requestBody: {
-				name: `${poem.poem.name}_note`,
-				parents: [pokebookFolderId]
-			},
-			media: {
-				mimeType: 'text/plain',
-				body: poem.note
-			}
-		})
-	).data.id;
-
-	if (noteId === null || noteId === undefined) return new Response('', { status: 500 });
-
-	drive.files.create({
+	await drive.files.create({
 		auth: googleClient,
 		requestBody: {
-			name: poem.poem.name,
-			parents: [pokebookFolderId],
-			properties: {
-				note_id: noteId
-			}
+			name: `${poem.name}.xml`,
+			parents: [pokebookFolderId]
 		},
 		media: {
 			mimeType: 'text/plain',
-			body: poem.poem.body
+			body: new XMLBuilder({ format: true }).build(poem)
 		}
 	});
 
@@ -112,34 +82,23 @@ export const PATCH: RequestHandler = async ({ request, url }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	const poemId = url.searchParams.get('poemId');
-	const noteId = url.searchParams.get('noteId');
 	const poem = (await request.json()) as Poem;
 
 	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
-	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
 
 	const drive = google.drive({
 		version: 'v3'
 	});
 
-	drive.files.update({
+	await drive.files.update({
 		auth: googleClient,
 		fileId: poemId,
 		requestBody: {
-			name: poem.poem.name
+			name: `${poem.name}.xml`
 		},
 		media: {
 			mimeType: 'text/plain',
-			body: poem.poem.body
-		}
-	});
-
-	drive.files.update({
-		auth: googleClient,
-		fileId: noteId,
-		media: {
-			mimeType: 'text/plain',
-			body: poem.note
+			body: new XMLBuilder({ format: true }).build(poem)
 		}
 	});
 
@@ -150,10 +109,8 @@ export const DELETE: RequestHandler = async ({ request, url }) => {
 	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
 
 	const poemId = url.searchParams.get('poemId');
-	const noteId = url.searchParams.get('noteId');
 
 	if (poemId === null) return new Response('Missing parameter `poemId`', { status: 400 });
-	if (noteId === null) return new Response('Missing parameter `noteId`', { status: 400 });
 
 	const drive = google.drive({
 		version: 'v3'
@@ -162,11 +119,6 @@ export const DELETE: RequestHandler = async ({ request, url }) => {
 	await drive.files.delete({
 		auth: googleClient,
 		fileId: poemId
-	});
-
-	await drive.files.delete({
-		auth: googleClient,
-		fileId: noteId
 	});
 
 	return new Response('', { status: 200 });

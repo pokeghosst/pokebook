@@ -23,6 +23,6 @@ export interface IPoemStorageDriver {
 	listPoems(): Promise<PoemFile[]>;
 	loadPoem(poemUri: string): Promise<Poem>;
 	savePoem(poem: Poem): Promise<void>;
-	updatePoem(poem: Poem, poemUri: string): Promise<string>;
-	deletePoem(poemUri: string, noteUri: string): Promise<void>;
+	updatePoem(poem: Poem, poemUri: string): Promise<string | void>;
+	deletePoem(poemUri: string): Promise<void>;
 }
