@@ -23,6 +23,7 @@ import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
 import type { Poem } from '../types/Poem';
 import type { PoemFile } from '../types/PoemFile';
+import { XMLParser } from 'fast-xml-parser';
 
 async function getAuthCredentials() {
 	const accessToken = (await Preferences.get({ key: 'google_access_token' })).value;
@@ -141,16 +142,10 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 		const poemFiles: PoemFile[] = [];
 
 		storedFiles.forEach((file) => {
-			if (
-				file.name != null &&
-				file.id != null &&
-				file.createdTime != null &&
-				file.properties != null
-			) {
+			if (file.name != null && file.id != null && file.createdTime != null) {
 				poemFiles.push({
-					name: file.name.split('_')[0],
+					name: file.name.split('.xml')[0],
 					poemUri: file.id,
-					noteUri: file.properties.note_id,
 					timestamp: file.createdTime
 				});
 			}
@@ -158,17 +153,14 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		return poemFiles;
 	},
-	loadPoem: async function (poemFile: PoemFile) {
+	loadPoem: async function (poemUri: string) {
 		const accessToken = await getAuthCredentials();
 
-		const response = await fetch(
-			`/api/drive/poem?poemId=${poemFile.poemUri}&noteId=${poemFile.noteUri}`,
-			{
-				headers: {
-					Authorization: accessToken
-				}
+		const response = await fetch(`/api/drive/poem?poemId=${poemUri}`, {
+			headers: {
+				Authorization: accessToken
 			}
-		);
+		});
 
 		if (response.status !== 200)
 			switch (response.status) {
@@ -178,15 +170,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 					throw new Error('errors.unknown');
 			}
 
-		const responseJson = await response.json();
-		return {
-			poem: {
-				name: poemFile.name,
-				body: responseJson.poem
-			},
-			// If the note is empty, it's returned as {} and cannot be treated as a string
-			note: typeof responseJson.note === 'object' ? '' : responseJson.note
-		};
+		return new XMLParser().parse(await response.json());
 	},
 	savePoem: async function (poem: Poem) {
 		const accessToken = await getAuthCredentials();
@@ -204,10 +188,10 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	updatePoem: async function (poem: Poem, poemUri: string, noteUri: string) {
+	updatePoem: async function (poem: Poem, poemUri: string) {
 		const accessToken = await getAuthCredentials();
 
-		await fetch(`/api/drive/poem?poemId=${poemUri}&noteId=${noteUri}`, {
+		await fetch(`/api/drive/poem?poemId=${poemUri}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: accessToken,
@@ -219,10 +203,10 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	deletePoem: async function (poemUri: string, noteUri: string) {
+	deletePoem: async function (poemUri: string) {
 		const accessToken = await getAuthCredentials();
 
-		await fetch(`/api/drive/poem?poemId=${poemUri}&noteId=${noteUri}`, {
+		await fetch(`/api/drive/poem?poemId=${poemUri}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: accessToken

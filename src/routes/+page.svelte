@@ -46,10 +46,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			const poem = {
-				poem: {
-					name: $draftPoemNameStore,
-					body: $draftPoemBodyStore
-				},
+				name: $draftPoemNameStore,
+				text: $draftPoemBodyStore,
 				note: $draftPoemNoteStore
 			};
 			switch ($storageMode) {

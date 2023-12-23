@@ -113,7 +113,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<button
 		on:click={() =>
 			getGoogleDriveAuthUrl().then((url) => {
-				Browser.open({ url: url });
+				Browser.open({ url: url, windowName: '_self' });
 			})}>Log in Google Drive</button
 	>
 	<br />

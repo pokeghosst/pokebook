@@ -1,7 +1,5 @@
 export interface Poem {
-	poem: {
-		name: string;
-		body: string;
-	};
+	name: string;
+	text: string;
 	note: string;
 }

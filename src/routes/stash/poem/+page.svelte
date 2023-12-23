@@ -103,11 +103,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	onMount(async () => {
-		const poemFile = {
-			name: $currentPoemName,
-			poemUri: $currentPoemUri,
-			noteUri: $currentPoemNoteUri
-		};
 		if ($currentPoemUnsavedChanges === 'true') {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
@@ -118,10 +113,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			switch ($storageMode) {
 				case 'gdrive': {
 					try {
-						const { poem, note } = await PoemGoogleDriveStorageDriver.loadPoem(poemFile);
-						$currentPoemBody = poem.body;
-						$currentPoemNote = note;
-						thinking = false;
+						const poem = await PoemGoogleDriveStorageDriver.loadPoem($currentPoemUri);
+						$currentPoemName = poem.name;
+						$currentPoemBody = poem.text;
+						$currentPoemNote = poem.note;
 					} catch (e) {
 						if (e instanceof Error) {
 							toast.error($t(e.message), {
@@ -133,14 +128,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					break;
 				}
 				case 'local': {
-					const poem = await PoemLocalStorageDriver.loadPoem(poemFile);
-					$currentPoemBody = poem.poem.body;
+					const poem = await PoemLocalStorageDriver.loadPoem($currentPoemUri);
+					$currentPoemName = poem.name;
+					$currentPoemBody = poem.text;
 					$currentPoemNote = poem.note;
-					thinking = false;
 					break;
 				}
 			}
 		}
+		thinking = false;
 	});
 
 	onDestroy(() => {
@@ -157,30 +153,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			case 'gdrive':
 				await PoemGoogleDriveStorageDriver.updatePoem(
 					{
-						poem: {
-							name: $currentPoemName,
-							body: $currentPoemBody
-						},
+						name: $currentPoemName,
+						text: $currentPoemBody,
 						note: $currentPoemNote
 					},
-					$currentPoemUri,
-					$currentPoemNoteUri
+					$currentPoemUri
 				);
 				break;
 			case 'local': {
-				const newUris = (await PoemLocalStorageDriver.updatePoem(
+				const newPoemUri = await PoemLocalStorageDriver.updatePoem(
 					{
-						poem: {
-							name: $currentPoemName,
-							body: $currentPoemBody
-						},
+						name: $currentPoemName,
+						text: $currentPoemBody,
 						note: $currentPoemNote
 					},
-					$currentPoemUri,
-					$currentPoemNoteUri
-				)) as { newPoemUri: string; newNoteUri: string };
-				$currentPoemUri = newUris.newPoemUri;
-				$currentPoemNoteUri = newUris.newNoteUri;
+					$currentPoemUri
+				);
+				$currentPoemUri = newPoemUri as string;
 				break;
 			}
 		}
@@ -191,11 +180,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function deletePoem() {
 		switch ($storageMode) {
 			case 'gdrive':
-				await PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+				await PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri);
 				clearCurrentPoemStorage();
 				break;
 			case 'local':
-				PoemLocalStorageDriver.deletePoem($currentPoemUri, $currentPoemNoteUri);
+				PoemLocalStorageDriver.deletePoem($currentPoemUri);
 				clearCurrentPoemStorage();
 				break;
 		}

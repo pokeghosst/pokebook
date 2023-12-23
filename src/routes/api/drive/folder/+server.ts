@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ request }) => {
 
 	const drive = google.drive('v3');
 	const results = await drive.files.list({
-		q: "mimeType='application/vnd.google-apps.folder' and name='PokeBook'",
+		q: `mimeType='application/vnd.google-apps.folder' and name='${PUBLIC_POKEBOOK_FOLDER_NAME}'`,
 		fields: 'files(id)',
 		auth: googleClient
 	});
@@ -44,7 +44,8 @@ export const GET: RequestHandler = async ({ request }) => {
 				name: PUBLIC_POKEBOOK_FOLDER_NAME,
 				mimeType: 'application/vnd.google-apps.folder'
 			},
-			fields: 'id,modifiedTime'
+			fields: 'id',
+			auth: googleClient
 		});
 		pokebookFolderId = response.data.id;
 	}

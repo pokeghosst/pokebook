@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
 		const response = await drive.files.list({
 			q: `'${url.searchParams.get(
 				'pokebookFolderId'
-			)}' in parents and trashed=false and not name contains '_note'`,
+			)}' in parents and trashed=false`,
 			orderBy: 'createdTime desc',
 			auth: googleClient,
 			fields: 'nextPageToken,files(id,name,createdTime,properties)'

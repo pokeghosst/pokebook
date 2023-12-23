@@ -1,5 +1,6 @@
 {
 	"unknown": "Something mysterious happened. Please report this error!",
+	"storageModeUnknown": "Such storage mode doesn't exist! Please recheck your settings.",
 	"google": {
 		"refreshToken": "Could not find your refresh token anywhere! Please log out and log in again.",
 		"folderId": "Couldn't find or create the PokeBook folder. Please log out and log in again!",
