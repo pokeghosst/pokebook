@@ -25,7 +25,7 @@ import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 export const GET = async () => {
 	return json(
 		await dbxAuthClient.getAuthenticationUrl(
-			`${PUBLIC_POKEBOOK_BASE_URL}/api/dropbox/callback`,
+			`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
 			'',
 			'code',
 			'offline',

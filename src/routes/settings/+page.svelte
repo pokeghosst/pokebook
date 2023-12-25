@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { page } from '$app/stores';
+
 	import { Capacitor } from '@capacitor/core';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Browser } from '@capacitor/browser';
@@ -45,6 +47,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import toast from 'svelte-french-toast';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import { onMount } from 'svelte';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
@@ -69,6 +72,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 		}
 	}
+
+	onMount(() => {
+		const authStatus = $page.url.searchParams.get('status');
+		if (authStatus)
+			switch (authStatus) {
+				case 'ok':
+					toast.success('Signed in successfully!', {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
+					break;
+				case 'authorizationError':
+					toast.error($t('errors.authorization'), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
+					break;
+				default:
+					toast.error($t('errors.unknown'), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
+			}
+	});
 </script>
 
 <div class="settings-container">
@@ -140,7 +167,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<button
 		on:click={() =>
 			getDropboxAuthUrl().then((url) => {
-				Browser.open({ url: url });
+				Browser.open({ url: url, windowName: '_self' });
 			})}>Log in Dropbox</button
 	>
 	<br />

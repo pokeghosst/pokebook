@@ -16,6 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Preferences } from '@capacitor/preferences';
+
 import type { Poem } from '$lib/types/Poem';
 import type { PoemFile } from '$lib/types/PoemFile';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
@@ -27,15 +29,50 @@ export async function getDropboxAuthUrl() {
 	return await response.json();
 }
 
+async function getAuthCredentials() {
+	const accessToken = (await Preferences.get({ key: 'dropbox_access_token' })).value;
+	const accessTokenExpiration = (await Preferences.get({ key: 'dropbox_access_token_expiration' }))
+		.value;
+
+	return accessToken;
+}
+
 export const PoemDropboxStorageDriver: IPoemStorageDriver = {
-	listPoems: function (): Promise<PoemFile[]> {
-		throw new Error('Function not implemented.');
+	listPoems: async function (): Promise<PoemFile[]> {
+		const accessToken = await getAuthCredentials();
+
+		let requestId = (await Preferences.get({ key: 'poem_list_request_timestamp' })).value;
+
+		if (requestId === null) {
+			requestId = Date.now().toString();
+			Preferences.set({ key: 'poem_list_request_timestamp', value: requestId });
+		}
+
+		const response = await fetch(`/api/dropbox/poem?cache=${requestId}`, {
+			headers: {
+				Authorization: accessToken
+			}
+		});
+
+		return await response.json();
 	},
 	loadPoem: function (poemFile: PoemFile): Promise<Poem> {
 		throw new Error('Function not implemented.');
 	},
-	savePoem: function (poem: Poem): Promise<void> {
-		throw new Error('Function not implemented.');
+	savePoem: async function (poem: Poem): Promise<void> {
+		const accessToken = await getAuthCredentials();
+
+		await fetch(`/api/dropbox/poem`, {
+			method: 'POST',
+			headers: {
+				Authorization: accessToken,
+				Accept: 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(poem)
+		});
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: function (
 		poem: Poem,

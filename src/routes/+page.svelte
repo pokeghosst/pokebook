@@ -33,6 +33,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 
 	import Workspace from '../components/Workspace.svelte';
+	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
@@ -51,6 +52,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				note: $draftPoemNoteStore
 			};
 			switch ($storageMode) {
+				case 'dropbox':
+					await PoemDropboxStorageDriver.savePoem(poem);
+					break;
 				case 'gdrive':
 					try {
 						await toast.promise(

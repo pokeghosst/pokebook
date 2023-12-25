@@ -30,6 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import type { PoemFile } from '$lib/types/PoemFile';
+	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 
 	const FALLBACK_DELAY = 100; // ms
 
@@ -43,6 +44,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}, FALLBACK_DELAY);
 
 		switch ($storageMode) {
+			case 'dropbox':
+				poemFilesPromise = PoemDropboxStorageDriver.listPoems();
+				break;
 			case 'gdrive':
 				poemFilesPromise = PoemGoogleDriveStorageDriver.listPoems();
 				break;
