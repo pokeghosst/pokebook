@@ -16,22 +16,39 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
-import { dbxAuthClient, dbxClient } from '$lib/client/DBXClient';
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { Dropbox } from 'dropbox';
+
+import RIPEMD160 from 'crypto-js/ripemd160';
+
+import { dbxAuthClient } from '$lib/client/DBXClient';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+
+import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
+import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const code = url.searchParams.get('code');
 
 	if (code) {
-		const { result } = await dbxAuthClient.getAccessTokenFromCode(
+		let refreshTokenId;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const { result }: any = await dbxAuthClient.getAccessTokenFromCode(
 			`${PUBLIC_POKEBOOK_BASE_URL}/api/dropbox/callback`,
 			code
 		);
-		console.log(result);
-		dbxAuthClient.setAccessToken(result.access_token);
-		console.log(await new Dropbox({ accessToken: result.access_token }).usersGetCurrentAccount());
+		console.log(Date.now() + parseInt(result.expires_in) * 1000);
+		if (result.refresh_token !== undefined) {
+			refreshTokenId = RIPEMD160(result.refresh_token).toString();
+			CredentialCacher.cacheCredential(RedisStorageKey.DBX, refreshTokenId, result.refresh_token);
+			// expires in 14400 seconds
+			// now 1703518634941 milliseconds
+			// 1 s = 1000 ms
+			return json({
+				accessToken: result.access_token,
+				// expiration: tokens.expiry_date,
+				refreshTokenId: refreshTokenId
+			});
+		} else return new Response('', { status: 401 });
 	}
 	return json('');
 };

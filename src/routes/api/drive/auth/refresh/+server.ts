@@ -19,14 +19,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
-import { GoogleCredentialCacher } from '$lib/cache/GoogleCredentialCacher';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const refreshTokenId = request.headers.get('Authorization');
 
 	if (refreshTokenId === null) return new Response('', { status: 400 });
 
-	const refreshToken = await GoogleCredentialCacher.retrieveCredential(refreshTokenId);
+	const refreshToken = await CredentialCacher.retrieveCredential(
+		RedisStorageKey.GOOGLE,
+		refreshTokenId
+	);
 
 	if (refreshToken === undefined) return new Response('', { status: 500 });
 

@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 export interface ICredentialCacher {
-	cacheCredential(credentialId: string, credential: string): void;
-	retrieveCredential(credentialId: string): Promise<string | undefined>;
+	cacheCredential(credentialKey: string, credentialId: string, credential: string): void;
+	retrieveCredential(
+		credentialKey: string,
+		credentialId: string
+	): Promise<string | undefined>;
 }

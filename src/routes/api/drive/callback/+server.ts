@@ -20,7 +20,9 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import RIPEMD160 from 'crypto-js/ripemd160';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
-import { GoogleCredentialCacher } from '$lib/cache/GoogleCredentialCacher';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+
+import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const code = request.headers.get('Authorization');
@@ -32,7 +34,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			if (tokens.refresh_token !== undefined && tokens.refresh_token !== null) {
 				refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
-				GoogleCredentialCacher.cacheCredential(refreshTokenId, tokens.refresh_token);
+				CredentialCacher.cacheCredential(
+					RedisStorageKey.GOOGLE,
+					refreshTokenId,
+					tokens.refresh_token
+				);
 			}
 
 			googleClient.setCredentials(tokens);
