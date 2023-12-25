@@ -107,8 +107,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		localizeLabel={false}
 	/>
 	<SettingsSelect
-		parameterName="alignment"
-		labelName={$t('settings.alignment')}
+		parameterName="justification"
+		labelName={$t('settings.justification')}
 		bind:bindParameter={$poemPadJustification}
 		options={textJustificationSettings}
 	/>

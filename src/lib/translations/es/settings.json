@@ -1,6 +1,6 @@
 {
 	"font": "Fuente de cuaderno",
-	"alignment": "Justificación del poema",
+	"justification": "Justificación del poema",
 	"dayTheme": "Tema diurno",
 	"nightTheme": "Tema nocturno",
 	"storage": "Modo de almacenamiento",

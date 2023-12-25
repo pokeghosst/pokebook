@@ -1,6 +1,6 @@
 {
 	"font": "ノートのフォント",
-	"alignment": "詩の位置揃え",
+	"justification": "詩の位置揃え",
 	"dayTheme": "ライトテーマ",
 	"nightTheme": "ダークテーマ",
 	"storage": "ストレージモード",

@@ -1,5 +1,5 @@
 export const textJustificationSettings = [
-	{ value: 'text-left', label: 'settings.left' },
-	{ value: 'text-center', label: 'settings.center' },
-	{ value: 'text-right', label: 'settings.right' }
+	{ value: 'left', label: 'settings.left' },
+	{ value: 'center', label: 'settings.center' },
+	{ value: 'right', label: 'settings.right' }
 ];
