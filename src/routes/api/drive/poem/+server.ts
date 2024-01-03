@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -22,7 +22,7 @@ import { google } from 'googleapis';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
 
-import type { Poem } from '$lib/types/Poem';
+import type { Poem } from '$lib/models/Poem';
 import { XMLBuilder } from 'fast-xml-parser';
 
 export const GET: RequestHandler = async ({ request, url }) => {

@@ -32,16 +32,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { storageMode } from '$lib/stores/storageMode';
 	import { saveFunction, discardFunction } from '$lib/stores/poemFunctionsStore';
 
-	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
 	import { preventTabClose } from '$lib/util/preventTabClose';
 
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
-	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
+	import Poem from '$lib/models/Poem';
+	import { toastPromiseOverride } from '$lib/util/toastOverrides';
 
 	let unsavedChangesToastId: string;
 
@@ -111,21 +110,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				style: GLOBAL_TOAST_STYLE
 			});
 		} else {
-			let poem;
 			try {
-				switch ($storageMode) {
-					case 'dropbox': {
-						poem = await PoemDropboxStorageDriver.loadPoem($currentPoemUri);
-						break;
-					}
-					case 'gdrive': {
-						poem = await PoemGoogleDriveStorageDriver.loadPoem($currentPoemUri);
-						break;
-					}
-					case 'local': {
-						poem = await PoemLocalStorageDriver.loadPoem($currentPoemUri);
-						break;
-					}
+				const poem = await Poem.load($currentPoemUri, $storageMode);
+				if (poem) {
+					$currentPoemName = poem.name;
+					$currentPoemBody = poem.text;
+					$currentPoemNote = poem.note;
 				}
 			} catch (e) {
 				if (e instanceof Error) {
@@ -135,12 +125,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					});
 				}
 			}
-			if (poem) {
-				$currentPoemName = poem.name;
-				$currentPoemBody = poem.text;
-				$currentPoemNote = poem.note;
-				thinking = false;
-			}
+			thinking = false;
 		}
 	});
 
@@ -154,58 +139,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function save() {
-		switch ($storageMode) {
-			case 'dropbox':
-				await PoemDropboxStorageDriver.updatePoem(
-					{
-						name: $currentPoemName,
-						text: $currentPoemBody,
-						note: $currentPoemNote
-					},
-					$currentPoemUri
-				);
-				break;
-			case 'gdrive':
-				await PoemGoogleDriveStorageDriver.updatePoem(
-					{
-						name: $currentPoemName,
-						text: $currentPoemBody,
-						note: $currentPoemNote
-					},
-					$currentPoemUri
-				);
-				break;
-			case 'local': {
-				const newPoemUri = await PoemLocalStorageDriver.updatePoem(
-					{
-						name: $currentPoemName,
-						text: $currentPoemBody,
-						note: $currentPoemNote
-					},
-					$currentPoemUri
-				);
-				$currentPoemUri = newPoemUri as string;
-				break;
-			}
-		}
+		let newPoemUriPromise;
+		await toastPromiseOverride(
+			(newPoemUriPromise = Poem.update(
+				{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+				$currentPoemUri,
+				$storageMode
+			))
+		);
+		// TODO: TEST THIS!!!!
+		const promiseResolved = await newPoemUriPromise;
+		console.log(promiseResolved);
+		if (await promiseResolved) console.log('yes');
 		editMode = false;
 		$currentPoemUnsavedChanges = 'false';
 	}
 
 	async function deletePoem() {
-		switch ($storageMode) {
-			case 'dropbox':
-				await PoemDropboxStorageDriver.deletePoem($currentPoemUri);
-				break;
-			case 'gdrive':
-				await PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri);
-				clearCurrentPoemStorage();
-				break;
-			case 'local':
-				PoemLocalStorageDriver.deletePoem($currentPoemUri);
-				clearCurrentPoemStorage();
-				break;
-		}
+		await toastPromiseOverride(Poem.delete($currentPoemUri, $storageMode));
+		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
 

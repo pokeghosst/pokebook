@@ -21,8 +21,8 @@ import { Preferences } from '@capacitor/preferences';
 
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
-import type { Poem } from '../types/Poem';
-import type { PoemFile } from '../types/PoemFile';
+import type { Poem } from '../models/Poem';
+import type { PoemFileEntity } from '$lib/types';
 import { XMLParser } from 'fast-xml-parser';
 
 async function getAuthCredentials() {
@@ -139,7 +139,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			}
 
 		const storedFiles = (await response.json()) as drive_v3.Schema$File[];
-		const poemFiles: PoemFile[] = [];
+		const poemFiles: PoemFileEntity[] = [];
 
 		storedFiles.forEach((file) => {
 			if (file.name != null && file.id != null && file.createdTime != null) {
@@ -212,6 +212,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 				Authorization: accessToken
 			}
 		});
+
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	}
 };

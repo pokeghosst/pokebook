@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -27,13 +27,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/poemDraft';
 	import { storageMode } from '$lib/stores/storageMode';
 
-	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
+	import Poem from '$lib/models/Poem';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import Workspace from '../components/Workspace.svelte';
-	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
@@ -46,42 +44,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
-			const poem = {
-				name: $draftPoemNameStore,
-				text: $draftPoemBodyStore,
-				note: $draftPoemNoteStore
-			};
-			switch ($storageMode) {
-				case 'dropbox':
-					await PoemDropboxStorageDriver.savePoem(poem);
-					break;
-				case 'gdrive':
-					try {
-						await toast.promise(
-							PoemGoogleDriveStorageDriver.savePoem(poem),
-							{
-								loading: 'Saving poem...',
-								success: 'Poem saved!',
-								error: 'Could not save the poem'
-							},
-							{
-								position: GLOBAL_TOAST_POSITION,
-								style: GLOBAL_TOAST_STYLE
-							}
-						);
-						clearDraftPoem();
-					} catch (e) {
-						if (e instanceof Error)
-							toast.error($t(e.message), {
-								position: GLOBAL_TOAST_POSITION,
-								style: GLOBAL_TOAST_STYLE
-							});
+			try {
+				await toast.promise(
+					Poem.save(
+						{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
+						$storageMode
+					),
+					{
+						loading: 'Saving poem...',
+						success: 'Poem saved!',
+						error: 'Could not save the poem'
+					},
+					{
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
 					}
-					break;
-				case 'local':
-					PoemLocalStorageDriver.savePoem(poem);
-					clearDraftPoem();
-					break;
+				);
+				clearDraftPoem();
+			} catch (e) {
+				if (e instanceof Error)
+					toast.error($t(e.message), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
 			}
 		} else {
 			toast(`☝️🤓 ${$t('popups.cannotSaveEmptyPoem')}`, {
@@ -98,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function clearDraftPoem() {
-		draftPoemNameStore.set($t('workspace.unnamed'));
+		draftPoemNameStore.set('');
 		draftPoemBodyStore.set('');
 		draftPoemNoteStore.set('');
 	}

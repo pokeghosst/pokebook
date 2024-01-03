@@ -20,9 +20,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { Dropbox, DropboxResponseError, type files } from 'dropbox';
 
-import type { Poem } from '$lib/types/Poem';
 import { XMLBuilder } from 'fast-xml-parser';
-import type { PoemFile } from '$lib/types/PoemFile';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const accessToken = request.headers.get('Authorization');
@@ -32,7 +31,7 @@ export const GET: RequestHandler = async ({ request }) => {
 	try {
 		const response = await new Dropbox({ accessToken: accessToken }).filesListFolder({ path: '' });
 		const entries = response.result.entries as files.FileMetadataReference[];
-		const files: PoemFile[] = [];
+		const files: PoemFileEntity[] = [];
 		entries.forEach((entry) => {
 			files.push({
 				name: entry.name.split('_')[0],
@@ -40,7 +39,7 @@ export const GET: RequestHandler = async ({ request }) => {
 				timestamp: entry.server_modified
 			});
 		});
-		return json(files);
+		return json(files.reverse());
 	} catch (e) {
 		if (e instanceof DropboxResponseError) return new Response('', { status: e.status });
 		else return new Response('', { status: 500 });
@@ -52,7 +51,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (!accessToken) return new Response('', { status: 401 });
 
-	const poem = (await request.json()) as Poem;
+	const poem = (await request.json()) as PoemEntity;
 
 	await new Dropbox({ accessToken: accessToken }).filesUpload({
 		contents: new XMLBuilder({ format: true }).build(poem),

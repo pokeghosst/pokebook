@@ -20,8 +20,7 @@ import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 
-import type { Poem } from '../types/Poem';
-import type { PoemFile } from '../types/PoemFile';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
@@ -34,7 +33,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 				})
 			).files;
 
-			const poemFiles: PoemFile[] = [];
+			const poemFiles: PoemFileEntity[] = [];
 			storedFiles.forEach((file) => {
 				poemFiles.push({
 					name: file.name.split('_')[0].replace(/%20/g, ' '),
@@ -65,7 +64,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 			).data.toString()
 		);
 	},
-	savePoem: async function (poem: Poem) {
+	savePoem: async function (poem: PoemEntity) {
 		await Filesystem.writeFile({
 			path: `poems/${poem.name}_${Date.now()}.xml`,
 			data: new XMLBuilder({ format: true }).build(poem),
@@ -74,7 +73,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 			recursive: true
 		});
 	},
-	updatePoem: async function (poem: Poem, poemUri: string): Promise<string> {
+	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string> {
 		await Filesystem.writeFile({
 			path: poemUri,
 			data: new XMLBuilder({ format: true }).build(poem),

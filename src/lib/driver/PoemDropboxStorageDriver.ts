@@ -18,8 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Preferences } from '@capacitor/preferences';
 
-import type { Poem } from '$lib/types/Poem';
-import type { PoemFile } from '$lib/types/PoemFile';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 import { XMLParser } from 'fast-xml-parser';
 
@@ -39,7 +38,7 @@ async function getAuthCredentials() {
 }
 
 export const PoemDropboxStorageDriver: IPoemStorageDriver = {
-	listPoems: async function (): Promise<PoemFile[]> {
+	listPoems: async function (): Promise<PoemFileEntity[]> {
 		const accessToken = await getAuthCredentials();
 
 		let requestId = (await Preferences.get({ key: 'poem_list_request_timestamp' })).value;
@@ -65,7 +64,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		return await response.json();
 	},
-	loadPoem: async function (poemUri: string): Promise<Poem> {
+	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
 		const accessToken = await getAuthCredentials();
 
 		const response = await fetch(`/api/dropbox/poem/${poemUri}`, {
@@ -78,7 +77,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		return new XMLParser().parse(await response.json());
 	},
-	savePoem: async function (poem: Poem): Promise<void> {
+	savePoem: async function (poem: PoemEntity): Promise<void> {
 		const accessToken = await getAuthCredentials();
 
 		await fetch('/api/dropbox/poem', {
@@ -93,7 +92,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	updatePoem: async function (poem: Poem, poemUri: string) {
+	updatePoem: async function (poem: PoemEntity, poemUri: string) {
 		const accessToken = await getAuthCredentials();
 
 		await fetch(`/api/dropbox/poem/${poemUri}`, {

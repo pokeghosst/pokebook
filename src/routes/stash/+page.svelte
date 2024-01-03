@@ -20,22 +20,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
-	import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import {
 		currentPoemName,
 		currentPoemUnsavedChanges,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
+	import Poem from '$lib/models/Poem';
 
-	import type { PoemFile } from '$lib/types/PoemFile';
-	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
+	import type { PoemFileEntity } from '$lib/types';
 	import { t } from '$lib/translations';
 
 	const FALLBACK_DELAY = 100; // ms
 
-	let poemFilesPromise: Promise<PoemFile[]>;
+	let poemFilesPromise: Promise<PoemFileEntity[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -44,17 +42,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY);
 
-		switch ($storageMode) {
-			case 'dropbox':
-				poemFilesPromise = PoemDropboxStorageDriver.listPoems();
-				break;
-			case 'gdrive':
-				poemFilesPromise = PoemGoogleDriveStorageDriver.listPoems();
-				break;
-			case 'local':
-				poemFilesPromise = PoemLocalStorageDriver.listPoems();
-				break;
-		}
+		poemFilesPromise = Poem.findAll($storageMode);
+
 		return () => clearTimeout(fallbackTimeout);
 	});
 

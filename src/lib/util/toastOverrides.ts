@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,13 +16,21 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Poem } from '../models/Poem';
-import type { PoemFileEntity } from '$lib/types';
+import toast from 'svelte-french-toast';
 
-export interface IPoemStorageDriver {
-	listPoems(): Promise<PoemFileEntity[]>;
-	loadPoem(poemUri: string): Promise<Poem>;
-	savePoem(poem: Poem): Promise<void>;
-	updatePoem(poem: Poem, poemUri: string): Promise<string | void>;
-	deletePoem(poemUri: string): Promise<void>;
+import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from './constants';
+
+export async function toastPromiseOverride<T>(promise: Promise<T>) {
+	toast.promise(
+		promise,
+		{
+			loading: 'Saving poem...',
+			success: 'Poem saved!',
+			error: 'Could not save the poem'
+		},
+		{
+			position: GLOBAL_TOAST_POSITION,
+			style: GLOBAL_TOAST_STYLE
+		}
+	);
 }
