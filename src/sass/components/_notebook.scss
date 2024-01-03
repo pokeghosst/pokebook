@@ -35,16 +35,16 @@
 
 .paper {
 	width: 100%;
-	padding: 35px;
-	line-height: 32px;
+	padding: 34px;
+	line-height: 30px;
 	overflow-y: hidden;
 	resize: none;
 	min-height: 60vh;
 	background: repeating-linear-gradient(
 		var(--notebook-paper-background),
-		var(--notebook-paper-background) 31px,
-		var(--notebook-paper-line) 31px,
-		var(--notebook-paper-line) 32px
+		var(--notebook-paper-background) 29px,
+		var(--notebook-paper-line) 29px,
+		var(--notebook-paper-line) 30px
 	);
 	box-shadow: 0 1px 1px var(--notebook-box-shadow-line), 0 10px 0 -5px var(--notebook-box-shadow-bg),
 		0 10px 1px -4px var(--notebook-box-shadow-line), 0 20px 0 -10px var(--notebook-box-shadow-bg),

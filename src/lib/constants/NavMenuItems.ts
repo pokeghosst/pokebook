@@ -10,9 +10,5 @@ export const navMenuItems = [
 	{
 		label: 'menu.settings',
 		url: '/settings'
-	},
-	{
-		label: 'menu.lab',
-		url: '/lab'
 	}
 ];
