@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -31,6 +31,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { PoemFile } from '$lib/types/PoemFile';
 	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
+	import { t } from '$lib/translations';
 
 	const FALLBACK_DELAY = 100; // ms
 
@@ -96,6 +97,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {:catch error}
 	<div class="placeholder-text-wrapper">
-		{error}
+		{$t(error.message)}
 	</div>
 {/await}

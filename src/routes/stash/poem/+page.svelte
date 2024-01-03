@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -41,6 +41,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
+	import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 
 	let unsavedChangesToastId: string;
 
@@ -110,33 +111,37 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				style: GLOBAL_TOAST_STYLE
 			});
 		} else {
-			switch ($storageMode) {
-				case 'gdrive': {
-					try {
-						const poem = await PoemGoogleDriveStorageDriver.loadPoem($currentPoemUri);
-						$currentPoemName = poem.name;
-						$currentPoemBody = poem.text;
-						$currentPoemNote = poem.note;
-					} catch (e) {
-						if (e instanceof Error) {
-							toast.error($t(e.message), {
-								position: GLOBAL_TOAST_POSITION,
-								style: GLOBAL_TOAST_STYLE
-							});
-						}
+			let poem;
+			try {
+				switch ($storageMode) {
+					case 'dropbox': {
+						poem = await PoemDropboxStorageDriver.loadPoem($currentPoemUri);
+						break;
 					}
-					break;
+					case 'gdrive': {
+						poem = await PoemGoogleDriveStorageDriver.loadPoem($currentPoemUri);
+						break;
+					}
+					case 'local': {
+						poem = await PoemLocalStorageDriver.loadPoem($currentPoemUri);
+						break;
+					}
 				}
-				case 'local': {
-					const poem = await PoemLocalStorageDriver.loadPoem($currentPoemUri);
-					$currentPoemName = poem.name;
-					$currentPoemBody = poem.text;
-					$currentPoemNote = poem.note;
-					break;
+			} catch (e) {
+				if (e instanceof Error) {
+					toast.error($t(e.message), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
 				}
 			}
+			if (poem) {
+				$currentPoemName = poem.name;
+				$currentPoemBody = poem.text;
+				$currentPoemNote = poem.note;
+				thinking = false;
+			}
 		}
-		thinking = false;
 	});
 
 	onDestroy(() => {
@@ -150,6 +155,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function save() {
 		switch ($storageMode) {
+			case 'dropbox':
+				await PoemDropboxStorageDriver.updatePoem(
+					{
+						name: $currentPoemName,
+						text: $currentPoemBody,
+						note: $currentPoemNote
+					},
+					$currentPoemUri
+				);
+				break;
 			case 'gdrive':
 				await PoemGoogleDriveStorageDriver.updatePoem(
 					{
@@ -179,6 +194,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function deletePoem() {
 		switch ($storageMode) {
+			case 'dropbox':
+				await PoemDropboxStorageDriver.deletePoem($currentPoemUri);
+				break;
 			case 'gdrive':
 				await PoemGoogleDriveStorageDriver.deletePoem($currentPoemUri);
 				clearCurrentPoemStorage();
@@ -188,7 +206,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				clearCurrentPoemStorage();
 				break;
 		}
-		await goto('/stash', { replaceState: false });
+		await goto('/stash', { invalidateAll: true });
 	}
 
 	function clearCurrentPoemStorage() {

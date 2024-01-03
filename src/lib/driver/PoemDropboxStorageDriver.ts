@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -21,6 +21,7 @@ import { Preferences } from '@capacitor/preferences';
 import type { Poem } from '$lib/types/Poem';
 import type { PoemFile } from '$lib/types/PoemFile';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+import { XMLParser } from 'fast-xml-parser';
 
 export async function getDropboxAuthUrl() {
 	const response = await fetch('/api/dropbox/auth', {
@@ -34,7 +35,7 @@ async function getAuthCredentials() {
 	const accessTokenExpiration = (await Preferences.get({ key: 'dropbox_access_token_expiration' }))
 		.value;
 
-	return accessToken;
+	return accessToken || '';
 }
 
 export const PoemDropboxStorageDriver: IPoemStorageDriver = {
@@ -54,15 +55,33 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 			}
 		});
 
+		if (response.status !== 200)
+			switch (response.status) {
+				case 401:
+					throw new Error('errors.authTokenExpired');
+				default:
+					throw new Error('errors.unknown');
+			}
+
 		return await response.json();
 	},
-	loadPoem: function (poemFile: PoemFile): Promise<Poem> {
-		throw new Error('Function not implemented.');
+	loadPoem: async function (poemUri: string): Promise<Poem> {
+		const accessToken = await getAuthCredentials();
+
+		const response = await fetch(`/api/dropbox/poem/${poemUri}`, {
+			headers: {
+				Authorization: accessToken
+			}
+		});
+
+		if (response.status !== 200) throw new Error('errors.unknown');
+
+		return new XMLParser().parse(await response.json());
 	},
 	savePoem: async function (poem: Poem): Promise<void> {
 		const accessToken = await getAuthCredentials();
 
-		await fetch(`/api/dropbox/poem`, {
+		await fetch('/api/dropbox/poem', {
 			method: 'POST',
 			headers: {
 				Authorization: accessToken,
@@ -74,14 +93,29 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	updatePoem: function (
-		poem: Poem,
-		poemUri: string,
-		noteUri: string
-	): Promise<void | { newPoemUri: string; newNoteUri: string }> {
-		throw new Error('Function not implemented.');
+	updatePoem: async function (poem: Poem, poemUri: string) {
+		const accessToken = await getAuthCredentials();
+
+		await fetch(`/api/dropbox/poem/${poemUri}`, {
+			method: 'PATCH',
+			headers: {
+				Authorization: accessToken
+			},
+			body: JSON.stringify(poem)
+		});
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	deletePoem: function (poemUri: string, noteUri: string): Promise<void> {
-		throw new Error('Function not implemented.');
+	deletePoem: async function (poemUri: string) {
+		const accessToken = await getAuthCredentials();
+
+		await fetch(`/api/dropbox/poem/${poemUri}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: accessToken
+			}
+		});
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	}
 };
