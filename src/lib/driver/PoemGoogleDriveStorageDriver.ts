@@ -21,8 +21,7 @@ import { Preferences } from '@capacitor/preferences';
 
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
-import type { Poem } from '../models/Poem';
-import type { PoemFileEntity } from '$lib/types';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import { XMLParser } from 'fast-xml-parser';
 
 async function getAuthCredentials() {
@@ -47,7 +46,7 @@ async function getAuthCredentials() {
 async function getNewAuthToken(): Promise<{ token: string; expiration: string }> {
 	const refreshTokenId = (await Preferences.get({ key: 'google_refresh_token_id' })).value;
 
-	if (refreshTokenId === null) throw new Error('errors.google.refreshToken');
+	if (refreshTokenId === null) throw new Error('errors.refreshToken');
 
 	const res = await fetch('/api/drive/auth/refresh', {
 		headers: {
@@ -55,7 +54,7 @@ async function getNewAuthToken(): Promise<{ token: string; expiration: string }>
 		}
 	});
 
-	if (res.status === 500) throw new Error('errors.google.refreshToken');
+	if (res.status === 500) throw new Error('errors.refreshToken');
 
 	const resJson = await res.json();
 
@@ -172,7 +171,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		return new XMLParser().parse(await response.json());
 	},
-	savePoem: async function (poem: Poem) {
+	savePoem: async function (poem: PoemEntity) {
 		const accessToken = await getAuthCredentials();
 		const pokeBookFolderId = await retrievePokebookFolderId();
 
@@ -188,7 +187,7 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
-	updatePoem: async function (poem: Poem, poemUri: string) {
+	updatePoem: async function (poem: PoemEntity, poemUri: string) {
 		const accessToken = await getAuthCredentials();
 
 		await fetch(`/api/drive/poem?poemId=${poemUri}`, {

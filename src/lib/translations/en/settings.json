@@ -7,6 +7,7 @@
 	"left": "Left",
 	"right": "Right",
 	"center": "Center",
+	"dropbox": "Dropbox",
 	"gdrive": "Google Drive",
 	"local": "Local storage",
 	"language": "Language",

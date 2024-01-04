@@ -34,7 +34,42 @@ async function getAuthCredentials() {
 	const accessTokenExpiration = (await Preferences.get({ key: 'dropbox_access_token_expiration' }))
 		.value;
 
-	return accessToken || '';
+	if (
+		accessToken === null ||
+		accessTokenExpiration === null ||
+		parseInt(accessTokenExpiration) < Date.now()
+	) {
+		const { newAccessToken, newAccessTokenExpiry } = await getNewAuthToken();
+		Preferences.set({ key: 'dropbox_access_token', value: newAccessToken });
+		Preferences.set({ key: 'dropbox_access_token_expiration', value: newAccessTokenExpiry });
+		return newAccessToken;
+	} else {
+		return accessToken;
+	}
+}
+
+async function getNewAuthToken(): Promise<{
+	newAccessToken: string;
+	newAccessTokenExpiry: string;
+}> {
+	const refreshTokenId = (await Preferences.get({ key: 'dropbox_refresh_token_id' })).value;
+
+	if (refreshTokenId === null) throw new Error('errors.refreshToken');
+
+	const response = await fetch('/api/dropbox/refresh', {
+		headers: {
+			Authorization: refreshTokenId
+		}
+	});
+
+	if (response.status === 500) throw new Error('errors.refreshToken');
+
+	const responseJson = await response.json();
+
+	const newAccessToken = responseJson.accessToken;
+	const newAccessTokenExpiry = responseJson.accessTokenExpiry;
+
+	return { newAccessToken, newAccessTokenExpiry };
 }
 
 export const PoemDropboxStorageDriver: IPoemStorageDriver = {

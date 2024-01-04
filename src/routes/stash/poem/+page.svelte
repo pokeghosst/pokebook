@@ -40,7 +40,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
 	import Poem from '$lib/models/Poem';
-	import { toastPromiseOverride } from '$lib/util/toastOverrides';
 
 	let unsavedChangesToastId: string;
 
@@ -140,12 +139,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function save() {
 		let newPoemUriPromise;
-		await toastPromiseOverride(
-			(newPoemUriPromise = Poem.update(
-				{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-				$currentPoemUri,
-				$storageMode
-			))
+		newPoemUriPromise = Poem.update(
+			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+			$currentPoemUri,
+			$storageMode
 		);
 		// TODO: TEST THIS!!!!
 		const promiseResolved = await newPoemUriPromise;
@@ -156,7 +153,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function deletePoem() {
-		await toastPromiseOverride(Poem.delete($currentPoemUri, $storageMode));
+		Poem.delete($currentPoemUri, $storageMode);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
