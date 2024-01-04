@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -46,7 +46,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 	import toast from 'svelte-french-toast';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
 	import { onMount } from 'svelte';
 
 	$: $dayTheme, setDayTheme();
@@ -70,6 +70,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			if (Capacitor.isNativePlatform()) {
 				StatusBar.setStyle({ style: Style.Dark });
 			}
+		}
+	}
+
+	function getCloudAuthUrlPromise(storage: string) {
+		switch (storage) {
+			case 'dropbox':
+				return getDropboxAuthUrl();
+			case 'gdrive':
+				return getGoogleDriveAuthUrl();
+			default:
+				throw new Error();
+		}
+	}
+
+	function getCloudLogoutPromise(storage: string) {
+		switch (storage) {
+			case 'dropbox':
+				return dropboxLogout();
+			case 'gdrive':
+				return googleDriveLogout();
+			default:
+				throw new Error();
 		}
 	}
 
@@ -130,6 +152,32 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:bindParameter={$storageMode}
 		options={storageOptions}
 	/>
+	{#if $storageMode !== 'local'}
+		<button
+			on:click={() =>
+				getCloudAuthUrlPromise($storageMode).then((url) => {
+					Browser.open({ url: url, windowName: '_self' });
+				})}
+			class="action-button action-button--secondary"
+			>Log in to {$t(`settings.${$storageMode}`)}</button
+		>
+		<button
+			on:click={() => {
+				toast.promise(
+					getCloudLogoutPromise($storageMode),
+					{
+						loading: 'Logging out',
+						success: 'Logged out successfully',
+						error: 'Something went wrong when trying to log out'
+					},
+					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
+				);
+				$storageMode = 'local';
+			}}
+			class="action-button action-button--secondary"
+			>Log out of {$t(`settings.${$storageMode}`)}</button
+		>
+	{/if}
 	<SettingsSelect
 		parameterName="language"
 		labelName={$t('settings.language')}
@@ -137,13 +185,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
-	<button
-		on:click={() =>
-			getGoogleDriveAuthUrl().then((url) => {
-				Browser.open({ url: url, windowName: '_self' });
-			})}>Log in Google Drive</button
-	>
-	<br />
 	<button
 		on:click={() => {
 			googleDriveLogout()
@@ -163,12 +204,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				});
 		}}>Log out of Google Drive</button
 	>
-	<br /><br />
-	<button
-		on:click={() =>
-			getDropboxAuthUrl().then((url) => {
-				Browser.open({ url: url, windowName: '_self' });
-			})}>Log in Dropbox</button
-	>
-	<br />
 </div>

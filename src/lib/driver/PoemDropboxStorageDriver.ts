@@ -29,6 +29,23 @@ export async function getDropboxAuthUrl() {
 	return await response.json();
 }
 
+export async function dropboxLogout() {
+	const refreshTokenId = (await Preferences.get({ key: 'dropbox_refresh_token_id' })).value;
+
+	if (refreshTokenId === null) throw new Error('errors.refreshToken');
+
+	await fetch('/api/dropbox/auth', {
+		method: 'DELETE',
+		headers: {
+			Authorization: refreshTokenId
+		}
+	});
+
+	Preferences.remove({ key: 'dropbox_refresh_token_id' });
+	Preferences.remove({ key: 'dropbox_access_token' });
+	Preferences.remove({ key: 'dropbox_access_token_expiration' });
+}
+
 async function getAuthCredentials() {
 	const accessToken = (await Preferences.get({ key: 'dropbox_access_token' })).value;
 	const accessTokenExpiration = (await Preferences.get({ key: 'dropbox_access_token_expiration' }))

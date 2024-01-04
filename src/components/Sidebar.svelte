@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -63,7 +63,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					<li><a href={link.url}>{$t(link.label)}</a></li>
 				{/each}
 			</ul>
-			<a href="https://codeberg.org/pokeghost/pokebook" target="_blank">Source code</a>
+			<a href="https://codeberg.org/pokeghost/pokebook" target="_blank">{$t('menu.sourceCode')}</a>
 		</div>
 	</div>
 </div>

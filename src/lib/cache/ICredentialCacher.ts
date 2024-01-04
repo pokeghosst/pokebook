@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,8 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 export interface ICredentialCacher {
 	cacheCredential(credentialKey: string, credentialId: string, credential: string): void;
-	retrieveCredential(
-		credentialKey: string,
-		credentialId: string
-	): Promise<string | undefined>;
+	retrieveCredential(credentialKey: string, credentialId: string): Promise<string | undefined>;
+	deleteCredential(credentialKey: string, credentialId: string): void;
 }
