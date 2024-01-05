@@ -17,15 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Preferences } from '@capacitor/preferences';
+import { XMLParser } from 'fast-xml-parser';
+
+import { retrieveAccessToken, refreshAndReturnAccessToken } from './StorageProviderUtil';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
-import { XMLParser } from 'fast-xml-parser';
+import { StorageProvider } from '$lib/enums/StorageProvider';
+
+async function getAccessToken() {
+	return (
+		(await retrieveAccessToken(StorageProvider.DROPBOX)) ||
+		(await refreshAndReturnAccessToken(StorageProvider.DROPBOX))
+	);
+}
 
 export async function getDropboxAuthUrl() {
-	const response = await fetch('/api/dropbox/auth', {
-		method: 'GET'
-	});
+	const response = await fetch('/api/dropbox/auth');
 	return await response.json();
 }
 
@@ -46,53 +54,8 @@ export async function dropboxLogout() {
 	Preferences.remove({ key: 'dropbox_access_token_expiration' });
 }
 
-async function getAuthCredentials() {
-	const accessToken = (await Preferences.get({ key: 'dropbox_access_token' })).value;
-	const accessTokenExpiration = (await Preferences.get({ key: 'dropbox_access_token_expiration' }))
-		.value;
-
-	if (
-		accessToken === null ||
-		accessTokenExpiration === null ||
-		parseInt(accessTokenExpiration) < Date.now()
-	) {
-		const { newAccessToken, newAccessTokenExpiry } = await getNewAuthToken();
-		Preferences.set({ key: 'dropbox_access_token', value: newAccessToken });
-		Preferences.set({ key: 'dropbox_access_token_expiration', value: newAccessTokenExpiry });
-		return newAccessToken;
-	} else {
-		return accessToken;
-	}
-}
-
-async function getNewAuthToken(): Promise<{
-	newAccessToken: string;
-	newAccessTokenExpiry: string;
-}> {
-	const refreshTokenId = (await Preferences.get({ key: 'dropbox_refresh_token_id' })).value;
-
-	if (refreshTokenId === null) throw new Error('errors.refreshToken');
-
-	const response = await fetch('/api/dropbox/refresh', {
-		headers: {
-			Authorization: refreshTokenId
-		}
-	});
-
-	if (response.status === 500) throw new Error('errors.refreshToken');
-
-	const responseJson = await response.json();
-
-	const newAccessToken = responseJson.accessToken;
-	const newAccessTokenExpiry = responseJson.accessTokenExpiry;
-
-	return { newAccessToken, newAccessTokenExpiry };
-}
-
 export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFileEntity[]> {
-		const accessToken = await getAuthCredentials();
-
 		let requestId = (await Preferences.get({ key: 'poem_list_request_timestamp' })).value;
 
 		if (requestId === null) {
@@ -102,7 +65,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		const response = await fetch(`/api/dropbox/poem?cache=${requestId}`, {
 			headers: {
-				Authorization: accessToken
+				Authorization: await getAccessToken()
 			}
 		});
 
@@ -117,11 +80,9 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		return await response.json();
 	},
 	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
-		const accessToken = await getAuthCredentials();
-
 		const response = await fetch(`/api/dropbox/poem/${poemUri}`, {
 			headers: {
-				Authorization: accessToken
+				Authorization: await getAccessToken()
 			}
 		});
 
@@ -130,12 +91,10 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		return new XMLParser().parse(await response.json());
 	},
 	savePoem: async function (poem: PoemEntity): Promise<void> {
-		const accessToken = await getAuthCredentials();
-
 		await fetch('/api/dropbox/poem', {
 			method: 'POST',
 			headers: {
-				Authorization: accessToken,
+				Authorization: await getAccessToken(),
 				Accept: 'application/json',
 				'Content-Type': 'application/json'
 			},
@@ -145,12 +104,10 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string) {
-		const accessToken = await getAuthCredentials();
-
 		await fetch(`/api/dropbox/poem/${poemUri}`, {
 			method: 'PATCH',
 			headers: {
-				Authorization: accessToken
+				Authorization: await getAccessToken()
 			},
 			body: JSON.stringify(poem)
 		});
@@ -158,12 +115,10 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	deletePoem: async function (poemUri: string) {
-		const accessToken = await getAuthCredentials();
-
 		await fetch(`/api/dropbox/poem/${poemUri}`, {
 			method: 'DELETE',
 			headers: {
-				Authorization: accessToken
+				Authorization: await getAccessToken()
 			}
 		});
 

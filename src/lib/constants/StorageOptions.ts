@@ -1,5 +1,9 @@
-export const storageOptions = [
-	{ value: 'gdrive', label: 'settings.gdrive' },
-	{ value: 'dropbox', label: 'settings.dropbox' },
-	{ value: 'local', label: 'settings.local' }
-];
+import { StorageProvider } from '$lib/enums/StorageProvider';
+
+export const storageOptions = (() => {
+	const storageOptions: { value: string; label: string }[] = [];
+	Object.values(StorageProvider).forEach((key) => {
+		storageOptions.push({ value: key, label: `settings.${key}` });
+	});
+	return storageOptions;
+})();

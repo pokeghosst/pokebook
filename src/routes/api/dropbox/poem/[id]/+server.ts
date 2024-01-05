@@ -16,34 +16,37 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Poem } from '$lib/models/Poem';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 import { Dropbox } from 'dropbox';
 import { XMLBuilder } from 'fast-xml-parser';
 
+import type { PoemEntity } from '$lib/types';
+
 export const GET: RequestHandler = async ({ request, params }) => {
+	const poemId = params.id;
+
+	if (!poemId) return new Response('', { status: 404 });
+
 	const accessToken = request.headers.get('Authorization');
 
 	if (!accessToken) return new Response('', { status: 401 });
 
-	const poemId = params.id;
-
-	if (poemId)
-		try {
-			return json(
-				Buffer.from(
-					(
-						await new Dropbox({ accessToken: accessToken }).filesDownload({
-							path: poemId
-						})
-					).result.fileBinary
-				).toString()
-			);
-		} catch (e) {
-			return new Response('', { status: 500 });
-		}
-	else return new Response('', { status: 404 });
+	try {
+		return json(
+			Buffer.from(
+				(
+					(await new Dropbox({ accessToken: accessToken }).filesDownload({
+						path: poemId
+						// The error says `fileBinary` does not exist on type but it's returned in the response
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					})) as any
+				).result.fileBinary
+			).toString()
+		);
+	} catch (e) {
+		return new Response('', { status: 500 });
+	}
 };
 
 export const PATCH: RequestHandler = async ({ request, params }) => {
@@ -51,7 +54,7 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 
 	if (!accessToken) return new Response('', { status: 401 });
 
-	const poem = (await request.json()) as Poem;
+	const poem = (await request.json()) as PoemEntity;
 
 	const poemId = params.id;
 

@@ -18,16 +18,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-import { dbxAuthClient, dbxClient } from '$lib/client/DBXClient';
+import { Dropbox } from 'dropbox';
+
+import { dropboxAuthClient } from '$lib/client/DropboxClient';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+
+import { StorageProvider } from '$lib/enums/StorageProvider';
 
 import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
-import { Dropbox } from 'dropbox';
-import { CredentialCacher } from '$lib/cache/CredentialsCacher';
-import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
 
 export const GET: RequestHandler = async () => {
 	return json(
-		await dbxAuthClient.getAuthenticationUrl(
+		await dropboxAuthClient.getAuthenticationUrl(
 			`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
 			'',
 			'code',
@@ -45,20 +47,19 @@ export const DELETE: RequestHandler = async ({ request }) => {
 	if (refreshTokenId === null) return new Response('', { status: 401 });
 
 	const refreshToken = await CredentialCacher.retrieveCredential(
-		RedisStorageKey.DBX,
+		StorageProvider.DROPBOX,
 		refreshTokenId
 	);
 
 	if (refreshToken === undefined) return new Response('', { status: 500 });
 
 	try {
-		dbxAuthClient.setRefreshToken(refreshToken);
-		new Dropbox({ auth: dbxAuthClient }).authTokenRevoke();
+		dropboxAuthClient.setRefreshToken(refreshToken);
+		new Dropbox({ auth: dropboxAuthClient }).authTokenRevoke();
 
-		CredentialCacher.deleteCredential(RedisStorageKey.DBX, refreshTokenId);
+		CredentialCacher.deleteCredential(StorageProvider.DROPBOX, refreshTokenId);
+		return new Response('', { status: 200 });
 	} catch (e) {
 		return new Response('', { status: 500 });
 	}
-
-	return new Response('', { status: 200 });
 };

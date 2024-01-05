@@ -16,11 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { json } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
 
-export const GET = () => {
+import { StorageProvider } from '$lib/enums/StorageProvider';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+
+export const GET: RequestHandler = () => {
 	return json(
 		googleClient.generateAuthUrl({
 			access_type: 'offline',
@@ -28,4 +31,26 @@ export const GET = () => {
 			include_granted_scopes: true
 		})
 	);
+};
+
+export const DELETE: RequestHandler = async ({ request }) => {
+	const refreshTokenId = request.headers.get('Authorization');
+
+	if (!refreshTokenId) return new Response('', { status: 401 });
+
+	const refreshToken = await CredentialCacher.retrieveCredential(
+		StorageProvider.GOOGLE,
+		refreshTokenId
+	);
+
+	if (refreshToken === undefined) return new Response('', { status: 500 });
+
+	try {
+		googleClient.revokeToken(refreshToken);
+		CredentialCacher.deleteCredential(StorageProvider.GOOGLE, refreshTokenId);
+
+		return new Response('', { status: 200 });
+	} catch (e) {
+		return new Response('', { status: 500 });
+	}
 };

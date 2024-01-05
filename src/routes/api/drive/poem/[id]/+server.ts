@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -25,9 +25,11 @@ import googleClient from '$lib/client/GoogleOAuthClient';
 
 import type { PoemEntity } from '$lib/types';
 
-const CACHE_MAX_AGE_SECONDS = 3600;
+export const GET: RequestHandler = async ({ request, params }) => {
+	const poemId = params.id;
 
-export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
+	if (!poemId) return new Response('', { status: 404 });
+
 	const accessToken = request.headers.get('Authorization');
 
 	if (!accessToken) return new Response('', { status: 401 });
@@ -35,43 +37,67 @@ export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
 	googleClient.setCredentials({ access_token: accessToken });
 
 	try {
-		const response = await google.drive('v3').files.list({
-			q: `'${url.searchParams.get('pokebookFolderId')}' in parents and trashed=false`,
-			orderBy: 'createdTime desc',
-			auth: googleClient,
-			fields: 'nextPageToken,files(id,name,createdTime,properties)'
-		});
-		setHeaders({
-			'cache-control': `max-age=${CACHE_MAX_AGE_SECONDS}`
-		});
-		return json(response.data.files);
+		return json(
+			(
+				await google.drive('v3').files.get({
+					fileId: poemId,
+					alt: 'media',
+					auth: googleClient
+				})
+			).data
+		);
 	} catch (e) {
 		return new Response('', { status: 500 });
 	}
 };
 
-export const POST: RequestHandler = async ({ request, url }) => {
-	const accessToken = request.headers.get('Authorization');
-	if (!accessToken) return new Response('', { status: 401 });
+export const PATCH: RequestHandler = async ({ request, params }) => {
+	const poemId = params.id;
 
-	const pokebookFolderId = url.searchParams.get('pokebookFolderId');
-	if (!pokebookFolderId) return new Response('', { status: 400 });
+	if (!poemId) return new Response('', { status: 404 });
+
+	const accessToken = request.headers.get('Authorization');
+
+	if (!accessToken) return new Response('', { status: 401 });
 
 	googleClient.setCredentials({ access_token: accessToken });
 
 	const poem = (await request.json()) as PoemEntity;
 
 	try {
-		await google.drive('v3').files.create({
+		await google.drive('v3').files.update({
 			auth: googleClient,
+			fileId: poemId,
 			requestBody: {
-				name: `${poem.name}.xml`,
-				parents: [pokebookFolderId]
+				name: `${poem.name}.xml`
 			},
 			media: {
 				mimeType: 'text/xml',
 				body: new XMLBuilder({ format: true }).build(poem)
 			}
+		});
+
+		return new Response('', { status: 200 });
+	} catch (e) {
+		return new Response('', { status: 500 });
+	}
+};
+
+export const DELETE: RequestHandler = async ({ request, params }) => {
+	const poemId = params.id;
+
+	if (!poemId) return new Response('', { status: 404 });
+
+	const accessToken = request.headers.get('Authorization');
+
+	if (!accessToken) return new Response('', { status: 401 });
+
+	googleClient.setCredentials({ access_token: accessToken });
+
+	try {
+		await google.drive('v3').files.delete({
+			auth: googleClient,
+			fileId: poemId
 		});
 
 		return new Response('', { status: 200 });

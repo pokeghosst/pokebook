@@ -18,31 +18,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-import { google } from 'googleapis';
-
 import googleClient from '$lib/client/GoogleOAuthClient';
+import { CredentialCacher } from '$lib/cache/CredentialsCacher';
 
-export const GET: RequestHandler = async ({ setHeaders, request, url }) => {
-	setHeaders({
-		'cache-control': 'max-age=3600' // seconds
+import { StorageProvider } from '$lib/enums/StorageProvider';
+
+export const GET: RequestHandler = async ({ request }) => {
+	const refreshTokenId = request.headers.get('Authorization');
+
+	if (!refreshTokenId) return new Response('', { status: 404 });
+
+	const refreshToken = await CredentialCacher.retrieveCredential(
+		StorageProvider.GOOGLE,
+		refreshTokenId
+	);
+
+	if (!refreshToken) return new Response('', { status: 500 });
+
+	googleClient.setCredentials({ refresh_token: refreshToken });
+	const { res } = await googleClient.getAccessToken();
+
+	return json({
+		accessToken: res?.data.access_token,
+		expiration: res?.data.expiry_date
 	});
-
-	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
-
-	const drive = google.drive('v3');
-
-	try {
-		const response = await drive.files.list({
-			q: `'${url.searchParams.get(
-				'pokebookFolderId'
-			)}' in parents and trashed=false`,
-			orderBy: 'createdTime desc',
-			auth: googleClient,
-			fields: 'nextPageToken,files(id,name,createdTime,properties)'
-		});
-		return json(response.data.files);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (e: any) {
-		return new Response(e.errors, { status: e.status });
-	}
 };

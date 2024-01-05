@@ -185,23 +185,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
-	<button
-		on:click={() => {
-			googleDriveLogout()
-				.then(() =>
-					toast.success('Logged out successfully', {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					})
-				)
-				.catch((e) => {
-					if (e instanceof Error) {
-						toast.error($t(e.message), {
-							position: GLOBAL_TOAST_POSITION,
-							style: GLOBAL_TOAST_STYLE
-						});
-					}
-				});
-		}}>Log out of Google Drive</button
-	>
 </div>

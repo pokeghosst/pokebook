@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,41 +17,40 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { json, type RequestHandler } from '@sveltejs/kit';
+
 import RIPEMD160 from 'crypto-js/ripemd160';
 
 import googleClient from '$lib/client/GoogleOAuthClient';
 import { CredentialCacher } from '$lib/cache/CredentialsCacher';
 
-import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
+import { StorageProvider } from '$lib/enums/StorageProvider';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const code = request.headers.get('Authorization');
-	if (code) {
-		try {
-			const { tokens } = await googleClient.getToken(code);
 
-			let refreshTokenId;
+	if (!code) return new Response('', { status: 401 });
 
-			if (tokens.refresh_token !== undefined && tokens.refresh_token !== null) {
-				refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
-				CredentialCacher.cacheCredential(
-					RedisStorageKey.GOOGLE,
-					refreshTokenId,
-					tokens.refresh_token
-				);
-			}
+	try {
+		const { tokens } = await googleClient.getToken(code);
+		let refreshTokenId;
 
-			googleClient.setCredentials(tokens);
-			return json({
-				accessToken: tokens.access_token,
-				expiration: tokens.expiry_date,
-				refreshTokenId: refreshTokenId
-			});
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (e: any) {
-			return new Response(e.errors, { status: e.response.status });
+		if (tokens.refresh_token !== undefined && tokens.refresh_token !== null) {
+			refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
+			CredentialCacher.cacheCredential(
+				StorageProvider.GOOGLE,
+				refreshTokenId,
+				tokens.refresh_token
+			);
 		}
-	} else {
-		return new Response('', { status: 401 });
+
+		googleClient.setCredentials(tokens);
+
+		return json({
+			accessToken: tokens.access_token,
+			expiration: tokens.expiry_date,
+			refreshTokenId: refreshTokenId
+		});
+	} catch (e) {
+		return new Response('', { status: 500 });
 	}
 };

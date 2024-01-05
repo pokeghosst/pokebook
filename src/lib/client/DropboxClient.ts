@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,16 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { RequestHandler } from '@sveltejs/kit';
+import { Dropbox, DropboxAuth } from 'dropbox';
 
-import googleClient from '$lib/client/GoogleOAuthClient';
+import { env } from '$env/dynamic/private';
 
-export const GET: RequestHandler = async ({ request }) => {
-	const authToken = request.headers.get('Authorization');
+export const dropboxClient = new Dropbox({
+	fetch: fetch,
+	clientId: env.DROPBOX_APP_KEY,
+	clientSecret: env.DROPBOX_APP_SECRET
+});
 
-	if (authToken === null) return new Response('', { status: 401 });
-
-	googleClient.revokeToken(authToken);
-
-	return new Response('', { status: 200 });
-};
+export const dropboxAuthClient = new DropboxAuth({
+	fetch: fetch,
+	clientId: env.DROPBOX_APP_KEY,
+	clientSecret: env.DROPBOX_APP_SECRET
+});

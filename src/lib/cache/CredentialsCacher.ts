@@ -18,21 +18,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { redisClient } from '../client/RedisClient';
 
-import type { RedisStorageKey } from '$lib/constants/RedisStorageKey';
+import type { StorageProvider } from '$lib/enums/StorageProvider';
+
 import type { ICredentialCacher } from './ICredentialCacher';
 
 export const CredentialCacher: ICredentialCacher = {
 	cacheCredential: async function (
-		credentialKey: RedisStorageKey,
+		credentialKey: StorageProvider,
 		credentialId: string,
 		credential: string
 	) {
 		await redisClient.hSet(credentialKey, credentialId, credential);
 	},
-	retrieveCredential: async function (credentialKey: RedisStorageKey, credentialId: string) {
+	retrieveCredential: async function (credentialKey: StorageProvider, credentialId: string) {
 		return await redisClient.hGet(credentialKey, credentialId);
 	},
-	deleteCredential: async function (credentialKey: RedisStorageKey, credentialId: string) {
+	deleteCredential: async function (credentialKey: StorageProvider, credentialId: string) {
 		await redisClient.hDel(credentialKey, credentialId);
 	}
 };

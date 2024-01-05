@@ -18,10 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-import { dbxAuthClient } from '$lib/client/DBXClient';
-
+import { dropboxAuthClient } from '$lib/client/DropboxClient';
 import { CredentialCacher } from '$lib/cache/CredentialsCacher';
-import { RedisStorageKey } from '$lib/constants/RedisStorageKey';
+
+import { StorageProvider } from '$lib/enums/StorageProvider';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const refreshTokenId = request.headers.get('Authorization');
@@ -29,17 +29,17 @@ export const GET: RequestHandler = async ({ request }) => {
 	if (refreshTokenId === null) return new Response('', { status: 401 });
 
 	const refreshToken = await CredentialCacher.retrieveCredential(
-		RedisStorageKey.DBX,
+		StorageProvider.DROPBOX,
 		refreshTokenId
 	);
 
 	if (refreshToken === undefined) return new Response('', { status: 500 });
 
-	dbxAuthClient.setRefreshToken(refreshToken)
-    dbxAuthClient.refreshAccessToken();
+	dropboxAuthClient.setRefreshToken(refreshToken);
+	dropboxAuthClient.refreshAccessToken();
 
-	const accessToken = dbxAuthClient.getAccessToken();
-	const accessTokenExpiry = dbxAuthClient.getAccessTokenExpiresAt();
+	const accessToken = dropboxAuthClient.getAccessToken();
+	const accessTokenExpiry = dropboxAuthClient.getAccessTokenExpiresAt();
 
 	return json({
 		accessToken: accessToken,

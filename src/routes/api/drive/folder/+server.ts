@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -25,7 +25,11 @@ import googleClient from '$lib/client/GoogleOAuthClient';
 import { PUBLIC_POKEBOOK_FOLDER_NAME } from '$env/static/public';
 
 export const GET: RequestHandler = async ({ request }) => {
-	googleClient.setCredentials({ access_token: request.headers.get('Authorization') });
+	const accessToken = request.headers.get('Authorization');
+
+	if (!accessToken) return new Response('', { status: 401 });
+
+	googleClient.setCredentials({ access_token: accessToken });
 
 	let pokebookFolderId;
 

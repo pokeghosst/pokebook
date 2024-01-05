@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Poem } from '../models/Poem';
+import type { PoemEntity } from '$lib/types';
 import type { PoemFileEntity } from '$lib/types';
 
 export interface IPoemStorageDriver {
 	listPoems(): Promise<PoemFileEntity[]>;
-	loadPoem(poemUri: string): Promise<Poem>;
-	savePoem(poem: Poem): Promise<void>;
-	updatePoem(poem: Poem, poemUri: string): Promise<string | void>;
+	loadPoem(poemUri: string): Promise<PoemEntity>;
+	savePoem(poem: PoemEntity): Promise<void>;
+	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
 	deletePoem(poemUri: string): Promise<void>;
 }
