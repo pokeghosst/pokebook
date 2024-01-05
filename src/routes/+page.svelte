@@ -38,7 +38,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const actions = [
 		{ action: stashPoem, label: $t('workspace.newPoem') as string },
-		{ action: exportPoem, label: $t('workspace.exportPoem') as string },
+		{ action: sharePoem, label: $t('workspace.sharePoem') as string },
 		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
 	];
 
@@ -88,16 +88,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemNoteStore.set('');
 	}
 
-	async function exportPoem() {
-		try {
+	async function sharePoem() {
+		const poemTextToShare = `${$draftPoemNameStore}\n\n${$draftPoemBodyStore}\n`;
+		if ((await Share.canShare()).value)
 			await Share.share({
-				title: $draftPoemNameStore,
-				text: $draftPoemBodyStore,
-				url: 'https://book.pokeghost.org',
-				dialogTitle: 'Share your poem with the world!'
+				title: `${$t('share.title')} "${$draftPoemNameStore}"`,
+				dialogTitle: $t('share.dialogTitle'),
+				text: poemTextToShare,
+				url: 'https://book.pokeghost.org'
 			});
-		} catch (e: unknown) {
-			console.log('Not implemented yet!');
+		else {
+			navigator.clipboard.writeText(poemTextToShare);
+			toast.success($t('toast.poemCopiedToClipboard'), {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
 		}
 	}
 </script>
