@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,90 +18,74 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-import { google } from 'googleapis';
-import { XMLBuilder } from 'fast-xml-parser';
+import { DropboxClient } from '$lib/client/DropboxClient';
+import { GoogleDriveClient } from '$lib/client/GoogleDriveClient';
 
-import googleClient from '$lib/client/GoogleOAuthClient';
+import { StorageProvider } from '$lib/enums/StorageProvider';
 
 import type { PoemEntity } from '$lib/types';
 
 export const GET: RequestHandler = async ({ request, params }) => {
-	const poemId = params.id;
+	const provider = params.provider;
+	if (!provider) return new Response('', { status: 400 });
 
+	const poemId = params.id;
 	if (!poemId) return new Response('', { status: 404 });
 
 	const accessToken = request.headers.get('Authorization');
-
 	if (!accessToken) return new Response('', { status: 401 });
 
-	googleClient.setCredentials({ access_token: accessToken });
-
-	try {
-		return json(
-			(
-				await google.drive('v3').files.get({
-					fileId: poemId,
-					alt: 'media',
-					auth: googleClient
-				})
-			).data
-		);
-	} catch (e) {
-		return new Response('', { status: 500 });
+	switch (provider) {
+		case StorageProvider.DROPBOX:
+			return json(await DropboxClient.getPoem(accessToken, poemId));
+		case StorageProvider.GOOGLE: {
+			return json(await GoogleDriveClient.getPoem(accessToken, poemId));
+		}
+		default:
+			return new Response('', { status: 400 });
 	}
 };
 
 export const PATCH: RequestHandler = async ({ request, params }) => {
-	const poemId = params.id;
+	const provider = params.provider;
+	if (!provider) return new Response('', { status: 400 });
 
+	const poemId = params.id;
 	if (!poemId) return new Response('', { status: 404 });
 
 	const accessToken = request.headers.get('Authorization');
-
 	if (!accessToken) return new Response('', { status: 401 });
-
-	googleClient.setCredentials({ access_token: accessToken });
 
 	const poem = (await request.json()) as PoemEntity;
 
-	try {
-		await google.drive('v3').files.update({
-			auth: googleClient,
-			fileId: poemId,
-			requestBody: {
-				name: `${poem.name}.xml`
-			},
-			media: {
-				mimeType: 'text/xml',
-				body: new XMLBuilder({ format: true }).build(poem)
-			}
-		});
-
-		return new Response('', { status: 200 });
-	} catch (e) {
-		return new Response('', { status: 500 });
+	switch (provider) {
+		case StorageProvider.DROPBOX:
+			return json(await DropboxClient.updatePoem(accessToken, poemId, poem));
+		case StorageProvider.GOOGLE: {
+			return json(await GoogleDriveClient.updatePoem(accessToken, poemId, poem));
+		}
+		default:
+			return new Response('', { status: 400 });
 	}
 };
 
 export const DELETE: RequestHandler = async ({ request, params }) => {
-	const poemId = params.id;
+	const provider = params.provider;
+	if (!provider) return new Response('', { status: 400 });
 
+	const poemId = params.id;
 	if (!poemId) return new Response('', { status: 404 });
 
 	const accessToken = request.headers.get('Authorization');
-
 	if (!accessToken) return new Response('', { status: 401 });
 
-	googleClient.setCredentials({ access_token: accessToken });
-
-	try {
-		await google.drive('v3').files.delete({
-			auth: googleClient,
-			fileId: poemId
-		});
-
-		return new Response('', { status: 200 });
-	} catch (e) {
-		return new Response('', { status: 500 });
+	switch (provider) {
+		case StorageProvider.DROPBOX:
+			return json(await DropboxClient.deletePoem(accessToken, poemId));
+		case StorageProvider.GOOGLE: {
+			return json(await GoogleDriveClient.deletePoem(accessToken, poemId));
+		}
+		default:
+			return new Response('', { status: 400 });
 	}
 };

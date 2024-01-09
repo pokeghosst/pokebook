@@ -30,26 +30,22 @@ import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
 export const POST: RequestHandler = async ({ request }) => {
 	const code = request.headers.get('Authorization');
 
-	if (code) {
-		let refreshTokenId;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const { result }: any = await dropboxAuthClient.getAccessTokenFromCode(
-			`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
-			code
-		);
-		if (result.refresh_token !== undefined) {
-			refreshTokenId = RIPEMD160(result.refresh_token).toString();
-			CredentialCacher.cacheCredential(
-				StorageProvider.DROPBOX,
-				refreshTokenId,
-				result.refresh_token
-			);
-			return json({
-				accessToken: result.access_token,
-				expiration: Date.now() + parseInt(result.expires_in) * 1000,
-				refreshTokenId: refreshTokenId
-			});
-		} else return new Response('', { status: 401 });
-	}
-	return json('');
+	if (!code) return new Response('', { status: 401 });
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const { result }: any = await dropboxAuthClient.getAccessTokenFromCode(
+		`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
+		code
+	);
+
+	if (!result.refresh_token) return new Response('', { status: 500 });
+
+	const refreshTokenId = RIPEMD160(result.refresh_token).toString();
+	CredentialCacher.cacheCredential(StorageProvider.DROPBOX, refreshTokenId, result.refresh_token);
+
+	return json({
+		accessToken: result.access_token,
+		expiration: Date.now() + parseInt(result.expires_in) * 1000,
+		refreshTokenId: refreshTokenId
+	});
 };

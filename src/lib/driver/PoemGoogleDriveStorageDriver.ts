@@ -42,7 +42,7 @@ async function retrievePokebookFolderId() {
 				Authorization: await getAccessToken()
 			}
 		});
-		const folderId = (await folderIdResponse.json()).folderId as string;
+		const folderId = (await folderIdResponse.json()).pokebookFolderId as string;
 
 		if (folderId === undefined) throw new Error('errors.google.folderId');
 

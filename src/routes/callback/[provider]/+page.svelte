@@ -57,7 +57,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					});
 					await Preferences.set({
 						key: `${provider}_access_token_expiration`,
-						value: callbackResponseJson.expiration
+						value: callbackResponseJson.accessTokenExpiration
 					});
 					await Preferences.set({
 						key: `${provider}_refresh_token_id`,

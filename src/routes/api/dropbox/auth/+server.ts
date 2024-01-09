@@ -51,13 +51,13 @@ export const DELETE: RequestHandler = async ({ request }) => {
 		refreshTokenId
 	);
 
-	if (refreshToken === undefined) return new Response('', { status: 500 });
+	if (!refreshToken) return new Response('', { status: 500 });
 
 	try {
 		dropboxAuthClient.setRefreshToken(refreshToken);
 		new Dropbox({ auth: dropboxAuthClient }).authTokenRevoke();
-
 		CredentialCacher.deleteCredential(StorageProvider.DROPBOX, refreshTokenId);
+
 		return new Response('', { status: 200 });
 	} catch (e) {
 		return new Response('', { status: 500 });
