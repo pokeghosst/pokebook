@@ -72,6 +72,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				default:
 					goto(`/settings?auth=${provider}&status=unknownError`);
 			}
+		} else {
+			toast.error('errors.callbackCodeNotFound', {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
 		}
 	});
 </script>

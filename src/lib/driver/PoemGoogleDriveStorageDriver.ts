@@ -28,8 +28,8 @@ import { StorageProvider } from '$lib/enums/StorageProvider';
 
 async function getAccessToken() {
 	return (
-		(await retrieveAccessToken(StorageProvider.DROPBOX)) ||
-		(await refreshAndReturnAccessToken(StorageProvider.DROPBOX))
+		(await retrieveAccessToken(StorageProvider.GOOGLE)) ||
+		(await refreshAndReturnAccessToken(StorageProvider.GOOGLE))
 	);
 }
 
@@ -54,7 +54,7 @@ async function retrievePokebookFolderId() {
 }
 
 export async function getGoogleDriveAuthUrl() {
-	const response = await fetch('/api/drive/auth', {
+	const response = await fetch('/api/google/auth', {
 		method: 'GET'
 	});
 	return await response.json();

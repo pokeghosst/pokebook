@@ -18,31 +18,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 
-import { dropboxAuthClient } from '$lib/client/DropboxClient';
-import { CredentialCacher } from '$lib/cache/CredentialsCacher';
+import { DropboxClient } from '$lib/client/DropboxClient';
+import { GoogleDriveClient } from '$lib/client/GoogleDriveClient';
 
 import { StorageProvider } from '$lib/enums/StorageProvider';
 
-export const GET: RequestHandler = async ({ request }) => {
-	const refreshTokenId = request.headers.get('Authorization');
+export const POST: RequestHandler = async ({ request, params }) => {
+	const provider = params.provider;
+	if (!provider) return new Response('', { status: 400 });
 
-	if (refreshTokenId === null) return new Response('', { status: 401 });
+	const code = request.headers.get('Authorization');
+	if (!code) return new Response('', { status: 401 });
 
-	const refreshToken = await CredentialCacher.retrieveCredential(
-		StorageProvider.DROPBOX,
-		refreshTokenId
-	);
-
-	if (refreshToken === undefined) return new Response('', { status: 500 });
-
-	dropboxAuthClient.setRefreshToken(refreshToken);
-	dropboxAuthClient.refreshAccessToken();
-
-	const accessToken = dropboxAuthClient.getAccessToken();
-	const accessTokenExpiry = dropboxAuthClient.getAccessTokenExpiresAt();
-
-	return json({
-		accessToken: accessToken,
-		accessTokenExpiry: accessTokenExpiry
-	});
+	switch (provider) {
+		case StorageProvider.DROPBOX:
+			return json(await DropboxClient.processCallback(code));
+		case StorageProvider.GOOGLE: {
+			return json(await GoogleDriveClient.processCallback(code));
+		}
+		default:
+			return new Response('', { status: 400 });
+	}
 };

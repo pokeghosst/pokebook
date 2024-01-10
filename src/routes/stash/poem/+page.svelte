@@ -153,7 +153,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function deletePoem() {
-		Poem.delete($currentPoemUri, $storageMode);
+		await Poem.delete($currentPoemUri, $storageMode);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}

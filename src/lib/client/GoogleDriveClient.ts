@@ -81,7 +81,7 @@ export class GoogleDriveClient {
 
 		return {
 			accessToken: res?.data.access_token,
-			expiration: res?.data.expiry_date
+			accessTokenExpiration: res?.data.expiry_date
 		};
 	}
 	public static async getPokeBookFolderId(accessToken: string) {

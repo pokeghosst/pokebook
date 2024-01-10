@@ -68,7 +68,7 @@ export class DropboxClient {
 
 		return {
 			accessToken: result.access_token,
-			expiration: Date.now() + parseInt(result.expires_in) * 1000,
+			accessTokenExpiration: Date.now() + parseInt(result.expires_in) * 1000,
 			refreshTokenId: refreshTokenId
 		};
 	}
@@ -86,7 +86,7 @@ export class DropboxClient {
 
 		return {
 			accessToken: accessToken,
-			accessTokenExpiry: accessTokenExpiry
+			accessTokenExpiration: accessTokenExpiry
 		};
 	}
 	public static async findAllPoems(accessToken: string) {
@@ -103,7 +103,7 @@ export class DropboxClient {
 		return files.reverse();
 	}
 	public static async getPoem(accessToken: string, poemId: string) {
-		Buffer.from(
+		return Buffer.from(
 			(
 				(await new Dropbox({ accessToken: accessToken }).filesDownload({
 					path: poemId
@@ -144,5 +144,5 @@ async function retrieveRefreshToken(refreshTokenId: string) {
 
 	if (!refreshToken) throw new Error('dropboxRefreshTokenMissing');
 
-	return refreshTokenId;
+	return refreshToken;
 }

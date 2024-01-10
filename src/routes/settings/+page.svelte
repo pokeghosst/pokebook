@@ -77,7 +77,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		switch (storage) {
 			case 'dropbox':
 				return getDropboxAuthUrl();
-			case 'gdrive':
+			case 'google':
 				return getGoogleDriveAuthUrl();
 			default:
 				throw new Error();
@@ -88,7 +88,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		switch (storage) {
 			case 'dropbox':
 				return dropboxLogout();
-			case 'gdrive':
+			case 'google':
 				return googleDriveLogout();
 			default:
 				throw new Error();

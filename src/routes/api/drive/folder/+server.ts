@@ -22,7 +22,6 @@ import { GoogleDriveClient } from '$lib/client/GoogleDriveClient';
 
 export const GET: RequestHandler = async ({ request }) => {
 	const accessToken = request.headers.get('Authorization');
-
 	if (!accessToken) return new Response('', { status: 401 });
 
 	return json({ pokebookFolderId: await GoogleDriveClient.getPokeBookFolderId(accessToken) });
