@@ -17,7 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
+
 	import { Share } from '@capacitor/share';
+	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
 
 	import {
@@ -27,8 +30,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/poemDraft';
 	import { storageMode } from '$lib/stores/storageMode';
 
-	import { t } from '$lib/translations';
 	import Poem from '$lib/models/Poem';
+	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import Workspace from '../components/Workspace.svelte';
@@ -41,6 +44,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{ action: sharePoem, label: $t('workspace.sharePoem') as string },
 		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
 	];
+
+	onMount(() => {
+		hotkeys('ctrl+shift+n, command+shift+n', function () {
+			stashPoem();
+			return false;
+		});
+	});
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
