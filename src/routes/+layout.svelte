@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Capacitor } from '@capacitor/core';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Toaster } from 'svelte-french-toast';
+	import { Modals, closeModal } from 'svelte-modals';
 
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -47,6 +48,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 </script>
+
+<Modals>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div slot="backdrop" class="backdrop" on:click={closeModal} />
+</Modals>
 
 <Toaster />
 <Sidebar />

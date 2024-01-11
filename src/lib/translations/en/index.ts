@@ -4,6 +4,7 @@ import settings from './settings.json';
 import themes from './themes.json';
 import workspace from './workspace.json';
 import errors from './errors.json';
+import hotkeys from './hotkeys.json';
 
 export default {
 	menu,
@@ -11,5 +12,6 @@ export default {
 	settings,
 	themes,
 	workspace,
-	errors
+	errors,
+	hotkeys
 };

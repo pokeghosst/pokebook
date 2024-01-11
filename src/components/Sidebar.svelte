@@ -17,7 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { openModal } from 'svelte-modals';
+
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
+
+	import Modal from './Modal.svelte';
+	import HotkeysModal from './HotkeysModal.svelte';
 
 	import { footerLinks } from '$lib/constants/FooterLinks';
 	import { navMenuIcons } from '$lib/constants/NavMenuIcons';
@@ -58,6 +63,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			{/each}
 		</div>
 		<div class="sidebar-footer">
+			<button
+				on:click={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				>{$t('menu.shortcuts')}</button
+			>
 			<ul>
 				{#each footerLinks as link}
 					<li><a href={link.url}>{$t(link.label)}</a></li>

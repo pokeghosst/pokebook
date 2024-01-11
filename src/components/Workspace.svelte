@@ -46,10 +46,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let currentState = '';
 
 	onMount(() => {
-		hotkeys('ctrl+shift+e, command+shift+e', function () {
+		hotkeys('ctrl+e, command+e', function () {
 			expandPoemPad();
 			return false;
 		});
+	});
+
+	onDestroy(() => {
+		hotkeys.unbind('ctrl+e, command+e');
 	});
 
 	function swapViews() {

@@ -52,6 +52,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		});
 	});
 
+	onDestroy(() => {
+		hotkeys.unbind('ctrl+shift+n, command+shift+n');
+	});
+
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {

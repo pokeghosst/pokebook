@@ -30,14 +30,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Pencil from './svg/PencilRuler.svelte';
 
 	onMount(() => {
-		hotkeys('ctrl+shift+/, command+shift+/', function () {
+		hotkeys('ctrl+/, command+/', function () {
 			toggleSidebar();
 			return false;
 		});
-		hotkeys('ctrl+shift+h, command+shift+h', function () {
+		hotkeys('ctrl+h, command+h', function () {
 			togglePokeHelp();
 			return false;
 		});
+	});
+
+	onDestroy(() => {
+		hotkeys.unbind();
 	});
 
 	async function toggleDarkMode() {
