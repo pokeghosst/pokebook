@@ -49,7 +49,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
 			stashPoem();
 			return false;
-		});
+		});		
 	});
 
 	onDestroy(() => {

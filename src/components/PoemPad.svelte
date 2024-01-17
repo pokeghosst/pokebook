@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 
-	import { highlightWords, putSyllables } from '$lib/pokehelp-util';
+	import { highlightWords, putSyllables } from '$lib/util/PokeHelp';
 	import { t } from '$lib/translations';
 
 	export let editable: boolean;
