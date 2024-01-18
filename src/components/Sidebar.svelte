@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import Modal from './Modal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
+	import AboutModal from './AboutModal.svelte';
 
-	import { footerLinks } from '$lib/constants/FooterLinks';
 	import { navMenuIcons } from '$lib/constants/NavMenuIcons';
 	import { navMenuItems } from '$lib/constants/NavMenuItems';
 
@@ -68,11 +68,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
-				{#each footerLinks as link}
-					<li><a href={link.url}>{$t(link.label)}</a></li>
-				{/each}
+				<li>
+					<button on:click={() => openModal(Modal, { content: AboutModal })}
+						>{$t('menu.about')}</button
+					>
+				</li>
 			</ul>
-			<a href="https://codeberg.org/pokeghost/pokebook" target="_blank">{$t('menu.sourceCode')}</a>
 		</div>
 	</div>
 </div>

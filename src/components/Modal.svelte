@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	export let isOpen = false;
 
-	export let title: string;
+	export let title: string | null = null;
 	export let content: ComponentType;
 </script>
 
@@ -33,7 +33,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="modal-wrapper">
 		<div role="dialog" class="modal">
 			<div class="modal-title-bar">
-				<div class="modal-title">{title}</div>
+				{#if title}
+					<div class="modal-title">{title}</div>
+				{/if}
 				<div class="modal-title-side">
 					<button on:click={closeModal}><CloseX /></button>
 				</div>

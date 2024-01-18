@@ -33,6 +33,7 @@
 
 .modal-title-bar {
 	display: flex;
+	justify-content: right;
 	border-bottom: 1px solid var(--border-color);
 	height: 56px;
 }

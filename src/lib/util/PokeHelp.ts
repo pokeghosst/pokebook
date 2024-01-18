@@ -72,7 +72,7 @@ function colorCodeWords(text, rhymeGroups, colors) {
 	forEach(rhymeGroups, (words, colorIndex) => {
 		const color = colors[colorIndex];
 		forEach(words, (word) => {
-			const pattern = new RegExp('( |^)' + word + '(\\n|$|[ .,!?:;]+\\n|[ .,!?:;]+$)', 'gm');
+			const pattern = new RegExp('( |^)' + word + '(\\n|$|[ .,!?:;—-]+\\n|[ .,!?:;—-]+$)', 'gm');
 			result = result
 				.replace("'", '')
 				.replace(
