@@ -70,6 +70,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<a href="https://getbook.pokeghost.org/privacy">{$t('about.privacy')}</a>
 			| <a href="https://getbook.pokeghost.org/terms">{$t('about.terms')}</a>
 		</p>
-		<p>© 2023-2024 Pokeghost</p>
+		<p>© 2023-{new Date().getFullYear()} Pokeghost</p>
 	</div>
 </div>
