@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { RIPEMD160 } from 'crypto-js';
+import RIPEMD160 from 'crypto-js/ripemd160';
 import { XMLBuilder } from 'fast-xml-parser';
 import { google } from 'googleapis';
 
