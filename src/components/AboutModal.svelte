@@ -19,8 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { t } from '$lib/translations';
 
-	import { PUBLIC_POKEBOOK_VERSION_NAME, PUBLIC_POKEBOOK_VERSION_NUMBER } from '$env/static/public';
-
 	const socialPlatforms = [
 		{
 			url: 'mailto:me@pokeghost.org',
@@ -53,7 +51,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<small>Version {PUBLIC_POKEBOOK_VERSION_NUMBER} - "{PUBLIC_POKEBOOK_VERSION_NAME}"</small>
+		<small>Version 3.0.0 - "Mille-feuille"</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}
