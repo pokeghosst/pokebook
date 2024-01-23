@@ -19,9 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	import { Capacitor } from '@capacitor/core';
-	import { StatusBar, Style } from '@capacitor/status-bar';
 	import { Browser } from '@capacitor/browser';
+	import { Capacitor } from '@capacitor/core';
+	import { Preferences } from '@capacitor/preferences';
+	import { StatusBar, Style } from '@capacitor/status-bar';
 
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
@@ -37,17 +38,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { padFonts } from '$lib/constants/PadFonts';
 	import { storageOptions } from '$lib/constants/StorageOptions';
 	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
-	import { t } from '$lib/translations';
 	import {
 		getGoogleDriveAuthUrl,
 		googleDriveLogout
 	} from '$lib/driver/PoemGoogleDriveStorageDriver';
+	import { t } from '$lib/translations';
 
-	import SettingsSelect from '../../components/SettingsSelect.svelte';
-	import toast from 'svelte-french-toast';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { onMount } from 'svelte';
+	import toast from 'svelte-french-toast';
+	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
@@ -74,6 +75,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function getCloudAuthUrlPromise(storage: string) {
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 		switch (storage) {
 			case 'dropbox':
 				return getDropboxAuthUrl();

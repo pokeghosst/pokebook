@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Preferences } from '@capacitor/preferences';
 import RIPEMD160 from 'crypto-js/ripemd160';
 import { XMLBuilder } from 'fast-xml-parser';
 import { google } from 'googleapis';
@@ -57,8 +56,6 @@ export class GoogleDriveClient {
 				tokens.refresh_token
 			);
 		}
-
-		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 
 		return {
 			accessToken: tokens.access_token,

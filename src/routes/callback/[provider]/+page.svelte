@@ -33,7 +33,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		const provider = $page.params.provider;
 
 		if (!isStorageProvider(provider))
-			toast.error('errors.noStorageProvider', {
+			toast.error($t('errors.noStorageProvider'), {
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
@@ -51,7 +51,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			switch (callbackResponse.status) {
 				case 200: {
 					const callbackResponseJson = await callbackResponse.json();
-					console.log('settings prefs...')
 					await Preferences.set({
 						key: `${provider}_access_token`,
 						value: callbackResponseJson.accessToken
@@ -82,4 +81,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 </script>
 
-<p style="text-align: center;">{$t('workspace.waitForAuthorization')}</p>
+<!-- <p style="text-align: center;">{$t('workspace.waitForAuthorization')}</p> -->
