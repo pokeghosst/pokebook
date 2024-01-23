@@ -113,7 +113,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		else {
 			navigator.clipboard.writeText(poemTextToShare);
-			toast.success($t('toast.poemCopiedToClipboard'), {
+			toast.success($t('toasts.poemCopiedToClipboard'), {
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});

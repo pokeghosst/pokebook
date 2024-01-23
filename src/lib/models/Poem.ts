@@ -27,7 +27,7 @@ export default class Poem {
 		switch (storage) {
 			case 'dropbox':
 				return PoemDropboxStorageDriver;
-			case 'gdrive':
+			case 'google':
 				return PoemGoogleDriveStorageDriver;
 			case 'local':
 				return PoemLocalStorageDriver;

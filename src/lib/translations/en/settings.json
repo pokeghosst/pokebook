@@ -8,8 +8,9 @@
 	"right": "Right",
 	"center": "Center",
 	"dropbox": "Dropbox",
-	"gdrive": "Google Drive",
+	"google": "Google Drive",
 	"local": "Local storage",
 	"language": "Language",
-	"logout": "Log out"
+	"login": "Log in to",
+	"logout": "Log out of"
 }

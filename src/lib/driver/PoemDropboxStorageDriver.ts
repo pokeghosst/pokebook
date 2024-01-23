@@ -40,14 +40,13 @@ export async function getDropboxAuthUrl() {
 export async function dropboxLogout() {
 	const refreshTokenId = (await Preferences.get({ key: 'dropbox_refresh_token_id' })).value;
 
-	if (refreshTokenId === null) throw new Error('errors.refreshToken');
-
-	await fetch('/api/dropbox/auth', {
-		method: 'DELETE',
-		headers: {
-			Authorization: refreshTokenId
-		}
-	});
+	if (refreshTokenId)
+		await fetch('/api/dropbox/auth', {
+			method: 'DELETE',
+			headers: {
+				Authorization: refreshTokenId
+			}
+		});
 
 	Preferences.remove({ key: 'dropbox_refresh_token_id' });
 	Preferences.remove({ key: 'dropbox_access_token' });

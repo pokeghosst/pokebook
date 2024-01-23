@@ -4,5 +4,10 @@
 	"forgetConfirm": "Heads up! You sure want to forget this poem?",
 	"somethingWrong": "Something went wrong! But don't fret. First, try to re-login with your Google Account. If it doesn't help, report this problem with the following info:",
 	"unauthorized": "Unauthorized! Try to log out and log in again!",
-	"gDriveRedirect": "Heads up! You will be redirected to log in with your Google account. Oke?"
+	"gDriveRedirect": "Heads up! You will be redirected to log in with your Google account. Oke?",
+	"poemCopiedToClipboard": "Poem copied to clipboard!",
+	"buttons": {
+		"saveChanges": "Save",
+		"discardChanges": "Discard"
+	}
 }

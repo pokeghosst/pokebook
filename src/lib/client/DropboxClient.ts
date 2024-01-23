@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Preferences } from '@capacitor/preferences';
 import RIPEMD160 from 'crypto-js/ripemd160';
 import { Dropbox, DropboxAuth, type files } from 'dropbox';
 import { XMLBuilder } from 'fast-xml-parser';
@@ -65,6 +66,8 @@ export class DropboxClient {
 
 		const refreshTokenId = RIPEMD160(result.refresh_token).toString();
 		CredentialCacher.cacheCredential(StorageProvider.DROPBOX, refreshTokenId, result.refresh_token);
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 
 		return {
 			accessToken: result.access_token,

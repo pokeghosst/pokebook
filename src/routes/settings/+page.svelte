@@ -84,12 +84,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	function getCloudLogoutPromise(storage: string) {
+	async function getCloudLogoutPromise(storage: string) {
 		switch (storage) {
 			case 'dropbox':
-				return dropboxLogout();
+				return await dropboxLogout();
 			case 'google':
-				return googleDriveLogout();
+				return await googleDriveLogout();
 			default:
 				throw new Error();
 		}
@@ -159,11 +159,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					Browser.open({ url: url, windowName: '_self' });
 				})}
 			class="action-button action-button--secondary"
-			>Log in to {$t(`settings.${$storageMode}`)}</button
+			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
 		>
 		<button
-			on:click={() => {
-				toast.promise(
+			on:click={async () => {
+				await toast.promise(
 					getCloudLogoutPromise($storageMode),
 					{
 						loading: 'Logging out',
@@ -175,7 +175,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				$storageMode = 'local';
 			}}
 			class="action-button action-button--secondary"
-			>Log out of {$t(`settings.${$storageMode}`)}</button
+			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
 		>
 	{/if}
 	<SettingsSelect

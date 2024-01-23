@@ -7,5 +7,6 @@
 	"newPoem": "New poem (save draft)",
 	"sharePoem": "Share poem",
 	"forgetPoem": "Forget poem",
-	"hotkeys": "Keyboard Shortcuts"
+	"hotkeys": "Keyboard Shortcuts",
+	"waitForAuthorization": "Hang on, we're doing things!"
 }

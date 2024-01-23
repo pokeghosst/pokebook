@@ -108,6 +108,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
+			thinking = false;
 		} else {
 			try {
 				const poem = await Poem.load($currentPoemUri, $storageMode);

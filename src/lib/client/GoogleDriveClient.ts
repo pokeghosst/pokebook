@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Preferences } from '@capacitor/preferences';
 import RIPEMD160 from 'crypto-js/ripemd160';
 import { XMLBuilder } from 'fast-xml-parser';
 import { google } from 'googleapis';
@@ -46,10 +47,18 @@ export class GoogleDriveClient {
 	public static async processCallback(code: string) {
 		const { tokens } = await googleClient.getToken(code);
 
-		if (!tokens.refresh_token) throw new Error('googleDriveCantProcessAuthCode');
+		let refreshTokenId;
 
-		const refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
-		CredentialCacher.cacheCredential(StorageProvider.GOOGLE, refreshTokenId, tokens.refresh_token);
+		if (tokens.refresh_token) {
+			refreshTokenId = RIPEMD160(tokens.refresh_token).toString();
+			CredentialCacher.cacheCredential(
+				StorageProvider.GOOGLE,
+				refreshTokenId,
+				tokens.refresh_token
+			);
+		}
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 
 		return {
 			accessToken: tokens.access_token,
@@ -63,10 +72,10 @@ export class GoogleDriveClient {
 			refreshTokenId
 		);
 
-		if (!refreshToken) throw new Error('googleDriveRefreshTokenMissing');
-
-		googleClient.revokeToken(refreshToken);
-		CredentialCacher.deleteCredential(StorageProvider.GOOGLE, refreshTokenId);
+		if (refreshToken) {
+			googleClient.revokeToken(refreshToken);
+			CredentialCacher.deleteCredential(StorageProvider.GOOGLE, refreshTokenId);
+		} 
 	}
 	public static async refreshAccessToken(refreshTokenId: string) {
 		const refreshToken = await CredentialCacher.retrieveCredential(
@@ -126,13 +135,20 @@ export class GoogleDriveClient {
 	}
 	public static async getPoem(accessToken: string, poemId: string) {
 		googleClient.setCredentials({ access_token: accessToken });
-		return (
-			await google.drive('v3').files.get({
-				fileId: poemId,
-				alt: 'media',
-				auth: googleClient
-			})
-		).data;
+		return Buffer.from(
+			(
+				await google.drive('v3').files.get(
+					{
+						fileId: poemId,
+						alt: 'media',
+						auth: googleClient
+					},
+					{
+						responseType: 'arraybuffer'
+					}
+				)
+			).data as ArrayBuffer
+		).toString();
 	}
 	public static async savePoem(accessToken: string, pokebookFolderId: string, poem: PoemEntity) {
 		googleClient.setCredentials({ access_token: accessToken });

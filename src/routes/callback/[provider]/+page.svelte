@@ -51,6 +51,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			switch (callbackResponse.status) {
 				case 200: {
 					const callbackResponseJson = await callbackResponse.json();
+					console.log('settings prefs...')
 					await Preferences.set({
 						key: `${provider}_access_token`,
 						value: callbackResponseJson.accessToken
@@ -81,4 +82,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 </script>
 
-<p style="text-align: center;">{$t('general.waitForAuthorization')}</p>
+<p style="text-align: center;">{$t('workspace.waitForAuthorization')}</p>

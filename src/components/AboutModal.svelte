@@ -26,9 +26,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'me@pokeghost.org'
 		},
 		{
-			url: 'https://codeberg.org/pokeghost/pokebook',
+			url: 'https://gitlab.com/pokeghost/pokebook',
 			title: 'about.contribute',
-			handle: 'codeberg.org'
+			handle: 'GitLab'
 		},
 		{
 			url: 'https://discord.gg/XfwmEHwa2k',
