@@ -20,6 +20,8 @@ import { Preferences } from '@capacitor/preferences';
 
 import type { StorageProvider } from '$lib/enums/StorageProvider';
 
+import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+
 export async function retrieveAccessToken(provider: StorageProvider) {
 	const accessToken = (await Preferences.get({ key: `${provider}_access_token` })).value;
 	const accessTokenExpiration = (
@@ -42,24 +44,29 @@ export async function refreshAndReturnAccessToken(provider: StorageProvider): Pr
 
 	if (refreshTokenId === null) throw new Error('errors.refreshToken');
 
-	const refreshTokenResponse = await fetch(`/api/${provider}/refresh`, {
-		headers: {
-			Authorization: refreshTokenId
+	const refreshTokenResponse = await fetch(
+		`${PUBLIC_POKEBOOK_SERVER_URL}/api/${provider}/refresh`,
+		{
+			headers: {
+				Authorization: refreshTokenId
+			}
 		}
-	});
+	);
 
 	if (refreshTokenResponse.status === 500) throw new Error('errors.refreshToken');
 
 	const refreshTokenResponseJson = await refreshTokenResponse.json();
 
 	const newAccessToken = refreshTokenResponseJson.accessToken;
-	const newAccessTokenExpiration = refreshTokenResponseJson.accessTokenExpiry;
+	const newAccessTokenExpiration = refreshTokenResponseJson.accessTokenExpiration;
 
 	Preferences.set({ key: `${provider}_access_token`, value: newAccessToken });
 	Preferences.set({
 		key: `${provider}_access_token_expiration`,
 		value: newAccessTokenExpiration
 	});
+	// TODO: Make this more DRY
+	Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 
 	return newAccessToken;
 }

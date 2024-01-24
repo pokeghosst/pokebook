@@ -40,14 +40,18 @@ export const GET: RequestHandler = async ({ setHeaders, request, url, params }) 
 
 	switch (provider) {
 		case StorageProvider.DROPBOX:
-			return json(await DropboxClient.findAllPoems(accessToken));
+			try {
+				return json(await DropboxClient.findAllPoems(accessToken));
+			} catch (e) {
+				return new Response(null, { status: 500 });
+			}
 		case StorageProvider.GOOGLE: {
 			const pokebookFolderId = url.searchParams.get('pokebookFolderId');
 			if (!pokebookFolderId) return new Response('', { status: 400 });
 			return json(await GoogleDriveClient.findAllPoems(accessToken, pokebookFolderId));
 		}
 		default:
-			return new Response('', { status: 400 });
+			return new Response(null, { status: 400 });
 	}
 };
 

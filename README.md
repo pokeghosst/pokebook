@@ -49,7 +49,7 @@ Functionality for storing poems in Google Drive is handled by [PokeDrive Book](h
 
 ## Environment variables
 
-- `PUBLIC_POKEBOOK_BASE_URL` - The base URL of the PokeBook app deployment with no trailing slash
+- `PUBLIC_POKEBOOK_CLIENT_URL` - The base URL of the PokeBook app deployment with no trailing slash
 - `PUBLIC_POKEDRIVE_BASE_URL`- The base URL of PokeDrive Book deployment with no trailing slash
 
 ## Building app for deployment
@@ -65,7 +65,7 @@ yarn run static
 
 You can deploy PokeBook to Vercel in one click:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokegh0st%2Fpokebook&env=PUBLIC_POKEDRIVE_BASE_URL,PUBLIC_POKEBOOK_BASE_URL)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokegh0st%2Fpokebook&env=PUBLIC_POKEDRIVE_BASE_URL,PUBLIC_POKEBOOK_CLIENT_URL)
 
 To deploy to other platform (e.g., Netlify), make sure to change the adapter.
 

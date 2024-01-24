@@ -29,6 +29,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import toast from 'svelte-french-toast';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
+	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+
 	onMount(async () => {
 		const provider = $page.params.provider;
 
@@ -41,13 +43,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		const code = $page.url.searchParams.get('code');
 
 		if (code) {
-			const callbackResponse = await fetch(`/api/${provider}/callback`, {
-				headers: {
-					Authorization: code,
-					'Content-type': 'application/json'
-				},
-				method: 'POST'
-			});
+			const callbackResponse = await fetch(
+				`${PUBLIC_POKEBOOK_SERVER_URL}/api/${provider}/callback`,
+				{
+					headers: {
+						Authorization: code,
+						'Content-type': 'application/json'
+					},
+					method: 'POST'
+				}
+			);
 			switch (callbackResponse.status) {
 				case 200: {
 					const callbackResponseJson = await callbackResponse.json();

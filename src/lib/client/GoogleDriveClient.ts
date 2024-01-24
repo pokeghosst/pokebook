@@ -27,12 +27,12 @@ import { StorageProvider } from '$lib/enums/StorageProvider';
 import type { PoemEntity } from '$lib/types';
 
 import { env } from '$env/dynamic/private';
-import { PUBLIC_POKEBOOK_BASE_URL, PUBLIC_POKEBOOK_FOLDER_NAME } from '$env/static/public';
+import { PUBLIC_POKEBOOK_CLIENT_URL, PUBLIC_POKEBOOK_FOLDER_NAME } from '$env/static/public';
 
 export const googleClient = new google.auth.OAuth2(
 	env.GOOGLE_CLIENT_ID,
 	env.GOOGLE_CLIENT_SECRET,
-	PUBLIC_POKEBOOK_BASE_URL + `/callback/${StorageProvider.GOOGLE}`
+	PUBLIC_POKEBOOK_CLIENT_URL + `/callback/${StorageProvider.GOOGLE}`
 );
 
 export class GoogleDriveClient {
@@ -72,7 +72,7 @@ export class GoogleDriveClient {
 		if (refreshToken) {
 			googleClient.revokeToken(refreshToken);
 			CredentialCacher.deleteCredential(StorageProvider.GOOGLE, refreshTokenId);
-		} 
+		}
 	}
 	public static async refreshAccessToken(refreshTokenId: string) {
 		const refreshToken = await CredentialCacher.retrieveCredential(

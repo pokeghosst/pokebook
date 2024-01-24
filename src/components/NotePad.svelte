@@ -25,18 +25,18 @@
 	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
-		if (noteTextarea) {
-			// Requesting the animation frame twice is the most reliable way to
-			// have correct auto resizing even on long text in MOST cases
+		// Requesting the animation frame twice is the most reliable way to
+		// have correct auto resizing even on long text in MOST cases
+		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
-				requestAnimationFrame(() => {
+				if (noteTextarea) {
 					const scrollPosition = window.scrollY;
 					noteTextarea.style.height = 'auto';
 					noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
 					window.scrollTo(0, scrollPosition);
-				});
+				}
 			});
-		}
+		});
 	}
 </script>
 

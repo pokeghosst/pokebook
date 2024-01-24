@@ -82,8 +82,6 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		const directory = poemUri.split('poems/')[0];
 		const timestamp = poemUri.split('poems/')[1].split(/_|\.xml/)[1];
 		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
-		console.log(poemUri);
-		console.log(newFileUri);
 		await Filesystem.rename({
 			from: poemUri,
 			to: newFileUri

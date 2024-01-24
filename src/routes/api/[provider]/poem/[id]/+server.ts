@@ -37,7 +37,11 @@ export const GET: RequestHandler = async ({ request, params }) => {
 
 	switch (provider) {
 		case StorageProvider.DROPBOX:
-			return json(await DropboxClient.getPoem(accessToken, poemId));
+			try {
+				return json(await DropboxClient.getPoem(accessToken, poemId));
+			} catch (e) {
+				return new Response(null, { status: 500 });
+			}
 		case StorageProvider.GOOGLE: {
 			return json(await GoogleDriveClient.getPoem(accessToken, poemId));
 		}

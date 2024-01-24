@@ -28,7 +28,10 @@ import type { PoemEntity, PoemFileEntity } from '$lib/types';
 
 import { env } from '$env/dynamic/private';
 
-import { PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
+import { PUBLIC_POKEBOOK_CLIENT_URL } from '$env/static/public';
+
+const MAX_REQUEST_TRIES = 3;
+const RETRY_DELAY_MS = 1000;
 
 export const dropboxClient = new Dropbox({
 	fetch: fetch,
@@ -45,7 +48,7 @@ export const dropboxAuthClient = new DropboxAuth({
 export class DropboxClient {
 	public static async getAuthUrl() {
 		return await dropboxAuthClient.getAuthenticationUrl(
-			`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
+			`${PUBLIC_POKEBOOK_CLIENT_URL}/callback/dropbox`,
 			'',
 			'code',
 			'offline',
@@ -57,7 +60,7 @@ export class DropboxClient {
 	public static async processCallback(code: string) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const { result }: any = await dropboxAuthClient.getAccessTokenFromCode(
-			`${PUBLIC_POKEBOOK_BASE_URL}/callback/dropbox`,
+			`${PUBLIC_POKEBOOK_CLIENT_URL}/callback/dropbox`,
 			code
 		);
 
@@ -90,7 +93,12 @@ export class DropboxClient {
 		};
 	}
 	public static async findAllPoems(accessToken: string) {
-		const response = await new Dropbox({ accessToken: accessToken }).filesListFolder({ path: '' });
+		const response = await doAndRetryOnTimeout(
+			new Dropbox({ accessToken: accessToken }).filesListFolder({ path: '' })
+		);
+
+		if (!response) throw new Error();
+
 		const entries = response.result.entries as files.FileMetadataReference[];
 		const files: PoemFileEntity[] = [];
 		entries.forEach((entry) => {
@@ -114,25 +122,36 @@ export class DropboxClient {
 		).toString();
 	}
 	public static async savePoem(accessToken: string, poem: PoemEntity) {
-		await new Dropbox({ accessToken: accessToken }).filesUpload({
-			contents: new XMLBuilder({ format: true }).build(poem),
-			path: `/${poem.name}_${Date.now()}.xml`
-		});
+		await doAndRetryOnTimeout(
+			new Dropbox({ accessToken: accessToken }).filesUpload({
+				contents: new XMLBuilder({ format: true }).build(poem),
+				path: `/${poem.name}_${Date.now()}.xml`
+			})
+		);
 	}
 	public static async updatePoem(accessToken: string, poemId: string, poem: PoemEntity) {
 		const dbx = new Dropbox({ accessToken: accessToken });
-		const response = await dbx.filesUpload({
-			contents: new XMLBuilder({ format: true }).build(poem),
-			path: poemId,
-			mode: { '.tag': 'overwrite' }
-		});
-		await dbx.filesMoveV2({
-			from_path: poemId,
-			to_path: `/${poem.name}_${response.result.name.split('_')[1]}`
-		});
+		const response = await doAndRetryOnTimeout(
+			dbx.filesUpload({
+				contents: new XMLBuilder({ format: true }).build(poem),
+				path: poemId,
+				mode: { '.tag': 'overwrite' }
+			})
+		);
+
+		if (!response) throw new Error();
+
+		await doAndRetryOnTimeout(
+			dbx.filesMoveV2({
+				from_path: poemId,
+				to_path: `/${poem.name}_${response.result.name.split('_')[1]}`
+			})
+		);
 	}
 	public static async deletePoem(accessToken: string, poemId: string) {
-		new Dropbox({ accessToken: accessToken }).filesDeleteV2({ path: poemId });
+		await doAndRetryOnTimeout(
+			new Dropbox({ accessToken: accessToken }).filesDeleteV2({ path: poemId })
+		);
 	}
 }
 
@@ -145,4 +164,21 @@ async function retrieveRefreshToken(refreshTokenId: string) {
 	if (!refreshToken) throw new Error('dropboxRefreshTokenMissing');
 
 	return refreshToken;
+}
+
+async function doAndRetryOnTimeout<T>(action: Promise<T>) {
+	let currentTry = 0;
+	console.log(`trying... ${currentTry}`);
+	while (currentTry < MAX_REQUEST_TRIES) {
+		try {
+			return action;
+		} catch (e) {
+			if (e.errno === 'ETIMEDOUT') {
+				currentTry++;
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+			} else {
+				throw e;
+			}
+		}
+	}
 }

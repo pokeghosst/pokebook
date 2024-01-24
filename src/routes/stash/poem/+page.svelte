@@ -139,16 +139,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function save() {
-		let newPoemUriPromise;
-		newPoemUriPromise = Poem.update(
+		await Poem.update(
 			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
 			$currentPoemUri,
 			$storageMode
 		);
-		// TODO: TEST THIS!!!!
-		const promiseResolved = await newPoemUriPromise;
-		console.log(promiseResolved);
-		if (await promiseResolved) console.log('yes');
 		editMode = false;
 		$currentPoemUnsavedChanges = 'false';
 	}

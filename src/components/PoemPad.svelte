@@ -75,18 +75,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function autoResizeNotebook() {
-		if (poemTextarea) {
-			// Requesting the animation frame twice is the most reliable way to
-			// have correct auto resizing even on long text in MOST cases
+		// Requesting the animation frame twice is the most reliable way to
+		// have correct auto resizing even on long text in MOST cases
+		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
-				requestAnimationFrame(() => {
+				if (poemTextarea) {
 					const scrollPosition = window.scrollY;
 					poemTextarea.style.height = 'auto';
 					poemTextarea.style.height = `${poemTextarea.scrollHeight}px`;
 					window.scrollTo(0, scrollPosition);
-				});
+				}
 			});
-		}
+		});
 	}
 </script>
 
