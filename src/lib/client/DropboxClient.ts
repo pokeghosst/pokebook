@@ -59,9 +59,11 @@ export class DropboxClient {
 	}
 	public static async processCallback(code: string) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const { result }: any = await dropboxAuthClient.getAccessTokenFromCode(
-			`${PUBLIC_POKEBOOK_CLIENT_URL}/callback/dropbox`,
-			code
+		const { result }: any = await doAndRetryOnTimeout(
+			dropboxAuthClient.getAccessTokenFromCode(
+				`${PUBLIC_POKEBOOK_CLIENT_URL}/callback/dropbox`,
+				code
+			)
 		);
 
 		if (!result.refresh_token) throw new Error('dropboxCantProcessAuthCode');
@@ -166,16 +168,26 @@ async function retrieveRefreshToken(refreshTokenId: string) {
 	return refreshToken;
 }
 
+// TODO: To waste more time trying to catch `ETIMEDOUT` (Dropbox is a bitch)
 async function doAndRetryOnTimeout<T>(action: Promise<T>) {
 	let currentTry = 0;
-	console.log(`trying... ${currentTry}`);
 	while (currentTry < MAX_REQUEST_TRIES) {
 		try {
-			return action;
+			console.log(`trying... ${currentTry}`);
+			const result = await action;
+			return result;
 		} catch (e) {
-			if (e.errno === 'ETIMEDOUT') {
+			if (e.code === 'ETIMEDOUT') {
+				console.log(`re-trying... ${currentTry}`);
 				currentTry++;
 				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+				// Welcome to Advanced Degeneracy Engineering
+				// When trying to "move" (aka rename) a file to the same location
+				// Dropbox throws `duplicated_or_nested_paths` with the code 409.
+				// Since rewriting contents and updating path are two different operations,
+				// it's safe to ignore (I think).
+			} else if (e.status === 409) {
+				break;
 			} else {
 				throw e;
 			}

@@ -64,11 +64,14 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 			Preferences.set({ key: 'poem_list_request_timestamp', value: requestId });
 		}
 
-		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem?cache=${requestId}`, {
-			headers: {
-				Authorization: await getAccessToken()
+		const response = await fetch(
+			`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem?cache=${requestId}`,
+			{
+				headers: {
+					Authorization: await getAccessToken()
+				}
 			}
-		});
+		);
 
 		if (response.status !== 200)
 			switch (response.status) {

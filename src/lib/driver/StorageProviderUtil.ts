@@ -30,6 +30,7 @@ export async function retrieveAccessToken(provider: StorageProvider) {
 
 	if (
 		accessToken === null ||
+		accessToken === 'undefined' ||
 		accessTokenExpiration === null ||
 		parseInt(accessTokenExpiration) < Date.now()
 	) {
