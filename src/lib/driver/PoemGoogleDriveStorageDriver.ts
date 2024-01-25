@@ -56,7 +56,7 @@ async function retrievePokebookFolderId() {
 }
 
 export async function getGoogleDriveAuthUrl() {
-	const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/google/auth/`, {
+	const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/google/auth`, {
 		method: 'GET'
 	});
 	return await response.json();
@@ -65,7 +65,7 @@ export async function getGoogleDriveAuthUrl() {
 export async function googleDriveLogout() {
 	const refreshTokenId = (await Preferences.get({ key: 'google_refresh_token_id' })).value;
 	if (refreshTokenId) {
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/google/auth/`, {
+		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/google/auth`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: refreshTokenId
