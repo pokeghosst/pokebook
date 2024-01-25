@@ -47,6 +47,7 @@
 		"autoprefixer": "^10.4.13",
 		"cross-env": "^7.0.3",
 		"dotenv": "^16.0.3",
+		"encoding": "^0.1.13",
 		"eslint": "^8.54.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
