@@ -13,7 +13,6 @@ const securityHeaders = {
 
 const corsHeaders = {
 	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-	Allow: 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 	'Access-Control-Allow-Origin': PUBLIC_POKEBOOK_CLIENT_URL,
 	'Access-Control-Allow-Headers': '*'
 };
@@ -26,6 +25,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		Object.entries(corsHeaders).forEach(([header, value]) => response.headers.set(header, value));
 
 	response.headers.append('Access-Control-Allow-Origin', PUBLIC_POKEBOOK_CLIENT_URL);
+	response.headers.append('Allow', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 
 	return response;
 };
