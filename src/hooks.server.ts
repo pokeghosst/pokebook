@@ -13,6 +13,7 @@ const securityHeaders = {
 
 const corsHeaders = {
 	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+	Allow: 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 	'Access-Control-Allow-Origin': PUBLIC_POKEBOOK_CLIENT_URL,
 	'Access-Control-Allow-Headers': '*'
 };
