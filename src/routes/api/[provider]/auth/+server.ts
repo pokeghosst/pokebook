@@ -24,20 +24,22 @@ import { GoogleDriveClient } from '$lib/client/GoogleDriveClient';
 
 export const GET: RequestHandler = async ({ params }) => {
 	const provider = params.provider;
+	console.log(provider);
 	if (!provider) return new Response('', { status: 400 });
 
 	try {
-		switch (provider) {
-			case StorageProvider.DROPBOX:
-				return json('hello from dropbox');
-			// return json(await DropboxClient.getAuthUrl());
-			case StorageProvider.GOOGLE: {
-				return json('hello from google drive');
-				// return json(await GoogleDriveClient.getAuthUrl());
-			}
-			default:
-				return new Response('', { status: 400 });
-		}
+		return json(`hello from ${provider}`);
+		// switch (provider) {
+		// 	case StorageProvider.DROPBOX:
+		// 		return json('hello from dropbox');
+		// 	// return json(await DropboxClient.getAuthUrl());
+		// 	case StorageProvider.GOOGLE: {
+		// 		return json('hello from google drive');
+		// 		// return json(await GoogleDriveClient.getAuthUrl());
+		// 	}
+		// 	default:
+		// 		return new Response('', { status: 400 });
+		// }
 	} catch (e) {
 		return new Response('', { status: 500 });
 	}
