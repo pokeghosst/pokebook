@@ -29,9 +29,11 @@ export const GET: RequestHandler = async ({ params }) => {
 	try {
 		switch (provider) {
 			case StorageProvider.DROPBOX:
-				return json(await DropboxClient.getAuthUrl());
+				return json('hello from dropbox');
+			// return json(await DropboxClient.getAuthUrl());
 			case StorageProvider.GOOGLE: {
-				return json(await GoogleDriveClient.getAuthUrl());
+				return json('hello from google drive');
+				// return json(await GoogleDriveClient.getAuthUrl());
 			}
 			default:
 				return new Response('', { status: 400 });
