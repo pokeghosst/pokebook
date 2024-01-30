@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import adapterStatic from '@sveltejs/adapter-static';
-import adapteVercel from '@sveltejs/adapter-vercel';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import adapterNode from '@sveltejs/adapter-node';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import("@sveltejs/kit").Config} */
 const config = {
@@ -20,7 +20,7 @@ const config = {
 						precompress: false,
 						strict: false
 				  })
-				: adapteVercel(),
+				: adapterNode(),
 		alias: { 'lib/': './src/lib/' }
 	}
 };
