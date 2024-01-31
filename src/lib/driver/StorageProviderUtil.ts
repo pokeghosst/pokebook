@@ -46,7 +46,7 @@ export async function refreshAndReturnAccessToken(provider: StorageProvider): Pr
 	if (refreshTokenId === null) throw new Error('errors.refreshToken');
 
 	const refreshTokenResponse = await fetch(
-		`${PUBLIC_POKEBOOK_SERVER_URL}/api/${provider}/refresh`,
+		`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/refresh`,
 		{
 			headers: {
 				Authorization: refreshTokenId

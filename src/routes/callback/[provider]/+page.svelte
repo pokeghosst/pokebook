@@ -44,7 +44,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 		if (code) {
 			const callbackResponse = await fetch(
-				`${PUBLIC_POKEBOOK_SERVER_URL}/api/${provider}/callback`,
+				`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/callback`,
 				{
 					headers: {
 						Authorization: code,

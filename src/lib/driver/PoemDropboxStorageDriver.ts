@@ -35,15 +35,15 @@ async function getAccessToken() {
 }
 
 export async function getDropboxAuthUrl() {
-	const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/auth`);
-	return await response.json();
+	const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/auth`);
+	return await response.text();
 }
 
 export async function dropboxLogout() {
 	const refreshTokenId = (await Preferences.get({ key: 'dropbox_refresh_token_id' })).value;
 
 	if (refreshTokenId)
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/auth`, {
+		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/auth`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: refreshTokenId
@@ -64,14 +64,11 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 			Preferences.set({ key: 'poem_list_request_timestamp', value: requestId });
 		}
 
-		const response = await fetch(
-			`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem?cache=${requestId}`,
-			{
-				headers: {
-					Authorization: await getAccessToken()
-				}
+		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem?cache=${requestId}`, {
+			headers: {
+				Authorization: await getAccessToken()
 			}
-		);
+		});
 
 		if (response.status !== 200)
 			switch (response.status) {
@@ -84,7 +81,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		return await response.json();
 	},
 	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
-		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem/${poemUri}`, {
+		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem/${poemUri}`, {
 			headers: {
 				Authorization: await getAccessToken()
 			}
@@ -92,10 +89,10 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 
 		if (response.status !== 200) throw new Error('errors.unknown');
 
-		return new XMLParser().parse(await response.json());
+		return new XMLParser().parse(await response.text());
 	},
 	savePoem: async function (poem: PoemEntity): Promise<void> {
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem`, {
+		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem`, {
 			method: 'POST',
 			headers: {
 				Authorization: await getAccessToken(),
@@ -108,7 +105,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string) {
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem/${poemUri}`, {
+		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem/${poemUri}`, {
 			method: 'PATCH',
 			headers: {
 				Authorization: await getAccessToken()
@@ -119,7 +116,7 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	deletePoem: async function (poemUri: string) {
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/api/dropbox/poem/${poemUri}`, {
+		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem/${poemUri}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: await getAccessToken()

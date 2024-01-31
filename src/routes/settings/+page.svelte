@@ -156,10 +156,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	/>
 	{#if $storageMode !== 'local'}
 		<button
-			on:click={() =>
-				getCloudAuthUrlPromise($storageMode).then((url) => {
-					Browser.open({ url: url, windowName: '_self' });
-				})}
+			on:click={async () =>
+				await toast.promise(
+					getCloudAuthUrlPromise($storageMode).then((url) => {
+						Browser.open({ url: url, windowName: '_self' });
+					}),
+					{
+						loading: `${$t('toasts.thingsAreHappening')}`,
+						success: `${$t('toasts.redirecting')}`,
+						error: `${$t('errors.unknown')}`
+					},
+					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
+				)}
 			class="action-button action-button--secondary"
 			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
 		>
