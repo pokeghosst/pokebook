@@ -105,13 +105,16 @@ export const PoemDropboxStorageDriver: IPoemStorageDriver = {
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string) {
-		await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem/${poemUri}`, {
+		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/dropbox/poem/${poemUri}`, {
 			method: 'PATCH',
 			headers: {
-				Authorization: await getAccessToken()
+				Authorization: await getAccessToken(),
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify(poem)
 		});
+
+		if (response.status !== 200) throw new Error(await response.text());
 
 		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
 	},
