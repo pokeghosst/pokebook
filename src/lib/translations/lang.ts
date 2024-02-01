@@ -1,5 +1,5 @@
 export default {
-	en: 'English',
-	ja: '日本語',
-	es: 'Español'
+	'en-US': 'English',
+	'ja-JP': '日本語',
+	'es-US': 'Español'
 };

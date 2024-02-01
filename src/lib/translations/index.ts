@@ -5,11 +5,11 @@ import es from './es';
 import ja from './ja';
 import lang from './lang';
 
-/** @type {import("sveltekit-i18n").Config} */
 const config = {
 	log: {
 		level: dev ? 'warn' : 'error'
 	},
+	fallbackLocale: 'en',
 	translations: {
 		en: { ...en, lang },
 		ja: { ...ja, lang },
