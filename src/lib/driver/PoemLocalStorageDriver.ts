@@ -43,7 +43,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 					timestamp: file.ctime ?? file.mtime
 				});
 			});
-			return poemFiles.sort((a, b) => b.timestamp - a.timestamp);
+			return poemFiles.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
 		} catch (e) {
 			if (e instanceof Error)
 				if (e.message === 'Folder does not exist.') {

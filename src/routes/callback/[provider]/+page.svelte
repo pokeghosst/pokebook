@@ -43,16 +43,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		const code = $page.url.searchParams.get('code');
 
 		if (code) {
-			const callbackResponse = await fetch(
-				`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/callback`,
-				{
-					headers: {
-						Authorization: code,
-						'Content-type': 'application/json'
-					},
-					method: 'POST'
-				}
-			);
+			const callbackResponse = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/callback`, {
+				headers: {
+					Authorization: code,
+					'Content-type': 'application/json'
+				},
+				method: 'POST'
+			});
 			switch (callbackResponse.status) {
 				case 200: {
 					const callbackResponseJson = await callbackResponse.json();
@@ -86,4 +83,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 </script>
 
-<!-- <p style="text-align: center;">{$t('workspace.waitForAuthorization')}</p> -->
+<p style="text-align: center;">{$t('workspace.waitForAuthorization')}</p>

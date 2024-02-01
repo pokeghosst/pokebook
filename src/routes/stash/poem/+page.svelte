@@ -57,9 +57,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		await toast.promise(
 			save(),
 			{
-				loading: 'Saving poem...',
-				success: 'Poem saved!',
-				error: 'Could not save the poem'
+				loading: `${$t('toasts.savingPoem')}`,
+				success: `${$t('toasts.poemSaved')}`,
+				error: `${$t('errors.poemSaveError')}`
 			},
 			{
 				position: GLOBAL_TOAST_POSITION,
@@ -77,9 +77,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			await toast.promise(
 				deletePoem(),
 				{
-					loading: 'Deleting poem...',
-					success: 'Poem deleted!',
-					error: 'Could not  the poem'
+					loading: `${$t('toasts.deletingPoem')}`,
+					success: `${$t('toasts.deletedPoem')}`,
+					error: `${$t('errors.poemDeleteError')}`
 				},
 				{
 					position: GLOBAL_TOAST_POSITION,
@@ -91,11 +91,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let actions = [
 		{ action: editOrSaveAction, label: editOrSaveLabel },
-		{ action: deletePoemAction, label: 'Forget poem' }
+		{ action: deletePoemAction, label: 'workspace.forgetPoem' }
 	];
 
 	$: {
-		editMode == true ? (editOrSaveLabel = 'Save poem') : (editOrSaveLabel = 'Edit poem');
+		editMode == true
+			? (editOrSaveLabel = 'workspace.savePoem')
+			: (editOrSaveLabel = 'workspace.editPoem');
 		editMode == true ? (editOrSaveAction = $saveFunction) : (editOrSaveAction = toggleEdit);
 		actions[0].label = editOrSaveLabel;
 		actions[0].action = editOrSaveAction;

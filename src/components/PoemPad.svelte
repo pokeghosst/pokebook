@@ -52,7 +52,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
 
-	onMount(async () => {
+	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
 		const resizeObserver = new ResizeObserver(autoResizeNotebook);
 		resizeObserver.observe(poemTextarea);

@@ -39,11 +39,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			url: 'https://nixnet.social/pokeghost',
 			title: 'about.fediverse',
 			handle: '@pokeghost'
-		},
-		{
-			url: 'https://www.buymeacoffee.com/pokegh0st',
-			title: 'about.support',
-			handle: 'buymeacoffee.com'
 		}
 	];
 </script>

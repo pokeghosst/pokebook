@@ -5,6 +5,10 @@
 	"authTokenExpired": "Looks like your session expired, please log in again!",
 	"refreshToken": "Could not find your refresh token anywhere! Please log out and log in again.",
 	"noStorageProvider": "Such storage provider doesn't exist!",
+	"callbackCodeNotFound": "Couldn't find callback code, please try again or contact support.",
+	"signOutError": "Something went wrong when trying to sign out",
+	"poemSaveError": "Couldn't save the poem!",
+	"poemDeleteError": "Couldn't delete the poem!",
 	"google": {
 		"folderId": "Couldn't find or create the PokeBook folder. Please log out and log in again!",
 		"poemList": "Could not load poem list. Please log out and log in again!",

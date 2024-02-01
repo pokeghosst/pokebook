@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
+	import { t } from '$lib/translations';
+
 	import ThreeDots from './svg/ThreeDots.svelte';
 
 	export let actions: { action: () => void; label: string }[];
@@ -37,7 +39,7 @@
 	<div class="pad-dropdown-menu">
 		{#each actions as action}
 			<button on:click={() => action.action()}>
-				{action.label}
+				{$t(action.label)}
 			</button>
 		{/each}
 	</div>

@@ -49,7 +49,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
 			stashPoem();
 			return false;
-		});		
+		});
 	});
 
 	onDestroy(() => {
@@ -65,9 +65,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 						$storageMode
 					),
 					{
-						loading: 'Saving poem...',
-						success: 'Poem saved!',
-						error: 'Could not save the poem'
+						loading: `${$t('toasts.savingPoem')}`,
+						success: `${$t('toasts.poemSaved')}`,
+						error: `${$t('errors.poemSaveError')}`
 					},
 					{
 						position: GLOBAL_TOAST_POSITION,

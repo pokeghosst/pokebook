@@ -17,8 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+
+	import { t } from '$lib/translations';
 
 	import {
 		currentPoemName,
@@ -26,21 +28,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
+
 	import Poem from '$lib/models/Poem';
 
 	import type { PoemFileEntity } from '$lib/types';
-	import { t } from '$lib/translations';
 
-	const FALLBACK_DELAY = 100; // ms
+	const FALLBACK_DELAY_MS = 100;
 
 	let poemFilesPromise: Promise<PoemFileEntity[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
-	onMount(async () => {
+	onMount(() => {
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
-		}, FALLBACK_DELAY);
+		}, FALLBACK_DELAY_MS);
 
 		poemFilesPromise = Poem.findAll($storageMode);
 
@@ -52,7 +54,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			if ($currentPoemUri === poemUri) {
 				await goto('/stash/poem');
 			} else {
-				alert(`You have unsaved changes in '${$currentPoemName}'`);
+				alert(`${$t('workspace.unsavedChanges')}} '${$currentPoemName}'`);
 			}
 		} else {
 			$currentPoemUri = poemUri;
@@ -81,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 	{:else}
 		<div class="placeholder-text-wrapper">
-			Your stage is ready and the spotlight's on, but the verses are yet to bloom.
+			{$t('workspace.emptyPoemList')}
 		</div>
 	{/if}
 {:catch error}

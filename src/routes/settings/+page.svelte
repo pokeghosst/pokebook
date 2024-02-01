@@ -18,12 +18,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	import { Browser } from '@capacitor/browser';
 	import { Capacitor } from '@capacitor/core';
 	import { Preferences } from '@capacitor/preferences';
 	import { StatusBar, Style } from '@capacitor/status-bar';
+	import toast from 'svelte-french-toast';
 
+	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -43,11 +46,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		googleDriveLogout
 	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
-
-	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
@@ -176,9 +176,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				await toast.promise(
 					getCloudLogoutPromise($storageMode),
 					{
-						loading: 'Logging out',
-						success: 'Logged out successfully',
-						error: 'Something went wrong when trying to log out'
+						loading: `${$t('toasts.signingOut')}`,
+						success: `${$t('toasts.signedOutOk')}`,
+						error: `${$t('errors.signOutError')}`
 					},
 					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
 				);
