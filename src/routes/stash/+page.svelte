@@ -54,7 +54,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			if ($currentPoemUri === poemUri) {
 				await goto('/stash/poem');
 			} else {
-				alert(`${$t('workspace.unsavedChanges')}} '${$currentPoemName}'`);
+				alert(`${$t('workspace.unsavedChanges')} '${$currentPoemName}'`);
 			}
 		} else {
 			$currentPoemUri = poemUri;

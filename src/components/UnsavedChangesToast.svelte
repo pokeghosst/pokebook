@@ -12,7 +12,7 @@
 </script>
 
 <div class="toast-contents">
-	<p>You may have unsaved changes here. Save or discard them before proceeding.</p>
+	<p>{$t('toasts.unsavedChanges')}</p>
 	<button
 		on:click={() => {
 			toast_.dismiss(toast.id);
