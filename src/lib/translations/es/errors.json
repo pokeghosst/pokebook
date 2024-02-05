@@ -1,0 +1,18 @@
+{
+	"unknown": "Algo misterioso sucedió. ¡Por favor informe este error!",
+	"storageModeUnknown": "¡Ese modo de almacenamiento no existe!",
+	"authorization": "No se pudo autorizar, ¡inténtalo de nuevo! Si el problema persiste, infórmalo.",
+	"authTokenExpired": "Parece que su sesión expiró, ¡inicie sesión nuevamente!",
+	"refreshToken": "¡No pude encontrar su token de actualización en ninguna parte! Por favor cierre sesión e inicie sesión nuevamente.",
+	"noStorageProvider": "¡Este proveedor de almacenamiento no existe!",
+	"callbackCodeNotFound": "No se pudo encontrar el código de devolución de llamada. Inténtelo de nuevo o comuníquese con el soporte.",
+	"signOutError": "Algo salió mal al intentar cerrar sesión.",
+	"poemSaveError": "¡No pude salvar el poema!",
+	"poemDeleteError": "¡No se pudo borrar el poema!",
+	"google": {
+		"folderId": "No se pudo encontrar ni crear la carpeta PokeBook. ¡Cierre sesión e inicie sesión nuevamente!",
+		"poemList": "No se pudo cargar la lista de poemas. ¡Cierre sesión e inicie sesión nuevamente!",
+		"invalidGrant": "El código de acceso es incorrecto o ha caducado.",
+		"poemNotFound": "No pude encontrar este poema. ¿Existe?"
+	}
+}

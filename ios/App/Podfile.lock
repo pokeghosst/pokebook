@@ -1,14 +1,16 @@
 PODS:
-  - Capacitor (5.4.2):
+  - Capacitor (5.5.1):
     - CapacitorCordova
   - CapacitorBrowser (5.1.0):
     - Capacitor
-  - CapacitorCordova (5.4.2)
+  - CapacitorCordova (5.5.1)
   - CapacitorFilesystem (5.1.4):
     - Capacitor
   - CapacitorPreferences (5.0.6):
     - Capacitor
   - CapacitorShare (5.0.6):
+    - Capacitor
+  - CapacitorStatusBar (5.0.6):
     - Capacitor
 
 DEPENDENCIES:
@@ -18,6 +20,7 @@ DEPENDENCIES:
   - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -32,15 +35,18 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/preferences"
   CapacitorShare:
     :path: "../../node_modules/@capacitor/share"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: 8a9db42d105f55843cd8ed2a3cb54e2b78e7f102
+  Capacitor: 9da0a2415e3b6098511f8b5ffdb578d91ee79f8f
   CapacitorBrowser: 7a0fb6a1011abfaaf2dfedfd8248f942a8eda3d6
-  CapacitorCordova: cfcc06b698481da655415985eeb2b8da363f8451
+  CapacitorCordova: e128cc7688c070ca0bfa439898a5f609da8dbcfe
   CapacitorFilesystem: af704badfbc69f6f8623d9ed313e5490e3723dcb
   CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
   CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
+  CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
 
-PODFILE CHECKSUM: 1946c67a58d6a571d40558cd29e5d182c24264fa
+PODFILE CHECKSUM: a4ae834bab6269d51555f1f3c7eb1907757d25fe
 
 COCOAPODS: 1.13.0

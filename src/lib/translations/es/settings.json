@@ -1,14 +1,16 @@
 {
 	"font": "Fuente de cuaderno",
-	"alignment": "Justificación del poema",
+	"justification": "Justificación del poema",
 	"dayTheme": "Tema diurno",
 	"nightTheme": "Tema nocturno",
 	"storage": "Modo de almacenamiento",
 	"left": "Izquierdo",
 	"right": "Derecho",
 	"center": "Centro",
+	"dropbox": "Dropbox",
 	"gdrive": "Google Drive",
 	"local": "Almacenamiento local",
 	"language": "Idioma",
+	"login": "Iniciar sesión en",
 	"logout": "Cerrar sesión"
 }

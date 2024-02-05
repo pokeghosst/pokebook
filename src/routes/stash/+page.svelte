@@ -1,120 +1,93 @@
-<script>
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023-2024 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount, getContext } from 'svelte';
-	import Skeleton from 'svelte-skeleton/Skeleton.svelte';
-	import { Preferences } from '@capacitor/preferences';
-	import { Filesystem, Directory } from '@capacitor/filesystem';
-	import { CapacitorHttp } from '@capacitor/core';
-	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
+	import { onMount } from 'svelte';
+
 	import { t } from '$lib/translations';
 
-	let poems = [];
-	let thinking = false;
-	let storageMode = null;
+	import {
+		currentPoemName,
+		currentPoemUnsavedChanges,
+		currentPoemUri
+	} from '$lib/stores/currentPoem';
+	import { storageMode } from '$lib/stores/storageMode';
 
-	let translationPromise = getContext('translationPromise');
+	import Poem from '$lib/models/Poem';
 
-	onMount(async () => {
-		await translationPromise;
-		const storageModePref = await Preferences.get({ key: 'storage_mode' });
-		storageMode = storageModePref.value || 'local';
+	import type { PoemFileEntity } from '$lib/types';
 
-		Preferences.remove({
-			key: 'current_poem_uri'
-		});
+	const FALLBACK_DELAY_MS = 100;
 
-		switch (storageMode) {
-			case 'gdrive':
-				thinking = true;
-				const response = await loadPoemsFromDrive();
-				switch (response.status) {
-					case 200:
-						poems = response.data.files;
-						break;
-					case 401:
-						alert($t('popups.unauthorized'));
-						break;
-					default:
-						alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
-						break;
-				}
-				thinking = false;
-				break;
-			case 'local':
-				const storedFiles = await Filesystem.readdir({
-					path: 'poems',
-					directory: Directory.Data
-				});
-				poems = storedFiles.files.sort((a, b) => b.ctime - a.ctime);
-				break;
-		}
+	let poemFilesPromise: Promise<PoemFileEntity[]>;
+	let showFallback = false;
+	let fallbackTimeout: ReturnType<typeof setTimeout>;
+
+	onMount(() => {
+		fallbackTimeout = setTimeout(() => {
+			showFallback = true;
+		}, FALLBACK_DELAY_MS);
+
+		poemFilesPromise = Poem.findAll($storageMode);
+
+		return () => clearTimeout(fallbackTimeout);
 	});
 
-	async function loadPoemsFromDrive() {
-		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
-		const options = {
-			url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
-			headers: {
-				Authorization: gDriveUuidPref.value
+	async function checkUnsavedChangesConflict(poemUri: string) {
+		if ($currentPoemUnsavedChanges === 'true') {
+			if ($currentPoemUri === poemUri) {
+				await goto('/stash/poem');
+			} else {
+				alert(`${$t('workspace.unsavedChanges')} '${$currentPoemName}'`);
 			}
-		};
-		const response = await CapacitorHttp.request({ ...options, method: 'GET' });
-		return response;
-	}
-
-	function openPoem(poem) {
-		if (storageMode == 'gdrive') {
-			Preferences.set({
-				key: 'gdrive_poem_id',
-				value: poem.id
-			});
 		} else {
-			Preferences.set({
-				key: 'current_poem_uri',
-				value: poem.uri
-			});
+			$currentPoemUri = poemUri;
+			await goto('/stash/poem');
 		}
-		goto('/stash/poem', { replaceState: false });
 	}
 </script>
 
-<div class="poem-list mt-5 flex flex-col w-11/12 md:w-7/12 mx-auto">
-	<div class="overflow-x-auto">
-		<div class="inline-block min-w-full">
-			<div class="overflow-hidden">
-				{#if thinking}
-					<div class="pt-10 flex items-center justify-center">
-						<Skeleton>
-							<rect width="100%" height="20" x="0" y="0" rx="5" ry="5" />
-							<rect width="100%" height="20" x="0" y="45" rx="5" ry="5" />
-							<rect width="100%" height="20" x="0" y="85" rx="5" ry="5" />
-							<rect width="100%" height="20" x="0" y="125" rx="5" ry="5" />
-						</Skeleton>
-					</div>
-				{:else if poems}
-					{#if poems.length == 0}
-						<div
-							class="flex justify-center items-center mt-12 text-center"
-							id="poem-list-placeholder"
-						>
-							Your stage is ready and the spotlight's on, but the verses are yet to bloom.
-						</div>
-					{:else}
-						{#each poems as poem}
-							{#if poem.name.split('_')[3] == null}
-								<div class="poem-list__item w-full">
-									<button on:click={openPoem(poem)} class="w-full flex justify-between p-5">
-										<div>{poem.name.split('_')[0].replace(/%20/g, ' ')}</div>
-										<div class="">
-											{poem.name.split('_')[1]}
-										</div>
-									</button>
-								</div>
-							{/if}
-						{/each}
-					{/if}
-				{/if}
-			</div>
+{#await poemFilesPromise}
+	{#if showFallback}
+		<div class="placeholder-text-wrapper">
+			<p>Loading...</p>
 		</div>
+	{/if}
+{:then poemFiles}
+	{#if poemFiles && poemFiles.length > 0}
+		<div class="poem-list">
+			{#each poemFiles as poemFile}
+				<div class="list-item">
+					<button on:click={() => checkUnsavedChangesConflict(poemFile.poemUri)}>
+						<span>{poemFile.name}</span>
+						<span>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</span>
+					</button>
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="placeholder-text-wrapper">
+			{$t('workspace.emptyPoemList')}
+		</div>
+	{/if}
+{:catch error}
+	<div class="placeholder-text-wrapper">
+		{$t(error.message)}
 	</div>
-</div>
+{/await}

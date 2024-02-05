@@ -1,14 +1,16 @@
 {
-    "font": "Notebook font",
-    "alignment": "Poem alignment",
-    "dayTheme": "Day theme",
-    "nightTheme": "Night theme",
-    "storage": "Storage mode",
-    "left": "Left",
-    "right": "Right",
-    "center": "Center",
-    "gdrive": "Google Drive",
-    "local": "Local storage",
-    "language": "Language",
-    "logout": "Log out"
+	"font": "Notebook font",
+	"justification": "Poem justification",
+	"dayTheme": "Day theme",
+	"nightTheme": "Night theme",
+	"storage": "Storage mode",
+	"left": "Left",
+	"right": "Right",
+	"center": "Center",
+	"dropbox": "Dropbox",
+	"google": "Google Drive",
+	"local": "Local storage",
+	"language": "Language",
+	"login": "Log in to",
+	"logout": "Log out of"
 }

@@ -1,61 +1,97 @@
-<script>
-	import Notes from '../components/Notes.svelte';
-	import Poem from '../components/Poem.svelte';
-	import { viewsState } from '../stores/views';
-	import DropdownButton from './DropdownButton.svelte';
-	import ArrowsSwap from './ArrowsSwap.svelte';
-	import ArrowsExpand from './ArrowsExpand.svelte';
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023-2024 Pokeghost.
 
-	export let poemProps;
-	export let noteProps;
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
+
+	import hotkeys from 'hotkeys-js';
+
+	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
+	import { viewsState } from '$lib/stores/views';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+
+	import NotePad from './NotePad.svelte';
+	import PadDropdownMenu from './PadDropdownMenu.svelte';
+	import PoemPad from './PoemPad.svelte';
+
+	import ArrowsExpand from './svg/ArrowsExpand.svelte';
+	import ArrowsSwap from './svg/ArrowsSwap.svelte';
+
 	export let editable = true;
-	export let actions;
+	export let actions: { action: () => void; label: string }[];
+	export let poemProps: { name: Writable<string>; body: Writable<string> };
+	export let noteProps: Writable<string>;
 
-	let isHiddenClass = '';
-	let isGrid = 'md:grid';
-	let activePadWidth = 'w-[87vw]';
+	let state: number[] = JSON.parse($viewsState);
+	let views = [PoemPad, NotePad];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let props: [any, any] = [poemProps, noteProps];
 
-	let views = [Poem, Notes];
-	let props = [poemProps, noteProps];
+	let currentState = '';
 
-	let state = JSON.parse($viewsState);
+	onMount(() => {
+		hotkeys('ctrl+e, command+e', function () {
+			expandPoemPad();
+			return false;
+		});
+	});
 
-	$: poemProps.poem = props[0].poem;
-	$: poemProps.poemName = props[0].poemName;
-	$: noteProps.note = props[1].note;
-
-	let currentState = 'transition-opacity duration-500 ease-out opacity-100';
+	onDestroy(() => {
+		hotkeys.unbind('ctrl+e, command+e');
+	});
 
 	function swapViews() {
-		currentState = 'transition-opacity duration-500 ease-out opacity-0';
+		currentState = 'transitioning';
 		setTimeout(function () {
 			[state[0], state[1]] = [state[1], state[0]];
 			$viewsState = JSON.stringify(state);
-			currentState = 'transition-opacity duration-500 ease-out opacity-100';
+			currentState = '';
 		}, 600);
 	}
 
 	function expandPoemPad() {
-		isHiddenClass == 'hidden' ? (isHiddenClass = '') : (isHiddenClass = 'hidden');
-		isGrid == 'md:grid' ? (isGrid = '') : (isGrid = 'md:grid');
-		activePadWidth == 'w-[87vw]' ? (activePadWidth = 'w-full') : (activePadWidth = 'w-[87vw]');
+		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
 	}
 </script>
 
-<div
-	class="notebook-container w-11/12 mb-20 {isGrid} md:grid-cols-2 md:gap-4 mx-auto mt-5 {currentState}"
->
-	<div class="{activePadWidth} md:w-full md:col-span-1 mb-6 inline-block align-top relative">
-		<div class="absolute right-2 top-2 z-10">
-			<div class="flex">
-				<button class="mr-1" on:click={expandPoemPad}><ArrowsExpand /></button>
-				<button class="mr-1" on:click={swapViews}><ArrowsSwap /></button>
-				<DropdownButton {actions} />
+{#if state}
+	<div
+		class="workspace {$isFullWidthPad === 'true'
+			? 'l-full-width'
+			: ''} {currentState} {$writingPadFont}"
+	>
+		<div class="notebook-container">
+			<div class="notebook-container-toolbar">
+				<div>
+					<button on:click={expandPoemPad}>
+						<ArrowsExpand />
+					</button>
+					<button on:click={swapViews}>
+						<ArrowsSwap />
+					</button>
+					<PadDropdownMenu {actions} />
+				</div>
 			</div>
+			<svelte:component this={views[state[0]]} {editable} bind:props={props[state[0]]} />
 		</div>
-		<svelte:component this={views[state[0]]} bind:editable bind:props={props[state[0]]} />
+		<div class="notebook-container">
+			<svelte:component this={views[state[1]]} {editable} bind:props={props[state[1]]} />
+		</div>
 	</div>
-	<div class="w-[87vw] md:w-full mb-6 md:col-span-1 inline-block align-top {isHiddenClass}">
-		<svelte:component this={views[state[1]]} bind:editable bind:props={props[state[1]]} />
-	</div>
-</div>
+{/if}

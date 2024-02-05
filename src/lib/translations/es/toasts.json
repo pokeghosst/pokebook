@@ -1,0 +1,22 @@
+{
+	"thingsAreHappening": "¡Están pasando cosas! Por favor espera un momento, ¿vale...?",
+	"redirecting": "Yendo afuera...",
+	"cannotSaveEmptyPoem": "No se puede guardar un poema sin nombre o... ¡un poema!",
+	"forgetConfirm": "¡Aviso! ¿Seguro que quieres olvidar este poema?",
+	"somethingWrong": "¡Algo salió mal! Pero no te preocupes. Primero, intente volver a iniciar sesión con su cuenta. Si no ayuda, informe este problema con la siguiente información:",
+	"unauthorized": "¡No autorizado! ¡Intenta cerrar sesión y volver a iniciar sesión!",
+	"gDriveRedirect": "¡Aviso! Serás redirigido para iniciar sesión con tu cuenta. ¿vale?",
+	"unsavedChanges": "Es posible que tenga cambios no salvos aquí. Guardarlos o descartarlos antes de continuar.",
+	"poemCopiedToClipboard": "¡Poema copiado al portapapeles!",
+	"signedInOk": "¡Iniciaste sesión exitosamente!",
+	"signingOut": "Cerrando sesión...",
+	"signedOutOk": "¡Cerró sesión correctamente!",
+	"savingPoem": "Guardando poema...",
+	"poemSaved": "Poema guardado!",
+	"deletingPoem": "Borrando poema...",
+	"deletedPoem": "Poema borrado!",
+	"buttons": {
+		"saveChanges": "Ahorrar",
+		"discardChanges": "Desechar"
+	}
+}

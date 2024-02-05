@@ -1,44 +1,66 @@
-<script>
-	import '../app.css';
-	import Footer from '../components/Footer.svelte';
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023-2024 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<script lang="ts">
+	import { Capacitor } from '@capacitor/core';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { Toaster } from 'svelte-french-toast';
+	import { Modals, closeModal } from 'svelte-modals';
+
+	import { darkMode } from '$lib/stores/darkMode';
+	import { dayTheme } from '$lib/stores/dayTheme';
+	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
+	import { nightTheme } from '$lib/stores/nightTheme';
+
 	import Header from '../components/Header.svelte';
-	import { onMount, setContext } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
-	import { loadTranslations } from '$lib/translations';
-	import { activeLang } from '../stores/lang';
+	import Sidebar from '../components/Sidebar.svelte';
 
-	const translationPromise = loadTranslations($activeLang);
-	setContext('translationPromise', translationPromise);
+	$: $darkMode, updateTheme();
 
-	$: {
-		const translationPromise = loadTranslations($activeLang);
-		setContext('translationPromise', translationPromise);
-	}
-
-	onMount(async () => {
-		const darkModePref = await Preferences.get({ key: 'dark_mode' });
-		const darkMode = darkModePref.value || '';
-
-		if (darkMode != '') {
-			const nightThemePref = await Preferences.get({ key: 'night_theme' });
-			const nightTheme = nightThemePref.value || 'chocolate';
-			document.documentElement.classList.add(darkMode);
-			document.documentElement.classList.add(nightTheme);
+	function updateTheme() {
+		document.documentElement.className = '';
+		if ($darkMode !== '') {
+			document.documentElement.classList.add($darkMode || '');
+			document.documentElement.classList.add($nightTheme || 'chocolate');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Dark });
+			}
 		} else {
-			const dayThemePref = await Preferences.get({ key: 'day_theme' });
-			const dayTheme = dayThemePref.value || 'vanilla';
-			document.documentElement.classList.add(dayTheme);
+			document.documentElement.classList.add($dayTheme || 'vanilla');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Light });
+			}
 		}
-	});
+	}
 </script>
 
-<div class="flex flex-col min-h-screen">
-	<main class="flex-1">
-		<Header />
-		<slot />
-	</main>
+<Modals>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div slot="backdrop" class="backdrop" on:click={closeModal} />
+</Modals>
 
-	<footer class="py-4">
-		<Footer />
-	</footer>
+<Toaster />
+<Sidebar />
+<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+	<main>
+		<div>
+			<Header />
+			<slot />
+		</div>
+	</main>
 </div>

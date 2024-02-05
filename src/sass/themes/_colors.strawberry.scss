@@ -1,0 +1,19 @@
+@import '../variables/color-variables';
+
+$theme-light-strawberry: (
+        $--base-background: #fdf2f8,
+        $--base-color: #c71585,
+        $--notebook-header-bg: #f9a8d4,
+        $--notebook-header-color: #fff,
+        $--notebook-box-shadow-bg: #fce7f3,
+        $--notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
+        $--notebook-text-color: #c71585,
+        $--list-item-hover-color: #fce7f3,
+        $--notebook-paper-background: #fce7f3,
+        $--notebook-paper-line:#f9a8d4,
+        $--border-color: #f9a8d4,
+        $--border-color-darker: #f9a8d4,
+        $--select-background: #fce7f3,
+        $--select-text-color: #c71585,
+        $--round-button-background: #fdf2f8
+);

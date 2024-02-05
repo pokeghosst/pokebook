@@ -1,0 +1,16 @@
+.hotkeys-item {
+	display: flex;
+	align-items: baseline;
+	gap: 5px;
+}
+
+.hotkeys-item-keys {
+	min-width: 151px;
+	display: inline-block;
+	text-align: right;
+}
+
+.hotkeys-item-description {
+	display: inline-block;
+	margin-left: 4px;
+}

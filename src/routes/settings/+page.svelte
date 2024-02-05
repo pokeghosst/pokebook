@@ -1,226 +1,198 @@
-<script>
-	import { onMount, getContext } from 'svelte';
-	import { Preferences } from '@capacitor/preferences';
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023-2024 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<script lang="ts">
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+
 	import { Browser } from '@capacitor/browser';
-	import { CapacitorHttp } from '@capacitor/core';
-	import { PUBLIC_POKEDRIVE_BASE_URL, PUBLIC_POKEBOOK_BASE_URL } from '$env/static/public';
-	import { v4 as uuidv4 } from 'uuid';
-	import Select from '../../components/Select.svelte';
+	import { Capacitor } from '@capacitor/core';
+	import { Preferences } from '@capacitor/preferences';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+	import toast from 'svelte-french-toast';
+
+	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import { activeLanguage } from '$lib/stores/activeLanguage';
+	import { darkMode } from '$lib/stores/darkMode';
+	import { dayTheme } from '$lib/stores/dayTheme';
+	import { nightTheme } from '$lib/stores/nightTheme';
+	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { storageMode } from '$lib/stores/storageMode';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+
+	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
+	import { padFonts } from '$lib/constants/PadFonts';
+	import { storageOptions } from '$lib/constants/StorageOptions';
+	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
+	import {
+		getGoogleDriveAuthUrl,
+		googleDriveLogout
+	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
-	import { activeLang } from '../../stores/lang';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	let translationPromise = getContext('translationPromise');
+	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
-	let storageMode = null;
-	let font = null;
-	let dayTheme = null;
-	let nightTheme = null;
-	let poemAlignment = null;
-	let gDriveAuth = false;
+	$: $dayTheme, setDayTheme();
+	$: $nightTheme, setNightTheme();
 
-	let alignments = [];
-	let dayThemes = [];
-	let nightThemes = [];
-	let storageModes = [];
-	let languages = [];
+	function setDayTheme() {
+		if ($darkMode === '') {
+			document.documentElement.className = '';
+			document.documentElement.classList.add($dayTheme || 'vanilla');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Light });
+			}
+		}
+	}
 
-	$: if (storageMode != null) {
-		Preferences.set({
-			key: 'storage_mode',
-			value: storageMode
-		});
-		if (storageMode == 'gdrive') {
-			if (gDriveAuth == 'false') {
-				if (confirm($t('popups.gDriveRedirect'))) {
-					authorize();
-				} else {
-					storageMode = 'local';
-					Preferences.set({
-						key: 'storage_mode',
-						value: storageMode
+	function setNightTheme() {
+		if ($darkMode === 'dark') {
+			document.documentElement.className = '';
+			document.documentElement.classList.add($darkMode || '');
+			document.documentElement.classList.add($nightTheme || 'chocolate');
+			if (Capacitor.isNativePlatform()) {
+				StatusBar.setStyle({ style: Style.Dark });
+			}
+		}
+	}
+
+	function getCloudAuthUrlPromise(storage: string) {
+		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
+		switch (storage) {
+			case 'dropbox':
+				return getDropboxAuthUrl();
+			case 'google':
+				return getGoogleDriveAuthUrl();
+			default:
+				throw new Error();
+		}
+	}
+
+	async function getCloudLogoutPromise(storage: string) {
+		switch (storage) {
+			case 'dropbox':
+				return await dropboxLogout();
+			case 'google':
+				return await googleDriveLogout();
+			default:
+				throw new Error();
+		}
+	}
+
+	onMount(() => {
+		const authStatus = $page.url.searchParams.get('status');
+		if (authStatus)
+			switch (authStatus) {
+				case 'ok':
+					toast.success('Signed in successfully!', {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
 					});
-				}
+					break;
+				case 'authorizationError':
+					toast.error($t('errors.authorization'), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
+					break;
+				default:
+					toast.error($t('errors.unknown'), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
 			}
-		}
-	}
-
-	$: if (font != null) {
-		Preferences.set({
-			key: 'notebook_font',
-			value: font
-		});
-	}
-
-	// TODO: Bug related to reacitivy when reading classList. Might be useful to refactor this part completely if possible
-	$: if (dayTheme != null) {
-		Preferences.set({
-			key: 'day_theme',
-			value: dayTheme
-		});
-		if (!document.documentElement.classList.contains('dark')) {
-			document.documentElement.classList.value = dayTheme;
-		}
-	}
-
-	$: if (nightTheme != null) {
-		Preferences.set({
-			key: 'night_theme',
-			value: nightTheme
-		});
-		if (document.documentElement.classList.contains('dark')) {
-			document.documentElement.classList.value = 'dark ' + nightTheme;
-		}
-	}
-
-	$: if (poemAlignment != null) {
-		Preferences.set({
-			key: 'poem_alignment',
-			value: poemAlignment
-		});
-	}
-
-	$: if (translationPromise != null) {
-		alignments = [
-			{ value: 'text-left', label: $t('settings.left') },
-			{ value: 'text-center', label: $t('settings.center') },
-			{ value: 'text-right', label: $t('settings.right') }
-		];
-
-		dayThemes = [
-			{ value: 'vanilla', label: $t('themes.vanilla') },
-			{ value: 'strawberry', label: $t('themes.strawberry') },
-			{ value: 'lemon', label: $t('themes.lemon') },
-			{ value: 'cookie', label: $t('themes.cookie') },
-			{ value: 'cherry', label: $t('themes.cherry') },
-			{ value: 'coral', label: $t('themes.coral') }
-		];
-
-		nightThemes = [
-			{ value: 'chocolate', label: $t('themes.chocolate') },
-			{ value: 'black-lobelia', label: $t('themes.blackLobelia') },
-			{ value: 'red-velvet', label: $t('themes.redVelvet') },
-			{ value: 'terminal', label: $t('themes.terminal') }
-		];
-
-		storageModes = [
-			{ value: 'gdrive', label: $t('settings.gdrive') },
-			{ value: 'local', label: $t('settings.local') }
-		];
-
-		languages = [
-			{ value: 'en', label: 'English' },
-			{ value: 'ja', label: '日本語' },
-			{ value: 'es', label: 'Español' }
-		];
-	}
-
-	onMount(async () => {
-		await translationPromise;
-		const storageModePref = await Preferences.get({ key: 'storage_mode' });
-		storageMode = storageModePref.value || 'local';
-		const gDriveAuthPref = await Preferences.get({ key: 'gdrive_auth' });
-		gDriveAuth = gDriveAuthPref.value || 'false';
-		const fontPref = await Preferences.get({ key: 'notebook_font' });
-		font = fontPref.value || 'halogen';
-		const dayThemePref = await Preferences.get({ key: 'day_theme' });
-		dayTheme = dayThemePref.value || 'vanilla';
-		const nightThemePref = await Preferences.get({ key: 'night_theme' });
-		nightTheme = nightThemePref.value || 'chocolate';
-		const poemAlignmentPref = await Preferences.get({ key: 'poem_alignment' });
-		poemAlignment = poemAlignmentPref.value || 'text-left';
 	});
-
-	async function authorize() {
-		const gDriveUuid = uuidv4();
-		Preferences.set({
-			key: 'gdrive_uuid',
-			value: gDriveUuid
-		});
-		await Browser.open({
-			url: `${PUBLIC_POKEDRIVE_BASE_URL}/auth?uuid=${gDriveUuid}&pokebook_base=${PUBLIC_POKEBOOK_BASE_URL}`,
-			windowName: '_self'
-		});
-	}
-
-	async function gDriveLogout() {
-		if (confirm('You sure?')) {
-			Preferences.set({
-				key: 'gdrive_auth',
-				value: 'false'
-			});
-			const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
-			const options = {
-				url: `${PUBLIC_POKEDRIVE_BASE_URL}/logout`,
-				headers: {
-					Authorization: gDriveUuidPref.value
-				}
-			};
-			const response = await CapacitorHttp.request({ ...options, method: 'GET' });
-			if (response.status == 400) {
-				alert($t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`);
-			}
-			Preferences.remove({ key: 'gdrive_uuid' });
-			storageMode = 'local';
-			location.reload();
-		}
-	}
-
-	const fonts = [
-		{ value: 'halogen', label: 'Halogen (MC)' },
-		{ value: 'hashtag', label: 'Hashtag (Sayori)' },
-		{ value: 'ammys', label: 'Ammys Handwriting (Natsuki)' },
-		{ value: 'journal', label: 'Journal (Monika)' },
-		{ value: 'damagrafik', label: 'Damagrafik Script (Yuri Act 2)' },
-		{ value: 'jphand', label: 'JP Hand (Yuri)' },
-		{ value: 'arial', label: 'Arial' },
-		{ value: 'oldattic', label: 'Times Old Attic Bold' },
-		{ value: 'crimson', label: 'Crimson Roman' },
-		{ value: 'comic', label: 'Comic Sans MS' },
-		{ value: 'consolas', label: 'Consolas' },
-		{ value: 'lucida', label: 'Lucida Console' }
-	];
 </script>
 
-{#if translationPromise != null}
-	<div class="w-11/12 mt-10 mx-auto">
-		<Select
-			parameterName="font"
-			labelName={$t('settings.font')}
-			bind:bindParameter={font}
-			options={fonts}
-		/>
-		<Select
-			parameterName="alignment"
-			labelName={$t('settings.alignment')}
-			bind:bindParameter={poemAlignment}
-			options={alignments}
-		/>
-		<Select
-			parameterName="dayTheme"
-			labelName={$t('settings.dayTheme')}
-			bind:bindParameter={dayTheme}
-			options={dayThemes}
-		/>
-		<Select
-			parameterName="nightTheme"
-			labelName={$t('settings.nightTheme')}
-			bind:bindParameter={nightTheme}
-			options={nightThemes}
-		/>
-		<Select
-			parameterName="storageMode"
-			labelName={$t('settings.storage')}
-			bind:bindParameter={storageMode}
-			options={storageModes}
-		/>
-		<Select
-			parameterName="language"
-			labelName={$t('settings.language')}
-			bind:bindParameter={$activeLang}
-			options={languages}
-		/>
-		{#if storageMode == 'gdrive'}
-			<button on:click={() => gDriveLogout()}>{$t('settings.logout')}</button>
-		{/if}
-	</div>
-{/if}
+<div class="settings-container">
+	<SettingsSelect
+		parameterName="font"
+		labelName={$t('settings.font')}
+		bind:bindParameter={$writingPadFont}
+		options={padFonts}
+		localizeLabel={false}
+	/>
+	<SettingsSelect
+		parameterName="justification"
+		labelName={$t('settings.justification')}
+		bind:bindParameter={$poemPadJustification}
+		options={textJustificationSettings}
+	/>
+	<SettingsSelect
+		parameterName="dayTheme"
+		labelName={$t('settings.dayTheme')}
+		bind:bindParameter={$dayTheme}
+		options={dayThemes}
+	/>
+	<SettingsSelect
+		parameterName="nightTheme"
+		labelName={$t('settings.nightTheme')}
+		bind:bindParameter={$nightTheme}
+		options={nightThemes}
+	/>
+	<SettingsSelect
+		parameterName="storageMode"
+		labelName={$t('settings.storage')}
+		bind:bindParameter={$storageMode}
+		options={storageOptions}
+	/>
+	{#if $storageMode !== 'local'}
+		<button
+			on:click={async () =>
+				await toast.promise(
+					getCloudAuthUrlPromise($storageMode).then((url) => {
+						Browser.open({ url: url, windowName: '_self' });
+					}),
+					{
+						loading: `${$t('toasts.thingsAreHappening')}`,
+						success: `${$t('toasts.redirecting')}`,
+						error: `${$t('errors.unknown')}`
+					},
+					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
+				)}
+			class="action-button action-button--secondary"
+			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
+		>
+		<button
+			on:click={async () => {
+				await toast.promise(
+					getCloudLogoutPromise($storageMode),
+					{
+						loading: `${$t('toasts.signingOut')}`,
+						success: `${$t('toasts.signedOutOk')}`,
+						error: `${$t('errors.signOutError')}`
+					},
+					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
+				);
+				$storageMode = 'local';
+			}}
+			class="action-button action-button--secondary"
+			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
+		>
+	{/if}
+	<SettingsSelect
+		parameterName="language"
+		labelName={$t('settings.language')}
+		bind:bindParameter={$activeLanguage}
+		options={localizationLanguages}
+		localizeLabel={false}
+	/>
+</div>

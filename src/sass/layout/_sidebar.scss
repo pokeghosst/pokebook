@@ -1,0 +1,58 @@
+@use '../vendors/mq';
+
+.sidebar-nav-wrapper {
+	z-index: 20;
+	display: flex;
+}
+
+.sidebar-close-area {
+	@include mq.mq($until: sprout) {
+		position: fixed;
+		background-color: var(--base-color);
+		opacity: 0.25;
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 100%;
+		transform: translateX(100%);
+		z-index: inherit;
+	}
+}
+
+.sidebar {
+	position: fixed;
+	top: 0;
+	left: -250px;
+	height: 100%;
+	width: 250px;
+	border-right: 1px solid var(--border-color);
+	z-index: inherit;
+	background-color: var(--base-background);
+}
+
+.sidebar-nav--open {
+	left: 0;
+	transform: translateX(0);
+}
+
+.sidebar-nav-items {
+	margin-top: 2.5rem;
+}
+
+.sidebar-footer {
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	text-align: left;
+	border-top: 1px solid var(--border-color);
+	padding: 1rem;
+	font-size: 15px;
+
+	ul {
+		display: flex;
+
+		li:first-of-type {
+			margin-right: 10px;
+		}
+	}
+}

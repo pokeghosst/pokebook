@@ -1,5 +1,3 @@
-<img src="/static/logo.png" width="300px" alt="PokeBook logo"/>
-
 # Poke!Book (Pokeghost’s poetry noteBook)
 
 [![https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg](https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg)](https://good-labs.github.io/greater-good-affirmation)
@@ -17,10 +15,10 @@
 # Patrons
 
 PokeBook is supported by these awesome people!
-|                                                       |                                             |                                                             |
+| | | |
 |-------------------------------------------------------|---------------------------------------------|-------------------------------------------------------------|
-|                                                       | [GlueBall](https://twitter.com/MrThernlund) | *"Better to execute what is, than to never compile at all"* |
-|<img src="./patrons/j33.png" width="50px" alt="J33"/>  | J33                                         |                                                             |
+| | [GlueBall](https://twitter.com/MrThernlund) | _"Better to execute what is, than to never compile at all"_ |
+|<img src="./patrons/j33.png" width="50px" alt="J33"/> | J33 | |
 
 # What makes PokeBook so cool?
 
@@ -28,7 +26,7 @@ PokeBook is supported by these awesome people!
 - Endless notebook that grows as you write!
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
 - Optional Google Drive integration for backing up and synchronizing your poems!
-- The draft is autosaved with every single character written – don't worry about crashes or blackouts so you can focus on the writing!
+- The draft is auto-saved with every single character written – don't worry about crashes or blackouts, so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous poem is saved in the Poem Stash!
 - View, edit and delete your previously written poems and store as many as your computer (or Google Drive) can handle!
 - Express yourself with a selection of themes and fonts!
@@ -37,7 +35,7 @@ PokeBook is supported by these awesome people!
 
 # PokeBook desktop app
 
-PokeBook has builds for Windows, Linux (deb package and AppImage) and MacOS generated with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
+PokeBook has builds for Windows, Linux (deb package and AppImage) and macOS generated with [Tauri](https://github.com/tauri-apps/tauri). Just grab the latest package from Releases page and enjoy!
 
 > Latest supported Tauri build is v0.6.1 - "French Toast With Extra Jam". At the moment there are no builds for later versions. I'm working on it, though!
 
@@ -51,7 +49,7 @@ Functionality for storing poems in Google Drive is handled by [PokeDrive Book](h
 
 ## Environment variables
 
-- `PUBLIC_POKEBOOK_BASE_URL` - The base URL of the PokeBook app deployment with no trailing slash
+- `PUBLIC_POKEBOOK_CLIENT_URL` - The base URL of the PokeBook app deployment with no trailing slash
 - `PUBLIC_POKEDRIVE_BASE_URL`- The base URL of PokeDrive Book deployment with no trailing slash
 
 ## Building app for deployment
@@ -67,7 +65,7 @@ yarn run static
 
 You can deploy PokeBook to Vercel in one click:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokegh0st%2Fpokebook&env=PUBLIC_POKEDRIVE_BASE_URL,PUBLIC_POKEBOOK_BASE_URL)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokegh0st%2Fpokebook&env=PUBLIC_POKEDRIVE_BASE_URL,PUBLIC_POKEBOOK_CLIENT_URL)
 
 To deploy to other platform (e.g., Netlify), make sure to change the adapter.
 
@@ -75,7 +73,7 @@ Bare-metal deployment with custom domain will need more configuration depending 
 
 ## Docker image
 
-The Docker image is *probably* working but I haven't properly tested it yet.
+The Docker image is _probably_ working, but I haven't properly tested it yet.
 
 # Developing
 

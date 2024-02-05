@@ -1,177 +1,124 @@
-<script>
-	import Workspace from '../components/Workspace.svelte';
-	import generateImage from '../util/poem2image';
-	import Overlay from '../components/Overlay.svelte';
-	import { onMount, getContext } from 'svelte';
-	import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-	import { Preferences } from '@capacitor/preferences';
-	import { CapacitorHttp } from '@capacitor/core';
-	import { PUBLIC_POKEDRIVE_BASE_URL } from '$env/static/public';
-	import { Share } from '@capacitor/share'
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2023-2024 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<script lang="ts">
+	import { onDestroy, onMount } from 'svelte';
+
+	import { Share } from '@capacitor/share';
+	import hotkeys from 'hotkeys-js';
+	import toast from 'svelte-french-toast';
+
+	import {
+		draftPoemBodyStore,
+		draftPoemNameStore,
+		draftPoemNoteStore
+	} from '$lib/stores/poemDraft';
+	import { storageMode } from '$lib/stores/storageMode';
+
+	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	let thinking = false;
+	import Workspace from '../components/Workspace.svelte';
 
-	let poemProps;
-	let noteProps;
-	let storageMode;
+	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
+	const noteProps = draftPoemNoteStore;
 
-	let translationPromise = getContext('translationPromise');
+	const actions = [
+		{ action: stashPoem, label: $t('workspace.newPoem') as string },
+		{ action: sharePoem, label: $t('workspace.sharePoem') as string },
+		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
+	];
 
-	let actions = [];
-
-	$: if (poemProps) {
-		Preferences.set({
-			key: 'draft_poem_text',
-			value: poemProps.poem
+	onMount(() => {
+		hotkeys('ctrl+shift+n, command+shift+n', function () {
+			stashPoem();
+			return false;
 		});
-		Preferences.set({
-			key: 'draft_poem_name',
-			value: poemProps.poemName
-		});
-	}
+	});
 
-	$: if (noteProps) {
-		Preferences.set({
-			key: 'draft_poem_note',
-			value: noteProps.note
-		});
-	}
-
-	onMount(async () => {
-		await translationPromise;
-		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
-		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
-		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
-
-		poemProps = {
-			poem: poemDraftText.value || '',
-			poemName: poemDraftName.value || $t('workspace.unnamed')
-		};
-		noteProps = {
-			note: poemDraftNote.value || ''
-		};
-
-		const storageModePref = await Preferences.get({ key: 'storage_mode' });
-		storageMode = storageModePref.value || 'local';
-
-		actions = [
-			{ action: stashPoem, label: $t('workspace.newPoem') },
-			// { action: exportPoem, label: $t('workspace.exportPoem') },
-			{ action: forgetDraft, label: $t('workspace.forgetPoem') }
-		];
+	onDestroy(() => {
+		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
 
 	async function stashPoem() {
-		const poemDraftText = await Preferences.get({ key: 'draft_poem_text' });
-		const poemDraftName = await Preferences.get({ key: 'draft_poem_name' });
-		const poemDraftNote = await Preferences.get({ key: 'draft_poem_note' });
-
-		const gDriveUuidPref = await Preferences.get({ key: 'gdrive_uuid' });
-
-		if (poemDraftText.value !== '' && poemDraftName.value !== '') {
-			const nowDate = new Date(Date.now());
-			switch (storageMode) {
-				case 'gdrive':
-					thinking = true;
-					const options = {
-						url: `${PUBLIC_POKEDRIVE_BASE_URL}/v0/poem`,
-						headers: {
-							Authorization: gDriveUuidPref.value,
-							'content-type': 'application/json'
-						},
-						data: JSON.stringify({
-							poem_name: poemDraftName.value,
-							poem_body: poemDraftText.value,
-							poem_note: poemDraftNote.value,
-							poem_timestamp: `${nowDate.getFullYear()}-${
-								nowDate.getMonth() + 1
-							}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}`
-						})
-					};
-					const response = await CapacitorHttp.post(options);
-					if (response.status === 200) {
-						thinking = false;
-					} else {
-						alert(
-							$t('popups.somethingWrong') + `\n ${response.status} \n ${response.data}`
-						);
+		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
+			try {
+				await toast.promise(
+					Poem.save(
+						{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
+						$storageMode
+					),
+					{
+						loading: `${$t('toasts.savingPoem')}`,
+						success: `${$t('toasts.poemSaved')}`,
+						error: `${$t('errors.poemSaveError')}`
+					},
+					{
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
 					}
-					thinking = false;
-					break;
-				case 'local':
-					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
-							nowDate.getMonth() + 1
-						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}.txt`,
-						data: poemDraftText.value,
-						directory: Directory.Data,
-						encoding: Encoding.UTF8,
-						recursive: true
+				);
+				clearDraftPoem();
+			} catch (e) {
+				if (e instanceof Error)
+					toast.error($t(e.message), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
 					});
-					await Filesystem.writeFile({
-						path: `poems/${poemDraftName.value.replace(/ /g, '%20')}_${nowDate.getFullYear()}-${
-							nowDate.getMonth() + 1
-						}-${nowDate.getDate()}_${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}_note.txt`,
-						data: poemDraftNote.value,
-						directory: Directory.Data,
-						encoding: Encoding.UTF8,
-						recursive: true
-					});
-					break;
 			}
-			Preferences.set({
-				key: 'draft_poem_text',
-				value: ''
-			});
-			Preferences.set({
-				key: 'draft_poem_name',
-				value: $t('workspace.unnamed')
-			});
-			Preferences.set({
-				key: 'draft_poem_note',
-				value: ''
-			});
-			location.reload();
 		} else {
-			alert($t('popups.cannotSaveEmptyPoem'));
+			toast(`☝️🤓 ${$t('toasts.cannotSaveEmptyPoem')}`, {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
 		}
 	}
 
 	function forgetDraft() {
-		if (confirm($t('popups.forgetConfirm'))) {
-			Preferences.set({
-				key: 'draft_poem_text',
-				value: ''
-			});
-			Preferences.set({
-				key: 'draft_poem_name',
-				value: $t('workspace.unnamed')
-			});
-			Preferences.set({
-				key: 'draft_poem_note',
-				value: ''
-			});
-			location.reload();
+		if (confirm($t('toasts.forgetConfirm'))) {
+			clearDraftPoem();
 		}
 	}
 
-	async function exportPoem() {
-		// TODO: This is so bad but I have no time
-		// thinking = true;
-		// generateImage(poemProps.poemName);
-		await Share.share({
-			title: poemProps.poemName,
-			text: poemProps.poem,
-			url: 'https://book.pokeghost.org',
-			dialogTitle: 'Share your poem with the world!'
-		})
+	function clearDraftPoem() {
+		draftPoemNameStore.set('');
+		draftPoemBodyStore.set('');
+		draftPoemNoteStore.set('');
+	}
+
+	async function sharePoem() {
+		const poemTextToShare = `${$draftPoemNameStore}\n\n${$draftPoemBodyStore}\n`;
+		if ((await Share.canShare()).value)
+			await Share.share({
+				title: `${$t('share.title')} "${$draftPoemNameStore}"`,
+				dialogTitle: $t('share.dialogTitle'),
+				text: poemTextToShare,
+				url: 'https://book.pokeghost.org'
+			});
+		else {
+			navigator.clipboard.writeText(poemTextToShare);
+			toast.success($t('toasts.poemCopiedToClipboard'), {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
+		}
 	}
 </script>
 
-{#if thinking}
-	<Overlay />
-{/if}
-{#if poemProps != null && noteProps != null}
-	<Workspace bind:poemProps bind:noteProps {actions} />
-{/if}
+<Workspace {poemProps} {noteProps} {actions} />

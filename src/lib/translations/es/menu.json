@@ -1,11 +1,7 @@
 {
-	"logo": "Poke!Libro",
 	"draft": "Borrador actual",
 	"stash": "Alijo de poemas",
 	"settings": "Configuración",
-	"markov": "PokeMarkov",
-	"privacy": "Política de privacidad",
-	"tos": "Términos de servicio",
-	"support": "Apoyo",
-	"sourceCode": "Código fuente"
+	"about": "Acerca de y comentarios",
+	"shortcuts": "Atajos de teclado"
 }
