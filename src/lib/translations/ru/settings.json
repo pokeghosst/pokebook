@@ -1,0 +1,16 @@
+{
+	"font": "Шрифт в блокноте",
+	"justification": "Выравнивание стиха",
+	"dayTheme": "Дневная тема",
+	"nightTheme": "Ночная тема",
+	"storage": "Хранилище",
+	"left": "По левому краю",
+	"right": "По правому краю",
+	"center": "По центру",
+	"dropbox": "Dropbox",
+	"google": "Google Drive",
+	"local": "Локальное хранилище",
+	"language": "Язык",
+	"login": "Войти в",
+	"logout": "Выйти из"
+}

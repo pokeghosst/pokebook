@@ -46,7 +46,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<small>Version 3.0.0 - "Mille-feuille"</small>
+		<small>{$t('about.version')} 3.0.0 - "Mille-feuille"</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}
@@ -63,6 +63,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<a href="https://getbook.pokeghost.org/privacy">{$t('about.privacy')}</a>
 			| <a href="https://getbook.pokeghost.org/terms">{$t('about.terms')}</a>
 		</p>
-		<p>© 2023-{new Date().getFullYear()} Pokeghost</p>
+		<p>© {new Date().getFullYear()} Pokeghost</p>
 	</div>
 </div>

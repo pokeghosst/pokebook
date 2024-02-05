@@ -1,12 +1,12 @@
 {
 	"unknown": "Something mysterious happened. Please report this error!",
-	"storageModeUnknown": "Such storage mode doesn't exist! Please recheck your settings.",
+	"storageModeUnknown": "Such storage mode doesn't exist!",
 	"authorization": "Could not authorize, try again! If the problem persists, please report it.",
 	"authTokenExpired": "Looks like your session expired, please log in again!",
 	"refreshToken": "Could not find your refresh token anywhere! Please log out and log in again.",
 	"noStorageProvider": "Such storage provider doesn't exist!",
 	"callbackCodeNotFound": "Couldn't find callback code, please try again or contact support.",
-	"signOutError": "Something went wrong when trying to sign out",
+	"signOutError": "Something went wrong when trying to sign out.",
 	"poemSaveError": "Couldn't save the poem!",
 	"poemDeleteError": "Couldn't delete the poem!",
 	"google": {

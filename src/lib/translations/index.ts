@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import i18n from 'sveltekit-i18n';
 import en from './en';
 import es from './es';
-import ja from './ja';
+import ru from './ru'
 import lang from './lang';
 
 const config = {
@@ -12,7 +12,7 @@ const config = {
 	fallbackLocale: 'en',
 	translations: {
 		en: { ...en, lang },
-		ja: { ...ja, lang },
+		ru: { ...ru, lang },
 		es: { ...es, lang }
 	}
 };

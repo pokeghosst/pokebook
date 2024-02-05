@@ -7,8 +7,10 @@
 	"left": "Izquierdo",
 	"right": "Derecho",
 	"center": "Centro",
+	"dropbox": "Dropbox",
 	"gdrive": "Google Drive",
 	"local": "Almacenamiento local",
 	"language": "Idioma",
+	"login": "Iniciar sesión en",
 	"logout": "Cerrar sesión"
 }

@@ -83,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					});
 			}
 		} else {
-			toast(`☝️🤓 ${$t('popups.cannotSaveEmptyPoem')}`, {
+			toast(`☝️🤓 ${$t('toasts.cannotSaveEmptyPoem')}`, {
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
@@ -91,7 +91,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function forgetDraft() {
-		if (confirm($t('popups.forgetConfirm'))) {
+		if (confirm($t('toasts.forgetConfirm'))) {
 			clearDraftPoem();
 		}
 	}
