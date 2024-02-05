@@ -73,7 +73,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	const deletePoemAction = async () => {
-		if (confirm('Heads up! You sure want to delete this poem?')) {
+		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
 			await toast.promise(
 				deletePoem(),
 				{
