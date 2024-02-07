@@ -2,10 +2,29 @@
 
 ## [Unreleased]
 
+### Added
+- Standardized API endpoints for cloud providers
+- Toast notifications with Svelte French Toast (#63)
+- Mobile sharing with Capacitor Share API (#61)
+- Dropbox storage option (#67)
+- Keyboard shortcuts (#65)
+- New sidebar menu
+
+### Changed
+- Major refactoring and cleanup
+- Removed TailwindCSS
+- Refactored styles to SASS
+- Now storing poem and note in XML file (#68)
+- Brought back Google Drive integration
+- Simplified PokeHelp mode, removed reducing poem groups based on Levenstein distance
+
 ### Fixed
 
 - Refactored storage functions into separate TypeScript modules
 - Poor internationalization implementation
+- Poem and note pads auto sizing
+- Style cohesiveness
+- Small fixes and improvements
 
 ## [v2.1.0] - 2023-10-25
 
