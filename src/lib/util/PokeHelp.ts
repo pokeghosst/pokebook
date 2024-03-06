@@ -18,13 +18,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { sha256 } from '@noble/hashes/sha256';
 import { bytesToHex } from '@noble/hashes/utils';
-import { findLastIndex, forEach, groupBy, last } from 'lodash';
-import { RiTa } from 'rita';
+import { dictionary } from 'cmu-pronouncing-dictionary';
+import { forEach, groupBy, last } from 'lodash';
 import { syllable } from 'syllable';
 
 // Hash-based approach with salt allows us to deterministically define colors
 // Since the number of phonemes is limited it is possible to find salt which would produce more or less pleasant colors for all phonemes
-const SALT_FOR_COLORS = 'pokeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const SALT_FOR_COLORS = 'pokeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 
 export function highlightWords(text: string, lines: string[]): string[] {
 	const lastWordOnLineMap = lines.map((line) =>
@@ -35,7 +35,7 @@ export function highlightWords(text: string, lines: string[]): string[] {
 				.split(/\s+/)
 		)
 	);
-	const rhymeGroups = groupBy(lastWordOnLineMap, getPhonesAfterLastVowel);
+	const rhymeGroups = groupBy(lastWordOnLineMap, getStressedSyllable);
 	const colors = rhymeGroupsToColors(rhymeGroups);
 	return colorCodeWords(text, rhymeGroups, colors);
 }
@@ -57,15 +57,18 @@ export function putSyllables(lines: string[]) {
 	return result.join('<br>');
 }
 
-function getPhonesAfterLastVowel(word: string) {
-	const wordPhoneArray = RiTa.phones(word).split('-');
-	return wordPhoneArray.slice(findLastIndex(wordPhoneArray, (phone) => isVowel(phone)));
-}
+function getStressedSyllable(word: string) {
+	const phonemes = dictionary[word] || '';
+	const phonemeArray = phonemes.split(' ');
+	const stress = phonemes.includes('1') ? '1' : '2';
 
-function isVowel(phoneme: string) {
-	// ARPAbet vowel phonemes
-	// https://rednoise.org/rita/reference/phones.html
-	return phoneme.match(/IY|IH|EY|EH|AE|AA|AO|OW|UH|UW|ER|AX|AH|AY|AW|OY/gi);
+	for (let i = phonemeArray.length - 1; i >= 0; i--) {
+		if (phonemeArray[i].includes(stress)) {
+			return phonemeArray.slice(i).join(' ');
+		}
+	}
+
+	return '';
 }
 
 function colorCodeWords(text, rhymeGroups, colors) {

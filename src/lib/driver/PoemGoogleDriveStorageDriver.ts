@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { drive_v3 } from 'googleapis';
 import { Preferences } from '@capacitor/preferences';
 import { XMLParser } from 'fast-xml-parser';
 
@@ -105,10 +104,10 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 					throw new Error('errors.unknown');
 			}
 
-		const storedFiles = (await response.json()) as drive_v3.Schema$File[];
+		const storedFiles: any = await response.json();
 		const poemFiles: PoemFileEntity[] = [];
 
-		storedFiles.forEach((file) => {
+		storedFiles.forEach((file: any) => {
 			if (file.name != null && file.id != null && file.createdTime != null) {
 				poemFiles.push({
 					name: file.name.split('.xml')[0],
