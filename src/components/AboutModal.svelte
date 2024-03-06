@@ -26,9 +26,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'me@pokeghost.org'
 		},
 		{
-			url: 'https://gitlab.com/pokeghost/pokebook',
+			url: 'https://github.com/pokeghosst/pokebook',
 			title: 'about.contribute',
-			handle: 'GitLab'
+			handle: 'GitHub'
 		},
 		{
 			url: 'https://discord.gg/XfwmEHwa2k',
@@ -36,9 +36,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'Poke!Suite'
 		},
 		{
-			url: 'https://nixnet.social/pokeghost',
-			title: 'about.fediverse',
-			handle: '@pokeghost'
+			url: 'https://www.buymeacoffee.com/pokegh0st',
+			title: 'about.support',
+			handle: 'Buy Me a Coffee'
 		}
 	];
 </script>
