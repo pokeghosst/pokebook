@@ -16,8 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { sha256 } from '@noble/hashes/sha256';
+import { bytesToHex } from '@noble/hashes/utils';
 import { findLastIndex, forEach, groupBy, last } from 'lodash';
-import { SHA256 } from 'crypto-js';
 import { RiTa } from 'rita';
 import { syllable } from 'syllable';
 
@@ -86,7 +87,7 @@ function colorCodeWords(text, rhymeGroups, colors) {
 }
 
 function hashToColor(str) {
-	const hash = SHA256(str + SALT_FOR_COLORS).toString();
+	const hash = bytesToHex(sha256(str + SALT_FOR_COLORS));
 	const r = parseInt(hash.substr(0, 8), 16) % 256; // take the first 32 bits of the hash and wrap it around to fit into the range of 0-255
 	const g = parseInt(hash.substr(8, 8), 16) % 256;
 	const b = parseInt(hash.substr(16, 8), 16) % 256;
