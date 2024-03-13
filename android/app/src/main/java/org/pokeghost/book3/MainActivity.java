@@ -1,4 +1,4 @@
-package org.pokeghost.book;
+package org.pokeghost.book3;
 
 import com.getcapacitor.BridgeActivity;
 

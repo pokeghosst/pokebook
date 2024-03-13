@@ -1,12 +1,12 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-	appId: 'org.pokeghost.book',
+	appId: 'org.pokeghost.book3',
 	appName: 'PokeBook',
 	webDir: 'build',
 	server: {
 		androidScheme: 'https',
-		hostname: 'book.pokeghost.org'
+		hostname: 'book3.pokeghost.org'
 	},
 	plugins: {
 		CapacitorHttp: {
