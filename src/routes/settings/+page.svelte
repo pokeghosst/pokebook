@@ -148,12 +148,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:bindParameter={$nightTheme}
 		options={nightThemes}
 	/>
-	<SettingsSelect
-		parameterName="storageMode"
-		labelName={$t('settings.storage')}
-		bind:bindParameter={$storageMode}
-		options={storageOptions}
-	/>
+	{#if !Capacitor.isNativePlatform()}
+		<SettingsSelect
+			parameterName="storageMode"
+			labelName={$t('settings.storage')}
+			bind:bindParameter={$storageMode}
+			options={storageOptions}
+		/>
+	{/if}
 	{#if $storageMode !== 'local'}
 		<button
 			on:click={async () =>

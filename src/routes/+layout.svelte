@@ -32,19 +32,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	$: $darkMode, updateTheme();
 
+	function rgbToHex(r: number, g: number, b: number) {
+		return (
+			'#' +
+			[r, g, b]
+				.map((x) => {
+					const hex = x.toString(16);
+					return hex.length === 1 ? '0' + hex : hex;
+				})
+				.join('')
+		);
+	}
+
 	function updateTheme() {
 		document.documentElement.className = '';
 		if ($darkMode !== '') {
 			document.documentElement.classList.add($darkMode || '');
 			document.documentElement.classList.add($nightTheme || 'chocolate');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Dark });
-			}
 		} else {
 			document.documentElement.classList.add($dayTheme || 'vanilla');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Light });
-			}
+		}
+		// I'm not a big fan of this idea but it's better than an ugly empty bar so it'll do for now
+		if (Capacitor.isNativePlatform()) {
+			const backgroundColorValues = getComputedStyle(document.body)
+				.getPropertyValue('background-color')
+				.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+			const [, red, green, blue] = backgroundColorValues!.map(Number);
+			const backgroundColorHex = rgbToHex(red, green, blue);
+			StatusBar.setBackgroundColor({ color: backgroundColorHex });
 		}
 	}
 </script>
