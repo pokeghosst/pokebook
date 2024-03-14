@@ -1,16 +1,14 @@
 # Poke!Book (Pokeghost’s poetry noteBook)
 
 [![https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg](https://good-labs.github.io/greater-good-affirmation/assets/images/badge.svg)](https://good-labs.github.io/greater-good-affirmation)
-![Website](https://img.shields.io/website?url=https%3A%2F%2Fbook.pokeghost.org)
-[![GitHub license](https://img.shields.io/github/license/pokegh0st/pokebook.svg)](https://github.com/pokegh0st/pokebook/blob/main/LICENSE)
-![Version](https://img.shields.io/github/v/release/pokegh0st/pokebook)
-![GitHub last commit](https://img.shields.io/github/last-commit/pokegh0st/pokebook)
+[![GitHub license](https://img.shields.io/github/license/pokeghosst/pokebook.svg)](https://github.com/pokeghosst/pokebook/blob/main/COPYING)
+![Version](https://img.shields.io/github/v/release/pokeghosst/pokebook)
+![GitHub last commit](https://img.shields.io/github/last-commit/pokeghosst/pokebook)
 ![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
-[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/4280-shield.svg)](https://madewithsvelte.com/p/pokebook/shield-link)
 
 <a href="https://www.buymeacoffee.com/pokegh0st" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;" ></a>
 
-> PokeBook is your own digital notebook for writing poetry. Get into your creative flow with distraction-free environment and never worry about saving what you write!
+> PokeBook is your own digital notebook for writing poetry. Get into a creative flow with distraction-free environment and never worry about saving what you write!
 
 # Patrons
 
