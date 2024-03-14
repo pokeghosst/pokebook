@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [v3.0.0] - 2024-03-14
 
 ### Added
 - Standardized API endpoints for cloud providers
