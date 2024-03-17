@@ -39,7 +39,7 @@ PokeBook has builds for Windows, Linux (deb package and AppImage) and macOS gene
 
 # Installing / Getting started
 
-You can use PokeBook at no cost by visiting https://book.pokeghost.org.
+You can use PokeBook at no cost by visiting https://book3.pokeghost.org.
 
 ## Cloud provider integration
 
