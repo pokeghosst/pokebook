@@ -31,12 +31,6 @@ PokeBook is supported by these awesome people!
 - Write your best with PokeHelp mode! PokeHelp provides highlighting rhymes, syllable counter, and text counters (words, characters, lines)
 - Want something more... unconventional? [PokeMarkov](https://github.com/pokeghosst/pokebook-markov) will help you generate prose, poems, and any other kind of text using Markov chains
 
-# PokeBook desktop app
-
-PokeBook has builds for Windows, Linux (deb package and AppImage) and macOS generated with Tauri. Just grab the latest package from Releases page and enjoy!
-
-> Latest supported Tauri build is v0.6.1 - "French Toast With Extra Jam". At the moment there are no builds for later versions. I'm working on it, though!
-
 # Installing / Getting started
 
 You can use PokeBook at no cost by visiting https://book3.pokeghost.org.
@@ -75,10 +69,6 @@ You can deploy PokeBook to Vercel in one click:
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fpokeghosst%2Fpokebook&env=PUBLIC_POKEBOOK_CLIENT_URL,PUBLIC_POKEBOOK_SERVER_URL,PUBLIC_POKEBOOK_FOLDER_NAME,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,REDIS_HOST,REDIS_PORT,REDIS_PASSWORD,DROPBOX_APP_KEY,DROPBOX_APP_SECRET&demo-title=PokeBook%203&demo-description=An%20endearing%20digital%20notebook%20for%20writing%20poetry.&demo-url=https%3A%2F%2Fbook3.pokeghost.org%2F)
 
 PokeBook is configured with `@sveltejs/adapter-auto` so it should be easily deployable to any popular hosting provider as long as there is an adapter for it.
-
-## Docker image
-
-As of today, the Docker image is **severely** out of date, it will be updated soon.
 
 # Developing
 
