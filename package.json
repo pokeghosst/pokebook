@@ -49,7 +49,7 @@
 	"dependencies": {
 		"@capacitor/android": "^5.7.0",
 		"@capacitor/browser": "^5.1.0",
-		"@capacitor/core": "^5.7.0",
+		"@capacitor/core": "^5.7.4",
 		"@capacitor/cli": "^5.7.0",
 		"@capacitor/filesystem": "^5.2.0",
 		"@capacitor/ios": "^5.7.0",
