@@ -85,6 +85,11 @@ If you'd like to contribute, please fork the repository and use a feature branch
 
 For bugs and feature requests, don't hesitate to open issues!
 
+## Branch structure
+
+- `main` - current development trunk branch, deployed to https://book3.pokeghost.org/
+- `prod` - current production branch, deployed to https://staging.book3.pokeghost.org/
+
 # License
 
 GNU Affero General Public License v3.0 (see `LICENSE` for details).
