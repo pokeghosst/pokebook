@@ -19,8 +19,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
+import BufferedPoem from './BufferedPoem';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
+import { BufferedPoemDriver } from '../driver/BufferedPoemDriver';
+
+// TODO: This is more of a "poem manager", rethink this class
 
 export default class Poem {
 	private static pickStorageDriver(storage: string) {
@@ -36,13 +40,20 @@ export default class Poem {
 		}
 	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
+		await BufferedPoemDriver.listBufferedPoems();
 		return this.pickStorageDriver(storage).listPoems();
 	}
 	public static async load(id: string, storage: string): Promise<PoemEntity> {
 		return this.pickStorageDriver(storage).loadPoem(id);
 	}
 	public static async save(poem: PoemEntity, storage: string) {
-		return this.pickStorageDriver(storage).savePoem(poem);
+		const savedPoemUri = (await this.pickStorageDriver(storage).savePoem(poem)) as string;
+		new BufferedPoem({
+			uriOrId: savedPoemUri,
+			name: poem.name,
+			text: poem.text,
+			note: poem.note
+		}).save();
 	}
 	public static async delete(id: string, storage: string) {
 		return this.pickStorageDriver(storage).deletePoem(id);

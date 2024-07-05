@@ -22,7 +22,7 @@ import type { PoemFileEntity } from '$lib/types';
 export interface IPoemStorageDriver {
 	listPoems(): Promise<PoemFileEntity[]>;
 	loadPoem(poemUri: string): Promise<PoemEntity>;
-	savePoem(poem: PoemEntity): Promise<void>;
+	savePoem(poem: PoemEntity): Promise<string | void>;
 	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
 	deletePoem(poemUri: string): Promise<void>;
 }
