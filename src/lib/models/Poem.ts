@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
+import { addPoemRecord } from '$lib/driver/PoemRegistryDriver';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 
@@ -42,7 +43,18 @@ export default class Poem {
 		return this.pickStorageDriver(storage).loadPoem(id);
 	}
 	public static async save(poem: PoemEntity, storage: string) {
-		return this.pickStorageDriver(storage).savePoem(poem);
+		// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
+		const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(poem)) as {
+			id: string;
+			timestamp: number;
+		};
+		await addPoemRecord({
+			id,
+			name: poem.name,
+			timestamp,
+			unsavedChanges: false,
+			poemSnippet: poem.text.slice(0, 100)
+		});
 	}
 	public static async delete(id: string, storage: string) {
 		return this.pickStorageDriver(storage).deletePoem(id);

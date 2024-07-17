@@ -45,7 +45,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
 	];
 
-	onMount(() => {
+	onMount(async () => {
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
 			stashPoem();
 			return false;

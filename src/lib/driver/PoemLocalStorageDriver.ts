@@ -65,13 +65,20 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		);
 	},
 	savePoem: async function (poem: PoemEntity) {
-		await Filesystem.writeFile({
-			path: `poems/${poem.name}_${Date.now()}.xml`,
-			data: new XMLBuilder({ format: true }).build(poem),
-			directory: Directory.Documents,
-			encoding: Encoding.UTF8,
-			recursive: true
-		});
+		const timestamp = Date.now();
+		const id = (
+			await Filesystem.writeFile({
+				path: `poems/${poem.name}_${timestamp}.xml`,
+				data: new XMLBuilder({ format: true }).build(poem),
+				directory: Directory.Documents,
+				encoding: Encoding.UTF8,
+				recursive: true
+			})
+		).uri;
+		return {
+			id,
+			timestamp
+		};
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string> {
 		await Filesystem.writeFile({
