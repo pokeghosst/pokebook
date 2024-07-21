@@ -17,51 +17,68 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Preferences } from '@capacitor/preferences';
 
-interface PoemBufferRecord {
+import Poem from '../models/Poem';
+
+interface PoemCacheRecord {
 	id: string;
 	name: string;
-	timestamp: number;
+	timestamp: string | number; // TODO: Check this later with different drivers, maybe harmonize
 	unsavedChanges: boolean;
 	poemSnippet: string;
 }
 
-async function addPoemRecord(recordToSave: PoemBufferRecord) {
-	let poemRegistryFile: string;
+export default class PoemRegistryDriver {
+	public static async addPoemRecord(recordToSave: PoemCacheRecord) {
+		let poemRegistryFile: string;
 
-	try {
-		poemRegistryFile = await getPoemRegistry();
-	} catch (e: any) {
-		await initPoemRegistry();
-		poemRegistryFile = await getPoemRegistry();
+		try {
+			poemRegistryFile = await this.getPoemRegistry();
+		} catch (e: any) {
+			await this.cachePoemsToRegistry();
+			poemRegistryFile = await this.getPoemRegistry();
+		}
+
+		const poemRegistry = JSON.parse(poemRegistryFile);
+
+		await this.writeToRegistry(JSON.stringify(poemRegistry.concat(recordToSave)));
 	}
 
-	const poemRegistry = JSON.parse(poemRegistryFile);
+	public static async getPoemRegistry() {
+		return (
+			await Filesystem.readFile({
+				directory: Directory.Documents,
+				path: 'poems/poems.json'
+			})
+		).data.toString();
+	}
 
-	await writeToRegistry(JSON.stringify(poemRegistry.concat(recordToSave)));
-}
+	static async cachePoemsToRegistry() {
+		const currentStorage = (await Preferences.get({ key: 'storage_mode' })).value as string;
+		const poemFiles = await Poem.findAll(currentStorage);
+		const cachedPoems: PoemCacheRecord[] = poemFiles.map((file) => {
+			return {
+				id: file.poemUri,
+				name: file.name,
+				timestamp: file.timestamp,
+				unsavedChanges: false,
+				// Empty snippet is a tradeoff for the sake of backwards compatibility with existing poem lists.
+				// Otherwise it would require loading every single poem file and snipping a bit of its contents.
+				// With a big number of files on a cloud provider (+ no pagination as of now), this can take a long time.
+				poemSnippet: ''
+			};
+		});
+		await this.writeToRegistry(JSON.stringify(cachedPoems));
+	}
 
-async function getPoemRegistry() {
-	return (
-		await Filesystem.readFile({
+	static async writeToRegistry(data: string) {
+		await Filesystem.writeFile({
 			directory: Directory.Documents,
-			path: 'poems/poems.json'
-		})
-	).data.toString();
+			path: 'poems/poems.json',
+			encoding: Encoding.UTF8,
+			recursive: true,
+			data: data
+		});
+	}
 }
-
-async function initPoemRegistry() {
-	await writeToRegistry('[]');
-}
-
-async function writeToRegistry(data: string) {
-	await Filesystem.writeFile({
-		directory: Directory.Documents,
-		path: 'poems/poems.json',
-		encoding: Encoding.UTF8,
-		recursive: true,
-		data: data
-	});
-}
-
-export { addPoemRecord, getPoemRegistry };

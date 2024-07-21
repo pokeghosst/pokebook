@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-import { addPoemRecord } from '$lib/driver/PoemRegistryDriver';
+import PoemRegistryDriver from '../driver/PoemRegistryDriver';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 
@@ -37,7 +37,9 @@ export default class Poem {
 		}
 	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
-		return this.pickStorageDriver(storage).listPoems();
+		return (await this.pickStorageDriver(storage).listPoems()).filter(
+			(poem) => poem.name !== 'poems.json'
+		);
 	}
 	public static async load(id: string, storage: string): Promise<PoemEntity> {
 		return this.pickStorageDriver(storage).loadPoem(id);
@@ -48,7 +50,7 @@ export default class Poem {
 			id: string;
 			timestamp: number;
 		};
-		await addPoemRecord({
+		await PoemRegistryDriver.addPoemRecord({
 			id,
 			name: poem.name,
 			timestamp,

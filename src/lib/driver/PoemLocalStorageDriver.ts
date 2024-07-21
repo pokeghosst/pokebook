@@ -23,6 +23,7 @@ import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
+// TODO: Refactor all drivers into classes with static methods
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	listPoems: async function () {
 		try {

@@ -76,6 +76,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				);
 				clearDraftPoem();
 			} catch (e) {
+				console.log(e);
 				if (e instanceof Error)
 					toast.error($t(e.message), {
 						position: GLOBAL_TOAST_POSITION,
