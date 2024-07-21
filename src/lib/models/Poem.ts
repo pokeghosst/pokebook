@@ -62,7 +62,7 @@ export default class Poem {
 			name: poem.name,
 			timestamp,
 			unsavedChanges: false,
-			poemSnippet: poem.text.slice(0, 100)
+			poemSnippet: poem.text.slice(0, 128) + '...'
 		});
 	}
 	public static async delete(id: string, storage: string) {

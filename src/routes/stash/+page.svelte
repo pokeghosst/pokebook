@@ -77,8 +77,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			{#each poemFiles as poemFile}
 				<div class="list-item">
 					<button on:click={() => checkUnsavedChangesConflict(poemFile.id)}>
-						<span>{poemFile.name}</span>
-						<span>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</span>
+						<div class="list-poem">
+							<p class="list-poem-name">{poemFile.name}</p>
+							<p class="list-poem-snippet">{poemFile.poemSnippet}</p>
+						</div>
+						<div>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</div>
 					</button>
 				</div>
 			{/each}

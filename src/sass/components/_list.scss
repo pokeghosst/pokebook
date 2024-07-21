@@ -18,4 +18,13 @@
 	span {
 		text-align: left;
 	}
+
+	.list-poem {
+		text-align: left;
+		// padding-right: 24px;
+
+		&-name {
+			font-weight: bold;
+		}
+	}
 }
