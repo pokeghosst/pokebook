@@ -28,7 +28,7 @@ export default class PoemCacheDriver {
 		const cachedPoemFile = await this.getCachedPoems();
 		const poemCache = cachedPoemFile;
 
-		await this.writeToCache(JSON.stringify([recordToSave].concat(poemCache)));
+		await this.writeToCache([recordToSave].concat(poemCache));
 	}
 
 	public static async getCachedPoems(): Promise<PoemCacheRecord[]> {
@@ -71,16 +71,31 @@ export default class PoemCacheDriver {
 				poemSnippet: ''
 			};
 		});
-		await this.writeToCache(JSON.stringify(cachedPoems));
+		await this.writeToCache(cachedPoems);
 	}
 
-	static async writeToCache(data: string) {
+	public static setUnsavedStatus(poemId: string) {
+		this.toggleUnsavedStatus(poemId, true);
+	}
+
+	public static unsetUnsavedStatus(poemId: string) {
+		this.toggleUnsavedStatus(poemId, false);
+	}
+
+	static async toggleUnsavedStatus(poemId: string, status: boolean) {
+		const cachedPoems = await this.getCachedPoems();
+		const poem = cachedPoems.find((p) => p.id === poemId);
+		const changedPoem: PoemCacheRecord = { ...poem, unsavedChanges: status } as PoemCacheRecord;
+		await this.writeToCache(cachedPoems.map((p) => (p.id !== poemId ? p : changedPoem)));
+	}
+
+	static async writeToCache(data: PoemCacheRecord[]) {
 		await Filesystem.writeFile({
 			directory: Directory.Documents,
 			path: 'poems/poems.json',
 			encoding: Encoding.UTF8,
 			recursive: true,
-			data: data
+			data: JSON.stringify(data)
 		});
 	}
 }

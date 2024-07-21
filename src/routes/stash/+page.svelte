@@ -78,7 +78,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				<div class="list-item">
 					<button on:click={() => checkUnsavedChangesConflict(poemFile.id)}>
 						<div class="list-poem">
-							<p class="list-poem-name">{poemFile.name}</p>
+							<p class="list-poem-name">
+								{poemFile.name}{poemFile.unsavedChanges ? ' (unsaved)' : ''}
+							</p>
 							<p class="list-poem-snippet">{poemFile.poemSnippet}</p>
 						</div>
 						<div>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</div>

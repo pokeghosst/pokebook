@@ -40,6 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
 	import Poem from '$lib/models/Poem';
+	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
 
 	let unsavedChangesToastId: string;
 
@@ -138,6 +139,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function toggleEdit() {
 		editMode = true;
 		$currentPoemUnsavedChanges = 'true';
+		PoemCacheDriver.setUnsavedStatus($currentPoemUri);
 	}
 
 	async function save() {
@@ -148,6 +150,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 		editMode = false;
 		$currentPoemUnsavedChanges = 'false';
+		PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
 	}
 
 	async function deletePoem() {
