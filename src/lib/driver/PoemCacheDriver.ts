@@ -21,40 +21,42 @@ import { Preferences } from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
-interface PoemCacheRecord {
-	id: string;
-	name: string;
-	timestamp: string | number; // TODO: Check this later with different drivers, maybe harmonize
-	unsavedChanges: boolean;
-	poemSnippet: string;
-}
+import type { PoemCacheRecord } from '$lib/types';
 
-export default class PoemRegistryDriver {
+export default class PoemCacheDriver {
 	public static async addPoemRecord(recordToSave: PoemCacheRecord) {
-		let poemRegistryFile: string;
+		const cachedPoemFile = await this.getCachedPoems();
+		const poemCache = cachedPoemFile;
 
-		try {
-			poemRegistryFile = await this.getPoemRegistry();
-		} catch (e: any) {
-			await this.cachePoemsToRegistry();
-			poemRegistryFile = await this.getPoemRegistry();
-		}
-
-		const poemRegistry = JSON.parse(poemRegistryFile);
-
-		await this.writeToRegistry(JSON.stringify(poemRegistry.concat(recordToSave)));
+		await this.writeToCache(JSON.stringify([recordToSave].concat(poemCache)));
 	}
 
-	public static async getPoemRegistry() {
-		return (
-			await Filesystem.readFile({
+	public static async getCachedPoems(): Promise<PoemCacheRecord[]> {
+		return JSON.parse(
+			(
+				await Filesystem.readFile({
+					directory: Directory.Documents,
+					path: 'poems/poems.json'
+				})
+			).data.toString()
+		);
+	}
+
+	public static async isCachePresent() {
+		try {
+			await Filesystem.stat({
 				directory: Directory.Documents,
 				path: 'poems/poems.json'
-			})
-		).data.toString();
+			});
+			return true;
+		} catch (e: any) {
+			if (e.message === 'Entry does not exist.') return false;
+			throw e;
+		}
 	}
 
-	static async cachePoemsToRegistry() {
+	public static async initCache() {
+		console.log('initializing cache...');
 		const currentStorage = (await Preferences.get({ key: 'storage_mode' })).value as string;
 		const poemFiles = await Poem.findAll(currentStorage);
 		const cachedPoems: PoemCacheRecord[] = poemFiles.map((file) => {
@@ -69,10 +71,10 @@ export default class PoemRegistryDriver {
 				poemSnippet: ''
 			};
 		});
-		await this.writeToRegistry(JSON.stringify(cachedPoems));
+		await this.writeToCache(JSON.stringify(cachedPoems));
 	}
 
-	static async writeToRegistry(data: string) {
+	static async writeToCache(data: string) {
 		await Filesystem.writeFile({
 			directory: Directory.Documents,
 			path: 'poems/poems.json',

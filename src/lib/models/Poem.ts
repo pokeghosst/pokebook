@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-import PoemRegistryDriver from '../driver/PoemRegistryDriver';
+import PoemCacheDriver from '../driver/PoemCacheDriver';
 
-import type { PoemEntity, PoemFileEntity } from '$lib/types';
+import type { PoemEntity, PoemFileEntity, PoemCacheRecord } from '$lib/types';
 
 export default class Poem {
 	private static pickStorageDriver(storage: string) {
@@ -36,6 +36,11 @@ export default class Poem {
 				throw new Error();
 		}
 	}
+	public static async loadFromCache(): Promise<PoemCacheRecord[]> {
+		await this.initPoemCacheIfNotExists();
+
+		return await PoemCacheDriver.getCachedPoems();
+	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
 		return (await this.pickStorageDriver(storage).listPoems()).filter(
 			(poem) => poem.name !== 'poems.json'
@@ -45,12 +50,14 @@ export default class Poem {
 		return this.pickStorageDriver(storage).loadPoem(id);
 	}
 	public static async save(poem: PoemEntity, storage: string) {
+		await this.initPoemCacheIfNotExists();
+
 		// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
 		const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(poem)) as {
 			id: string;
 			timestamp: number;
 		};
-		await PoemRegistryDriver.addPoemRecord({
+		await PoemCacheDriver.addPoemRecord({
 			id,
 			name: poem.name,
 			timestamp,
@@ -67,5 +74,9 @@ export default class Poem {
 		storage: string
 	): Promise<void | string> {
 		return this.pickStorageDriver(storage).updatePoem(poem, id);
+	}
+
+	static async initPoemCacheIfNotExists() {
+		if (!(await PoemCacheDriver.isCachePresent())) await PoemCacheDriver.initCache();
 	}
 }

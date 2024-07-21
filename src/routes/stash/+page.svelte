@@ -31,11 +31,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import Poem from '$lib/models/Poem';
 
-	import type { PoemFileEntity } from '$lib/types';
+	import type { PoemFileEntity, PoemCacheRecord } from '$lib/types';
 
 	const FALLBACK_DELAY_MS = 100;
 
 	let poemFilesPromise: Promise<PoemFileEntity[]>;
+	let cachedPoems: Promise<PoemCacheRecord[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -45,6 +46,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}, FALLBACK_DELAY_MS);
 
 		poemFilesPromise = Poem.findAll($storageMode);
+		cachedPoems = Poem.loadFromCache();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
@@ -63,7 +65,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-{#await poemFilesPromise}
+{#await cachedPoems}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
 			<p>Loading...</p>
@@ -74,7 +76,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<div class="poem-list">
 			{#each poemFiles as poemFile}
 				<div class="list-item">
-					<button on:click={() => checkUnsavedChangesConflict(poemFile.poemUri)}>
+					<button on:click={() => checkUnsavedChangesConflict(poemFile.id)}>
 						<span>{poemFile.name}</span>
 						<span>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</span>
 					</button>

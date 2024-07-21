@@ -8,3 +8,11 @@ export interface PoemEntity {
 	text: string;
 	note: string;
 }
+
+export interface PoemCacheRecord {
+	id: string;
+	name: string;
+	timestamp: string | number; // TODO: Check this later with different drivers, maybe harmonize
+	unsavedChanges: boolean;
+	poemSnippet: string;
+}
