@@ -56,7 +56,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	$: {
-		// console.log(`${$currentPoemUri}.tmp`);
 		Filesystem.writeFile({
 			path: `${$currentPoemUri}.tmp`,
 			data: new XMLBuilder({ format: true }).build({
@@ -85,7 +84,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 	};
 	$discardFunction = async () => {
-		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
+		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
 		goto('/stash', { replaceState: false });
 	};
@@ -122,8 +121,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	onMount(async () => {
-		console.log($currentPoemUri);
-		if ((await PoemCacheDriver.getCacheRecord($currentPoemUri))?.unsavedChanges === true) {
+		if (
+			(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
+		) {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
 				position: GLOBAL_TOAST_POSITION,
@@ -133,8 +133,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$currentPoemName = name;
 			$currentPoemBody = text;
 			$currentPoemNote = note;
-			console.log($currentPoemName);
-			console.log($currentPoemBody);
 
 			thinking = false;
 		} else {
@@ -162,7 +160,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function toggleEdit() {
-		PoemCacheDriver.setUnsavedStatus($currentPoemUri).then(() => (editMode = true));
+		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri).then(() => (editMode = true));
 	}
 
 	async function save() {
@@ -172,14 +170,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$storageMode
 		);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
+		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
 		editMode = false;
 	}
 
 	async function deletePoem() {
 		await Poem.delete($currentPoemUri, $storageMode);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-		await PoemCacheDriver.popCacheRecord($currentPoemUri);
+		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}

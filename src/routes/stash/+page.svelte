@@ -40,7 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		cachedPoems = Poem.listFromCache();
+		cachedPoems = Poem.listFromCache($storageMode);
 
 		return () => clearTimeout(fallbackTimeout);
 	});

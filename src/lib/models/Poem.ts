@@ -36,10 +36,10 @@ export default class Poem {
 				throw new Error();
 		}
 	}
-	public static async listFromCache(): Promise<PoemCacheRecord[]> {
-		await this.initPoemCacheIfNotExists();
+	public static async listFromCache(storage: string): Promise<PoemCacheRecord[]> {
+		await this.initPoemCacheIfNotExists(storage);
 
-		return await PoemCacheDriver.getCachedPoems();
+		return await PoemCacheDriver.getCachedPoems(storage);
 	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
 		return (await this.pickStorageDriver(storage).listPoems()).filter(
@@ -50,14 +50,14 @@ export default class Poem {
 		return this.pickStorageDriver(storage).loadPoem(id);
 	}
 	public static async save(poem: PoemEntity, storage: string) {
-		await this.initPoemCacheIfNotExists();
+		await this.initPoemCacheIfNotExists(storage);
 
 		// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
 		const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(poem)) as {
 			id: string;
 			timestamp: number;
 		};
-		await PoemCacheDriver.addPoemRecord({
+		await PoemCacheDriver.addPoemRecord(storage, {
 			id,
 			name: poem.name,
 			timestamp,
@@ -76,7 +76,7 @@ export default class Poem {
 		return this.pickStorageDriver(storage).updatePoem(poem, id);
 	}
 
-	static async initPoemCacheIfNotExists() {
-		if (!(await PoemCacheDriver.isCachePresent())) await PoemCacheDriver.initCache();
+	static async initPoemCacheIfNotExists(storage: string) {
+		if (!(await PoemCacheDriver.isCachePresent(storage))) await PoemCacheDriver.initCache(storage);
 	}
 }
