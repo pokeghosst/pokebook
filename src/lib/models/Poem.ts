@@ -36,7 +36,7 @@ export default class Poem {
 				throw new Error();
 		}
 	}
-	public static async loadFromCache(): Promise<PoemCacheRecord[]> {
+	public static async listFromCache(): Promise<PoemCacheRecord[]> {
 		await this.initPoemCacheIfNotExists();
 
 		return await PoemCacheDriver.getCachedPoems();

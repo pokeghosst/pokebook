@@ -74,12 +74,20 @@ export default class PoemCacheDriver {
 		await this.writeToCache(cachedPoems);
 	}
 
-	public static setUnsavedStatus(poemId: string) {
-		this.toggleUnsavedStatus(poemId, true);
+	public static async getCacheRecord(uri: string) {
+		return (await this.getCachedPoems()).find((p) => p.id === uri);
 	}
 
-	public static unsetUnsavedStatus(poemId: string) {
-		this.toggleUnsavedStatus(poemId, false);
+	public static async setUnsavedStatus(poemId: string) {
+		await this.toggleUnsavedStatus(poemId, true);
+	}
+
+	public static async unsetUnsavedStatus(poemId: string) {
+		await this.toggleUnsavedStatus(poemId, false);
+	}
+
+	public static async popCacheRecord(poemId: string) {
+		this.writeToCache((await this.getCachedPoems()).filter((p) => p.id !== poemId));
 	}
 
 	static async toggleUnsavedStatus(poemId: string, status: boolean) {

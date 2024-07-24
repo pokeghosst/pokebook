@@ -22,20 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	import {
-		currentPoemName,
-		currentPoemUnsavedChanges,
-		currentPoemUri
-	} from '$lib/stores/currentPoem';
+	import { currentPoemUri } from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import Poem from '$lib/models/Poem';
 
-	import type { PoemFileEntity, PoemCacheRecord } from '$lib/types';
+	import type { PoemCacheRecord } from '$lib/types';
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let poemFilesPromise: Promise<PoemFileEntity[]>;
 	let cachedPoems: Promise<PoemCacheRecord[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
@@ -45,23 +40,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		poemFilesPromise = Poem.findAll($storageMode);
-		cachedPoems = Poem.loadFromCache();
+		cachedPoems = Poem.listFromCache();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
 
-	async function checkUnsavedChangesConflict(poemUri: string) {
-		if ($currentPoemUnsavedChanges === 'true') {
-			if ($currentPoemUri === poemUri) {
-				await goto('/stash/poem');
-			} else {
-				alert(`${$t('workspace.unsavedChanges')} '${$currentPoemName}'`);
-			}
-		} else {
-			$currentPoemUri = poemUri;
-			await goto('/stash/poem');
-		}
+	async function goToPoem(poemUri: string) {
+		$currentPoemUri = poemUri;
+		await goto('/stash/poem');
 	}
 </script>
 
@@ -71,19 +57,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<p>Loading...</p>
 		</div>
 	{/if}
-{:then poemFiles}
-	{#if poemFiles && poemFiles.length > 0}
+{:then cacheRecords}
+	{#if cacheRecords && cacheRecords.length > 0}
 		<div class="poem-list">
-			{#each poemFiles as poemFile}
+			{#each cacheRecords as record}
 				<div class="list-item">
-					<button on:click={() => checkUnsavedChangesConflict(poemFile.id)}>
+					<button on:click={() => goToPoem(record.id)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
-								{poemFile.name}{poemFile.unsavedChanges ? ' (unsaved)' : ''}
+								{record.name}{record.unsavedChanges ? ' (unsaved)' : ''}
 							</p>
-							<p class="list-poem-snippet">{poemFile.poemSnippet}</p>
+							<p class="list-poem-snippet">{record.poemSnippet}</p>
 						</div>
-						<div>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</div>
+						<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
 					</button>
 				</div>
 			{/each}

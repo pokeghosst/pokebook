@@ -26,7 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemName,
 		currentPoemNote,
 		currentPoemNoteUri,
-		currentPoemUnsavedChanges,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { storageMode } from '$lib/stores/storageMode';
@@ -40,7 +39,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { t } from '$lib/translations';
 	import Poem from '$lib/models/Poem';
-	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
+	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import { Encoding, Filesystem } from '@capacitor/filesystem';
+	import { XMLBuilder } from 'fast-xml-parser';
 
 	let unsavedChangesToastId: string;
 
@@ -52,6 +53,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let editOrSaveLabel = 'Edit poem';
 	let editOrSaveAction = toggleEdit;
+
+	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
+	$: {
+		// console.log(`${$currentPoemUri}.tmp`);
+		Filesystem.writeFile({
+			path: `${$currentPoemUri}.tmp`,
+			data: new XMLBuilder({ format: true }).build({
+				name: $currentPoemName,
+				text: $currentPoemBody,
+				note: $currentPoemNote
+			}),
+
+			encoding: Encoding.UTF8
+		});
+	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
@@ -68,8 +84,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 		);
 	};
-	$discardFunction = () => {
-		$currentPoemUnsavedChanges = 'false';
+	$discardFunction = async () => {
+		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
+		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
 		goto('/stash', { replaceState: false });
 	};
 
@@ -105,12 +122,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	onMount(async () => {
-		if ($currentPoemUnsavedChanges === 'true') {
+		console.log($currentPoemUri);
+		if ((await PoemCacheDriver.getCacheRecord($currentPoemUri))?.unsavedChanges === true) {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
+			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+			$currentPoemName = name;
+			$currentPoemBody = text;
+			$currentPoemNote = note;
+			console.log($currentPoemName);
+			console.log($currentPoemBody);
+
 			thinking = false;
 		} else {
 			try {
@@ -137,9 +162,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function toggleEdit() {
-		editMode = true;
-		$currentPoemUnsavedChanges = 'true';
-		PoemCacheDriver.setUnsavedStatus($currentPoemUri);
+		PoemCacheDriver.setUnsavedStatus($currentPoemUri).then(() => (editMode = true));
 	}
 
 	async function save() {
@@ -148,13 +171,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$currentPoemUri,
 			$storageMode
 		);
+		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
+		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
 		editMode = false;
-		$currentPoemUnsavedChanges = 'false';
-		PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
 	}
 
 	async function deletePoem() {
 		await Poem.delete($currentPoemUri, $storageMode);
+		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
+		await PoemCacheDriver.popCacheRecord($currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
@@ -166,7 +191,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$currentPoemUri =
 			$currentPoemNoteUri =
 				'';
-		$currentPoemUnsavedChanges = 'false';
 	}
 </script>
 
