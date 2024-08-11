@@ -33,17 +33,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
+	import { sharePoem } from 'lib//actions/sharePoem';
 	import Workspace from '../components/Workspace.svelte';
 	import Delete from '../components/svg/Delete.svelte';
 	import New from '../components/svg/New.svelte';
+	import Save from '../components/svg/Save.svelte';
 	import ShareIcon from '../components/svg/ShareIcon.svelte';
-	import { sharePoem } from 'lib//actions/sharePoem';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
 	const actions: { icon: ComponentType; action: () => void; label: string }[] = [
-		{ icon: New, action: stashPoem, label: $t('workspace.newPoem') as string },
+		{ icon: New, action: newPoem, label: $t('workspace.newPoem') as string },
+		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') as string },
 		{
 			icon: ShareIcon,
 			action: () =>
@@ -66,6 +68,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	onDestroy(() => {
 		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
+
+	async function newPoem() {
+		if (confirm($t('workspace.isSavePoem'))) {
+			stashPoem();
+		} else {
+			clearDraftPoem();
+		}
+	}
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {

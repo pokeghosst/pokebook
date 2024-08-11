@@ -4,13 +4,14 @@
 	"words": "Words",
 	"characters": "Characters",
 	"lines": "Lines",
-	"newPoem": "New poem (save draft)",
-	"savePoem": "Save poem",
-	"editPoem": "Edit poem",
-	"sharePoem": "Share poem",
-	"forgetPoem": "Forget poem",
+	"newPoem": "New",
+	"savePoem": "Save",
+	"editPoem": "Edit",
+	"sharePoem": "Share",
+	"forgetPoem": "Delete",
 	"hotkeys": "Keyboard Shortcuts",
 	"waitForAuthorization": "Hang on, we're doing things!",
 	"unsavedChanges": "You have unsaved changes in",
-	"emptyPoemList": "Your stage is ready and the spotlight's on, but the verses are yet to bloom."
+	"emptyPoemList": "Your stage is ready and the spotlight's on, but the verses are yet to bloom.",
+	"isSavePoem": "Save this poem?"
 }
