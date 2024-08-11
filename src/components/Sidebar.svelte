@@ -48,6 +48,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		class="sidebar-close-area {sidebarNavOpenClass}"
 		on:click={() => ($isSidebarOpen = 'false')}
 		on:keydown
+		role="button"
+		tabindex="0"
 	/>
 	<div class="sidebar {sidebarNavOpenClass}">
 		<div class="sidebar-nav-items">

@@ -25,7 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 
-	import { highlightWords, putSyllables } from '$lib/util/PokeHelp';
+	import { putSyllables } from '$lib/util/PokeHelp';
 	import { t } from '$lib/translations';
 
 	export let editable: boolean;
@@ -35,14 +35,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let poemBodyStoreProp = props.body;
 
 	// Overlays
-	let highlightedWords: string[];
 	let syllableRows: string;
 	let stats: Record<string, string | number>;
 
 	let lines: string[] = $poemBodyStoreProp.split('\n');
 
 	let poemTextarea: HTMLTextAreaElement;
-	let poemOverlay: Element;
 
 	$: lines = $poemBodyStoreProp.split('\n');
 	$: $poemBodyStoreProp, autoResizeNotebook();
@@ -66,7 +64,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function updatePokeHelpOverlays() {
 		stats = count($poemBodyStoreProp);
 		syllableRows = putSyllables(lines);
-		highlightedWords = highlightWords($poemBodyStoreProp, lines);
 	}
 
 	function sanitizePoemTitle() {
@@ -104,13 +101,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
 				)}: {stats.lines}
-			</div>
-			<div
-				class="notebook-paper-overlay paper-highlight-overlay {$poemPadJustification}"
-				aria-hidden="true"
-				bind:this={poemOverlay}
-			>
-				{@html highlightedWords}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
 				{@html syllableRows}

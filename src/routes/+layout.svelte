@@ -65,8 +65,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <Modals>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div slot="backdrop" class="backdrop" on:click={closeModal} />
+	<div
+		slot="backdrop"
+		class="backdrop"
+		on:click={closeModal}
+		on:keydown
+		role="button"
+		tabindex="0"
+	/>
 </Modals>
 
 <Toaster />
