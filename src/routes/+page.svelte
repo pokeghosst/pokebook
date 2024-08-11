@@ -46,6 +46,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
+		hotkeys.filter = function () {
+			return true;
+		};
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
 			stashPoem();
 			return false;

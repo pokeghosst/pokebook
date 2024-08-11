@@ -30,6 +30,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Pencil from './svg/PencilRuler.svelte';
 
 	onMount(() => {
+		// TODO: Extract hotkey-related logic into separate function possibly
+		hotkeys.filter = function () {
+			return true;
+		};
 		hotkeys('ctrl+/, command+/', function () {
 			toggleSidebar();
 			return false;
