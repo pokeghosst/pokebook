@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onDestroy, onMount } from 'svelte';
 
 	import toast from 'svelte-french-toast';
 
@@ -39,12 +40,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { Encoding, Filesystem } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
-	import { onDestroy, onMount } from 'svelte';
+
 	import Delete from '../../../components/svg/Delete.svelte';
-	import Edit from '../../../components/svg/Edit.svelte';
 	import Save from '../../../components/svg/Save.svelte';
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
+	import ShareIcon from '../../../components/svg/ShareIcon.svelte';
+	import { sharePoem } from 'lib//actions/sharePoem';
 
 	let unsavedChangesToastId: string;
 
@@ -108,7 +110,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let actions = [
 		{ icon: Save, action: save, label: $t('workspace.savePoem') },
-		{ icon: Edit, action: toggleEdit, label: $t('workspace.editPoem') },
+		{
+			icon: ShareIcon,
+			action: () =>
+				sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem') as string
+		},
 		{ icon: Delete, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
 

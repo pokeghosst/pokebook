@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount, type ComponentType } from 'svelte';
 
-	import { Share } from '@capacitor/share';
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
 
@@ -38,13 +37,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Delete from '../components/svg/Delete.svelte';
 	import New from '../components/svg/New.svelte';
 	import ShareIcon from '../components/svg/ShareIcon.svelte';
+	import { sharePoem } from 'lib//actions/sharePoem';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
 	const actions: { icon: ComponentType; action: () => void; label: string }[] = [
 		{ icon: New, action: stashPoem, label: $t('workspace.newPoem') as string },
-		{ icon: ShareIcon, action: sharePoem, label: $t('workspace.sharePoem') as string },
+		{
+			icon: ShareIcon,
+			action: () =>
+				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem') as string
+		},
 		{ icon: Delete, action: forgetDraft, label: $t('workspace.forgetPoem') as string }
 	];
 
@@ -107,24 +112,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemNameStore.set('');
 		draftPoemBodyStore.set('');
 		draftPoemNoteStore.set('');
-	}
-
-	async function sharePoem() {
-		const poemTextToShare = `${$draftPoemNameStore}\n\n${$draftPoemBodyStore}\n`;
-		if ((await Share.canShare()).value)
-			await Share.share({
-				title: `${$t('share.title')} "${$draftPoemNameStore}"`,
-				dialogTitle: $t('share.dialogTitle'),
-				text: poemTextToShare,
-				url: 'https://book.pokeghost.org'
-			});
-		else {
-			navigator.clipboard.writeText(poemTextToShare);
-			toast.success($t('toasts.poemCopiedToClipboard'), {
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-		}
 	}
 </script>
 
