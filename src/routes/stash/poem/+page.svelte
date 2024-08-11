@@ -170,7 +170,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$storageMode
 		);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
 		editMode = false;
 	}
 

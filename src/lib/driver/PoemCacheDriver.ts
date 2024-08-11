@@ -21,7 +21,9 @@ import { Preferences } from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
-import type { PoemCacheRecord } from '$lib/types';
+import type { PoemCacheRecord, PoemEntity } from '$lib/types';
+
+const SNIPPET_LENGTH = 128;
 
 export default class PoemCacheDriver {
 	public static async addPoemRecord(storage: string, recordToSave: PoemCacheRecord) {
@@ -90,6 +92,31 @@ export default class PoemCacheDriver {
 			storage,
 			(await this.getCachedPoems(storage)).filter((p) => p.id !== poemId)
 		);
+	}
+
+	public static async updateCachedPoem(
+		storage: string,
+		oldPoemUri: string,
+		newPoemUri: string | void,
+		newPoem: PoemEntity
+	) {
+		const poems = await this.getCachedPoems(storage);
+		const updatedPoems = poems.map((poem) =>
+			poem.id === oldPoemUri
+				? {
+						...poem,
+						id: newPoemUri || poem.id,
+						name: newPoem.name,
+						poemSnippet: this.sliceSnippet(newPoem.text),
+						unsavedChanges: false
+				  }
+				: poem
+		);
+		await this.writeToCache(storage, updatedPoems);
+	}
+
+	public static sliceSnippet(textToSlice: string) {
+		return textToSlice.slice(0, SNIPPET_LENGTH) + '...';
 	}
 
 	static async toggleUnsavedStatus(storage: string, poemId: string, status: boolean) {

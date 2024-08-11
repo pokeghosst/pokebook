@@ -62,7 +62,7 @@ export default class Poem {
 			name: poem.name,
 			timestamp,
 			unsavedChanges: false,
-			poemSnippet: poem.text.slice(0, 128) + '...'
+			poemSnippet: PoemCacheDriver.sliceSnippet(poem.text)
 		});
 	}
 	public static async delete(id: string, storage: string) {
@@ -70,10 +70,15 @@ export default class Poem {
 	}
 	public static async update(
 		poem: PoemEntity,
+		// TODO: Refactor variable name to poemUri or similar
 		id: string,
 		storage: string
 	): Promise<void | string> {
-		return this.pickStorageDriver(storage).updatePoem(poem, id);
+		const newPoemUri = await this.pickStorageDriver(storage).updatePoem(poem, id);
+
+		await PoemCacheDriver.updateCachedPoem(storage, id, newPoemUri, poem);
+
+		return newPoemUri;
 	}
 
 	static async initPoemCacheIfNotExists(storage: string) {
