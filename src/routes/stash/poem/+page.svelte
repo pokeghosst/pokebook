@@ -28,20 +28,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemNoteUri,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
+	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { storageMode } from '$lib/stores/storageMode';
-	import { saveFunction, discardFunction } from '$lib/stores/poemFunctionsStore';
 
 	import { preventTabClose } from '$lib/util/preventTabClose';
 
-	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
-	import Workspace from '../../../components/Workspace.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { t } from '$lib/translations';
-	import Poem from '$lib/models/Poem';
 	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import Poem from '$lib/models/Poem';
+	import { t } from '$lib/translations';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { Encoding, Filesystem } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
+	import { onDestroy, onMount } from 'svelte';
+	import Delete from '../../../components/svg/Delete.svelte';
+	import Edit from '../../../components/svg/Edit.svelte';
+	import Save from '../../../components/svg/Save.svelte';
+	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
+	import Workspace from '../../../components/Workspace.svelte';
 
 	let unsavedChangesToastId: string;
 
@@ -50,9 +53,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
-
-	let editOrSaveLabel = 'Edit poem';
-	let editOrSaveAction = toggleEdit;
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	$: {
@@ -107,18 +107,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	let actions = [
-		{ action: editOrSaveAction, label: editOrSaveLabel },
-		{ action: deletePoemAction, label: 'workspace.forgetPoem' }
+		{ icon: Save, action: save, label: $t('workspace.savePoem') },
+		{ icon: Edit, action: toggleEdit, label: $t('workspace.editPoem') },
+		{ icon: Delete, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
-
-	$: {
-		editMode == true
-			? (editOrSaveLabel = 'workspace.savePoem')
-			: (editOrSaveLabel = 'workspace.editPoem');
-		editMode == true ? (editOrSaveAction = $saveFunction) : (editOrSaveAction = toggleEdit);
-		actions[0].label = editOrSaveLabel;
-		actions[0].action = editOrSaveAction;
-	}
 
 	onMount(async () => {
 		if (

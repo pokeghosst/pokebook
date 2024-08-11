@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type ComponentType } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	import hotkeys from 'hotkeys-js';
@@ -27,14 +27,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
 	import NotePad from './NotePad.svelte';
-	import PadDropdownMenu from './PadDropdownMenu.svelte';
 	import PoemPad from './PoemPad.svelte';
 
 	import ArrowsExpand from './svg/ArrowsExpand.svelte';
 	import ArrowsSwap from './svg/ArrowsSwap.svelte';
+	import Toolbar from './Toolbar.svelte';
 
 	export let editable = true;
-	export let actions: { action: () => void; label: string }[];
+	export let actions: { icon: ComponentType; action: () => void; label: string }[];
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
 
@@ -71,6 +71,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 {#if state}
+	<div class="toolbar"><Toolbar {actions} /></div>
 	<div
 		class="workspace {$isFullWidthPad === 'true'
 			? 'l-full-width'
@@ -85,7 +86,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					<button on:click={swapViews}>
 						<ArrowsSwap />
 					</button>
-					<PadDropdownMenu {actions} />
 				</div>
 			</div>
 			<svelte:component this={views[state[0]]} {editable} bind:props={props[state[0]]} />

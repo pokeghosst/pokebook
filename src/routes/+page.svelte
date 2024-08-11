@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type ComponentType } from 'svelte';
 
 	import { Share } from '@capacitor/share';
 	import hotkeys from 'hotkeys-js';
@@ -35,14 +35,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import Workspace from '../components/Workspace.svelte';
+	import Delete from '../components/svg/Delete.svelte';
+	import New from '../components/svg/New.svelte';
+	import ShareIcon from '../components/svg/ShareIcon.svelte';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
-	const actions = [
-		{ action: stashPoem, label: $t('workspace.newPoem') as string },
-		{ action: sharePoem, label: $t('workspace.sharePoem') as string },
-		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
+	const actions: { icon: ComponentType; action: () => void; label: string }[] = [
+		{ icon: New, action: stashPoem, label: $t('workspace.newPoem') as string },
+		{ icon: ShareIcon, action: sharePoem, label: $t('workspace.sharePoem') as string },
+		{ icon: Delete, action: forgetDraft, label: $t('workspace.forgetPoem') as string }
 	];
 
 	onMount(async () => {
