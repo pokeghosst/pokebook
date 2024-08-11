@@ -28,8 +28,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { putSyllables } from '$lib/util/PokeHelp';
 	import { t } from '$lib/translations';
 
-	export let editable: boolean;
 	export let props: { name: Writable<string>; body: Writable<string> };
+	export let unsavedChangesHandler;
 
 	let poemNameStoreProp = props.name;
 	let poemBodyStoreProp = props.body;
@@ -90,10 +90,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		disabled={!editable}
 		bind:value={$poemNameStoreProp}
 		on:input={sanitizePoemTitle}
 		placeholder={$t('workspace.unnamed')}
+		on:keypress|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -108,12 +108,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{/if}
 		<textarea
 			bind:value={$poemBodyStoreProp}
-			disabled={!editable}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
 			bind:this={poemTextarea}
+			on:keypress|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

@@ -32,8 +32,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { storageMode } from '$lib/stores/storageMode';
 
-	import { preventTabClose } from '$lib/util/preventTabClose';
-
 	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
@@ -41,16 +39,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Encoding, Filesystem } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
 
+	import { sharePoem } from 'lib//actions/sharePoem';
 	import Delete from '../../../components/svg/Delete.svelte';
 	import Save from '../../../components/svg/Save.svelte';
+	import ShareIcon from '../../../components/svg/ShareIcon.svelte';
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
-	import ShareIcon from '../../../components/svg/ShareIcon.svelte';
-	import { sharePoem } from 'lib//actions/sharePoem';
 
 	let unsavedChangesToastId: string;
 
-	let editMode = false;
 	let thinking = true;
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
@@ -158,8 +155,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		toast.dismiss(unsavedChangesToastId);
 	});
 
-	function toggleEdit() {
-		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri).then(() => (editMode = true));
+	function unsavedChangesHandler() {
+		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri);
 	}
 
 	async function save() {
@@ -169,7 +166,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			$storageMode
 		);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-		editMode = false;
 	}
 
 	async function deletePoem() {
@@ -190,11 +186,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<div use:preventTabClose={editMode} />
 {#if thinking}
 	<div class="placeholder-text-wrapper">
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
+	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
 {/if}

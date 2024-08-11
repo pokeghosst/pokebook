@@ -33,10 +33,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import ArrowsSwap from './svg/ArrowsSwap.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	export let editable = true;
 	export let actions: { icon: ComponentType; action: () => void; label: string }[];
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
+
+	export let unsavedChangesHandler;
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
@@ -88,10 +89,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					</button>
 				</div>
 			</div>
-			<svelte:component this={views[state[0]]} {editable} bind:props={props[state[0]]} />
+			<svelte:component
+				this={views[state[0]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[0]]}
+			/>
 		</div>
 		<div class="notebook-container">
-			<svelte:component this={views[state[1]]} {editable} bind:props={props[state[1]]} />
+			<svelte:component
+				this={views[state[1]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[1]]}
+			/>
 		</div>
 	</div>
 {/if}
