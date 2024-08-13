@@ -93,7 +93,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:value={$poemNameStoreProp}
 		on:input={sanitizePoemTitle}
 		placeholder={$t('workspace.unnamed')}
-		on:keypress|once={unsavedChangesHandler}
+		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -113,7 +113,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				: ''}"
 			id="poem-textarea"
 			bind:this={poemTextarea}
-			on:keypress|once={unsavedChangesHandler}
+			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

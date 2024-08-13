@@ -16,14 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Directory, Encoding } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
 import type { PoemCacheRecord, PoemEntity } from '$lib/types';
+import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
-const SNIPPET_LENGTH = 128;
+const SNIPPET_LENGTH = 256;
 
 export default class PoemCacheDriver {
 	public static async addPoemRecord(storage: string, recordToSave: PoemCacheRecord) {
@@ -34,26 +35,24 @@ export default class PoemCacheDriver {
 	}
 
 	public static async getCachedPoems(storage: string): Promise<PoemCacheRecord[]> {
-		return JSON.parse(
-			(
-				await Filesystem.readFile({
-					directory: Directory.Documents,
-					path: `poems/poems_${storage}.json`
-				})
-			).data.toString()
-		);
+		const poemCacheFile = await FilesystemWithPermissions.readFile({
+			directory: Directory.Documents,
+			path: `poems/poems_${storage}.json`,
+			encoding: Encoding.UTF8
+		});
+
+		return JSON.parse(poemCacheFile.data.toString());
 	}
 
 	public static async isCachePresent(storage: string) {
 		try {
-			await Filesystem.stat({
+			await FilesystemWithPermissions.stat({
 				directory: Directory.Documents,
 				path: `poems/poems_${storage}.json`
 			});
 			return true;
 		} catch (e: any) {
-			if (e.message === 'Entry does not exist.') return false;
-			throw e;
+			return false;
 		}
 	}
 
@@ -130,7 +129,7 @@ export default class PoemCacheDriver {
 	}
 
 	static async writeToCache(storage: string, data: PoemCacheRecord[]) {
-		await Filesystem.writeFile({
+		await FilesystemWithPermissions.writeFile({
 			directory: Directory.Documents,
 			path: `poems/poems_${storage}.json`,
 			encoding: Encoding.UTF8,

@@ -66,7 +66,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			class="paper"
 			id="note-textarea"
 			bind:this={noteTextarea}
-			on:keypress|once={unsavedChangesHandler}
+			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

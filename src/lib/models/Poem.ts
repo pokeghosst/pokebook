@@ -57,6 +57,7 @@ export default class Poem {
 			id: string;
 			timestamp: number;
 		};
+
 		await PoemCacheDriver.addPoemRecord(storage, {
 			id,
 			name: poem.name,
@@ -82,6 +83,8 @@ export default class Poem {
 	}
 
 	static async initPoemCacheIfNotExists(storage: string) {
-		if (!(await PoemCacheDriver.isCachePresent(storage))) await PoemCacheDriver.initCache(storage);
+		const isCachePresent = await PoemCacheDriver.isCachePresent(storage);
+
+		if (!isCachePresent) await PoemCacheDriver.initCache(storage);
 	}
 }

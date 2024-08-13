@@ -16,19 +16,29 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { Directory, Encoding } from '@capacitor/filesystem';
 
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+
+// TODO: This method seems safe but stupid(?)
+// Consider thinking of a better solution
+try {
+	await FilesystemWithPermissions.mkdir({
+		path: 'poems',
+		directory: Directory.Documents
+	});
+} catch (_) {}
 
 // TODO: Refactor all drivers into classes with static methods
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	listPoems: async function () {
 		try {
 			const storedFiles = (
-				await Filesystem.readdir({
+				await FilesystemWithPermissions.readdir({
 					path: 'poems/',
 					directory: Directory.Documents
 				})
@@ -58,7 +68,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	loadPoem: async function (poemUri: string) {
 		return new XMLParser().parse(
 			(
-				await Filesystem.readFile({
+				await FilesystemWithPermissions.readFile({
 					path: poemUri,
 					encoding: Encoding.UTF8
 				})
@@ -68,7 +78,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	savePoem: async function (poem: PoemEntity) {
 		const timestamp = Date.now();
 		const id = (
-			await Filesystem.writeFile({
+			await FilesystemWithPermissions.writeFile({
 				path: `poems/${poem.name}_${timestamp}.xml`,
 				data: new XMLBuilder({ format: true }).build(poem),
 				directory: Directory.Documents,
@@ -82,7 +92,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		};
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string> {
-		await Filesystem.writeFile({
+		await FilesystemWithPermissions.writeFile({
 			path: poemUri,
 			data: new XMLBuilder({ format: true }).build(poem),
 			encoding: Encoding.UTF8
@@ -90,7 +100,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		const directory = poemUri.split('poems/')[0];
 		const timestamp = poemUri.split('poems/')[1].split(/_|\.xml/)[1];
 		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
-		await Filesystem.rename({
+		await FilesystemWithPermissions.rename({
 			from: poemUri,
 			to: newFileUri
 		});
@@ -98,7 +108,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		return newFileUri;
 	},
 	deletePoem: async function (poemUri: string) {
-		await Filesystem.deleteFile({
+		await FilesystemWithPermissions.deleteFile({
 			path: poemUri
 		});
 	}

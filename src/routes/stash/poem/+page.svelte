@@ -26,20 +26,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemBody,
 		currentPoemName,
 		currentPoemNote,
-		currentPoemNoteUri,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { storageMode } from '$lib/stores/storageMode';
 
+	import { sharePoem } from '$lib/actions/sharePoem';
 	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { Encoding, Filesystem } from '@capacitor/filesystem';
+	import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
+	import { Encoding } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
 
-	import { sharePoem } from 'lib//actions/sharePoem';
 	import Delete from '../../../components/svg/Delete.svelte';
 	import Save from '../../../components/svg/Save.svelte';
 	import ShareIcon from '../../../components/svg/ShareIcon.svelte';
@@ -55,16 +55,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	$: {
-		Filesystem.writeFile({
-			path: `${$currentPoemUri}.tmp`,
-			data: new XMLBuilder({ format: true }).build({
-				name: $currentPoemName,
-				text: $currentPoemBody,
-				note: $currentPoemNote
-			}),
+		if (!thinking)
+			FilesystemWithPermissions.writeFile({
+				path: `${$currentPoemUri}.tmp`,
+				data: new XMLBuilder({ format: true }).build({
+					name: $currentPoemName,
+					text: $currentPoemBody,
+					note: $currentPoemNote
+				}),
 
-			encoding: Encoding.UTF8
-		});
+				encoding: Encoding.UTF8
+			});
 	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
@@ -177,12 +178,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function clearCurrentPoemStorage() {
-		$currentPoemBody =
-			$currentPoemName =
-			$currentPoemNote =
-			$currentPoemUri =
-			$currentPoemNoteUri =
-				'';
+		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
 	}
 </script>
 
