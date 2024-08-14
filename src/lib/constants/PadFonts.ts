@@ -1,6 +1,6 @@
 export const padFonts = [
-	{ value: 'sans', label: 'System (sans-serif)' },
-	{ value: 'serif', label: 'System (serif)' },
+	{ value: 'sans', label: 'sans-serif' },
+	{ value: 'serif', label: 'serif' },
 	{ value: 'oldattic', label: 'Times Old Attic Bold' },
 	{ value: 'crimson', label: 'Crimson Roman' },
 	{ value: 'comic', label: 'Comic Sans MS' },

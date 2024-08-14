@@ -1,12 +1,20 @@
 <script lang="ts">
-	import { poemPadJustification } from 'lib//stores/poemPadJustification';
+	import { t } from '$lib/translations';
 
-	import type { ToolbarItem } from '$lib/types';
+	import { poemPadJustification } from '$lib/stores/poemPadJustification';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
 
 	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignCenter from 'lucide-svelte/icons/align-center';
 	import AlignRight from 'lucide-svelte/icons/align-right';
 	import Type from 'lucide-svelte/icons/type';
+
+	import { padFonts } from '$lib/constants/PadFonts';
+
+	import SettingsSelect from './SettingsSelect.svelte';
+
+	import type { ToolbarItem } from '$lib/types';
+	import { ChevronDown } from 'lucide-svelte';
 
 	export let actions: ToolbarItem[];
 </script>
@@ -32,9 +40,19 @@
 			<AlignRight />
 		</button>
 	</div>
-	<button on:click={() => {}}>
-		<Type />
-	</button>
+	<div class="settings-select">
+		<!-- TODO: Do something about these styles later -->
+		<select bind:value={$writingPadFont} style="margin: 0">
+			{#each padFonts as option}
+				<option value={option.value}>
+					{option.label}
+				</option>
+			{/each}
+		</select>
+		<div class="settings-select-chevron-wrapper" style="margin-top: -5px">
+			<ChevronDown />
+		</div>
+	</div>
 	{#each actions as action}
 		<button on:click={() => action.action()}>
 			<svelte:component this={action.icon} />

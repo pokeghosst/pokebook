@@ -5,6 +5,18 @@
 		flex: none;
 	}
 
+	textarea.left {
+		text-align: left;
+	}
+
+	textarea.center {
+		text-align: center;
+	}
+
+	textarea.right {
+		text-align: right;
+	}
+
 	textarea,
 	.paper-highlight-overlay,
 	.poem-syllable-rows {
