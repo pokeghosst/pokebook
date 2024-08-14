@@ -106,8 +106,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	};
 
+	async function save() {
+		const newPoemUri = await Poem.update(
+			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+			$currentPoemUri,
+			$storageMode
+		);
+
+		if (newPoemUri) $currentPoemUri = newPoemUri;
+
+		await deleteTmpFile($currentPoemUri);
+	}
+
+	async function deletePoem() {
+		await Poem.delete($currentPoemUri, $storageMode);
+		await deleteTmpFile($currentPoemUri);
+		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
+		clearCurrentPoemStorage();
+		await goto('/stash', { invalidateAll: true });
+	}
+
 	let actions = [
-		{ icon: Save, action: save, label: $t('workspace.savePoem') },
+		// TODO: Bad, bad, bad, bad!!!
+		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
 		{
 			icon: ShareIcon,
 			action: () =>
@@ -160,25 +181,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri);
 	}
 
-	async function save() {
-		await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri,
-			$storageMode
-		);
-		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-	}
-
-	async function deletePoem() {
-		await Poem.delete($currentPoemUri, $storageMode);
-		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
-		clearCurrentPoemStorage();
-		await goto('/stash', { invalidateAll: true });
-	}
-
 	function clearCurrentPoemStorage() {
 		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
+	}
+
+	async function deleteTmpFile(fileUri: string) {
+		try {
+			await Poem.delete(`${fileUri}.tmp`, 'local');
+		} catch (_) {}
 	}
 </script>
 
