@@ -24,9 +24,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
+	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
-	import { putSyllables } from '$lib/util/PokeHelp';
 	import { t } from '$lib/translations';
+	import { putSyllables } from '$lib/util/PokeHelp';
 
 	export let props: { name: Writable<string>; body: Writable<string> };
 	export let unsavedChangesHandler;
@@ -112,6 +113,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
+			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
 			on:change|once={unsavedChangesHandler}
 		/>

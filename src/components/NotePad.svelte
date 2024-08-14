@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
+	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+
 	import { t } from '$lib/translations';
 
 	export let props: Writable<string>;
@@ -65,6 +67,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			bind:value={$props}
 			class="paper"
 			id="note-textarea"
+			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
 			on:change|once={unsavedChangesHandler}
 		/>
