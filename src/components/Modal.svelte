@@ -30,19 +30,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 {#if isOpen}
-	<div class="modal-wrapper">
-		<div role="dialog" class="modal">
-			<div class="modal-title-bar">
-				{#if title}
-					<div class="modal-title">{title}</div>
-				{/if}
-				<div class="modal-title-side">
-					<button on:click={closeModal}><CloseX /></button>
-				</div>
+	<div role="dialog" class="modal">
+		<div class="modal-title-bar">
+			{#if title}
+				<div class="modal-title">{title}</div>
+			{/if}
+			<div class="modal-title-side">
+				<button on:click={closeModal}><CloseX /></button>
 			</div>
-			<div class="modal-content">
-				<svelte:component this={content} />
-			</div>
+		</div>
+		<div class="modal-content">
+			<svelte:component this={content} />
 		</div>
 	</div>
 {/if}
