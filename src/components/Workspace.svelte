@@ -38,7 +38,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	export let noteProps: Writable<string>;
 
 	// Assigning empty function by default because on draft page we don't pass a function here
-	export let unsavedChangesHandler: () => void = () => {};
+	export let unsavedChangesHandler = () => {};
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
