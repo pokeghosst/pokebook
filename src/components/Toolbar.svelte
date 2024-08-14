@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { type ComponentType } from 'svelte';
+	import type { ToolbarItem } from 'lib//types';
 
-	export let actions: { icon: ComponentType; action: () => void; label: string }[];
+	export let actions: ToolbarItem[];
 </script>
 
 <div class="toolbar-menu">
 	{#each actions as action}
 		<button on:click={() => action.action()}>
-			<svelte:component this={action.icon} ... />
+			<svelte:component this={action.icon} />
 			{action.label}
 		</button>
 	{/each}

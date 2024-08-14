@@ -21,11 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 
-	import Modal from './Modal.svelte';
-	import HotkeysModal from './HotkeysModal.svelte';
 	import AboutModal from './AboutModal.svelte';
+	import HotkeysModal from './HotkeysModal.svelte';
+	import Modal from './Modal.svelte';
 
-	import { navMenuIcons } from '$lib/constants/NavMenuIcons';
 	import { navMenuItems } from '$lib/constants/NavMenuItems';
 
 	import { t } from '$lib/translations';
@@ -56,9 +55,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			{#each navMenuItems as item, index (navMenuItems[index])}
 				<a href={item.url} on:click={() => handleSidebarItemClick()}>
 					<div class="list-item">
-						<svg fill="currentColor" viewBox="0 0 24 24">
-							<path d={navMenuIcons[index].icon} />
-						</svg>
+						<svelte:component this={item.icon} />
 						{$t(item.label)}
 					</div>
 				</a>

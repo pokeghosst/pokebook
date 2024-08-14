@@ -29,8 +29,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import NotePad from './NotePad.svelte';
 	import PoemPad from './PoemPad.svelte';
 
-	import ArrowsExpand from './svg/ArrowsExpand.svelte';
-	import ArrowsSwap from './svg/ArrowsSwap.svelte';
+	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
+	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
 	import Toolbar from './Toolbar.svelte';
 
 	export let actions: { icon: ComponentType; action: () => void; label: string }[];
@@ -83,10 +83,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<div class="notebook-container-toolbar">
 				<div>
 					<button on:click={expandPoemPad}>
-						<ArrowsExpand />
+						<ChevronsLeftRight class="round-button" />
 					</button>
 					<button on:click={swapViews}>
-						<ArrowsSwap />
+						<ArrowRightLeft class="round-button" />
 					</button>
 				</div>
 			</div>

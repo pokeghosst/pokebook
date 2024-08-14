@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { closeModal } from 'svelte-modals';
 
-	import CloseX from './svg/CloseX.svelte';
+	import X from 'lucide-svelte/icons/x';
 
 	export let isOpen = false;
 
@@ -36,7 +36,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				<div class="modal-title">{title}</div>
 			{/if}
 			<div class="modal-title-side">
-				<button on:click={closeModal}><CloseX /></button>
+				<button on:click={closeModal}><X /></button>
 			</div>
 		</div>
 		<div class="modal-content">

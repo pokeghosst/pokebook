@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount, type ComponentType } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
@@ -29,30 +29,32 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/poemDraft';
 	import { storageMode } from '$lib/stores/storageMode';
 
+	import { sharePoem } from '$lib/actions/sharePoem';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	import { sharePoem } from 'lib//actions/sharePoem';
+	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
+	import Save from 'lucide-svelte/icons/save';
+	import Share2 from 'lucide-svelte/icons/share-2';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import Workspace from '../components/Workspace.svelte';
-	import Delete from '../components/svg/Delete.svelte';
-	import New from '../components/svg/New.svelte';
-	import Save from '../components/svg/Save.svelte';
-	import ShareIcon from '../components/svg/ShareIcon.svelte';
+
+	import type { ToolbarItem } from '$lib/types';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
-	const actions: { icon: ComponentType; action: () => void; label: string }[] = [
-		{ icon: New, action: newPoem, label: $t('workspace.newPoem') as string },
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') as string },
+	const actions: ToolbarItem[] = [
+		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
+		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
 		{
-			icon: ShareIcon,
+			icon: Share2,
 			action: () =>
 				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem') as string
+			label: $t('workspace.sharePoem')
 		},
-		{ icon: Delete, action: forgetDraft, label: $t('workspace.forgetPoem') as string }
+		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
 	];
 
 	onMount(async () => {

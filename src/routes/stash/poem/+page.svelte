@@ -40,9 +40,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Encoding } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
 
-	import Delete from '../../../components/svg/Delete.svelte';
-	import Save from '../../../components/svg/Save.svelte';
-	import ShareIcon from '../../../components/svg/ShareIcon.svelte';
+	import Save from 'lucide-svelte/icons/save';
+	import Share2 from 'lucide-svelte/icons/share-2';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
+
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 
@@ -130,12 +131,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		// TODO: Bad, bad, bad, bad!!!
 		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
 		{
-			icon: ShareIcon,
+			icon: Share2,
 			action: () =>
 				sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem') as string
+			label: $t('workspace.sharePoem')
 		},
-		{ icon: Delete, action: deletePoemAction, label: $t('workspace.forgetPoem') }
+		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
 
 	onMount(async () => {
