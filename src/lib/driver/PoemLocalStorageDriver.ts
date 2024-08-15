@@ -26,12 +26,12 @@ import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
 // TODO: This method seems safe but stupid(?)
 // Consider thinking of a better solution
-try {
-	await FilesystemWithPermissions.mkdir({
-		path: 'poems',
-		directory: Directory.Documents
-	});
-} catch (_) {}
+// try {
+// 	await FilesystemWithPermissions.mkdir({
+// 		path: 'poems',
+// 		directory: Directory.Documents
+// 	});
+// } catch (_) {}
 
 // TODO: Refactor all drivers into classes with static methods
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
