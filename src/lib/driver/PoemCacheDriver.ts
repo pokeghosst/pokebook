@@ -24,7 +24,7 @@ import Poem from '../models/Poem';
 import type { PoemCacheRecord, PoemEntity } from '$lib/types';
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
-const SNIPPET_LENGTH = 256;
+const SNIPPET_LENGTH = 128;
 
 export default class PoemCacheDriver {
 	public static async addPoemRecord(storage: string, recordToSave: PoemCacheRecord) {
@@ -51,7 +51,12 @@ export default class PoemCacheDriver {
 				path: `poems/poems_${storage}.json`
 			});
 			return true;
-		} catch (e: any) {
+		} catch (_) {
+			FilesystemWithPermissions.mkdir({
+				path: 'poems',
+				directory: Directory.Documents,
+				recursive: true
+			});
 			return false;
 		}
 	}
@@ -115,7 +120,7 @@ export default class PoemCacheDriver {
 	}
 
 	public static sliceSnippet(textToSlice: string) {
-		return textToSlice.slice(0, SNIPPET_LENGTH) + '...';
+		return textToSlice.slice(0, SNIPPET_LENGTH);
 	}
 
 	static async toggleUnsavedStatus(storage: string, poemId: string, status: boolean) {

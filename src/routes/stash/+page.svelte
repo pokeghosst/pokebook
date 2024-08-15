@@ -73,7 +73,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 							<p class="list-poem-name">
 								{record.name}{record.unsavedChanges ? ' (unsaved)' : ''}
 							</p>
-							<p class="list-poem-snippet">{record.poemSnippet}</p>
+							<p class="list-poem-snippet">{record.poemSnippet}...</p>
 						</div>
 						<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
 					</button>
