@@ -52,11 +52,16 @@ export default class PoemCacheDriver {
 			});
 			return true;
 		} catch (_) {
-			FilesystemWithPermissions.mkdir({
-				path: 'poems',
-				directory: Directory.Documents,
-				recursive: true
-			});
+			// TODO: I reckon this is not too good
+			try {
+				await FilesystemWithPermissions.mkdir({
+					path: 'poems',
+					directory: Directory.Documents,
+					recursive: true
+				});
+			} catch (_) {
+				/* do nothing */
+			}
 			return false;
 		}
 	}

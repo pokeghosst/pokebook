@@ -43,7 +43,7 @@ export default class Poem {
 	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
 		return (await this.pickStorageDriver(storage).listPoems()).filter(
-			(poem) => poem.name !== 'poems.json'
+			(poem) => !poem.poemUri.includes('.json')
 		);
 	}
 	public static async load(id: string, storage: string): Promise<PoemEntity> {

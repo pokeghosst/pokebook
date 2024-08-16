@@ -24,12 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { storageMode } from '$lib/stores/storageMode';
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
-	import {
-		currentPoemBody,
-		currentPoemName,
-		currentPoemNote,
-		currentPoemUri
-	} from '$lib/stores/currentPoem';
+	import { currentPoemUri } from '$lib/stores/currentPoem';
 
 	import Poem from '$lib/models/Poem';
 

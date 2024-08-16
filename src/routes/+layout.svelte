@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
-	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { StatusBar } from '@capacitor/status-bar';
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
 

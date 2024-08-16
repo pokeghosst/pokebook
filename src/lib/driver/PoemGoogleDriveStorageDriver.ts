@@ -137,7 +137,9 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 		return new XMLParser().parse(await response.text());
 	},
 	savePoem: async function (poem: PoemEntity) {
-		await fetch(
+		const timestamp = Date.now();
+
+		const response = await fetch(
 			`${PUBLIC_POKEBOOK_SERVER_URL}/google/poem?pokebookFolderId=${await retrievePokebookFolderId()}`,
 			{
 				method: 'POST',
@@ -149,7 +151,11 @@ export const PoemGoogleDriveStorageDriver: IPoemStorageDriver = {
 			}
 		);
 
-		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
+		const { id } = await response.json();
+
+		Preferences.set({ key: 'poem_list_request_timestamp', value: timestamp.toString() });
+
+		return { id, timestamp };
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string) {
 		const response = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/poem/${poemUri}`, {

@@ -1,6 +1,5 @@
 export enum StorageProvider {
-	// TODO
-	// DROPBOX = 'dropbox',
+	DROPBOX = 'dropbox',
 	GOOGLE = 'google',
 	LOCAL = 'local'
 }
