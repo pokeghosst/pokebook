@@ -22,11 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
+	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
+
 	import { storageMode } from '$lib/stores/storageMode';
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
 	import { currentPoemUri } from '$lib/stores/currentPoem';
 
 	import Poem from '$lib/models/Poem';
+
+	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 
 	import type { PoemCacheRecord } from '$lib/types';
 
@@ -50,6 +54,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		$currentPoemUri = poemUri;
 		await goto('/stash/poem');
 	}
+
+	async function handleCacheRefresh() {
+		cachedPoems = PoemCacheDriver.refreshCache($storageMode);
+	}
 </script>
 
 {#await cachedPoems}
@@ -60,6 +68,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
+		<div class="refresh-wrapper">
+			<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
+		</div>
 		<div class="poem-list">
 			{#each cacheRecords as record}
 				<div class="list-item">

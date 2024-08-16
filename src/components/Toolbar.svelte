@@ -1,17 +1,12 @@
 <script lang="ts">
-	import { t } from '$lib/translations';
-
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
-	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignCenter from 'lucide-svelte/icons/align-center';
+	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignRight from 'lucide-svelte/icons/align-right';
-	import Type from 'lucide-svelte/icons/type';
 
 	import { padFonts } from '$lib/constants/PadFonts';
-
-	import SettingsSelect from './SettingsSelect.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
 	import { ChevronDown } from 'lucide-svelte';
@@ -42,8 +37,7 @@
 		</button>
 	</div>
 	<div class="settings-select">
-		<!-- TODO: Do something about these styles later -->
-		<select bind:value={$writingPadFont} style="margin: 0">
+		<select bind:value={$writingPadFont} style="margin: 0; min-width: 130px;">
 			{#each padFonts as option}
 				<option value={option.value}>
 					{option.label}

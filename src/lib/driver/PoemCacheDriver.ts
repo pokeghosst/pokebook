@@ -67,6 +67,7 @@ export default class PoemCacheDriver {
 	}
 
 	public static async initCache(storage: string) {
+		// TODO: Why this and function argument?
 		const currentStorage = (await Preferences.get({ key: 'storage_mode' })).value as string;
 		const poemFiles = await Poem.findAll(currentStorage);
 		const cachedPoems: PoemCacheRecord[] = poemFiles.map((file) => {
@@ -82,6 +83,24 @@ export default class PoemCacheDriver {
 			};
 		});
 		await this.writeToCache(storage, cachedPoems);
+	}
+
+	public static async refreshCache(storage: string) {
+		const poemFiles = await Poem.findAll(storage);
+		const cachedPoems = await this.getCachedPoems(storage);
+		const newCache = poemFiles.map((file) => {
+			const cachedPoem = cachedPoems.find((p) => p.id === file.poemUri);
+			return {
+				id: file.poemUri,
+				name: file.name,
+				timestamp: file.timestamp,
+				unsavedChanges: cachedPoem ? cachedPoem.unsavedChanges : false,
+				poemSnippet: cachedPoem ? cachedPoem.poemSnippet : ''
+			};
+		});
+		await this.writeToCache(storage, newCache);
+
+		return newCache;
 	}
 
 	public static async getCacheRecord(storage: string, uri: string) {

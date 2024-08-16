@@ -52,7 +52,6 @@ export default class Poem {
 	public static async save(poem: PoemEntity, storage: string) {
 		await this.initPoemCacheIfNotExists(storage);
 
-		// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
 		const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(poem)) as {
 			id: string;
 			timestamp: number;
