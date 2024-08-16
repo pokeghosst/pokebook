@@ -22,7 +22,8 @@
 
 	.list-poem {
 		text-align: left;
-		padding-right: 24px;
+		line-break: anywhere;
+		padding-right: 6px;
 
 		&-name {
 			font-weight: bold;
