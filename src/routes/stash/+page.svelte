@@ -77,7 +77,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					<button on:click={() => goToPoem(record.id)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
-								{record.name}{record.unsavedChanges ? ' (unsaved)' : ''}
+								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
 							</p>
 							<p class="list-poem-snippet">{record.poemSnippet}...</p>
 						</div>

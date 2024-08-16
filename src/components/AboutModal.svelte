@@ -23,9 +23,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const socialPlatforms = [
 		{
-			url: 'mailto:me@pokeghost.org',
+			url: 'mailto:support@pokeghost.org',
 			title: 'about.mail',
-			handle: 'me@pokeghost.org'
+			handle: 'support@pokeghost.org'
+		},
+		{
+			url: 'https://pokeghost.substack.com/subscribe',
+			title: 'about.blog',
+			handle: 'Substack'
 		},
 		{
 			url: 'https://github.com/pokeghosst/pokebook',
