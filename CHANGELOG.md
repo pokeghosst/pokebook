@@ -1,8 +1,36 @@
 # Changelog
 
+## [v3.1.0] - 2024-08-17
+
+### Added
+
+- Poem buffer (#21)
+- Sticky toolbar
+- Neo, a new default theme pair
+- Variable font size for poem and note
+
+### Changed
+
+- Remove rhyme highlighting functionality from PokeHelp
+- Refactor share actions for toolbar
+- Pads are now editable when opening the previously saved poem
+- Migrate icons to Lucide
+
+### Fixed
+
+- Bump outdated dependencies
+- Migrate to Bun
+- Hotkeys are not captured when focus is on input or textarea (#8)
+- Workspace chunk is too big (#9)
+- Wrong colors for poem stats and syllables in dark mode (#11)
+- Display toast after saving edited poem
+- Improve and sync localizations
+- Styling fixes
+
 ## [v3.0.0] - 2024-03-14
 
 ### Added
+
 - Standardized API endpoints for cloud providers
 - Toast notifications with Svelte French Toast (#63)
 - Mobile sharing with Capacitor Share API (#61)
@@ -11,6 +39,7 @@
 - New sidebar menu
 
 ### Changed
+
 - Major refactoring and cleanup
 - Removed TailwindCSS
 - Refactored styles to SASS
