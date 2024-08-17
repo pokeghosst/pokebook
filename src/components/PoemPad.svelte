@@ -24,25 +24,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
+	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
-	import { highlightWords, putSyllables } from '$lib/util/PokeHelp';
 	import { t } from '$lib/translations';
+	import { putSyllables } from '$lib/util/PokeHelp';
 
-	export let editable: boolean;
 	export let props: { name: Writable<string>; body: Writable<string> };
+	export let unsavedChangesHandler;
 
 	let poemNameStoreProp = props.name;
 	let poemBodyStoreProp = props.body;
 
 	// Overlays
-	let highlightedWords: string[];
 	let syllableRows: string;
 	let stats: Record<string, string | number>;
 
 	let lines: string[] = $poemBodyStoreProp.split('\n');
 
 	let poemTextarea: HTMLTextAreaElement;
-	let poemOverlay: Element;
 
 	$: lines = $poemBodyStoreProp.split('\n');
 	$: $poemBodyStoreProp, autoResizeNotebook();
@@ -66,7 +65,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function updatePokeHelpOverlays() {
 		stats = count($poemBodyStoreProp);
 		syllableRows = putSyllables(lines);
-		highlightedWords = highlightWords($poemBodyStoreProp, lines);
 	}
 
 	function sanitizePoemTitle() {
@@ -93,10 +91,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		disabled={!editable}
 		bind:value={$poemNameStoreProp}
 		on:input={sanitizePoemTitle}
 		placeholder={$t('workspace.unnamed')}
+		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -105,25 +103,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					'workspace.lines'
 				)}: {stats.lines}
 			</div>
-			<div
-				class="notebook-paper-overlay paper-highlight-overlay {$poemPadJustification}"
-				aria-hidden="true"
-				bind:this={poemOverlay}
-			>
-				{@html highlightedWords}
-			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
 				{@html syllableRows}
 			</div>
 		{/if}
 		<textarea
 			bind:value={$poemBodyStoreProp}
-			disabled={!editable}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
+			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
+			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "org.pokeghost.book3",
+  "applicationId": "art.gosuto.pokebook",
   "variantName": "release",
   "elements": [
     {

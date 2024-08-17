@@ -19,11 +19,14 @@
 @import './themes/colors.lobelia';
 @import './themes/colors.velvet';
 @import './themes/colors.terminal';
+@import './themes/colors.neoday';
+@import './themes/colors.neonight';
 
 @import './layout/header';
 @import './layout/workspace';
 @import './layout/sidebar';
 @import './layout/wrapper';
+@import './layout/toolbar';
 
 @import './pages/settings';
 @import './pages/stash';
@@ -41,6 +44,9 @@
 @import './components/modal-hotkeys';
 @import './components/modal-about';
 @import './components/toast';
+@import './components/toolbar-menu';
+@import './components/refresh-button';
+@import './components/button';
 
 // Day themes
 
@@ -68,6 +74,10 @@
 	@include spread-map($theme-light-coral);
 }
 
+:root.neo-day {
+	@include spread-map($theme-light-neo);
+}
+
 // Night themes
 
 :root.chocolate {
@@ -86,7 +96,39 @@
 	@include spread-map($theme-dark-terminal);
 }
 
+:root.neo-night {
+	@include spread-map($theme-dark-neo);
+}
+
 // Fonts
+
+.workspace.sans {
+	@include spread-map($font-family-sans);
+}
+
+.workspace.serif {
+	@include spread-map($font-family-serif);
+}
+
+.workspace.oldattic {
+	@include spread-map($font-family-oldattic);
+}
+
+.workspace.crimson {
+	@include spread-map($font-family-crimsonroman);
+}
+
+.workspace.comic {
+	@include spread-map($font-family-comic);
+}
+
+.workspace.consolas {
+	@include spread-map($font-family-consolas);
+}
+
+.workspace.lucida {
+	@include spread-map($font-family-lucida);
+}
 
 .workspace.halogen {
 	@include spread-map($font-family-halogen);
@@ -110,24 +152,4 @@
 
 .workspace.jphand {
 	@include spread-map($font-family-jphand);
-}
-
-.workspace.arial {
-	@include spread-map($font-family-arial);
-}
-
-.workspace.oldattic {
-	@include spread-map($font-family-oldattic);
-}
-
-.workspace.comic {
-	@include spread-map($font-family-comic);
-}
-
-.workspace.lucida {
-	@include spread-map($font-family-lucida);
-}
-
-.workspace.consolas {
-	@include spread-map($font-family-consolas);
 }

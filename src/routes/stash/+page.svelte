@@ -22,20 +22,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	import {
-		currentPoemName,
-		currentPoemUnsavedChanges,
-		currentPoemUri
-	} from '$lib/stores/currentPoem';
+	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
+
 	import { storageMode } from '$lib/stores/storageMode';
+	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
+	import { currentPoemUri } from '$lib/stores/currentPoem';
 
 	import Poem from '$lib/models/Poem';
 
-	import type { PoemFileEntity } from '$lib/types';
+	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
+
+	import type { PoemCacheRecord } from '$lib/types';
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let poemFilesPromise: Promise<PoemFileEntity[]>;
+	let cachedPoems: Promise<PoemCacheRecord[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -44,39 +45,43 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		poemFilesPromise = Poem.findAll($storageMode);
+		cachedPoems = Poem.listFromCache($storageMode);
 
 		return () => clearTimeout(fallbackTimeout);
 	});
 
-	async function checkUnsavedChangesConflict(poemUri: string) {
-		if ($currentPoemUnsavedChanges === 'true') {
-			if ($currentPoemUri === poemUri) {
-				await goto('/stash/poem');
-			} else {
-				alert(`${$t('workspace.unsavedChanges')} '${$currentPoemName}'`);
-			}
-		} else {
-			$currentPoemUri = poemUri;
-			await goto('/stash/poem');
-		}
+	async function goToPoem(poemUri: string) {
+		$currentPoemUri = poemUri;
+		await goto('/stash/poem');
+	}
+
+	async function handleCacheRefresh() {
+		cachedPoems = PoemCacheDriver.refreshCache($storageMode);
 	}
 </script>
 
-{#await poemFilesPromise}
+{#await cachedPoems}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
 			<p>Loading...</p>
 		</div>
 	{/if}
-{:then poemFiles}
-	{#if poemFiles && poemFiles.length > 0}
+{:then cacheRecords}
+	{#if cacheRecords && cacheRecords.length > 0}
+		<div class="refresh-wrapper">
+			<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
+		</div>
 		<div class="poem-list">
-			{#each poemFiles as poemFile}
+			{#each cacheRecords as record}
 				<div class="list-item">
-					<button on:click={() => checkUnsavedChangesConflict(poemFile.poemUri)}>
-						<span>{poemFile.name}</span>
-						<span>{new Intl.DateTimeFormat('en-US').format(new Date(poemFile.timestamp))}</span>
+					<button on:click={() => goToPoem(record.id)}>
+						<div class="list-poem">
+							<p class="list-poem-name">
+								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
+							</p>
+							<p class="list-poem-snippet">{record.poemSnippet}...</p>
+						</div>
+						<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
 					</button>
 				</div>
 			{/each}

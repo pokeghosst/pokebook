@@ -20,10 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
+	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+
 	import { t } from '$lib/translations';
 
-	export let editable: boolean;
 	export let props: Writable<string>;
+	export let unsavedChangesHandler;
 
 	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
@@ -63,10 +65,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div>
 		<textarea
 			bind:value={$props}
-			disabled={!editable}
 			class="paper"
 			id="note-textarea"
+			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
+			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

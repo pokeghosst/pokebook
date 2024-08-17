@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, type ComponentType } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	import hotkeys from 'hotkeys-js';
@@ -27,16 +27,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
 	import NotePad from './NotePad.svelte';
-	import PadDropdownMenu from './PadDropdownMenu.svelte';
 	import PoemPad from './PoemPad.svelte';
 
-	import ArrowsExpand from './svg/ArrowsExpand.svelte';
-	import ArrowsSwap from './svg/ArrowsSwap.svelte';
+	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
+	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
+	import Toolbar from './Toolbar.svelte';
 
-	export let editable = true;
-	export let actions: { action: () => void; label: string }[];
+	export let actions: { icon: ComponentType; action: () => void; label: string }[];
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
+
+	// Assigning empty function by default because on draft page we don't pass a function here
+	export let unsavedChangesHandler = () => {};
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
@@ -71,6 +73,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 {#if state}
+	<div class="toolbar"><Toolbar {actions} /></div>
 	<div
 		class="workspace {$isFullWidthPad === 'true'
 			? 'l-full-width'
@@ -80,18 +83,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<div class="notebook-container-toolbar">
 				<div>
 					<button on:click={expandPoemPad}>
-						<ArrowsExpand />
+						<ChevronsLeftRight class="round-button" />
 					</button>
 					<button on:click={swapViews}>
-						<ArrowsSwap />
+						<ArrowRightLeft class="round-button" />
 					</button>
-					<PadDropdownMenu {actions} />
 				</div>
 			</div>
-			<svelte:component this={views[state[0]]} {editable} bind:props={props[state[0]]} />
+			<svelte:component
+				this={views[state[0]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[0]]}
+			/>
 		</div>
 		<div class="notebook-container">
-			<svelte:component this={views[state[1]]} {editable} bind:props={props[state[1]]} />
+			<svelte:component
+				this={views[state[1]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[1]]}
+			/>
 		</div>
 	</div>
 {/if}

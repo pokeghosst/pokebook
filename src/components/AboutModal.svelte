@@ -17,13 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { closeModal } from 'svelte-modals';
+
 	import { t } from '$lib/translations';
 
 	const socialPlatforms = [
 		{
-			url: 'mailto:me@pokeghost.org',
+			url: 'mailto:support@pokeghost.org',
 			title: 'about.mail',
-			handle: 'me@pokeghost.org'
+			handle: 'support@pokeghost.org'
+		},
+		{
+			url: 'https://pokeghost.substack.com/subscribe',
+			title: 'about.blog',
+			handle: 'Substack'
 		},
 		{
 			url: 'https://github.com/pokeghosst/pokebook',
@@ -46,7 +53,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<small>{$t('about.version')} 3.0.0 - "Mille-feuille"</small>
+		<small>{$t('about.version')} 3.1 - "Carrot Cake"</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}
@@ -60,8 +67,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</ul>
 	<div class="about-bottom">
 		<p>
-			<a href="/privacy">{$t('about.privacy')}</a>
-			| <a href="/terms">{$t('about.terms')}</a>
+			<a href="/privacy" on:click={closeModal}>{$t('about.privacy')}</a>
+			| <a href="/terms" on:click={closeModal}>{$t('about.terms')}</a>
 		</p>
 		<p>© {new Date().getFullYear()} Pokeghost</p>
 	</div>

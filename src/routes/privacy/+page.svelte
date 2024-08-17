@@ -63,6 +63,6 @@
 	<br />
 	<p>
 		For any questions or clarifications regarding the privacy policy, please send an email to
-		<u><b><a href="mailto:me@pokeghost.org">me@pokeghost.org</a></b></u>.
+		<u><b><a href="mailto:support@pokeghost.org">support@pokeghost.org</a></b></u>.
 	</p>
 </div>

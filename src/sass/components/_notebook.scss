@@ -5,6 +5,18 @@
 		flex: none;
 	}
 
+	textarea.left {
+		text-align: left;
+	}
+
+	textarea.center {
+		text-align: center;
+	}
+
+	textarea.right {
+		text-align: right;
+	}
+
 	textarea,
 	.paper-highlight-overlay,
 	.poem-syllable-rows {
@@ -96,4 +108,34 @@
 .poem-syllable-rows {
 	opacity: 0.5;
 	color: var(--notebook-text-color);
+}
+
+// Neo theme overrides
+
+.neo-day,
+.neo-night {
+	.notebook-header {
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.paper {
+		box-shadow: none;
+	}
+
+	.notebook {
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+	}
+}
+
+.neo-day {
+	.notebook {
+		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+	}
+}
+
+.neo-night {
+	.notebook {
+		box-shadow: 0 1px 2px 0 rgb(255 255 255 / 0.05);
+	}
 }

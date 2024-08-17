@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onDestroy, onMount } from 'svelte';
 
 	import toast from 'svelte-french-toast';
 
@@ -25,32 +26,48 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemBody,
 		currentPoemName,
 		currentPoemNote,
-		currentPoemNoteUri,
-		currentPoemUnsavedChanges,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
+	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { storageMode } from '$lib/stores/storageMode';
-	import { saveFunction, discardFunction } from '$lib/stores/poemFunctionsStore';
 
-	import { preventTabClose } from '$lib/util/preventTabClose';
+	import { sharePoem } from '$lib/actions/sharePoem';
+	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import Poem from '$lib/models/Poem';
+	import { t } from '$lib/translations';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
+	import { Encoding } from '@capacitor/filesystem';
+	import { XMLBuilder } from 'fast-xml-parser';
+
+	import Save from 'lucide-svelte/icons/save';
+	import Share2 from 'lucide-svelte/icons/share-2';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
 
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
-	import { onDestroy, onMount } from 'svelte';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { t } from '$lib/translations';
-	import Poem from '$lib/models/Poem';
 
 	let unsavedChangesToastId: string;
 
-	let editMode = false;
 	let thinking = true;
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
 
-	let editOrSaveLabel = 'Edit poem';
-	let editOrSaveAction = toggleEdit;
+	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
+	$: {
+		if (!thinking)
+			FilesystemWithPermissions.writeFile({
+				path: `${$currentPoemUri}.tmp`,
+				data: new XMLBuilder({ format: true }).build({
+					name: $currentPoemName,
+					text: $currentPoemBody,
+					note: $currentPoemNote
+				}),
+
+				encoding: Encoding.UTF8
+			});
+	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
@@ -67,8 +84,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 		);
 	};
-	$discardFunction = () => {
-		$currentPoemUnsavedChanges = 'false';
+	$discardFunction = async () => {
+		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
+		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
 		goto('/stash', { replaceState: false });
 	};
 
@@ -89,27 +107,52 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	};
 
-	let actions = [
-		{ action: editOrSaveAction, label: editOrSaveLabel },
-		{ action: deletePoemAction, label: 'workspace.forgetPoem' }
-	];
+	async function save() {
+		const newPoemUri = await Poem.update(
+			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+			$currentPoemUri,
+			$storageMode
+		);
 
-	$: {
-		editMode == true
-			? (editOrSaveLabel = 'workspace.savePoem')
-			: (editOrSaveLabel = 'workspace.editPoem');
-		editMode == true ? (editOrSaveAction = $saveFunction) : (editOrSaveAction = toggleEdit);
-		actions[0].label = editOrSaveLabel;
-		actions[0].action = editOrSaveAction;
+		if (newPoemUri) $currentPoemUri = newPoemUri;
+
+		await deleteTmpFile($currentPoemUri);
 	}
 
+	async function deletePoem() {
+		await Poem.delete($currentPoemUri, $storageMode);
+		await deleteTmpFile($currentPoemUri);
+		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
+		clearCurrentPoemStorage();
+		await goto('/stash', { invalidateAll: true });
+	}
+
+	let actions = [
+		// TODO: Bad, bad, bad, bad!!!
+		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
+		{
+			icon: Share2,
+			action: () =>
+				sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem')
+		},
+		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
+	];
+
 	onMount(async () => {
-		if ($currentPoemUnsavedChanges === 'true') {
+		if (
+			(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
+		) {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
+			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+			$currentPoemName = name;
+			$currentPoemBody = text;
+			$currentPoemNote = note;
+
 			thinking = false;
 		} else {
 			try {
@@ -135,43 +178,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		toast.dismiss(unsavedChangesToastId);
 	});
 
-	function toggleEdit() {
-		editMode = true;
-		$currentPoemUnsavedChanges = 'true';
-	}
-
-	async function save() {
-		await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri,
-			$storageMode
-		);
-		editMode = false;
-		$currentPoemUnsavedChanges = 'false';
-	}
-
-	async function deletePoem() {
-		await Poem.delete($currentPoemUri, $storageMode);
-		clearCurrentPoemStorage();
-		await goto('/stash', { invalidateAll: true });
+	function unsavedChangesHandler() {
+		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri);
 	}
 
 	function clearCurrentPoemStorage() {
-		$currentPoemBody =
-			$currentPoemName =
-			$currentPoemNote =
-			$currentPoemUri =
-			$currentPoemNoteUri =
-				'';
-		$currentPoemUnsavedChanges = 'false';
+		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
+	}
+
+	async function deleteTmpFile(fileUri: string) {
+		try {
+			await Poem.delete(`${fileUri}.tmp`, 'local');
+		} catch (_) {}
 	}
 </script>
 
-<div use:preventTabClose={editMode} />
 {#if thinking}
 	<div class="placeholder-text-wrapper">
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {poemProps} {noteProps} editable={editMode} {actions} />
+	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
 {/if}

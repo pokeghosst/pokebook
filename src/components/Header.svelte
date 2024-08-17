@@ -25,11 +25,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 
-	import BurgerMenu from './svg/BurgerMenu.svelte';
-	import Moon from './svg/Moon.svelte';
-	import Pencil from './svg/PencilRuler.svelte';
+	import Menu from 'lucide-svelte/icons/menu';
+	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
+	import Eclipse from 'lucide-svelte/icons/eclipse';
 
 	onMount(() => {
+		// TODO: Extract hotkey-related logic into separate function possibly
+		hotkeys.filter = function () {
+			return true;
+		};
 		hotkeys('ctrl+/, command+/', function () {
 			toggleSidebar();
 			return false;
@@ -59,10 +63,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <div class="header-nav-wrapper">
 	<button on:click={toggleSidebar}>
-		<BurgerMenu />
+		<Menu />
 	</button>
 	<div class="header-icons">
-		<button on:click={() => togglePokeHelp()}><Pencil /></button>
-		<button on:click={() => toggleDarkMode()}><Moon /></button>
+		<button on:click={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
+		<button on:click={() => toggleDarkMode()}><Eclipse strokeWidth={1.7} /></button>
 	</div>
 </div>

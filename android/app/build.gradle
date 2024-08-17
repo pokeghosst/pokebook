@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "org.pokeghost.book3"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace "art.gosuto.pokebook"
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "org.pokeghost.book3"
+        applicationId "art.gosuto.pokebook"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 3

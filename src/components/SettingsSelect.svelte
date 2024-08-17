@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { t } from '$lib/translations';
 
-	import ChevronDown from './svg/ChevronDown.svelte';
+	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 
 	export let parameterName: string;
 	export let labelName: string;

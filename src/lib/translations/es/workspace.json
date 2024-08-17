@@ -4,13 +4,14 @@
 	"words": "Palabras",
 	"characters": "Caracteres",
 	"lines": "Líneas",
-	"newPoem": "Nuevo poema (guardar borrador)",
-	"savePoem": "Guardar poema",
-	"editPoem": "Editar poema",
-	"sharePoem": "Exportar poema",
-	"forgetPoem": "Olvidar poema",
+	"newPoem": "Nuevo",
+	"savePoem": "Guardar",
+	"editPoem": "Editar",
+	"sharePoem": "Exportar",
+	"forgetPoem": "Olvidar",
 	"hotkeys": "Atajos de teclado",
 	"waitForAuthorization": "¡Espera, que estamos haciendo cosas!",
 	"unsavedChanges": "Tienes cambios no guardados en",
-	"emptyPoemList": "Tu escenario está listo y el foco está encendido, pero los versos aún no han florecido."
+	"emptyPoemList": "Tu escenario está listo y el foco está encendido, pero los versos aún no han florecido.",
+	"unsaved": "cambios no salvados"
 }

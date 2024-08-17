@@ -18,9 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
-	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { StatusBar } from '@capacitor/status-bar';
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
+	import { App } from '@capacitor/app';
 
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -62,11 +63,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			StatusBar.setBackgroundColor({ color: backgroundColorHex });
 		}
 	}
+
+	App.addListener('backButton', (_) => {
+		window.history.back();
+	});
 </script>
 
 <Modals>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div slot="backdrop" class="backdrop" on:click={closeModal} />
+	<div
+		slot="backdrop"
+		class="backdrop"
+		on:click={closeModal}
+		on:keydown
+		role="button"
+		tabindex="0"
+	/>
 </Modals>
 
 <Toaster />

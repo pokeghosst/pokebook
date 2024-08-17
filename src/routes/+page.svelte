@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
-	import { Share } from '@capacitor/share';
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
 
@@ -30,22 +29,39 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/poemDraft';
 	import { storageMode } from '$lib/stores/storageMode';
 
+	import { sharePoem } from '$lib/actions/sharePoem';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
+	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
+	import Save from 'lucide-svelte/icons/save';
+	import Share2 from 'lucide-svelte/icons/share-2';
+	import Trash2 from 'lucide-svelte/icons/trash-2';
+
 	import Workspace from '../components/Workspace.svelte';
+
+	import type { ToolbarItem } from '$lib/types';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
-	const actions = [
-		{ action: stashPoem, label: $t('workspace.newPoem') as string },
-		{ action: sharePoem, label: $t('workspace.sharePoem') as string },
-		{ action: forgetDraft, label: $t('workspace.forgetPoem') as string }
+	const actions: ToolbarItem[] = [
+		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
+		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
+		{
+			icon: Share2,
+			action: () =>
+				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem')
+		},
+		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
 	];
 
-	onMount(() => {
+	onMount(async () => {
+		hotkeys.filter = function () {
+			return true;
+		};
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
 			stashPoem();
 			return false;
@@ -55,6 +71,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	onDestroy(() => {
 		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
+
+	async function newPoem() {
+		if (confirm($t('workspace.isSavePoem'))) {
+			stashPoem();
+		} else {
+			clearDraftPoem();
+		}
+	}
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
@@ -76,6 +100,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				);
 				clearDraftPoem();
 			} catch (e) {
+				console.log(e);
 				if (e instanceof Error)
 					toast.error($t(e.message), {
 						position: GLOBAL_TOAST_POSITION,
@@ -100,24 +125,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemNameStore.set('');
 		draftPoemBodyStore.set('');
 		draftPoemNoteStore.set('');
-	}
-
-	async function sharePoem() {
-		const poemTextToShare = `${$draftPoemNameStore}\n\n${$draftPoemBodyStore}\n`;
-		if ((await Share.canShare()).value)
-			await Share.share({
-				title: `${$t('share.title')} "${$draftPoemNameStore}"`,
-				dialogTitle: $t('share.dialogTitle'),
-				text: poemTextToShare,
-				url: 'https://book.pokeghost.org'
-			});
-		else {
-			navigator.clipboard.writeText(poemTextToShare);
-			toast.success($t('toasts.poemCopiedToClipboard'), {
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-		}
 	}
 </script>
 

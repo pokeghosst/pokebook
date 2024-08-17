@@ -31,16 +31,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { storageMode } from '$lib/stores/storageMode';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
 
 	import { dayThemes } from '$lib/constants/DayThemes';
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
-	import { padFonts } from '$lib/constants/PadFonts';
 	import { storageOptions } from '$lib/constants/StorageOptions';
-	import { textJustificationSettings } from '$lib/constants/TextJustificationSettings';
 	import {
 		getGoogleDriveAuthUrl,
 		googleDriveLogout
@@ -123,19 +119,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="settings-container">
-	<SettingsSelect
-		parameterName="font"
-		labelName={$t('settings.font')}
-		bind:bindParameter={$writingPadFont}
-		options={padFonts}
-		localizeLabel={false}
-	/>
-	<SettingsSelect
-		parameterName="justification"
-		labelName={$t('settings.justification')}
-		bind:bindParameter={$poemPadJustification}
-		options={textJustificationSettings}
-	/>
 	<SettingsSelect
 		parameterName="dayTheme"
 		labelName={$t('settings.dayTheme')}

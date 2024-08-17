@@ -4,6 +4,7 @@
 	padding: 1rem;
 	display: flex;
 	text-align: left;
+	align-items: center;
 
 	&:hover {
 		background-color: var(--list-item-hover-color);
@@ -17,5 +18,15 @@
 
 	span {
 		text-align: left;
+	}
+
+	.list-poem {
+		text-align: left;
+		line-break: anywhere;
+		padding-right: 6px;
+
+		&-name {
+			font-weight: bold;
+		}
 	}
 }

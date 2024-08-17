@@ -1,0 +1,12 @@
+.toolbar {
+	white-space: nowrap;
+	width: 100%;
+	margin: 0 auto;
+	position: fixed;
+	z-index: 20;
+	background-color: var(--base-background);
+	bottom: 0;
+	padding: 14px 4%;
+	overflow-x: scroll;
+	border-top: 1px solid var(--border-color);
+}
