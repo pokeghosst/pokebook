@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-	appId: 'org.pokeghost.book3',
+	appId: 'art.gosuto.pokebook',
 	appName: 'PokeBook',
 	webDir: 'build',
 	server: {

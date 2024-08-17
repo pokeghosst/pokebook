@@ -1,4 +1,4 @@
-package org.pokeghost.book3;
+package art.gosuto.pokebook;
 
 import com.getcapacitor.BridgeActivity;
 
