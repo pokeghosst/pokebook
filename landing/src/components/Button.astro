@@ -1,0 +1,35 @@
+---
+interface Props {
+  href: string;
+  type: "primary" | "secondary";
+  external?: boolean;
+}
+
+const { href, type, external = false } = Astro.props;
+---
+
+<a href={href} target={external ? "_blank" : "_self"} class={`btn btn-${type}`}>
+  <slot /></a
+>
+
+<style>
+  .btn {
+    padding: 0.75em 1.5em;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    width: max-content;
+  }
+
+  .btn-primary {
+    background-color: #ff7f50;
+    color: #fff;
+    border-radius: 5px;
+  }
+
+  .btn-secondary {
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 5px;
+  }
+</style>

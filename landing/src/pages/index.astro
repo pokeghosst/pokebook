@@ -1,0 +1,149 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+---
+
+<Layout>
+  <Navbar />
+  <Hero />
+  <Features />
+
+  <!-- Testimonials Section -->
+  <section class="testimonials">
+    <div class="container">
+      <h2>What Poets Are Saying</h2>
+      <blockquote>
+        <p>
+          "I write poetry and I’ve never found a writing app that is conducive
+          to writing poems until now. PokeBook is nearly perfect."
+        </p>
+        <cite>- Claudia Dawson, Recomendo</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <h2>Pricing</h2>
+      <div class="pricing-options">
+        <div class="option">
+          <h3>Web Version</h3>
+          <p>100% Free to Use</p>
+          <a href="#download" class="btn btn-secondary">Use Now</a>
+        </div>
+        <div class="option">
+          <h3>Android App</h3>
+          <p>$1.99 One-Time Purchase</p>
+          <a href="#download" class="btn btn-secondary">Download</a>
+        </div>
+      </div>
+      <p class="note">
+        PokeBook is Free and Open Source Software (FOSS). Pay once and own it
+        for life. All updates, new features, and improvements are yours to enjoy
+        without any additional cost.
+      </p>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download" id="download">
+    <div class="container">
+      <h2>Get PokeBook Today</h2>
+      <div class="download-buttons">
+        <a href="#" class="btn btn-primary">Download for Android</a>
+        <a href="#" class="btn btn-primary">Use on the Web</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; {new Date().getFullYear()} PokeBook. All rights reserved.</p>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  .features,
+  .testimonials,
+  .pricing,
+  .download {
+    padding: 4em 0;
+  }
+
+  .features h2,
+  .testimonials h2,
+  .pricing h2,
+  .download h2 {
+    text-align: center;
+    margin-bottom: 2em;
+  }
+
+  .testimonials blockquote {
+    font-style: italic;
+    text-align: center;
+  }
+
+  .testimonials cite {
+    display: block;
+    margin-top: 1em;
+    color: #888;
+  }
+
+  .pricing-options {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+  }
+
+  .pricing .option {
+    background-color: #f0f8ff;
+    padding: 2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+  }
+
+  .pricing .note {
+    text-align: center;
+    margin-top: 2em;
+    font-size: 0.9em;
+    color: #888;
+  }
+
+  .download-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+  }
+
+  footer {
+    background-color: #fff;
+    padding: 2em 0;
+    text-align: center;
+    border-top: 1px solid #eaeaea;
+  }
+
+  @media (max-width: 768px) {
+    .navbar .nav-links {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pricing-options {
+      flex-direction: column;
+    }
+
+    .pricing .option {
+      width: 100%;
+    }
+
+    .download-buttons {
+      flex-direction: column;
+    }
+  }
+</style>

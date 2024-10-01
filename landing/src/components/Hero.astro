@@ -1,0 +1,44 @@
+---
+import Button from "./Button.astro";
+import Container from "./Container.astro";
+---
+
+<section class="hero">
+  <Container innerContainer>
+    <div class="contents">
+      <h1>The ultimate notebook for writing poetry</h1>
+      <p>
+        Get into your creative flow with a digital notebook designed to fall in
+        love with writing poetry.
+      </p>
+      <Button href="/poems" type="primary" external>Start writing now</Button>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 4em 0;
+    background-color: #fff5ee;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+    font-weight: bold;
+    font-family: "Lovelace";
+  }
+
+  .hero p {
+    font-size: 20px;
+    line-height: 1.6em;
+    color: #666;
+  }
+
+  .contents {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+  }
+</style>

@@ -1,0 +1,62 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="PokeBook - The Ultimate Poem Notebook and Notepad for Creative Minds"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+    <title>PokeBook - Poem notebook</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+<style is:global>
+  @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+  @font-face {
+    font-family: "Lovelace";
+    font-weight: bold;
+    src: url("/fonts/Lovelace-Bold.otf");
+  }
+
+  @font-face {
+    font-family: "Lovelace";
+    font-weight: normal;
+    src: url("/fonts/Lovelace-Regular.otf");
+  }
+
+  .lato-regular {
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .lato-bold {
+    font-family: "Lato", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  body {
+    margin: 0;
+    font-family: "Lato", sans-serif;
+    background-color: #fdfcfb;
+    color: #333;
+  }
+
+  h1,
+  h3,
+  p {
+    padding: 0;
+    margin: 0;
+  }
+
+  h2 {
+    text-align: center;
+    margin: 1em 0;
+    font-size: 36px;
+  }
+</style>

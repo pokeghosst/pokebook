@@ -1,4 +1,6 @@
 {
     "eslint.validate": ["javascript", "typescript", "svelte"],
-    "git.enableCommitSigning": true
+    "git.enableCommitSigning": true,
+    "editor.formatOnSave": true,
+    "prettier.documentSelectors": ["**/*.astro"],
 }

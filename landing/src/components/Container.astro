@@ -1,0 +1,24 @@
+---
+interface Props {
+  innerContainer?: boolean;
+}
+
+const { innerContainer = false } = Astro.props;
+---
+
+<div class={innerContainer ? "inner-container" : "container"}>
+  <slot />
+</div>
+
+<style>
+  .container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .inner-container {
+    max-width: 600px;
+    width: 85%;
+    margin: auto;
+  }
+</style>

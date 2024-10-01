@@ -1,0 +1,100 @@
+---
+import Container from "./Container.astro";
+
+import double from "/public/icons/double.svg";
+import zap from "/public/icons/zap.svg";
+import eyeOff from "/public/icons/eye-off.svg";
+import palette from "/public/icons/palette.svg";
+import coins from "/public/icons/coins.svg";
+import bell from "/public/icons/bell.svg";
+
+const features = [
+  {
+    icon: double,
+    title: "Dual notepads",
+    description:
+      "The workspace is split into two independent notepads—write the poem in one while jotting down ideas in the other.",
+  },
+  {
+    icon: zap,
+    title: "Autosave at the speed of thought",
+    description:
+      "Every character is saved instantly. Write freely, even with a low battery or on the go.",
+  },
+  {
+    icon: eyeOff,
+    title: "Genuine focus on privacy",
+    description:
+      "All your poems are stored locally on your device. No ads, tracking, or data collection.",
+  },
+  {
+    icon: palette,
+    title: "Get inspired with colorful themes",
+    description:
+      "Customize interface to match your mood and style with a selection of fonts and handcrafted themes.",
+  },
+  {
+    icon: coins,
+    title: "One-time investment with no hidden costs",
+    description:
+      "Pay once, get everything. All current and future features are yours forever.",
+  },
+  {
+    icon: bell,
+    title: "Regular updates",
+    description:
+      "Regular updates with new features, improvements, and fixes based on feedback.",
+  },
+];
+---
+
+<section class="features">
+  <div class="container">
+    <Container innerContainer>
+      <h2>Everything you need for a stellar writing experience</h2>
+    </Container>
+    <Container>
+      <div class="features-grid">
+        {
+          features.map((feature) => (
+            <div class="feature-item">
+              <img src={feature.icon.src} alt={`${feature.title} icon`} />
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </Container>
+  </div>
+</section>
+
+<style>
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2em;
+  }
+
+  .feature-item {
+    background-color: #fff;
+    padding: 1.5em;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-item img {
+    width: 50px;
+    height: auto;
+  }
+
+  .feature-item h3 {
+    font-size: 1.25em;
+    margin: 0.5em 0;
+  }
+
+  .feature-item p {
+    color: #666;
+  }
+</style>
