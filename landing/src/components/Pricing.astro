@@ -1,0 +1,88 @@
+---
+import Button from "./Button.astro";
+import Container from "./Container.astro";
+
+const pricing = [
+  {
+    platform: "Web Version",
+    price: "",
+    description: "100% Free to use. Forever",
+    button: {
+      text: "Start writing",
+      href: "",
+    },
+  },
+  {
+    platform: "Android App",
+    price: "",
+    description: "$1.99 one-time purchase",
+    button: {
+      text: "Download",
+      href: "",
+    },
+  },
+  {
+    platform: "Desktop Version",
+    price: "",
+    description: "Coming soon",
+  },
+];
+---
+
+<section>
+  <h2>Simple, pay-if-you-want pricing</h2>
+  <Container>
+    <div class="pricing-options">
+      {
+        pricing.map((option) => (
+          <div class="option">
+            <h3>{option.platform}</h3>
+            <p>{option.description}</p>
+            {option.button ? (
+              <Button href={option.button.href} type="secondary" external>
+                {option.button.text}
+              </Button>
+            ) : null}
+          </div>
+        ))
+      }
+    </div>
+    <p class="note">
+      *PokeBook is Free and Open Source Software (FOSS). You are free to use,
+      study, and modify it. You can compile and use it at no cost.
+    </p>
+  </Container>
+</section>
+
+<style>
+  section {
+    padding: 2em 0;
+  }
+
+  .pricing-options {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+  }
+
+  .option {
+    background-color: #f0f8ff;
+    padding: 1em;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex: 1 1 0;
+  }
+
+  .note {
+    text-align: center;
+    margin-top: 2em;
+    font-size: 0.9em;
+    color: #888;
+  }
+</style>
