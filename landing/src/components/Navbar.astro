@@ -1,12 +1,14 @@
 ---
 import Container from "./Container.astro";
+
+import icon from "/public/icon.webp";
 ---
 
 <div class="navbar">
   <Container>
     <nav>
       <a href="/" class="logo">
-        <img src="/public/icon.webp" alt="PokeBook logo icon" />
+        {`<img src="${icon.src}" alt="PokeBook logo icon" />`}
         <span>PokeBook</span>
       </a>
     </nav>
