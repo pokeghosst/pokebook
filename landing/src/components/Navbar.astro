@@ -1,14 +1,12 @@
 ---
 import Container from "./Container.astro";
-
-// import icon from "/public/icon.png";
 ---
 
 <div class="navbar">
   <Container>
     <nav>
       <a href="/" class="logo">
-        <!-- {`<img src="${icon.src}" alt="PokeBook logo icon" />`} -->
+        <img src="/images/icon.png" alt="PokeBook logo icon" />
         <span>PokeBook</span>
       </a>
     </nav>
@@ -35,6 +33,11 @@ import Container from "./Container.astro";
         display: flex;
         align-items: center;
         gap: 0.5em;
+      }
+
+      .logo img {
+        width: 50px;
+        height: 50px;
       }
 
       .logo span {
