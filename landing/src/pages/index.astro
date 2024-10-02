@@ -1,10 +1,11 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Navbar from "../components/Navbar.astro";
-import Hero from "../components/Hero.astro";
 import Features from "../components/Features.astro";
-import Testimonials from "../components/Testimonials.astro";
+import Footer from "../components/Footer.astro";
+import Hero from "../components/Hero.astro";
+import Navbar from "../components/Navbar.astro";
 import Pricing from "../components/Pricing.astro";
+import Testimonials from "../components/Testimonials.astro";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
@@ -13,10 +14,7 @@ import Pricing from "../components/Pricing.astro";
   <Features />
   <Testimonials />
   <Pricing />
-
-  <footer>
-    <p>&copy; {new Date().getFullYear()} PokeBook. All rights reserved.</p>
-  </footer>
+  <Footer />
 </Layout>
 
 <style>

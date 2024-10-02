@@ -1,4 +1,5 @@
 ---
+import Button from "./Button.astro";
 import Container from "./Container.astro";
 ---
 
@@ -9,59 +10,55 @@ import Container from "./Container.astro";
         <img src="/icon.webp" alt="PokeBook logo icon" />
         <span>PokeBook</span>
       </a>
-      <ul class="nav-links">
-        <li><a href="#pricing">Pricing</a></li>
-        <li><a href="#contact">Contact Us</a></li>
-        <li><a href="#download" class="btn btn-primary">Get Free</a></li>
-      </ul>
     </nav>
+
+    <style>
+      .navbar {
+        background-color: #fff;
+        padding: 1em 0;
+        border-bottom: 1px solid #eaeaea;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        font-size: 1.5em;
+        font-family: "Lovelace";
+        font-weight: bold;
+        color: #333;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+      }
+
+      .logo span {
+        margin-top: 5px;
+      }
+
+      .logo img {
+        border-radius: 10px;
+      }
+
+      .nav-links {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 1em;
+      }
+
+      .nav-links li {
+        display: inline;
+      }
+
+      .nav-links a {
+        color: #333;
+        text-decoration: none;
+      }
+    </style>
   </Container>
 </div>
-
-<style>
-  .navbar {
-    background-color: #fff;
-    padding: 1em 0;
-    border-bottom: 1px solid #eaeaea;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    font-size: 1.5em;
-    font-family: "Lovelace";
-    font-weight: bold;
-    color: #333;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-
-  .logo span {
-    margin-top: 5px;
-  }
-
-  .logo img {
-    border-radius: 10px;
-  }
-
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1em;
-  }
-
-  .nav-links li {
-    display: inline;
-  }
-
-  .nav-links a {
-    color: #333;
-    text-decoration: none;
-  }
-</style>

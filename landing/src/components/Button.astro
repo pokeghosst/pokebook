@@ -20,17 +20,49 @@ const { href, type, external = false } = Astro.props;
     text-decoration: none;
     width: max-content;
     display: block;
+    border-radius: 5px;
   }
 
+  /* Primary Button */
   .btn-primary {
     background-color: #ff7f50;
     color: #fff;
-    border-radius: 5px;
+  }
+
+  .btn-primary:hover {
+    background-color: #ff7043;
+  }
+
+  .btn-primary:active {
+    background-color: #f4511e;
+  }
+
+  .btn-primary:disabled,
+  .btn-primary[disabled] {
+    background-color: #ffccbc;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .btn-secondary {
     background-color: #4caf50;
     color: #fff;
-    border-radius: 5px;
+  }
+
+  .btn-secondary:hover {
+    background-color: #43a047;
+  }
+
+  .btn-secondary:active {
+    background-color: #388e3c;
+  }
+
+  .btn-secondary:disabled,
+  .btn-secondary[disabled] {
+    background-color: #a5d6a7;
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 </style>

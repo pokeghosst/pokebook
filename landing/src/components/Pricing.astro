@@ -5,41 +5,38 @@ import Container from "./Container.astro";
 const pricing = [
   {
     platform: "Web Version",
-    price: "",
-    description: "100% Free to use. Forever",
+    price: "100% Free to use. Forever",
     button: {
       text: "Start writing",
-      href: "",
+      href: "https://book3.pokeghost.org/",
     },
   },
   {
     platform: "Android App",
-    price: "",
-    description: "$1.99 one-time purchase",
+    price: "$1.99 one-time purchase",
     button: {
       text: "Download",
-      href: "",
+      href: "https://play.google.com/store/apps/details?id=art.gosuto.pokebook",
     },
   },
   {
     platform: "Desktop Version",
-    price: "",
-    description: "Coming soon",
+    price: "Coming soon",
   },
 ];
 ---
 
 <section>
-  <h2>Simple, pay-if-you-want pricing</h2>
+  <h2>Simple, pay-if-you-want* pricing</h2>
   <Container>
     <div class="pricing-options">
       {
         pricing.map((option) => (
           <div class="option">
             <h3>{option.platform}</h3>
-            <p>{option.description}</p>
+            <p>{option.price}</p>
             {option.button ? (
-              <Button href={option.button.href} type="secondary" external>
+              <Button href={option.button.href} type="secondary">
                 {option.button.text}
               </Button>
             ) : null}
@@ -62,6 +59,7 @@ const pricing = [
   .pricing-options {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 2em;
   }
 
@@ -76,13 +74,19 @@ const pricing = [
     align-items: center;
     justify-content: center;
     gap: 12px;
-    flex: 1 1 0;
+    flex: 1 1 calc(31% - 2em);
   }
 
   .note {
     text-align: center;
     margin-top: 2em;
-    font-size: 0.9em;
+    font-size: 0.95em;
     color: #888;
+  }
+
+  @media screen and (max-width: 768px) {
+    .pricing-options {
+      /* flex-direction: column; */
+    }
   }
 </style>
