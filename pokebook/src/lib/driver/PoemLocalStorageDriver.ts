@@ -19,6 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { Directory, Encoding } from '@capacitor/filesystem';
 
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { writeTextFile, BaseDirectory, exists, mkdir } from '@tauri-apps/plugin-fs';
+
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
@@ -67,6 +69,21 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		);
 	},
 	savePoem: async function (poem: PoemEntity) {
+		if (window.__TAURI__) {
+			const tokenExists = await exists('PokeBook', {
+				baseDir: BaseDirectory.Home
+			});
+
+			if (!tokenExists)
+				await mkdir('PokeBook', {
+					baseDir: BaseDirectory.Home
+				});
+
+			await writeTextFile('PokeBook/poem.xml', new XMLBuilder({ format: true }).build(poem), {
+				baseDir: BaseDirectory.Home
+			});
+		}
+
 		const timestamp = Date.now();
 		const id = (
 			await FilesystemWithPermissions.writeFile({

@@ -1,12 +1,22 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "enables the default permissions",
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "core:default",
-    "fs:default"
-  ]
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "enables the default permissions",
+	"windows": ["main"],
+	"permissions": [
+		"core:default",
+		"fs:default",
+		{
+			"identifier": "fs:allow-exists",
+			"allow": [{ "path": "$HOME/PokeBook" }]
+		},
+		{
+			"identifier": "fs:create-app-specific-dirs",
+			"allow": [{ "path": "$HOME/PokeBook" }]
+		},
+		{
+			"identifier": "fs:allow-write-text-file",
+			"allow": [{ "path": "$HOME/PokeBook/*" }]
+		}
+	]
 }
