@@ -1,6 +1,7 @@
 {
-    "eslint.validate": ["javascript", "typescript", "svelte"],
-    "git.enableCommitSigning": true,
-    "editor.formatOnSave": true,
-    "prettier.documentSelectors": ["**/*.astro"],
+  "eslint.validate": ["javascript", "typescript", "svelte"],
+  "git.enableCommitSigning": true,
+  "editor.formatOnSave": true,
+  "prettier.documentSelectors": ["**/*.astro"],
+  "cSpell.words": ["lucide", "pokebook", "tauri"]
 }

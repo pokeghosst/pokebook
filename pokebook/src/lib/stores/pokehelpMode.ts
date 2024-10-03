@@ -1,3 +1,3 @@
 import { createStore } from './storeFactory';
 
-export const isPokehelpActive = await createStore('pokehelp_active', 'false');
+export const isPokehelpActive = createStore('pokehelp_active', 'false');
