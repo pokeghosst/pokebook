@@ -16,108 +16,46 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding } from '@capacitor/filesystem';
-
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
-import { writeTextFile, BaseDirectory, exists, mkdir } from '@tauri-apps/plugin-fs';
-
-import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
-
-import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+import type TauriAPI from '@tauri-apps/api';
 
-// TODO: Refactor all drivers into classes with static methods
-export const PoemLocalStorageDriver: IPoemStorageDriver = {
-	listPoems: async function () {
-		try {
-			const storedFiles = (
-				await FilesystemWithPermissions.readdir({
-					path: 'poems/',
-					directory: Directory.Documents
-				})
-			).files;
-
-			const poemFiles: PoemFileEntity[] = [];
-			storedFiles.forEach((file) => {
-				poemFiles.push({
-					name: file.name.split('_')[0].replace(/%20/g, ' '),
-					poemUri: file.uri,
-					// ctime is not available on Android 7 and older devices.
-					// The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
-					timestamp: file.ctime ?? file.mtime
-				});
-			});
-			return poemFiles.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
-		} catch (e) {
-			if (e instanceof Error)
-				if (e.message === 'Folder does not exist.') {
-					return [];
-				} else {
-					throw e;
-				}
-			else throw new Error('errors.unknown');
-		}
-	},
-	loadPoem: async function (poemUri: string) {
-		return new XMLParser().parse(
-			(
-				await FilesystemWithPermissions.readFile({
-					path: poemUri,
-					encoding: Encoding.UTF8
-				})
-			).data.toString()
-		);
-	},
-	savePoem: async function (poem: PoemEntity) {
-		if (window.__TAURI__) {
-			const tokenExists = await exists('PokeBook', {
-				baseDir: BaseDirectory.Home
-			});
-
-			if (!tokenExists)
-				await mkdir('PokeBook', {
-					baseDir: BaseDirectory.Home
-				});
-
-			await writeTextFile('PokeBook/poem.xml', new XMLBuilder({ format: true }).build(poem), {
-				baseDir: BaseDirectory.Home
-			});
-		}
-
-		const timestamp = Date.now();
-		const id = (
-			await FilesystemWithPermissions.writeFile({
-				path: `poems/${poem.name}_${timestamp}.xml`,
-				data: new XMLBuilder({ format: true }).build(poem),
-				directory: Directory.Documents,
-				encoding: Encoding.UTF8,
-				recursive: true
-			})
-		).uri;
-		return {
-			id,
-			timestamp
-		};
-	},
-	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string> {
-		await FilesystemWithPermissions.writeFile({
-			path: poemUri,
-			data: new XMLBuilder({ format: true }).build(poem),
-			encoding: Encoding.UTF8
-		});
-		const directory = poemUri.split('poems/')[0];
-		const timestamp = poemUri.split('poems/')[1].split(/_|\.xml/)[1];
-		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
-		await FilesystemWithPermissions.rename({
-			from: poemUri,
-			to: newFileUri
-		});
-
-		return newFileUri;
-	},
-	deletePoem: async function (poemUri: string) {
-		await FilesystemWithPermissions.deleteFile({
-			path: poemUri
-		});
+declare global {
+	interface Window {
+		__TAURI__?: typeof TauriAPI;
 	}
-};
+}
+
+// I am NOT dealing with this just to have "end-to-end type safety" or whatever.
+// If it works correctly, it's all that matters.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let providerPromise: any;
+
+async function getImplementation() {
+	if (!providerPromise) {
+		if (window.__TAURI__) {
+			providerPromise = import('./FilesystemStorageDriver').then(
+				(module) => module.FilesystemStorageDriver
+			);
+		} else {
+			providerPromise = import('./WebStorageDriver').then((module) => module.WebStorageDriver);
+		}
+	}
+	return providerPromise;
+}
+
+export const PoemLocalStorageDriver = new Proxy(
+	{},
+	{
+		get(_, prop) {
+			return async (...args: unknown[]) => {
+				const impl = await getImplementation();
+				const method = impl[prop];
+				if (typeof method === 'function') {
+					return method.apply(impl, args);
+				} else {
+					throw new Error(`Method ${String(prop)} does not exist on implementation`);
+				}
+			};
+		}
+	}
+) as IPoemStorageDriver;
