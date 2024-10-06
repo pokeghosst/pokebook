@@ -16,67 +16,65 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding } from '@capacitor/filesystem';
+import { Encoding } from '@capacitor/filesystem';
 
+import Dexie, { type EntityTable } from 'dexie';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
-import type { PoemEntity, PoemFileEntity } from '$lib/types';
+import type { PoemEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+
+const db = new Dexie('PokeBook') as Dexie & {
+	poems: EntityTable<
+		PoemEntity & {
+			id: number;
+			timestamp: number;
+		},
+		'id'
+	>;
+};
+
+db.version(1).stores({
+	poems: '++id, name, text, note, timestamp'
+});
 
 export const WebStorageDriver: IPoemStorageDriver = {
 	listPoems: async function () {
 		try {
-			const storedFiles = (
-				await FilesystemWithPermissions.readdir({
-					path: 'poems/',
-					directory: Directory.Documents
-				})
-			).files;
-
-			const poemFiles: PoemFileEntity[] = [];
-			storedFiles.forEach((file) => {
-				poemFiles.push({
-					name: file.name.split('_')[0].replace(/%20/g, ' '),
-					poemUri: file.uri,
-					// ctime is not available on Android 7 and older devices.
-					// The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
-					timestamp: file.ctime ?? file.mtime
-				});
-			});
-			return poemFiles.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
+			return (await db.poems.toArray())
+				.map((record) => ({
+					name: record.name,
+					// This is a bit stinky but we need to conform with poem cache interface
+					// (otherwise it breaks cache file lookup)
+					poemUri: record.id.toString(),
+					timestamp: record.timestamp
+				}))
+				.sort((a, b) => b.timestamp - a.timestamp);
 		} catch (e) {
-			if (e instanceof Error)
-				if (e.message === 'Folder does not exist.') {
-					return [];
-				} else {
-					throw e;
-				}
-			else throw new Error('errors.unknown');
+			console.log(e);
+			throw new Error('errors.unknown');
 		}
 	},
 	loadPoem: async function (poemUri: string) {
-		return new XMLParser().parse(
-			(
-				await FilesystemWithPermissions.readFile({
-					path: poemUri,
-					encoding: Encoding.UTF8
-				})
-			).data.toString()
-		);
+		const poemRecord = await db.poems.get(parseInt(poemUri));
+
+		console.log(poemUri, poemRecord);
+
+		// TODO: Add error message for poem not found
+		if (!poemRecord) throw new Error('errors.unknown');
+
+		return {
+			name: poemRecord.name,
+			text: poemRecord.text,
+			note: poemRecord.note
+		};
 	},
 	savePoem: async function (poem: PoemEntity) {
 		const timestamp = Date.now();
-		const id = (
-			await FilesystemWithPermissions.writeFile({
-				path: `poems/${poem.name}_${timestamp}.xml`,
-				data: new XMLBuilder({ format: true }).build(poem),
-				directory: Directory.Documents,
-				encoding: Encoding.UTF8,
-				recursive: true
-			})
-		).uri;
+		const id = (await db.poems.add({ ...poem, timestamp })).toString();
+
 		return {
 			id,
 			timestamp

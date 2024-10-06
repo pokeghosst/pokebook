@@ -54,18 +54,13 @@ function withFolderCheck<This, Args extends unknown[], R>(
 
 export const FilesystemStorageDriver: IPoemStorageDriver = {
 	listPoems: withFolderCheck(async function () {
-		try {
-			return (await readDir('PokeBook', { baseDir: BaseDirectory.Home }))
-				.map((file) => ({
-					name: file.name.split('_')[0],
-					poemUri: `PokeBook/${file.name}`,
-					timestamp: parseInt(file.name.split('_')[1].split('.xml')[0])
-				}))
-				.sort((a, b) => b.timestamp - a.timestamp);
-		} catch (e) {
-			console.log(e);
-			throw new Error('errors.unknown');
-		}
+		return (await readDir('PokeBook', { baseDir: BaseDirectory.Home }))
+			.map((file) => ({
+				name: file.name.split('_')[0],
+				poemUri: `PokeBook/${file.name}`,
+				timestamp: parseInt(file.name.split('_')[1].split('.xml')[0])
+			}))
+			.sort((a, b) => b.timestamp - a.timestamp);
 	}),
 	loadPoem: withFolderCheck(async function (poemUri: string) {
 		return new XMLParser().parse(
