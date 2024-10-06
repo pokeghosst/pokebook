@@ -22,8 +22,7 @@ import type { PoemFileEntity } from '$lib/types';
 export interface IPoemStorageDriver {
 	listPoems(): Promise<PoemFileEntity[]>;
 	loadPoem(poemUri: string): Promise<PoemEntity>;
-	// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
-	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;
+	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number }>;
 	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
 	deletePoem(poemUri: string): Promise<void>;
 }
