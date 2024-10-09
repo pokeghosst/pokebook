@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { Encoding } from '@capacitor/filesystem';
 
 import Dexie, { type EntityTable } from 'dexie';
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { XMLBuilder } from 'fast-xml-parser';
 
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 

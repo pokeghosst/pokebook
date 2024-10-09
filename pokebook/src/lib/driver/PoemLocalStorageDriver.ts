@@ -18,44 +18,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
-// I am NOT dealing with this just to have "end-to-end type safety" or whatever.
-// If it works correctly, it's all that matters.
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let providerPromise: any;
-
-async function getImplementation() {
-	console.log('checking environment');
-
-	if (!providerPromise) {
-		// TODO: Revise this. There has to be a more orthodox way to do this check
-		if (window.__TAURI_INTERNALS__) {
-			console.log('we are in tauri');
-
-			providerPromise = import('./FilesystemStorageDriver').then(
-				(module) => module.FilesystemStorageDriver
-			);
-		} else {
-			console.log('we are in web');
-			providerPromise = import('./WebStorageDriver').then((module) => module.WebStorageDriver);
-		}
+async function resolveImplementation() {
+	// TODO: Revise this. There has to be a more orthodox way to do this check
+	if (window.__TAURI_INTERNALS__) {
+		console.log('Loading filesystem driver');
+		const { FilesystemStorageDriver } = await import('./FilesystemStorageDriver');
+		return FilesystemStorageDriver;
+	} else {
+		console.log('Loading web storage driver');
+		const { WebStorageDriver } = await import('./WebStorageDriver');
+		return WebStorageDriver;
 	}
-	return providerPromise;
 }
 
-export const PoemLocalStorageDriver = new Proxy(
-	{},
-	{
-		get(_, prop) {
-			return async (...args: unknown[]) => {
-				const impl = await getImplementation();
-				const method = impl[prop];
-				if (typeof method === 'function') {
-					return method.apply(impl, args);
-				} else {
-					throw new Error(`Method ${String(prop)} does not exist on implementation`);
-				}
-			};
-		}
-	}
-) as IPoemStorageDriver;
+let PoemLocalStorageDriver: IPoemStorageDriver;
+
+(async () => {
+	const impl = await resolveImplementation();
+	PoemLocalStorageDriver = impl;
+})().catch((error) => {
+	console.error('Failed to initialize the driver:', error);
+	throw error;
+});
+
+export { PoemLocalStorageDriver };
