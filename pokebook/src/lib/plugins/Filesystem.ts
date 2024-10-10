@@ -1,5 +1,11 @@
 import type { FilesystemPlugin } from '@capacitor/filesystem';
 
+declare global {
+	interface Window {
+		__TAURI_INTERNAL__: Record<string, unknown>;
+	}
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pluginPromise: any;
 
