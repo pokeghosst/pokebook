@@ -16,29 +16,81 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { Filesystem } from '../plugins/Filesystem';
+import type { PoemFileEntity, PoemEntity } from '../types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
-async function resolveImplementation() {
-	// TODO: Revise this. There has to be a more orthodox way to do this check
-	if (window.__TAURI_INTERNALS__) {
-		console.log('Loading filesystem driver');
-		const { FilesystemStorageDriver } = await import('./FilesystemStorageDriver');
-		return FilesystemStorageDriver;
-	} else {
-		console.log('Loading web storage driver');
-		const { WebStorageDriver } = await import('./WebStorageDriver');
-		return WebStorageDriver;
+// import type { IPoemStorageDriver } from './IPoemStorageDriver';
+
+// declare global {
+// 	interface Window {
+// 		__TAURI_INTERNAL__?: Record<string, unknown>;
+// 	}
+// }
+
+// // I am NOT dealing with this just to have "end-to-end type safety" or whatever.
+// // If it works correctly, it's all that matters.
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// let providerPromise: any;
+
+// async function getImplementation() {
+// 	if (!providerPromise) {
+// 		if (window.__TAURI_INTERNAL__) {
+// 			providerPromise = import('./FilesystemStorageDriver').then(
+// 				(module) => module.FilesystemStorageDriver
+// 			);
+// 		} else {
+// 			providerPromise = import('./WebStorageDriver').then((module) => module.WebStorageDriver);
+// 		}
+// 	}
+// 	return providerPromise;
+// }
+
+// export const PoemLocalStorageDriver = new Proxy(
+// 	{},
+// 	{
+// 		get(_, prop) {
+// 			return async (...args: unknown[]) => {
+// 				const impl = await getImplementation();
+// 				const method = impl[prop];
+// 				if (typeof method === 'function') {
+// 					return method.apply(impl, args);
+// 				} else {
+// 					throw new Error(`Method ${String(prop)} does not exist on implementation`);
+// 				}
+// 			};
+// 		}
+// 	}
+// ) as IPoemStorageDriver;
+
+export const PoemLocalStorageDriver: IPoemStorageDriver = {
+	listPoems: function (): Promise<PoemFileEntity[]> {
+		const files = Filesystem.readDir({ path: '/' }).entries;
+		console.log(files);
+	},
+	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
+		console.log('loading poem');
+
+		const file = await Filesystem.readFile({ path: `/${poemUri}` });
+		console.log(file);
+
+		return new XMLParser().parse(file.data);
+	},
+	savePoem: async function (poem: PoemEntity): Promise<{ id: string; timestamp: number }> {
+		const now = Date.now();
+
+		const { uri } = await Filesystem.writeFile({
+			path: `/${poem.name}_${now}.xml`,
+			data: new XMLBuilder({ format: true }).build(poem)
+		});
+
+		return { id: uri, timestamp: now };
+	},
+	updatePoem: function (poem: PoemEntity, poemUri: string): Promise<string | void> {
+		throw new Error('Function not implemented.');
+	},
+	deletePoem: function (poemUri: string): Promise<void> {
+		throw new Error('Function not implemented.');
 	}
-}
-
-let PoemLocalStorageDriver: IPoemStorageDriver;
-
-(async () => {
-	const impl = await resolveImplementation();
-	PoemLocalStorageDriver = impl;
-})().catch((error) => {
-	console.error('Failed to initialize the driver:', error);
-	throw error;
-});
-
-export { PoemLocalStorageDriver };
+};

@@ -16,12 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Encoding } from '@capacitor/filesystem';
-
 import Dexie, { type EntityTable } from 'dexie';
-import { XMLBuilder } from 'fast-xml-parser';
-
-import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 import type { PoemEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
@@ -75,30 +70,14 @@ export const WebStorageDriver: IPoemStorageDriver = {
 		const timestamp = Date.now();
 		const id = (await db.poems.add({ ...poem, timestamp })).toString();
 
-		return {
-			id,
-			timestamp
-		};
+		return { id, timestamp };
 	},
 	updatePoem: async function (poem: PoemEntity, poemUri: string) {
-		await FilesystemWithPermissions.writeFile({
-			path: poemUri,
-			data: new XMLBuilder({ format: true }).build(poem),
-			encoding: Encoding.UTF8
-		});
-		const directory = poemUri.split('poems/')[0];
-		const timestamp = poemUri.split('poems/')[1].split(/_|\.xml/)[1];
-		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
-		await FilesystemWithPermissions.rename({
-			from: poemUri,
-			to: newFileUri
-		});
-
-		return newFileUri;
+		await db.poems.update(parseInt(poemUri), poem);
 	},
 	deletePoem: async function (poemUri: string): Promise<void> {
-		await FilesystemWithPermissions.deleteFile({
-			path: poemUri
-		});
+		console.log('deleting poem', Number(poemUri));
+
+		await db.poems.delete(parseInt(poemUri));
 	}
 };
