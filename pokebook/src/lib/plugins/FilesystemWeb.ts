@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import Dexie, { type EntityTable } from 'dexie';
 
 import type {
+	DeleteFileOptions,
 	ExistsOptions,
 	ExistsResult,
 	FileInfo,
@@ -28,6 +29,7 @@ import type {
 	ReadDirResult,
 	ReadFileOptions,
 	ReadFileResult,
+	RenameOptions,
 	WriteFileOptions,
 	WriteFileResult
 } from './FilesystemPlugin';
@@ -48,16 +50,16 @@ export class FilesystemWeb implements FilesystemPlugin {
 		return this._db;
 	}
 	async exists(options: ExistsOptions): Promise<ExistsResult> {
-		const count = await this.getDb().files.where('path').equals(options.path).count();
+		const count = await this.getDb().files.where('path').equals(`/${options.path}`).count();
 		return { exists: count > 0 };
 	}
 	async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
 		const now = Date.now();
 
-		const uri = await this.getDb().files.add(
+		const uri = await this.getDb().files.put(
 			{
 				content: options.data,
-				path: options.path,
+				path: `/${options.path}`,
 				ctime: now,
 				mtime: now
 			},
@@ -68,8 +70,6 @@ export class FilesystemWeb implements FilesystemPlugin {
 	async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
 		const data = await this.getDb().files.where('path').equals(options.path).first();
 
-		console.log(data);
-
 		if (data?.content) {
 			return { data: data.content };
 		} else {
@@ -77,18 +77,17 @@ export class FilesystemWeb implements FilesystemPlugin {
 			throw new Error('errors.unknown');
 		}
 	}
+	async deleteFile(options: DeleteFileOptions): Promise<void> {
+		await this.getDb().files.delete(options.path);
+	}
 	async readDir(options: ReadDirOptions): Promise<ReadDirResult> {
-		console.log('files', await this.getDb().files.where('path').startsWith(options.path).toArray());
-
-		const entries = await this.getDb().files.where('path').startsWith(options.path).toArray();
-
-		console.log(entries);
+		const entries = await this.getDb().files.where('path').startsWith(`${options.path}`).toArray();
 
 		return {
 			entries: entries.map(
 				(file) =>
 					({
-						name: file.path,
+						name: file.path.split('/').pop(),
 						type: 'file',
 						ctime: file.ctime,
 						mtime: file.mtime,
@@ -97,4 +96,5 @@ export class FilesystemWeb implements FilesystemPlugin {
 			)
 		};
 	}
+	rename(options: RenameOptions): Promise<void> {}
 }

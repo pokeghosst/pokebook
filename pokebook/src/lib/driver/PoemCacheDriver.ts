@@ -16,13 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
 import type { PoemCacheRecord, PoemEntity } from '$lib/types';
-import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
+import { Filesystem } from '../plugins/Filesystem';
 
 const SNIPPET_LENGTH = 128;
 
@@ -35,37 +34,22 @@ export default class PoemCacheDriver {
 	}
 
 	public static async getCachedPoems(storage: string): Promise<PoemCacheRecord[]> {
-		const poemCacheFile = await FilesystemWithPermissions.readFile({
-			directory: Directory.Documents,
-			path: `poems/poems_${storage}.json`,
-			encoding: Encoding.UTF8
+		const poemCacheFile = await Filesystem.readFile({
+			path: `/poems_${storage}.json`
 		});
 
 		return JSON.parse(poemCacheFile.data.toString());
 	}
 
 	public static async isCachePresent(storage: string) {
-		try {
-			await FilesystemWithPermissions.stat({
-				directory: Directory.Documents,
-				path: `poems/poems_${storage}.json`
-			});
-			return true;
-		} catch (_) {
-			// TODO: I reckon this is not too good
-			try {
-				await FilesystemWithPermissions.mkdir({
-					path: 'poems',
-					directory: Directory.Documents,
-					recursive: true
-				});
-			} catch (_) {
-				/* do nothing */
-			}
-			return false;
-		}
+		return (
+			await Filesystem.exists({
+				path: `poems_${storage}.json`
+			})
+		).exists;
 	}
 
+	// TODO: Make this a "smart" algorithm that will skip already existing snippets or update them properly
 	public static async initCache(storage: string) {
 		// TODO: Why this and function argument?
 		const currentStorage = (await Preferences.get({ key: 'storage_mode' })).value as string;
@@ -86,6 +70,8 @@ export default class PoemCacheDriver {
 	}
 
 	public static async refreshCache(storage: string) {
+		console.log('refreshing cache...');
+
 		const poemFiles = await Poem.findAll(storage);
 		const cachedPoems = await this.getCachedPoems(storage);
 		const newCache = poemFiles.map((file) => {
@@ -158,11 +144,9 @@ export default class PoemCacheDriver {
 	}
 
 	static async writeToCache(storage: string, data: PoemCacheRecord[]) {
-		await FilesystemWithPermissions.writeFile({
-			directory: Directory.Documents,
-			path: `poems/poems_${storage}.json`,
-			encoding: Encoding.UTF8,
-			recursive: true,
+		console.log('writing to cache...');
+		await Filesystem.writeFile({
+			path: `poems_${storage}.json`,
 			data: JSON.stringify(data)
 		});
 	}

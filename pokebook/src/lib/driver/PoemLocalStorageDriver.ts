@@ -21,58 +21,22 @@ import { Filesystem } from '../plugins/Filesystem';
 import type { PoemFileEntity, PoemEntity } from '../types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
-// import type { IPoemStorageDriver } from './IPoemStorageDriver';
-
-// declare global {
-// 	interface Window {
-// 		__TAURI_INTERNAL__?: Record<string, unknown>;
-// 	}
-// }
-
-// // I am NOT dealing with this just to have "end-to-end type safety" or whatever.
-// // If it works correctly, it's all that matters.
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// let providerPromise: any;
-
-// async function getImplementation() {
-// 	if (!providerPromise) {
-// 		if (window.__TAURI_INTERNAL__) {
-// 			providerPromise = import('./FilesystemStorageDriver').then(
-// 				(module) => module.FilesystemStorageDriver
-// 			);
-// 		} else {
-// 			providerPromise = import('./WebStorageDriver').then((module) => module.WebStorageDriver);
-// 		}
-// 	}
-// 	return providerPromise;
-// }
-
-// export const PoemLocalStorageDriver = new Proxy(
-// 	{},
-// 	{
-// 		get(_, prop) {
-// 			return async (...args: unknown[]) => {
-// 				const impl = await getImplementation();
-// 				const method = impl[prop];
-// 				if (typeof method === 'function') {
-// 					return method.apply(impl, args);
-// 				} else {
-// 					throw new Error(`Method ${String(prop)} does not exist on implementation`);
-// 				}
-// 			};
-// 		}
-// 	}
-// ) as IPoemStorageDriver;
-
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
-	listPoems: function (): Promise<PoemFileEntity[]> {
-		const files = Filesystem.readDir({ path: '/' }).entries;
-		console.log(files);
+	listPoems: async function (): Promise<PoemFileEntity[]> {
+		const files = (await Filesystem.readDir({ path: '/' })).entries;
+		console.log('files', files);
+
+		return files.map((file) => ({
+			name: file.name.split('_')[0].replace(/%20/g, ' '),
+			poemUri: file.uri,
+			timestamp: file.ctime
+		}));
 	},
+
 	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
 		console.log('loading poem');
 
-		const file = await Filesystem.readFile({ path: `/${poemUri}` });
+		const file = await Filesystem.readFile({ path: `${poemUri}` });
 		console.log(file);
 
 		return new XMLParser().parse(file.data);
@@ -81,16 +45,19 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		const now = Date.now();
 
 		const { uri } = await Filesystem.writeFile({
-			path: `/${poem.name}_${now}.xml`,
+			path: `${poem.name}_${now}.xml`,
 			data: new XMLBuilder({ format: true }).build(poem)
 		});
 
 		return { id: uri, timestamp: now };
 	},
-	updatePoem: function (poem: PoemEntity, poemUri: string): Promise<string | void> {
-		throw new Error('Function not implemented.');
+	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string | void> {
+		await Filesystem.writeFile({
+			path: poemUri,
+			data: new XMLBuilder({ format: true }).build(poem)
+		});
 	},
-	deletePoem: function (poemUri: string): Promise<void> {
-		throw new Error('Function not implemented.');
+	deletePoem: async function (poemUri: string): Promise<void> {
+		await Filesystem.deleteFile({ path: poemUri });
 	}
 };

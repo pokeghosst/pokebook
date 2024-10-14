@@ -1,4 +1,4 @@
-import type { FilesystemPlugin } from '@capacitor/filesystem';
+import type { FilesystemPlugin } from './FilesystemPlugin';
 
 declare global {
 	interface Window {

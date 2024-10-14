@@ -67,10 +67,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 	{/if}
 {:then cacheRecords}
+	<div class="refresh-wrapper">
+		<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
+	</div>
 	{#if cacheRecords && cacheRecords.length > 0}
-		<div class="refresh-wrapper">
-			<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
-		</div>
 		<div class="poem-list">
 			{#each cacheRecords as record}
 				<div class="list-item">

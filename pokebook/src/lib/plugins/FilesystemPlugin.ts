@@ -2,7 +2,9 @@ export interface FilesystemPlugin {
 	exists(options: ExistsOptions): Promise<ExistsResult>;
 	writeFile(options: WriteFileOptions): Promise<WriteFileResult>;
 	readFile(options: ReadFileOptions): Promise<ReadFileResult>;
+	deleteFile(options: DeleteFileOptions): Promise<void>;
 	readDir(options: ReadDirOptions): Promise<ReadDirResult>;
+	rename(options: RenameOptions): Promise<void>;
 }
 
 export interface ExistsOptions {
@@ -24,6 +26,15 @@ export interface WriteFileResult {
 
 export interface ReadFileOptions {
 	path: string;
+}
+
+export interface DeleteFileOptions {
+	path: string;
+}
+
+export interface RenameOptions {
+	from: string;
+	to: string;
 }
 
 export interface ReadFileResult {
