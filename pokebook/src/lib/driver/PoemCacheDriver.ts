@@ -44,7 +44,7 @@ export default class PoemCacheDriver {
 	public static async isCachePresent(storage: string) {
 		return (
 			await Filesystem.exists({
-				path: `poems_${storage}.json`
+				path: `/poems_${storage}.json`
 			})
 		).exists;
 	}
@@ -146,7 +146,7 @@ export default class PoemCacheDriver {
 	static async writeToCache(storage: string, data: PoemCacheRecord[]) {
 		console.log('writing to cache...');
 		await Filesystem.writeFile({
-			path: `poems_${storage}.json`,
+			path: `/poems_${storage}.json`,
 			data: JSON.stringify(data)
 		});
 	}

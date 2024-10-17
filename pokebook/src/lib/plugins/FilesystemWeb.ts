@@ -59,7 +59,7 @@ export class FilesystemWeb implements FilesystemPlugin {
 		const uri = await this.getDb().files.put(
 			{
 				content: options.data,
-				path: `/${options.path}`,
+				path: `${options.path}`,
 				ctime: now,
 				mtime: now
 			},
@@ -68,14 +68,11 @@ export class FilesystemWeb implements FilesystemPlugin {
 		return { uri };
 	}
 	async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
-		const data = await this.getDb().files.where('path').equals(options.path).first();
+		const entry = await this.getDb().files.where('path').equals(options.path).first();
 
-		if (data?.content) {
-			return { data: data.content };
-		} else {
-			// TODO: Handle properly
-			throw new Error('errors.unknown');
-		}
+		if (!entry) throw new Error('File does not exist!');
+
+		return { data: entry.content };
 	}
 	async deleteFile(options: DeleteFileOptions): Promise<void> {
 		await this.getDb().files.delete(options.path);
@@ -96,5 +93,18 @@ export class FilesystemWeb implements FilesystemPlugin {
 			)
 		};
 	}
-	rename(options: RenameOptions): Promise<void> {}
+	async rename(options: RenameOptions): Promise<void> {
+		if (options.from === options.to) return;
+
+		const entry = await this.getDb().files.where('path').equals(options.from).first();
+
+		if (!entry) throw new Error('File does not exist!');
+
+		await this.getDb().files.delete(options.from);
+
+		await this.getDb().files.add({
+			...entry,
+			path: options.to
+		});
+	}
 }

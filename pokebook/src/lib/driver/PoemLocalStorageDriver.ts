@@ -18,8 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { Filesystem } from '../plugins/Filesystem';
-import type { PoemFileEntity, PoemEntity } from '../types';
+
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
+
+import type { PoemEntity, PoemFileEntity } from '../types';
 
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFileEntity[]> {
@@ -45,7 +47,7 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 		const now = Date.now();
 
 		const { uri } = await Filesystem.writeFile({
-			path: `${poem.name}_${now}.xml`,
+			path: `/${poem.name}_${now}.xml`,
 			data: new XMLBuilder({ format: true }).build(poem)
 		});
 
@@ -56,6 +58,13 @@ export const PoemLocalStorageDriver: IPoemStorageDriver = {
 			path: poemUri,
 			data: new XMLBuilder({ format: true }).build(poem)
 		});
+		const timestamp = poemUri.split('/')[1].split(/_|\.xml/)[1];
+		const newFileUri = `/${poem.name}_${timestamp}.xml`;
+		await Filesystem.rename({
+			from: poemUri,
+			to: newFileUri
+		});
+		return newFileUri;
 	},
 	deletePoem: async function (poemUri: string): Promise<void> {
 		await Filesystem.deleteFile({ path: poemUri });
