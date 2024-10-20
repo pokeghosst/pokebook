@@ -60,6 +60,6 @@ export interface FileInfo {
 	name: string;
 	type: 'file' | 'dir';
 	ctime: number;
-	mtime: number;
+	mtime: number | null; // TODO: Check. Maybe we don't need mtime altogether and this is just a Capacitor legacy
 	uri: string;
 }

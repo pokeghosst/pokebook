@@ -8,7 +8,7 @@
 		"fs:default",
 		{
 			"identifier": "fs:allow-exists",
-			"allow": [{ "path": "$HOME/PokeBook" }]
+			"allow": [{ "path": "$HOME/PokeBook" }, { "path": "$HOME/PokeBook/*" }]
 		},
 		{
 			"identifier": "fs:create-app-specific-dirs",

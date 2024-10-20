@@ -2,7 +2,7 @@ import type { FilesystemPlugin } from './FilesystemPlugin';
 
 declare global {
 	interface Window {
-		__TAURI_INTERNAL__: Record<string, unknown>;
+		__TAURI_INTERNALS__: Record<string, unknown>;
 	}
 }
 
@@ -11,9 +11,9 @@ let pluginPromise: any;
 
 async function getImplementation() {
 	if (!pluginPromise) {
-		if (window.__TAURI_INTERNAL__) {
+		if (window.__TAURI_INTERNALS__) {
 			// TODO: Don't forget to update this
-			pluginPromise = import('./FilesystemWeb').then((m) => new m.FilesystemWeb());
+			pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
 		} else {
 			pluginPromise = import('./FilesystemWeb').then((m) => new m.FilesystemWeb());
 		}

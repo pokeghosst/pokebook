@@ -17,11 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+
 import { Filesystem } from '../plugins/Filesystem';
 
-import type { IPoemStorageDriver } from './IPoemStorageDriver';
-
 import type { PoemEntity, PoemFileEntity } from '../types';
+import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
 	listPoems: async function (): Promise<PoemFileEntity[]> {

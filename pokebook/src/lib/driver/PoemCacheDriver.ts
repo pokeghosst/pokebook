@@ -51,6 +51,7 @@ export default class PoemCacheDriver {
 
 	// TODO: Make this a "smart" algorithm that will skip already existing snippets or update them properly
 	public static async initCache(storage: string) {
+		console.log('initializing cache...');
 		// TODO: Why this and function argument?
 		const currentStorage = (await Preferences.get({ key: 'storage_mode' })).value as string;
 		const poemFiles = await Poem.findAll(currentStorage);
@@ -123,7 +124,7 @@ export default class PoemCacheDriver {
 						name: newPoem.name,
 						poemSnippet: this.sliceSnippet(newPoem.text),
 						unsavedChanges: false
-				  }
+					}
 				: poem
 		);
 		await this.writeToCache(storage, updatedPoems);
