@@ -45,12 +45,9 @@ import type {
 const POKEBOOK_DIR = 'PokeBook';
 
 async function checkFolderAndCreateIfMissing() {
-	console.log('checking folder');
 	const tokenExists = await exists('PokeBook', {
 		baseDir: BaseDirectory.Home
 	});
-
-	console.log('checked folder');
 
 	if (!tokenExists)
 		await mkdir('PokeBook', {
@@ -69,11 +66,9 @@ function withFolderCheck<This, Args extends unknown[], R>(
 
 export class FilesystemTauri implements FilesystemPlugin {
 	exists = withFolderCheck(async (options: ExistsOptions): Promise<ExistsResult> => {
-		console.log('checking exists at', POKEBOOK_DIR + options.path);
 		return { exists: await exists(POKEBOOK_DIR + options.path, { baseDir: BaseDirectory.Home }) };
 	});
 	writeFile = withFolderCheck(async (options: WriteFileOptions): Promise<WriteFileResult> => {
-		console.log('writing file to', POKEBOOK_DIR + options.path);
 		await writeTextFile(POKEBOOK_DIR + options.path, options.data, { baseDir: BaseDirectory.Home });
 
 		return { uri: options.path };
