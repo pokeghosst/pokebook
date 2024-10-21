@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
 	import { count } from 'letter-count';
 
@@ -28,49 +27,35 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 	import { putSyllables } from '$lib/util/PokeHelp';
+	import { usePreferences } from 'lib/hooks/usePreferences.svelte';
 
-	export let props: { name: Writable<string>; body: Writable<string> };
-	export let unsavedChangesHandler;
-
-	let poemNameStoreProp = props.name;
-	let poemBodyStoreProp = props.body;
-
-	// Overlays
-	let syllableRows: string;
-	let stats: Record<string, string | number>;
-
-	let lines: string[] = $poemBodyStoreProp.split('\n');
+	let pokehelpMode = usePreferences('pokehelp_active', 'false');
+	let { poem }: { poem: { title: { value: string }; text: { value: string } } } = $props();
+	let lines = $derived(poem.text.value.split('\n'));
+	let syllableRows: string = $derived(putSyllables(lines));
+	let stats: Record<string, string | number> = $derived(count(poem.text.value));
 
 	let poemTextarea: HTMLTextAreaElement;
 
-	$: lines = $poemBodyStoreProp.split('\n');
-	$: $poemBodyStoreProp, autoResizeNotebook();
+	$effect(() => {
+		// TODO: That's a hack to trigger effect on changing the value. Later I'll find a way to maybe use it in the calculation
+		if (poem.text.value) autoResizeNotebook();
+	});
 
-	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	$: $isPokehelpActive, autoResizeNotebook();
+	$effect(() => {
+		// To avoid text going beyond the notepad when the poem is padded/un-padded
+		if (pokehelpMode.value) autoResizeNotebook();
+	});
 
-	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
-
-	onMount(() => {
+	onMount(async () => {
 		// Resize the notebook when switching between single/dual panes
 		const resizeObserver = new ResizeObserver(autoResizeNotebook);
 		resizeObserver.observe(poemTextarea);
-
 		return () => {
 			resizeObserver.unobserve(poemTextarea);
 			resizeObserver.disconnect();
 		};
 	});
-
-	function updatePokeHelpOverlays() {
-		stats = count($poemBodyStoreProp);
-		syllableRows = putSyllables(lines);
-	}
-
-	function sanitizePoemTitle() {
-		const forbiddenChars = /[./_]/g;
-		$poemNameStoreProp = $poemNameStoreProp.replace(forbiddenChars, '');
-	}
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -91,10 +76,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={$poemNameStoreProp}
-		on:input={sanitizePoemTitle}
+		bind:value={poem.title.value}
+		oninput={() => {
+			poem.title.value = poem.title.value.replace(/[./_]/g, '');
+		}}
 		placeholder={$t('workspace.unnamed')}
-		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -108,14 +94,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={$poemBodyStoreProp}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
+			bind:value={poem.text.value}
 			bind:this={poemTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+		></textarea>
 	</div>
 </div>

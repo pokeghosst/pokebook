@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Preferences } from '@capacitor/preferences';
+import { Preferences } from '../plugins/Preferences';
 
 import type { StorageProvider } from '$lib/enums/StorageProvider';
 
@@ -45,14 +45,11 @@ export async function refreshAndReturnAccessToken(provider: StorageProvider): Pr
 
 	if (refreshTokenId === null) throw new Error('errors.refreshToken');
 
-	const refreshTokenResponse = await fetch(
-		`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/refresh`,
-		{
-			headers: {
-				Authorization: refreshTokenId
-			}
+	const refreshTokenResponse = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/${provider}/refresh`, {
+		headers: {
+			Authorization: refreshTokenId
 		}
-	);
+	});
 
 	if (refreshTokenResponse.status === 500) throw new Error('errors.refreshToken');
 

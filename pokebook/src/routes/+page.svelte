@@ -42,9 +42,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
+	import { Preferences } from 'lib/plugins/Preferences';
+	import { draftPoemNote, draftPoemText, draftPoemTitle } from 'lib/stored/draft.svelte';
+	import { usePreferences } from 'lib/hooks/usePreferences.svelte';
 
-	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
-	const noteProps = draftPoemNoteStore;
+	let poem: { title: { value: string }; text: { value: string } } = {
+		title: usePreferences('draft_poem_name', 'Unnamed'),
+		text: usePreferences('draft_poem_text', '')
+	};
+
+	let note: { value: string } = usePreferences('draft_poem_note', '');
+
+	// $effect(() => {
+	// 	Preferences.set({ key: 'draft_poem_name', value: poemProps.title.replace(/[./_]/g, '') });
+	// });
+
+	// $effect(() => {
+	// 	if (poemProps.text !== null) Preferences.set({ key: 'draft_poem_text', value: poemProps.text });
+	// });
+
+	// $effect(() => {
+	// 	Preferences.set({ key: 'draft_poem_note', value: poemNote });
+	// });
 
 	const actions: ToolbarItem[] = [
 		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
@@ -128,4 +147,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<Workspace {poemProps} {noteProps} {actions} />
+<Workspace {poem} {note} {actions} />

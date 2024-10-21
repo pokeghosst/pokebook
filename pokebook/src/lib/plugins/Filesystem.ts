@@ -1,18 +1,11 @@
 import type { FilesystemPlugin } from './FilesystemPlugin';
 
-declare global {
-	interface Window {
-		__TAURI_INTERNALS__: Record<string, unknown>;
-	}
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pluginPromise: any;
 
 async function getImplementation() {
 	if (!pluginPromise) {
 		if (window.__TAURI_INTERNALS__) {
-			// TODO: Don't forget to update this
 			pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
 		} else {
 			pluginPromise = import('./FilesystemWeb').then((m) => new m.FilesystemWeb());

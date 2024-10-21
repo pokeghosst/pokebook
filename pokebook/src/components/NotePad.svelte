@@ -24,10 +24,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	export let props: Writable<string>;
-	export let unsavedChangesHandler;
+	let { note } = $props();
 
-	let lines = $props.split('\n');
+	// export let props: Writable<string>;
+	// export let unsavedChangesHandler;
+
+	// let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
 
 	onMount(() => {
@@ -41,8 +43,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	$: lines = $props.split('\n');
-	$: lines, autoResizeNotebook();
+	// $: lines = $props.split('\n');
+	// $: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -64,12 +66,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={$props}
+			bind:value={note.value}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+		></textarea>
 	</div>
 </div>

@@ -33,17 +33,26 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
 	import Toolbar from './Toolbar.svelte';
 
-	export let actions: { icon: ComponentType; action: () => void; label: string }[];
-	export let poemProps: { name: Writable<string>; body: Writable<string> };
-	export let noteProps: Writable<string>;
+	let {
+		poem,
+		note,
+		actions
+	}: {
+		poem: { title: { value: string }; text: { value: string } };
+		note: { value: string };
+		actions: { icon: ComponentType; action: () => void; label: string }[];
+	} = $props();
 
-	// Assigning empty function by default because on draft page we don't pass a function here
-	export let unsavedChangesHandler = () => {};
+	// export let poemProps: { name: string; body: Writable<string> };
+	// export let noteProps: Writable<string>;
+
+	// // Assigning empty function by default because on draft page we don't pass a function here
+	// export let unsavedChangesHandler = () => {};
 
 	let state: number[] = JSON.parse($viewsState);
-	let views = [PoemPad, NotePad];
+	// let views = [PoemPad, NotePad];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let props: [any, any] = [poemProps, noteProps];
+	// let props: [any, any] = [poemProps, noteProps];
 
 	let currentState = '';
 
@@ -90,18 +99,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					</button>
 				</div>
 			</div>
-			<svelte:component
-				this={views[state[0]]}
-				{unsavedChangesHandler}
-				bind:props={props[state[0]]}
-			/>
+			<PoemPad {poem} />
+			<!-- <svelte:component this={views[state[0]]} {unsavedChangesHandler} /> -->
 		</div>
-		<div class="notebook-container">
+		<NotePad {note} />
+		<!-- <div class="notebook-container">
 			<svelte:component
 				this={views[state[1]]}
 				{unsavedChangesHandler}
 				bind:props={props[state[1]]}
 			/>
-		</div>
+		</div> -->
 	</div>
 {/if}
