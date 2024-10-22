@@ -21,13 +21,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import hotkeys from 'hotkeys-js';
 
-	import { darkMode } from '$lib/stores/darkMode';
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
-
 	import Menu from 'lucide-svelte/icons/menu';
 	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
 	import Eclipse from 'lucide-svelte/icons/eclipse';
+
+	let {
+		toggleSidebar,
+		togglePokeHelp,
+		toggleDarkMode
+	}: { toggleSidebar: () => void; togglePokeHelp: () => void; toggleDarkMode: () => void } =
+		$props();
 
 	onMount(() => {
 		// TODO: Extract hotkey-related logic into separate function possibly
@@ -47,26 +50,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	onDestroy(() => {
 		hotkeys.unbind();
 	});
-
-	async function toggleDarkMode() {
-		$darkMode === 'dark' ? ($darkMode = '') : ($darkMode = 'dark');
-	}
-
-	function togglePokeHelp() {
-		$isPokehelpActive === 'true' ? ($isPokehelpActive = 'false') : ($isPokehelpActive = 'true');
-	}
-
-	function toggleSidebar() {
-		$isSidebarOpen === 'true' ? ($isSidebarOpen = 'false') : ($isSidebarOpen = 'true');
-	}
 </script>
 
 <div class="header-nav-wrapper">
-	<button on:click={toggleSidebar}>
+	<button onclick={toggleSidebar}>
 		<Menu />
 	</button>
 	<div class="header-icons">
-		<button on:click={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
-		<button on:click={() => toggleDarkMode()}><Eclipse strokeWidth={1.7} /></button>
+		<button onclick={togglePokeHelp}><PencilRuler strokeWidth={1.7} /></button>
+		<button onclick={toggleDarkMode}><Eclipse strokeWidth={1.7} /></button>
 	</div>
 </div>

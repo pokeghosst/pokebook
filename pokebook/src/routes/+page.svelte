@@ -22,17 +22,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
 
-	import {
-		draftPoemBodyStore,
-		draftPoemNameStore,
-		draftPoemNoteStore
-	} from '$lib/stores/poemDraft';
-	import { storageMode } from '$lib/stores/storageMode';
-
 	import { sharePoem } from '$lib/actions/sharePoem';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { usePreferences, type PreferencesStore } from '$lib/hooks/usePreferences.svelte';
 
 	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
 	import Save from 'lucide-svelte/icons/save';
@@ -42,28 +36,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import { Preferences } from 'lib/plugins/Preferences';
-	import { draftPoemNote, draftPoemText, draftPoemTitle } from 'lib/stored/draft.svelte';
-	import { usePreferences } from 'lib/hooks/usePreferences.svelte';
 
-	let poem: { title: { value: string }; text: { value: string } } = {
+	let poem: { title: PreferencesStore; text: PreferencesStore } = {
 		title: usePreferences('draft_poem_name', 'Unnamed'),
 		text: usePreferences('draft_poem_text', '')
 	};
 
-	let note: { value: string } = usePreferences('draft_poem_note', '');
-
-	// $effect(() => {
-	// 	Preferences.set({ key: 'draft_poem_name', value: poemProps.title.replace(/[./_]/g, '') });
-	// });
-
-	// $effect(() => {
-	// 	if (poemProps.text !== null) Preferences.set({ key: 'draft_poem_text', value: poemProps.text });
-	// });
-
-	// $effect(() => {
-	// 	Preferences.set({ key: 'draft_poem_note', value: poemNote });
-	// });
+	let note: PreferencesStore = usePreferences('draft_poem_note', '');
+	let storageMode: PreferencesStore = usePreferences('storage_mode', 'local');
 
 	const actions: ToolbarItem[] = [
 		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
@@ -71,7 +51,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{
 			icon: Share2,
 			action: () =>
-				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
+				sharePoem(poem.title.value, poem.text.value, $t('toasts.poemCopiedToClipboard')),
 			label: $t('workspace.sharePoem')
 		},
 		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
@@ -100,12 +80,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function stashPoem() {
-		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
+		if (poem.title.value !== '' && poem.text.value !== '') {
 			try {
 				await toast.promise(
 					Poem.save(
-						{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
-						$storageMode
+						{ name: poem.title.value, text: poem.text.value, note: note.value },
+						storageMode.value
 					),
 					{
 						loading: `${$t('toasts.savingPoem')}`,
@@ -141,9 +121,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function clearDraftPoem() {
-		draftPoemNameStore.set('');
-		draftPoemBodyStore.set('');
-		draftPoemNoteStore.set('');
+		poem.title.remove();
+		poem.text.remove();
+		note.remove();
 	}
 </script>
 

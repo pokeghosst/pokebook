@@ -18,16 +18,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
+	import type { PreferencesStore } from 'lib/hooks/usePreferences.svelte';
 
-	let { note } = $props();
-
-	// export let props: Writable<string>;
-	// export let unsavedChangesHandler;
+	let { note }: { note: PreferencesStore } = $props();
 
 	// let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;

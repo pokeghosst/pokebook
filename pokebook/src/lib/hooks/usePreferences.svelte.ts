@@ -1,7 +1,9 @@
 import { Preferences } from 'lib/plugins/Preferences';
 import { onMount } from 'svelte';
 
-export function usePreferences(key: string, initialValue: string) {
+export type PreferencesStore = { remove: () => void; value: string };
+
+export function usePreferences(key: string, initialValue: string): PreferencesStore {
 	let value: string = $state<string>(initialValue);
 
 	onMount(async () => {
@@ -10,6 +12,10 @@ export function usePreferences(key: string, initialValue: string) {
 	});
 
 	return {
+		remove() {
+			value = initialValue;
+			Preferences.remove({ key });
+		},
 		set value(newValue: string) {
 			// console.log('updating value');
 			value = newValue;

@@ -18,19 +18,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { syllable } from 'syllable';
 
-export function putSyllables(lines: string[]) {
+export function getSyllables(lines: string[]) {
 	const lineSyllablesArray = (() => {
 		const _: number[] = [];
 		lines.forEach((line) => _.push(syllable(line)));
 		return _;
 	})();
-	const result = lines.map((line, i) => {
+	return lines.map((line, i) => {
 		if (lineSyllablesArray[i] > 0) {
-			return (
-				`<span class="poem-syllable-count">${lineSyllablesArray[i]}</span> ` +
-				`<span style="color: transparent; margin-left: 5px">${line}</span>`
-			);
+			return {
+				syllables: lineSyllablesArray[i],
+				line
+			};
 		}
 	});
-	return result.join('<br>');
 }

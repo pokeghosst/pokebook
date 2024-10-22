@@ -17,23 +17,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 
 	import { count } from 'letter-count';
 
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
-	import { putSyllables } from '$lib/util/PokeHelp';
-	import { usePreferences } from 'lib/hooks/usePreferences.svelte';
+	import { getSyllables } from '$lib/util/PokeHelp';
+	import { type PreferencesStore } from 'lib/hooks/usePreferences.svelte';
 
-	let pokehelpMode = usePreferences('pokehelp_active', 'false');
-	let { poem }: { poem: { title: { value: string }; text: { value: string } } } = $props();
+	// let pokehelpMode = usePreferences('pokehelp_active', 'false');
+	let { poem }: { poem: { title: PreferencesStore; text: PreferencesStore } } = $props();
 	let lines = $derived(poem.text.value.split('\n'));
-	let syllableRows: string = $derived(putSyllables(lines));
+	let syllableRows = $derived(getSyllables(lines));
 	let stats: Record<string, string | number> = $derived(count(poem.text.value));
+
+	const isPokehelpActive: PreferencesStore = getContext('pokehelp');
 
 	let poemTextarea: HTMLTextAreaElement;
 
@@ -44,19 +45,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	$effect(() => {
 		// To avoid text going beyond the notepad when the poem is padded/un-padded
-		if (pokehelpMode.value) autoResizeNotebook();
+		if (isPokehelpActive.value) autoResizeNotebook();
 	});
 
 	onMount(async () => {
 		// Resize the notebook when switching between single/dual panes
 		const resizeObserver = new ResizeObserver(autoResizeNotebook);
 		resizeObserver.observe(poemTextarea);
-		return () => {
-			resizeObserver.unobserve(poemTextarea);
-			resizeObserver.disconnect();
-		};
+		// return () => {
+		// 	resizeObserver.unobserve(poemTextarea);
+		// 	resizeObserver.disconnect();
+		// };
 	});
 
+	// TODO: MAYBE refactor this into a hook
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
 		// have correct auto resizing even on long text in MOST cases
@@ -73,6 +75,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
+{#snippet syllables()}
+	{#each syllableRows as row}
+		<span class="poem-syllable-count">{row?.syllables}</span>
+		<span style="color: transparent; margin-left: 5px">${row?.line}</span>
+		<br />
+	{/each}
+{/snippet}
+
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
@@ -83,18 +93,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
-		{#if $isPokehelpActive === 'true'}
+		{#if isPokehelpActive.value === 'true'}
 			<div class="poem-stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
 				)}: {stats.lines}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-				{@html syllableRows}
+				<!-- {@html syllableRows} -->
+				{@render syllables()}
 			</div>
 		{/if}
 		<textarea
-			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
+			class="paper {$poemPadJustification} {isPokehelpActive.value === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"

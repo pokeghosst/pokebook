@@ -18,19 +18,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onDestroy, onMount, type ComponentType } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
 	import hotkeys from 'hotkeys-js';
 
-	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
-	import { viewsState } from '$lib/stores/views';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
-
-	import NotePad from './NotePad.svelte';
-	import PoemPad from './PoemPad.svelte';
+	import { usePreferences, type PreferencesStore } from 'lib/hooks/usePreferences.svelte';
 
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
+
+	import type { Icon } from 'lucide-svelte';
+	import NotePad from './NotePad.svelte';
+	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
 	let {
@@ -38,24 +36,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		note,
 		actions
 	}: {
-		poem: { title: { value: string }; text: { value: string } };
-		note: { value: string };
-		actions: { icon: ComponentType; action: () => void; label: string }[];
+		poem: { title: PreferencesStore; text: PreferencesStore };
+		note: PreferencesStore;
+		actions: { icon: ComponentType<Icon>; action: () => void; label: string }[];
 	} = $props();
 
-	// export let poemProps: { name: string; body: Writable<string> };
-	// export let noteProps: Writable<string>;
+	let writingPadsState = usePreferences('notebook_positions', JSON.stringify(['poem', 'note']));
+	let isFullWidthPad = usePreferences('full_width_pad', 'false');
+	let notebookFont = usePreferences('notebook_font', 'halogen');
 
-	// // Assigning empty function by default because on draft page we don't pass a function here
-	// export let unsavedChangesHandler = () => {};
+	let currentState = $state('');
 
-	let state: number[] = JSON.parse($viewsState);
-	// let views = [PoemPad, NotePad];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	// let props: [any, any] = [poemProps, noteProps];
-
-	let currentState = '';
-
+	// TODO: Maybe refactor hotkeys into a hook or something like that
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
 			expandPoemPad();
@@ -70,45 +62,48 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function swapViews() {
 		currentState = 'transitioning';
 		setTimeout(function () {
+			const state = JSON.parse(writingPadsState.value);
 			[state[0], state[1]] = [state[1], state[0]];
-			$viewsState = JSON.stringify(state);
+			writingPadsState.value = JSON.stringify(state);
 			currentState = '';
-		}, 600);
+		}, 300);
 	}
 
 	function expandPoemPad() {
-		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
+		isFullWidthPad.value = isFullWidthPad.value === 'true' ? 'false' : 'true';
 	}
 </script>
 
-{#if state}
-	<div class="toolbar"><Toolbar {actions} /></div>
-	<div
-		class="workspace {$isFullWidthPad === 'true'
-			? 'l-full-width'
-			: ''} {currentState} {$writingPadFont}"
-	>
-		<div class="notebook-container">
-			<div class="notebook-container-toolbar">
-				<div>
-					<button on:click={expandPoemPad}>
-						<ChevronsLeftRight class="round-button" />
-					</button>
-					<button on:click={swapViews}>
-						<ArrowRightLeft class="round-button" />
-					</button>
-				</div>
-			</div>
-			<PoemPad {poem} />
-			<!-- <svelte:component this={views[state[0]]} {unsavedChangesHandler} /> -->
-		</div>
+{#snippet pad(state: string)}
+	{#if state === 'poem'}
+		<PoemPad {poem} />
+	{:else if state === 'note'}
 		<NotePad {note} />
-		<!-- <div class="notebook-container">
-			<svelte:component
-				this={views[state[1]]}
-				{unsavedChangesHandler}
-				bind:props={props[state[1]]}
-			/>
-		</div> -->
+	{:else}
+		D'oh!
+	{/if}
+{/snippet}
+
+<div class="toolbar"><Toolbar {actions} /></div>
+<div
+	class="workspace {isFullWidthPad.value === 'true'
+		? 'l-full-width'
+		: ''} {currentState} {notebookFont.value}"
+>
+	<div class="notebook-container">
+		<div class="notebook-container-toolbar">
+			<div>
+				<button onclick={expandPoemPad}>
+					<ChevronsLeftRight class="round-button" />
+				</button>
+				<button onclick={swapViews}>
+					<ArrowRightLeft class="round-button" />
+				</button>
+			</div>
+		</div>
+		{@render pad(JSON.parse(writingPadsState.value)[0])}
 	</div>
-{/if}
+	<div class="notebook-container">
+		{@render pad(JSON.parse(writingPadsState.value)[1])}
+	</div>
+</div>
