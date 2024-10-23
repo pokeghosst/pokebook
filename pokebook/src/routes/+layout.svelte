@@ -104,7 +104,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </Modals>
 
 <Toaster />
-<Sidebar />
+<Sidebar {isSidebarOpen} />
 <div class="main-wrapper {isSidebarOpen.value === 'true' ? 'l-sidebar-open' : ''}">
 	<main>
 		<div>

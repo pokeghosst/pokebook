@@ -28,7 +28,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { getSyllables } from '$lib/util/PokeHelp';
 	import { type PreferencesStore } from 'lib/hooks/usePreferences.svelte';
 
-	// let pokehelpMode = usePreferences('pokehelp_active', 'false');
 	let { poem }: { poem: { title: PreferencesStore; text: PreferencesStore } } = $props();
 	let lines = $derived(poem.text.value.split('\n'));
 	let syllableRows = $derived(getSyllables(lines));

@@ -21,9 +21,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import hotkeys from 'hotkeys-js';
 
+	import Eclipse from 'lucide-svelte/icons/eclipse';
 	import Menu from 'lucide-svelte/icons/menu';
 	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
-	import Eclipse from 'lucide-svelte/icons/eclipse';
 
 	let {
 		toggleSidebar,
