@@ -4,7 +4,6 @@
 [![GitHub license](https://img.shields.io/github/license/pokeghosst/pokebook.svg)](https://github.com/pokeghosst/pokebook/blob/main/COPYING)
 ![Version](https://img.shields.io/github/v/release/pokeghosst/pokebook)
 ![GitHub last commit](https://img.shields.io/github/last-commit/pokeghosst/pokebook)
-![It's free!](https://img.shields.io/badge/price-%240-brightgreen)
 
 <a href="https://www.buymeacoffee.com/pokegh0st" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;" ></a>
 
@@ -87,8 +86,8 @@ For bugs and feature requests, don't hesitate to open issues!
 
 ## Branch structure
 
-- `main` - current development trunk branch, deployed to https://book3.pokeghost.org/
-- `prod` - current production branch, deployed to https://staging.book3.pokeghost.org/
+- `main` - current development trunk branch, deployed to https://staging.book3.pokeghost.org/
+- `prod` - current production branch, deployed to https://book3.pokeghost.org/
 
 # License
 
