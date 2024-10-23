@@ -7,10 +7,8 @@ assignees: ''
 
 ---
 
-## Description
+**Description**
 
-## Motivation
+**Solution details**
 
-## Proposed solution
-
-## Acceptance criteria
+**Acceptance criteria**
