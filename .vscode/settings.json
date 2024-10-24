@@ -3,5 +3,12 @@
   "git.enableCommitSigning": true,
   "editor.formatOnSave": true,
   "prettier.documentSelectors": ["**/*.astro"],
-  "cSpell.words": ["Dexie", "lucide", "pokebook", "pokehelp", "tauri"]
+  "cSpell.words": [
+    "Dexie",
+    "lucide",
+    "macaron",
+    "pokebook",
+    "pokehelp",
+    "tauri"
+  ]
 }
