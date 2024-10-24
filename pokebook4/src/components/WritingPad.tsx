@@ -1,23 +1,16 @@
-import {
-  Component,
-  createResource,
-  createSignal,
-  JSX,
-  onMount,
-} from "solid-js";
+import { Component, JSX } from "solid-js";
 
-import { Preferences } from "../lib/Preferences";
-
+import { createStoredSignal } from "../hooks/createStoredSignal";
 import pad from "./pad.module.css";
 
 const WritingPad: Component = () => {
-  const [content, { mutate }] = createResource(
-    async () => (await Preferences.get({ key: "draft_poem" })).value || ""
-  );
+  const [content, setContent] = createStoredSignal("current_poem", "");
 
   const handleInput: JSX.EventHandler<HTMLTextAreaElement, InputEvent> = (
     event
-  ) => {};
+  ) => {
+    setContent(event.currentTarget.value);
+  };
 
   return (
     <div>
