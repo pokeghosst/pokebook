@@ -1,24 +1,35 @@
-import { Component, JSX } from "solid-js";
+/*
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2024 Pokeghost.
 
-import { createStoredSignal } from "../hooks/createStoredSignal";
-import pad from "./pad.module.css";
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-const WritingPad: Component = () => {
-  const [content, setContent] = createStoredSignal("current_poem", "");
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
-  const handleInput: JSX.EventHandler<HTMLTextAreaElement, InputEvent> = (
-    event
-  ) => {
-    setContent(event.currentTarget.value);
-  };
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 
+import { Accessor, Component, JSX } from "solid-js";
+
+import pad from "../css/components/notebook.module.css";
+
+const WritingPad: Component<{
+  value: Accessor<string>;
+  inputHandler: JSX.EventHandler<HTMLTextAreaElement, InputEvent>;
+}> = ({ value, inputHandler }) => {
   return (
     <div>
-      <p>writing pad</p>
       <textarea
         class={pad.paper}
-        onInput={handleInput}
-        value={content()}
+        onInput={inputHandler}
+        value={value()}
       ></textarea>
     </div>
   );

@@ -8,7 +8,7 @@ import {
 
 import { Preferences } from "../lib/Preferences";
 
-export function createStoredSignal(
+export function createPersistentSignal(
   key: string,
   initialValue: string
 ): [Accessor<string>, Setter<string>] {

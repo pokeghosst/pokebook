@@ -17,26 +17,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type {
-	GetOptions,
-	GetResult,
-	PreferencesPlugin,
-	RemoveOptions,
-	SetOptions
-} from './PreferencesPlugin';
+  GetOptions,
+  GetResult,
+  PreferencesPlugin,
+  RemoveOptions,
+  SetOptions,
+} from "./PreferencesPlugin";
 
 export class PreferencesWeb implements PreferencesPlugin {
-	get(options: GetOptions): Promise<GetResult> {
-		return Promise.resolve({
-			value: localStorage.getItem(options.key)
-		});
-	}
-	set(options: SetOptions): Promise<void> {
-		return Promise.resolve(localStorage.setItem(options.key, options.value));
-	}
-	remove(options: RemoveOptions): Promise<void> {
-		return Promise.resolve(localStorage.removeItem(options.key));
-	}
-	clear(): Promise<void> {
-		return Promise.resolve(localStorage.clear());
-	}
+  get(options: GetOptions): Promise<GetResult> {
+    return Promise.resolve({
+      value: localStorage.getItem(options.key),
+    });
+  }
+  set(options: SetOptions): Promise<void> {
+    console.log("writing with key", options.key);
+    return Promise.resolve(localStorage.setItem(options.key, options.value));
+  }
+  remove(options: RemoveOptions): Promise<void> {
+    return Promise.resolve(localStorage.removeItem(options.key));
+  }
+  clear(): Promise<void> {
+    return Promise.resolve(localStorage.clear());
+  }
 }
