@@ -1,0 +1,34 @@
+.settings-select {
+	position: relative;
+}
+
+.settings-select select {
+	cursor: pointer;
+	display: block;
+	width: 100%;
+	padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+	border-radius: 8px;
+	margin-top: 0.5rem;
+	margin-bottom: 1rem;
+	outline: 1px solid var(--border-color-darker);
+	background-color: var(--select-background);
+	color: var(--select-text-color);
+}
+
+.settings-select-chevron-wrapper {
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	margin-top: 2rem;
+}
+
+.settings-select svg {
+	width: 20px;
+	height: 20px;
+}

@@ -16,58 +16,42 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Component, JSX } from "solid-js";
+import type { Component } from "solid-js";
 
-import WritingPad from "../components/WritingPad";
-import { createPersistentSignal } from "../hooks/createPersistentSignal";
+import PoemPad from "@components/PoemPad";
+import { createPersistentStore } from "@lib/hooks/createPersistentStore";
 
 const Draft: Component = () => {
-  const [draftPoemContent, setDraftPoemContent] = createPersistentSignal(
-    "draft_poem_text",
-    ""
-  );
-  const [draftPoemName, setDraftPoemName] = createPersistentSignal(
-    "draft_poem_name",
-    ""
-  );
-  const [draftPoemNote, setDraftPoemNote] = createPersistentSignal(
-    "draft_poem_note",
-    ""
-  );
-
-  const handleDraftPoemInput: JSX.EventHandler<
-    HTMLTextAreaElement,
-    InputEvent
-  > = (event) => {
-    setDraftPoemContent(event.currentTarget.value);
+  const draftPoemInit = {
+    title: "Unnamed",
+    content: "init",
+    note: "",
   };
 
-  const handleDraftPoemNameInput: JSX.EventHandler<
-    HTMLInputElement,
-    InputEvent
-  > = (event) => {
-    setDraftPoemName(event.currentTarget.value);
-  };
-
-  const handleDraftNoteInput: JSX.EventHandler<
-    HTMLTextAreaElement,
-    InputEvent
-  > = (event) => {
-    setDraftPoemNote(event.currentTarget.value);
-  };
+  /*
+   ~Just keep this in mind for now and revise when Tauri is implemented~
+   This shouldn't be a big problem considering we're using local storage for stores,
+   But since the operation is async, this may possibly cause a delay between the initial value
+   and the value retrieved from Preferences plugin. If long enough, this may cause an issue when
+   the user starts writing (unaware that the value hasn't been retrieved yet) and then their value
+   is overwritten by whatever was retrieved from the Preferences. Again, this isn't a likely problem,
+   but may become one. In this case, we should add a value check (e.g. init with null or undefined)
+   and render once the store is populated.
+  */
+  const [draftPoem, setDraftPoem] = createPersistentStore(draftPoemInit);
 
   return (
     <>
-      <input
-        type="text"
-        value={draftPoemName()}
-        onInput={handleDraftPoemNameInput}
+      <PoemPad
+        title={draftPoem.title}
+        text={draftPoem.content}
+        titleInputHandler={(e) => setDraftPoem("title", e.currentTarget.value)}
+        inputHandler={(e) => setDraftPoem("content", e.currentTarget.value)}
       />
-      <WritingPad
-        value={draftPoemContent}
-        inputHandler={handleDraftPoemInput}
-      />
-      <WritingPad value={draftPoemNote} inputHandler={handleDraftNoteInput} />
+      {/* <Notepad
+        value={draftPoem.note}
+        inputHandler={(e) => setDraftPoem("note", e.currentTarget.value)}
+      /> */}
     </>
   );
 };

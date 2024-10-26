@@ -4,6 +4,8 @@ import { render } from "solid-js/web";
 
 import App from "./App";
 
+import "./sass/main.scss";
+
 const Draft = lazy(() => import("./routes/Draft"));
 
 render(

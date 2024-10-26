@@ -1,0 +1,66 @@
+@import '../variables/font-variables';
+
+$font-family-sans: (
+	$--notebook-font-family: 'sans-serif',
+	$--notebook-font-size: 16px
+);
+
+$font-family-serif: (
+	$--notebook-font-family: 'serif',
+	$--notebook-font-size: 16px
+);
+
+$font-family-oldattic: (
+	$--notebook-font-family: 'Times Old Attic Bold',
+	$--notebook-font-size: 16px
+);
+
+$font-family-crimsonroman: (
+	$--notebook-font-family: 'Crimson Roman',
+	$--notebook-font-size: 20px
+);
+
+$font-family-comic: (
+	$--notebook-font-family: 'Comic Sans',
+	$--notebook-font-size: 16px
+);
+
+$font-family-consolas: (
+	$--notebook-font-family: 'Consolas',
+	$--notebook-font-size: 16px
+);
+
+$font-family-lucida: (
+	$--notebook-font-family: 'Lucida Console',
+	$--notebook-font-size: 16px
+);
+
+$font-family-halogen: (
+	$--notebook-font-family: 'Halogen',
+	$--notebook-font-size: 19px
+);
+
+$font-family-hashtag: (
+	$--notebook-font-family: 'Hashtag',
+	$--notebook-font-size: 33px
+);
+
+$font-family-ammys: (
+	$--notebook-font-family: 'Ammys Handwriting',
+	$--notebook-font-size: 19px
+);
+
+$font-family-journal: (
+	$--notebook-font-family: 'Journal',
+	$--notebook-font-size: 28px
+);
+
+$font-family-damagrafik: (
+	$--notebook-font-family: 'Damagrafik Script',
+	$--notebook-font-size: 20px
+);
+
+$font-family-jphand: (
+	$--notebook-font-family: 'JP Hand',
+	$--notebook-font-size: 30px
+);

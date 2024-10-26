@@ -6,7 +6,7 @@ import {
   Setter,
 } from "solid-js";
 
-import { Preferences } from "../lib/Preferences";
+import { Preferences } from "../Preferences";
 
 export function createPersistentSignal(
   key: string,
@@ -18,6 +18,7 @@ export function createPersistentSignal(
     setValue((await Preferences.get({ key })).value ?? initialValue);
   });
 
+  // Consider changing to a custom Setter
   createEffect(() => {
     Preferences.set({ key, value: value() });
   });

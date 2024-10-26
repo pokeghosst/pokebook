@@ -16,23 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Accessor, Component, JSX } from "solid-js";
+import type { Component } from "solid-js";
 
-import pad from "../css/components/notebook.module.css";
+import type { NotepadProps } from "@lib/types";
 
-const WritingPad: Component<{
-  value: Accessor<string>;
-  inputHandler: JSX.EventHandler<HTMLTextAreaElement, InputEvent>;
-}> = ({ value, inputHandler }) => {
+// import notebook from "../css/components/notebook.module.css";
+
+const Notepad: Component<NotepadProps> = (props) => {
   return (
-    <div>
-      <textarea
-        class={pad.paper}
-        onInput={inputHandler}
-        value={value()}
-      ></textarea>
-    </div>
+    <textarea
+      class="paper"
+      onInput={props.inputHandler}
+      value={props.text}
+    ></textarea>
   );
 };
 
-export default WritingPad;
+export default Notepad;
