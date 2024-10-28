@@ -15,6 +15,7 @@
     "@solidjs/router": "^0.14.10",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-shell": "^2",
+    "lucide-solid": "^0.454.0",
     "solid-js": "^1.7.8"
   },
   "devDependencies": {

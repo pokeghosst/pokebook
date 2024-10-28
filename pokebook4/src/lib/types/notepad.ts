@@ -1,11 +1,11 @@
 import type { JSX } from "solid-js";
 
-export type NotepadProps = {
+export type PaperProps = {
   text: string;
   inputHandler: JSX.EventHandler<HTMLTextAreaElement, InputEvent>;
 };
 
-export type PoemPadProps = {
+export type PoemNotepadProps = {
   title: string;
   titleInputHandler: JSX.EventHandler<HTMLInputElement, InputEvent>;
-} & NotepadProps;
+} & PaperProps;

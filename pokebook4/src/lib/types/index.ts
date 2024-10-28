@@ -1,1 +1,4 @@
-export type { NotepadProps, PoemPadProps } from "./notepad";
+export type {
+  PaperProps as NotepadProps,
+  PoemNotepadProps as PoemPadProps,
+} from "./notepad";

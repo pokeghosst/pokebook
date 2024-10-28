@@ -16,26 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type { PaperProps } from "@lib/types/notepad";
 import type { Component } from "solid-js";
 
-import { Dynamic } from "solid-js/web";
+import Paper from "./Paper";
 
-const Workspace: Component<{ poemPad: Component; notePad: Component }> = (
-  props
-) => {
-  return (
-    <div class="workspace">
-      <div class="notebook-container">
-        <div class="notebook-container-toolbar">
-          toolbar for the left notebook here
-        </div>
-        <Dynamic component={props.poemPad} />
-      </div>
-      <div class="notebook-container">
-        <Dynamic component={props.notePad} />
-      </div>
+const NoteNotepad: Component<PaperProps> = (props) => (
+  <div class="notebook">
+    <div class="notebook-header">
+      <div class="notebook-header-title">Note</div>
     </div>
-  );
-};
+    <div class="notebook-content">
+      <Paper text={props.text} inputHandler={props.inputHandler} />
+    </div>
+  </div>
+);
 
-export default Workspace;
+export default NoteNotepad;

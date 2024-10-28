@@ -20,9 +20,7 @@ import type { Component } from "solid-js";
 
 import type { NotepadProps } from "@lib/types";
 
-// import notebook from "../css/components/notebook.module.css";
-
-const Notepad: Component<NotepadProps> = (props) => {
+const Paper: Component<NotepadProps> = (props) => {
   return (
     <textarea
       class="paper"
@@ -32,4 +30,4 @@ const Notepad: Component<NotepadProps> = (props) => {
   );
 };
 
-export default Notepad;
+export default Paper;

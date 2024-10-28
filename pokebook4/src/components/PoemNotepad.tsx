@@ -16,27 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type { PoemPadProps } from "@lib/types";
 import type { Component } from "solid-js";
 
-import { PoemPadProps } from "@lib/types";
+import Paper from "./Paper";
 
-import WritingPad from "./Notepad";
-
-// import notebook from "../css/components/notebook.module.css";
-
-const PoemPad: Component<PoemPadProps> = (props) => {
-  return (
-    <div class="notebook">
-      <div class="notebook-header">
-        <input
-          type="text"
-          value={props.title}
-          onInput={props.titleInputHandler}
-        ></input>
-      </div>
-      <WritingPad text={props.text} inputHandler={props.inputHandler} />
+const PoemNotepad: Component<PoemPadProps> = (props) => (
+  <div class="notebook">
+    <div class="notebook-header">
+      <input
+        type="text"
+        value={props.title}
+        onInput={props.titleInputHandler}
+      ></input>
     </div>
-  );
-};
+    <Paper text={props.text} inputHandler={props.inputHandler} />
+  </div>
+);
 
-export default PoemPad;
+export default PoemNotepad;
