@@ -31,16 +31,7 @@ const Draft: Component = () => {
     note: "",
   };
 
-  /*
-   ~Just keep this in mind for now and revise when Tauri is implemented~
-   This shouldn't be a big problem considering we're using local storage for stores,
-   But since the operation is async, this may possibly cause a delay between the initial value
-   and the value retrieved from Preferences plugin. If long enough, this may cause an issue when
-   the user starts writing (unaware that the value hasn't been retrieved yet) and then their value
-   is overwritten by whatever was retrieved from the Preferences. Again, this isn't a likely problem,
-   but may become one. In this case, we should add a value check (e.g. init with null or undefined)
-   and render once the store is populated.
-  */
+  // Add Suspense to put off loading default values
   const [draftPoem, setDraftPoem] = createPersistentStore(draftPoemInit);
 
   const draftPoemNotepad: Component = () => (

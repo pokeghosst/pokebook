@@ -16,18 +16,32 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Component } from "solid-js";
-
+import { type Component } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
+import { usePreferences } from "./PreferencesProvider";
+
+import { ChevronsLeftRight } from "lucide-solid";
 
 const Workspace: Component<{ poemPad: Component; notePad: Component }> = (
   props
 ) => {
+  const [pref, setPref] = usePreferences();
+
+  function togglePoemPad() {
+    setPref(
+      "isPoemPadExpanded",
+      pref.isPoemPadExpanded === "true" ? "false" : "true"
+    );
+  }
+
   return (
     <div class="workspace">
       <div class="notebook-container">
         <div class="notebook-container-toolbar">
-          toolbar for the left notebook here
+          <button onclick={togglePoemPad}>
+            <ChevronsLeftRight />
+          </button>
         </div>
         <Dynamic component={props.poemPad} />
       </div>

@@ -20,23 +20,19 @@ export function createPersistentStore<T extends Record<string, string>>(
   onMount(async () => {
     const keys = Object.keys(initialState) as Array<keyof T>;
 
-    const promises = keys.map((key) =>
-      Preferences.get({ key: String(key) }).then(({ value }) => ({
-        key,
-        value,
-      }))
-    );
+    const promises = keys.map(async (key) => {
+      const { value } = await Preferences.get({ key: String(key) });
+      return { key, value: value ? value : initialState[key] };
+    });
 
     const results = await Promise.all(promises);
 
     const storedValues = results.reduce((acc, { key, value }) => {
-      if (value !== null) {
-        acc[key] = value as T[typeof key];
-      }
+      acc[key] = value as T[typeof key];
       return acc;
-    }, {} as Partial<T>);
+    }, {} as T);
 
-    setStore(storedValues as T);
+    setStore(storedValues);
   });
 
   return [store, setPersistentStore];
