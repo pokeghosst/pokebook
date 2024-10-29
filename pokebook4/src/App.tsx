@@ -21,13 +21,14 @@ import type { ParentComponent } from "solid-js";
 import { usePreferences } from "@components/PreferencesProvider";
 
 import Header from "@components/Header";
+import Sidebar from "@components/Sidebar";
 
 const App: ParentComponent = (props) => {
   const [pref] = usePreferences();
 
   return (
     <>
-      {/* Sidebar will go here */}
+      <Sidebar />
       <div
         class="main-wrapper"
         classList={{ "l-sidebar-open": pref.isSidebarOpen === "true" }}
