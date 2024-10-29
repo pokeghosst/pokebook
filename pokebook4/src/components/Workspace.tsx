@@ -16,37 +16,57 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { type Component } from "solid-js";
+import { createSignal, type Component } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import { usePreferences } from "./PreferencesProvider";
 
-import { ChevronsLeftRight } from "lucide-solid";
+import { ArrowRightLeft, ChevronsLeftRight } from "lucide-solid";
 
-const Workspace: Component<{ poemPad: Component; notePad: Component }> = (
-  props
-) => {
+const Workspace: Component<{ notepads: Component[] }> = (props) => {
+  const [isTransitioning, setIsTransitioning] = createSignal(false);
   const [pref, setPref] = usePreferences();
+  const padState = () => JSON.parse(pref.writingPadState);
 
   function togglePoemPad() {
     setPref(
-      "isPoemPadExpanded",
-      pref.isPoemPadExpanded === "true" ? "false" : "true"
+      "isFullWidthPad",
+      pref.isFullWidthPad === "true" ? "false" : "true"
     );
   }
 
+  // TODO: Make transition animation smoother
+  function swapViews() {
+    setIsTransitioning(true);
+    setTimeout(function () {
+      const state = JSON.parse(pref.writingPadState);
+      [state[0], state[1]] = [state[1], state[0]];
+      setPref("writingPadState", JSON.stringify(state));
+      setIsTransitioning(false);
+    }, 300);
+  }
+
   return (
-    <div class="workspace">
+    <div
+      class="workspace"
+      classList={{
+        "l-full-width": pref.isFullWidthPad === "true",
+        transitioning: isTransitioning(),
+      }}
+    >
       <div class="notebook-container">
         <div class="notebook-container-toolbar">
           <button onclick={togglePoemPad}>
-            <ChevronsLeftRight />
+            <ChevronsLeftRight class="round-button" />
+          </button>
+          <button onClick={swapViews}>
+            <ArrowRightLeft class="round-button" />
           </button>
         </div>
-        <Dynamic component={props.poemPad} />
+        <Dynamic component={props.notepads[padState()[0]]} />
       </div>
       <div class="notebook-container">
-        <Dynamic component={props.notePad} />
+        <Dynamic component={props.notepads[padState()[1]]} />
       </div>
     </div>
   );

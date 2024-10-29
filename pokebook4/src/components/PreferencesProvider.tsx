@@ -1,16 +1,20 @@
 import { createPersistentStore } from "@lib/hooks/createPersistentStore";
 import { createContext, useContext, type ParentComponent } from "solid-js";
 
-type PreferencesContextType = [
-  preferences: Record<string, string>,
-  setPreference: (key: string, value: string) => void
+const preferencesInit = {
+  isFullWidthPad: "false",
+  writingPadState: "[1,0]",
+};
+
+type PreferencesType = typeof preferencesInit;
+
+type PreferencesContextType<T extends Record<string, string>> = [
+  preferences: T,
+  setPreference: (key: keyof T, value: string) => void
 ];
 
-export const PreferencesContext = createContext<PreferencesContextType>();
-
-const preferencesInit = {
-  isPoemPadExpanded: "false",
-};
+export const PreferencesContext =
+  createContext<PreferencesContextType<PreferencesType>>();
 
 export const PreferencesProvider: ParentComponent = (props) => {
   const [preferences, setPreferences] = createPersistentStore(preferencesInit);
@@ -22,5 +26,12 @@ export const PreferencesProvider: ParentComponent = (props) => {
   );
 };
 
-export const usePreferences = () =>
-  useContext(PreferencesContext) as PreferencesContextType;
+export const usePreferences = () => {
+  const context = useContext(PreferencesContext);
+
+  if (!context) {
+    throw new Error("usePreferences must be used within a PreferencesProvider");
+  }
+
+  return context;
+};
