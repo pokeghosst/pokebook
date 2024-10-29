@@ -16,30 +16,34 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { ParentComponent } from "solid-js";
+import { Eclipse, Menu, PencilRuler } from "lucide-solid";
 
-import { usePreferences } from "@components/PreferencesProvider";
+import { usePreferences } from "./PreferencesProvider";
 
-import Header from "@components/Header";
+import type { Component } from "solid-js";
 
-const App: ParentComponent = (props) => {
-  const [pref] = usePreferences();
+const Header: Component = () => {
+  const [pref, setPref] = usePreferences();
+
+  function toggleSidebar() {
+    setPref("isSidebarOpen", pref.isSidebarOpen === "true" ? "false" : "true");
+  }
 
   return (
-    <>
-      {/* Sidebar will go here */}
-      <div
-        class="main-wrapper"
-        classList={{ "l-sidebar-open": pref.isSidebarOpen === "true" }}
-      >
-        <main>
-          <div>
-            <Header />
-            {props.children}
-          </div>
-        </main>
+    <div class="header-nav-wrapper">
+      <button onClick={toggleSidebar}>
+        <Menu />
+      </button>
+      <div class="header-icons">
+        <button>
+          <PencilRuler strokeWidth={1.7} />
+        </button>
+        <button>
+          <Eclipse strokeWidth={1.7} />
+        </button>
       </div>
-    </>
+    </div>
   );
 };
-export default App;
+
+export default Header;

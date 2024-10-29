@@ -3,7 +3,8 @@ import { createContext, useContext, type ParentComponent } from "solid-js";
 
 const preferencesInit = {
   isFullWidthPad: "false",
-  writingPadState: "[1,0]",
+  writingPadState: "[0,1]",
+  isSidebarOpen: "true",
 };
 
 type PreferencesType = typeof preferencesInit;
