@@ -23,7 +23,8 @@ import type { NotepadProps } from "@lib/types";
 const Paper: Component<NotepadProps> = (props) => {
   return (
     <textarea
-      class="paper"
+      class={`paper ${props.justification}`}
+      classList={props.classList}
       onInput={props.inputHandler}
       value={props.text}
     ></textarea>

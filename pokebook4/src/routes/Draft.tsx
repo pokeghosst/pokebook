@@ -17,8 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { Component } from "solid-js";
+import { createStore } from "solid-js/store";
 
-import { createPersistentStore } from "@lib/hooks/createPersistentStore";
+import { makePersisted } from "@solid-primitives/storage";
+import { tauriStorage } from "@solid-primitives/storage/tauri";
 
 import NoteNotepad from "@components/NoteNotepad";
 import PoemNotepad from "@components/PoemNotepad";
@@ -27,12 +29,16 @@ import Workspace from "@components/Workspace";
 const Draft: Component = () => {
   const draftPoemInit = {
     title: "Unnamed",
-    content: "init",
+    content: "",
     note: "",
   };
 
-  // Add Suspense to put off loading default values
-  const [draftPoem, setDraftPoem] = createPersistentStore(draftPoemInit);
+  const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
+
+  const [draftPoem, setDraftPoem] = makePersisted(createStore(draftPoemInit), {
+    name: "pokebook_draft",
+    storage,
+  });
 
   const draftPoemNotepad: Component = () => (
     <PoemNotepad

@@ -19,19 +19,31 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import type { PoemPadProps } from "@lib/types";
 import type { Component } from "solid-js";
 
+import { usePreferences } from "./PreferencesProvider";
+
 import Paper from "./Paper";
 
-const PoemNotepad: Component<PoemPadProps> = (props) => (
-  <div class="notebook">
-    <div class="notebook-header">
-      <input
-        type="text"
-        value={props.title}
-        onInput={props.titleInputHandler}
-      ></input>
+const PoemNotepad: Component<PoemPadProps> = (props) => {
+  const [pref, setPref] = usePreferences();
+
+  return (
+    <div class="notebook">
+      <div class="notebook-header">
+        <input
+          type="text"
+          // TODO: Don't forget to sanitize this
+          value={props.title}
+          onInput={props.titleInputHandler}
+          placeholder="Unnamed"
+        ></input>
+      </div>
+      <Paper
+        justification={pref.poemPadJustification}
+        text={props.text}
+        inputHandler={props.inputHandler}
+      />
     </div>
-    <Paper text={props.text} inputHandler={props.inputHandler} />
-  </div>
-);
+  );
+};
 
 export default PoemNotepad;

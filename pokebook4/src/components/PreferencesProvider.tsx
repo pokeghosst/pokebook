@@ -1,10 +1,34 @@
-import { createPersistentStore } from "@lib/hooks/createPersistentStore";
+/*
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2024 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 import { createContext, useContext, type ParentComponent } from "solid-js";
+import { createStore } from "solid-js/store";
+
+import { tauriStorage } from "@solid-primitives/storage/tauri";
+import { makePersisted } from "@solid-primitives/storage";
+
+const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
 
 const preferencesInit = {
   isFullWidthPad: "false",
   writingPadState: "[0,1]",
   isSidebarOpen: "true",
+  poemPadJustification: "left",
 };
 
 type PreferencesType = typeof preferencesInit;
@@ -18,7 +42,13 @@ export const PreferencesContext =
   createContext<PreferencesContextType<PreferencesType>>();
 
 export const PreferencesProvider: ParentComponent = (props) => {
-  const [preferences, setPreferences] = createPersistentStore(preferencesInit);
+  const [preferences, setPreferences] = makePersisted(
+    createStore(preferencesInit),
+    {
+      name: "pokebook_preferences",
+      storage,
+    }
+  );
 
   return (
     <PreferencesContext.Provider value={[preferences, setPreferences]}>
