@@ -16,29 +16,61 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Component } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { makePersisted } from "@solid-primitives/storage";
 import { tauriStorage } from "@solid-primitives/storage/tauri";
 
+import type { ToolbarItem } from "@lib/types";
+import type { Component } from "solid-js";
+
+import { FilePlus2 } from "lucide-solid";
+
 import NoteNotepad from "@components/NoteNotepad";
 import PoemNotepad from "@components/PoemNotepad";
+import Toolbar from "@components/Toolbar";
 import Workspace from "@components/Workspace";
+import toast from "solid-toast";
+import Poem from "@lib/models/Poem";
 
 const Draft: Component = () => {
-  const draftPoemInit = {
-    title: "Unnamed",
-    content: "",
-    note: "",
-  };
-
   const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
 
-  const [draftPoem, setDraftPoem] = makePersisted(createStore(draftPoemInit), {
-    name: "pokebook_draft",
-    storage,
-  });
+  const [draftPoem, setDraftPoem] = makePersisted(
+    createStore({
+      title: "Unnamed",
+      content: "",
+      note: "",
+    }),
+    {
+      name: "pokebook_draft",
+      storage,
+    }
+  );
+
+  const actions: ToolbarItem[] = [
+    {
+      icon: FilePlus2,
+      action: async () => {
+        await toast.promise(
+          Poem.save(
+            {
+              name: draftPoem.title,
+              text: draftPoem.content,
+              note: draftPoem.note,
+            },
+            "local"
+          ),
+          {
+            loading: "loading",
+            success: "saved",
+            error: "error",
+          }
+        );
+      },
+      label: "Save",
+    },
+  ];
 
   const draftPoemNotepad: Component = () => (
     <PoemNotepad
@@ -56,6 +88,9 @@ const Draft: Component = () => {
   );
   return (
     <>
+      <div class="toolbar">
+        <Toolbar actions={actions} />
+      </div>
       <Workspace notepads={[draftPoemNotepad, draftNoteNotepad]} />
     </>
   );

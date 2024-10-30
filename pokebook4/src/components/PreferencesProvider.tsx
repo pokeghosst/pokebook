@@ -29,6 +29,8 @@ const preferencesInit = {
   writingPadState: "[0,1]",
   isSidebarOpen: "true",
   poemPadJustification: "left",
+  // TODO: make it camel case later
+  storage_mode: "local",
 };
 
 type PreferencesType = typeof preferencesInit;

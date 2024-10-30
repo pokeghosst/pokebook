@@ -16,12 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { ToolbarItem } from "@lib/types";
-import type { Component } from "solid-js";
+import { For, type Component } from "solid-js";
 
 import { usePreferences } from "./PreferencesProvider";
 
+import type { ToolbarItem } from "@lib/types";
+
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-solid";
+import { Dynamic } from "solid-js/web";
 
 const Toolbar: Component<{ actions: ToolbarItem[] }> = (props) => {
   const [pref, setPref] = usePreferences();
@@ -31,23 +33,34 @@ const Toolbar: Component<{ actions: ToolbarItem[] }> = (props) => {
       <div class="button-group">
         <button
           onClick={() => setPref("poemPadJustification", "left")}
+          class="button"
           classList={{ active: pref.poemPadJustification === "left" }}
         >
           <AlignLeft />
         </button>
         <button
           onClick={() => setPref("poemPadJustification", "center")}
+          class="button"
           classList={{ active: pref.poemPadJustification === "center" }}
         >
           <AlignCenter />
         </button>
         <button
           onClick={() => setPref("poemPadJustification", "right")}
+          class="button"
           classList={{ active: pref.poemPadJustification === "right" }}
         >
           <AlignRight />
         </button>
       </div>
+      <For each={props.actions}>
+        {(action) => (
+          <button class="button" onClick={() => action.action()}>
+            <Dynamic component={action.icon} />
+            {action.label}
+          </button>
+        )}
+      </For>
     </div>
   );
 };

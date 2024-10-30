@@ -23,8 +23,6 @@ import { usePreferences } from "./PreferencesProvider";
 
 import { ArrowRightLeft, ChevronsLeftRight } from "lucide-solid";
 
-import Toolbar from "./Toolbar";
-
 const Workspace: Component<{ notepads: Component[] }> = (props) => {
   const [isTransitioning, setIsTransitioning] = createSignal(false);
   const [pref, setPref] = usePreferences();
@@ -49,33 +47,28 @@ const Workspace: Component<{ notepads: Component[] }> = (props) => {
   }
 
   return (
-    <>
-      <div class="toolbar">
-        <Toolbar />
-      </div>
-      <div
-        class="workspace"
-        classList={{
-          "l-full-width": pref.isFullWidthPad === "true",
-          transitioning: isTransitioning(),
-        }}
-      >
-        <div class="notebook-container">
-          <div class="notebook-container-toolbar">
-            <button onclick={togglePoemPad}>
-              <ChevronsLeftRight class="round-button" />
-            </button>
-            <button onClick={swapViews}>
-              <ArrowRightLeft class="round-button" />
-            </button>
-          </div>
-          <Dynamic component={props.notepads[padState()[0]]} />
+    <div
+      class="workspace"
+      classList={{
+        "l-full-width": pref.isFullWidthPad === "true",
+        transitioning: isTransitioning(),
+      }}
+    >
+      <div class="notebook-container">
+        <div class="notebook-container-toolbar">
+          <button onclick={togglePoemPad}>
+            <ChevronsLeftRight class="round-button" />
+          </button>
+          <button onClick={swapViews}>
+            <ArrowRightLeft class="round-button" />
+          </button>
         </div>
-        <div class="notebook-container">
-          <Dynamic component={props.notepads[padState()[1]]} />
-        </div>
+        <Dynamic component={props.notepads[padState()[0]]} />
       </div>
-    </>
+      <div class="notebook-container">
+        <Dynamic component={props.notepads[padState()[1]]} />
+      </div>
+    </div>
   );
 };
 

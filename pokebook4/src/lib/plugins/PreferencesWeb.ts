@@ -16,34 +16,28 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { ParentComponent } from "solid-js";
+import type {
+  GetOptions,
+  GetResult,
+  PreferencesPlugin,
+  RemoveOptions,
+  SetOptions,
+} from "./PreferencesPlugin";
 
-import { usePreferences } from "@components/PreferencesProvider";
-
-import { Toaster } from "solid-toast";
-
-import Header from "@components/Header";
-import Sidebar from "@components/Sidebar";
-
-const App: ParentComponent = (props) => {
-  const [pref] = usePreferences();
-
-  return (
-    <>
-      <Toaster />
-      <Sidebar />
-      <div
-        class="main-wrapper"
-        classList={{ "l-sidebar-open": pref.isSidebarOpen === "true" }}
-      >
-        <main>
-          <div>
-            <Header />
-            {props.children}
-          </div>
-        </main>
-      </div>
-    </>
-  );
-};
-export default App;
+export class PreferencesWeb implements PreferencesPlugin {
+  get(options: GetOptions): Promise<GetResult> {
+    return Promise.resolve({
+      value: localStorage.getItem(options.key),
+    });
+  }
+  set(options: SetOptions): Promise<void> {
+    console.log("writing with key", options.key);
+    return Promise.resolve(localStorage.setItem(options.key, options.value));
+  }
+  remove(options: RemoveOptions): Promise<void> {
+    return Promise.resolve(localStorage.removeItem(options.key));
+  }
+  clear(): Promise<void> {
+    return Promise.resolve(localStorage.clear());
+  }
+}
