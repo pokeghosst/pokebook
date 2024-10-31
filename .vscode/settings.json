@@ -5,6 +5,7 @@
   "prettier.documentSelectors": ["**/*.astro"],
   "cSpell.words": [
     "Dexie",
+    "localforage",
     "lucide",
     "macaron",
     "pokebook",

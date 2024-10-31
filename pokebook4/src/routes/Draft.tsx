@@ -31,7 +31,7 @@ import PoemNotepad from "@components/PoemNotepad";
 import Toolbar from "@components/Toolbar";
 import Workspace from "@components/Workspace";
 import toast from "solid-toast";
-import Poem from "@lib/models/Poem";
+import Poem from "@lib/types/Poem";
 
 const Draft: Component = () => {
   const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;

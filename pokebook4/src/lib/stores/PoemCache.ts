@@ -16,34 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { ParentComponent } from "solid-js";
+import { createStore } from "solid-js/store";
 
-import { usePreferences } from "@components/PreferencesProvider";
+import { makePersisted } from "@solid-primitives/storage";
+import localforage from "localforage";
 
-import { Toaster } from "solid-toast";
+import type { PoemCacheRecord } from "@lib/types";
 
-import Header from "@components/Header";
-import Sidebar from "@components/Sidebar";
+// window.__TAURI_INTERNALS__ ? null : localforage
+const storage = localforage;
 
-const App: ParentComponent = (props) => {
-  const [pref] = usePreferences();
-
-    return (
-    <>
-      <Toaster />
-      <Sidebar />
-      <div
-        class="main-wrapper"
-        classList={{ "l-sidebar-open": pref.isSidebarOpen === "true" }}
-      >
-        <main>
-          <div>
-            <Header />
-            {props.children}
-          </div>
-        </main>
-      </div>
-    </>
-  );
-};
-export default App;
+export const [poemCache, setPoemCache] = makePersisted(
+  createStore<Record<string, PoemCacheRecord>>({}),
+  {
+    storage,
+  }
+);

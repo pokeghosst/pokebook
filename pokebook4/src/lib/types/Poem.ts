@@ -20,15 +20,16 @@ import PoemCacheDriver from "@lib/driver/PoemCacheDriver";
 import { PoemLocalStorageDriver } from "@lib/driver/PoemLocalStorageDriver";
 
 import type { PoemCacheRecord, PoemEntity, PoemFileEntity } from "@lib/types";
+import { poemCache, setPoemCache } from "@lib/stores/PoemCache";
 
 export default class Poem {
   private static pickStorageDriver(storage: string) {
     switch (storage) {
-      case "dropbox":
-        return null;
+      // case "dropbox":
+      // return null;
       // return PoemDropboxStorageDriver;
-      case "google":
-        return null;
+      // case "google":
+      // return null;
       // return PoemGoogleDriveStorageDriver;
       case "local":
         return PoemLocalStorageDriver;
@@ -53,19 +54,15 @@ export default class Poem {
     return this.pickStorageDriver(storage).loadPoem(id);
   }
   public static async save(poem: PoemEntity, storage: string) {
-    await this.initPoemCacheIfNotExists(storage);
-
-    const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(
+    const { id, timestamp } = await this.pickStorageDriver(storage).savePoem(
       poem
-    )) as {
-      id: string;
-      timestamp: number;
-    };
+    );
 
-    await PoemCacheDriver.addPoemRecord(storage, {
+    setPoemCache(id, {
       id,
       name: poem.name,
-      timestamp,
+      createdAt: timestamp,
+      modifiedAt: timestamp,
       unsavedChanges: false,
       poemSnippet: PoemCacheDriver.sliceSnippet(poem.text),
     });

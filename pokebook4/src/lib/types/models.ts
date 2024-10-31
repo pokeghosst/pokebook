@@ -1,7 +1,8 @@
 export interface PoemFileEntity {
   name: string;
   poemUri: string;
-  timestamp: string | number;
+  createdAt: string;
+  modifiedAt: string;
 }
 export interface PoemEntity {
   name: string;
@@ -12,7 +13,8 @@ export interface PoemEntity {
 export interface PoemCacheRecord {
   id: string;
   name: string;
-  timestamp: string | number; // TODO: Check this later with different drivers, maybe harmonize
-  unsavedChanges: boolean;
+  createdAt: number;
+  modifiedAt: number;
   poemSnippet: string;
+  unsavedChanges: boolean;
 }

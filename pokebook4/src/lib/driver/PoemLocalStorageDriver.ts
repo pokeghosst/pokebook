@@ -16,57 +16,60 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { Filesystem } from "../plugins/Filesystem";
 
-import { Filesystem } from '../plugins/Filesystem';
-
-import type { PoemEntity, PoemFileEntity } from '../types';
-import type { IPoemStorageDriver } from './IPoemStorageDriver';
+import type { PoemEntity, PoemFileEntity } from "../types";
+import type { IPoemStorageDriver } from "./IPoemStorageDriver";
 
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
-	listPoems: async function (): Promise<PoemFileEntity[]> {
-		const files = (await Filesystem.readDir({ path: '/' })).entries;
-		console.log('files', files);
+  listPoems: async function (): Promise<PoemFileEntity[]> {
+    const files = (await Filesystem.readDir({ path: "/" })).entries;
+    console.log("files", files);
 
-		return files.map((file) => ({
-			name: file.name.split('_')[0].replace(/%20/g, ' '),
-			poemUri: file.uri,
-			timestamp: file.ctime
-		}));
-	},
+    return files.map((file) => ({
+      name: file.name.split("_")[0].replace(/%20/g, " "),
+      poemUri: file.uri,
+      timestamp: file.ctime,
+    }));
+  },
 
-	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
-		console.log('loading poem');
+  loadPoem: async function (poemUri: string): Promise<PoemEntity> {
+    console.log("loading poem");
 
-		const file = await Filesystem.readFile({ path: `${poemUri}` });
-		console.log(file);
+    const file = await Filesystem.readFile({ path: `${poemUri}` });
+    console.log(file);
 
-		return new XMLParser().parse(file.data);
-	},
-	savePoem: async function (poem: PoemEntity): Promise<{ id: string; timestamp: number }> {
-		const now = Date.now();
+    return new XMLParser().parse(file.data);
+  },
+  savePoem: async function (
+    poem: PoemEntity
+  ): Promise<{ id: string; timestamp: number }> {
+    const now = Date.now();
 
-		const { uri } = await Filesystem.writeFile({
-			path: `/${poem.name}_${now}.xml`,
-			data: new XMLBuilder({ format: true }).build(poem)
-		});
+    const { uri } = await Filesystem.writeFile({
+      path: `/${crypto.randomUUID()}.json`,
+      data: JSON.stringify(poem),
+    });
 
-		return { id: uri, timestamp: now };
-	},
-	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string | void> {
-		await Filesystem.writeFile({
-			path: poemUri,
-			data: new XMLBuilder({ format: true }).build(poem)
-		});
-		const timestamp = poemUri.split('/')[1].split(/_|\.xml/)[1];
-		const newFileUri = `/${poem.name}_${timestamp}.xml`;
-		await Filesystem.rename({
-			from: poemUri,
-			to: newFileUri
-		});
-		return newFileUri;
-	},
-	deletePoem: async function (poemUri: string): Promise<void> {
-		await Filesystem.deleteFile({ path: poemUri });
-	}
+    return { id: uri, timestamp: now };
+  },
+  updatePoem: async function (
+    poem: PoemEntity,
+    poemUri: string
+  ): Promise<string | void> {
+    await Filesystem.writeFile({
+      path: poemUri,
+      data: new XMLBuilder({ format: true }).build(poem),
+    });
+    const timestamp = poemUri.split("/")[1].split(/_|\.xml/)[1];
+    const newFileUri = `/${poem.name}_${timestamp}.xml`;
+    await Filesystem.rename({
+      from: poemUri,
+      to: newFileUri,
+    });
+    return newFileUri;
+  },
+  deletePoem: async function (poemUri: string): Promise<void> {
+    await Filesystem.deleteFile({ path: poemUri });
+  },
 };

@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import type { PoemFileEntity } from '$lib/types';
+import type { PoemEntity } from "@lib/types";
+import type { PoemFileEntity } from "@lib/types";
 
 export interface IPoemStorageDriver {
-	listPoems(): Promise<PoemFileEntity[]>;
-	loadPoem(poemUri: string): Promise<PoemEntity>;
-	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number }>;
-	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
-	deletePoem(poemUri: string): Promise<void>;
+  listPoems(): Promise<PoemFileEntity[]>;
+  loadPoem(poemUri: string): Promise<PoemEntity>;
+  savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number }>;
+  updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
+  deletePoem(poemUri: string): Promise<void>;
 }
