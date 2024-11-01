@@ -16,95 +16,92 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Dexie, { type EntityTable } from 'dexie';
+import database from "./DexieManager";
 
 import type {
-	DeleteFileOptions,
-	ExistsOptions,
-	ExistsResult,
-	FileInfo,
-	FilesystemFile,
-	FilesystemPlugin,
-	ReadDirOptions,
-	ReadDirResult,
-	ReadFileOptions,
-	ReadFileResult,
-	RenameOptions,
-	WriteFileOptions,
-	WriteFileResult
-} from './FilesystemPlugin';
-
-type DexieFilesystem = Dexie & { files: EntityTable<FilesystemFile, 'path'> };
+  DeleteFileOptions,
+  ExistsOptions,
+  ExistsResult,
+  FileInfo,
+  FilesystemPlugin,
+  ReadDirOptions,
+  ReadDirResult,
+  ReadFileOptions,
+  ReadFileResult,
+  RenameOptions,
+  WriteFileOptions,
+  WriteFileResult,
+} from "./FilesystemPlugin";
 
 export class FilesystemWeb implements FilesystemPlugin {
-	private _db?: DexieFilesystem;
+  async exists(options: ExistsOptions): Promise<ExistsResult> {
+    const count = await database.files
+      .where("path")
+      .equals(`/${options.path}`)
+      .count();
+    return { exists: count > 0 };
+  }
+  async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
+    const now = Date.now();
 
-	private getDb(): DexieFilesystem {
-		if (this._db !== undefined) {
-			return this._db;
-		}
+    const uri = await database.files.put(
+      {
+        content: options.data,
+        path: `${options.path}`,
+        ctime: now,
+        mtime: now,
+      },
+      options.path
+    );
+    return { uri };
+  }
+  async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
+    const entry = await database.files
+      .where("path")
+      .equals(options.path)
+      .first();
 
-		this._db = new Dexie('PokeBook') as DexieFilesystem;
-		this._db.version(1).stores({ files: 'path, content, ctime, mtime' });
+    if (!entry) throw new Error("File does not exist!");
 
-		return this._db;
-	}
-	async exists(options: ExistsOptions): Promise<ExistsResult> {
-		const count = await this.getDb().files.where('path').equals(`/${options.path}`).count();
-		return { exists: count > 0 };
-	}
-	async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
-		const now = Date.now();
+    return { data: entry.content };
+  }
+  async deleteFile(options: DeleteFileOptions): Promise<void> {
+    await database.files.delete(options.path);
+  }
+  async readDir(options: ReadDirOptions): Promise<ReadDirResult> {
+    const entries = await database.files
+      .where("path")
+      .startsWith(`${options.path}`)
+      .toArray();
 
-		const uri = await this.getDb().files.put(
-			{
-				content: options.data,
-				path: `${options.path}`,
-				ctime: now,
-				mtime: now
-			},
-			options.path
-		);
-		return { uri };
-	}
-	async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
-		const entry = await this.getDb().files.where('path').equals(options.path).first();
+    return {
+      entries: entries.map(
+        (file) =>
+          ({
+            name: file.path.split("/").pop(),
+            type: "file",
+            ctime: file.ctime,
+            mtime: file.mtime,
+            uri: file.path,
+          }) as FileInfo
+      ),
+    };
+  }
+  async rename(options: RenameOptions): Promise<void> {
+    if (options.from === options.to) return;
 
-		if (!entry) throw new Error('File does not exist!');
+    const entry = await database.files
+      .where("path")
+      .equals(options.from)
+      .first();
 
-		return { data: entry.content };
-	}
-	async deleteFile(options: DeleteFileOptions): Promise<void> {
-		await this.getDb().files.delete(options.path);
-	}
-	async readDir(options: ReadDirOptions): Promise<ReadDirResult> {
-		const entries = await this.getDb().files.where('path').startsWith(`${options.path}`).toArray();
+    if (!entry) throw new Error("File does not exist!");
 
-		return {
-			entries: entries.map(
-				(file) =>
-					({
-						name: file.path.split('/').pop(),
-						type: 'file',
-						ctime: file.ctime,
-						mtime: file.mtime,
-						uri: file.path
-					} as FileInfo)
-			)
-		};
-	}
-	async rename(options: RenameOptions): Promise<void> {
-		if (options.from === options.to) return;
+    await database.files.delete(options.from);
 
-		const entry = await this.getDb().files.where('path').equals(options.from).first();
-
-		if (!entry) throw new Error('File does not exist!');
-
-		await this.getDb().files.delete(options.from);
-
-		await this.getDb().files.add({
-			...entry,
-			path: options.to
-		});
-	}
+    await database.files.add({
+      ...entry,
+      path: options.to,
+    });
+  }
 }

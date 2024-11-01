@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Preferences } from "@lib/plugins/Preferences";
 
-import Poem from "../types/Poem";
+import PoemManager from "../plugins/PoemManager";
 
 import type { PoemCacheRecord, PoemEntity } from "@lib/types";
 import { Filesystem } from "../plugins/Filesystem";
@@ -60,7 +60,7 @@ export default class PoemCacheDriver {
     // TODO: Why this and function argument?
     const currentStorage = (await Preferences.get({ key: "storage_mode" }))
       .value as string;
-    const poemFiles = await Poem.findAll(currentStorage);
+    const poemFiles = await PoemManager.findAll(currentStorage);
     const cachedPoems: PoemCacheRecord[] = poemFiles.map((file) => {
       return {
         id: file.poemUri,
@@ -79,10 +79,10 @@ export default class PoemCacheDriver {
   public static async refreshCache(storage: string) {
     console.log("refreshing cache...");
 
-    const poemFiles = await Poem.findAll(storage);
+    const poemFiles = await PoemManager.findAll(storage);
     const cachedPoems = await this.getCachedPoems(storage);
     const newCache = poemFiles.map((file) => {
-      const cachedPoem = cachedPoems.find((p) => p.id === file.poemUri);
+      const cachedPoem = cachedPoems.find((p) => p.poemId === file.poemUri);
       return {
         id: file.poemUri,
         name: file.name,
@@ -97,7 +97,7 @@ export default class PoemCacheDriver {
   }
 
   public static async getCacheRecord(storage: string, uri: string) {
-    return (await this.getCachedPoems(storage)).find((p) => p.id === uri);
+    return (await this.getCachedPoems(storage)).find((p) => p.poemId === uri);
   }
 
   public static async setUnsavedStatus(storage: string, poemId: string) {
@@ -111,7 +111,7 @@ export default class PoemCacheDriver {
   public static async popCacheRecord(storage: string, poemId: string) {
     await this.writeToCache(
       storage,
-      (await this.getCachedPoems(storage)).filter((p) => p.id !== poemId)
+      (await this.getCachedPoems(storage)).filter((p) => p.poemId !== poemId)
     );
   }
 
@@ -123,10 +123,10 @@ export default class PoemCacheDriver {
   ) {
     const poems = await this.getCachedPoems(storage);
     const updatedPoems = poems.map((poem) =>
-      poem.id === oldPoemUri
+      poem.poemId === oldPoemUri
         ? {
             ...poem,
-            id: newPoemUri || poem.id,
+            poemId: newPoemUri || poem.poemId,
             name: newPoem.name,
             poemSnippet: this.sliceSnippet(newPoem.text),
             unsavedChanges: false,
@@ -146,14 +146,14 @@ export default class PoemCacheDriver {
     status: boolean
   ) {
     const cachedPoems = await this.getCachedPoems(storage);
-    const poem = cachedPoems.find((p) => p.id === poemId);
+    const poem = cachedPoems.find((p) => p.poemId === poemId);
     const changedPoem: PoemCacheRecord = {
       ...poem,
       unsavedChanges: status,
     } as PoemCacheRecord;
     await this.writeToCache(
       storage,
-      cachedPoems.map((p) => (p.id !== poemId ? p : changedPoem))
+      cachedPoems.map((p) => (p.poemId !== poemId ? p : changedPoem))
     );
   }
 

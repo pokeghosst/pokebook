@@ -31,7 +31,7 @@ import PoemNotepad from "@components/PoemNotepad";
 import Toolbar from "@components/Toolbar";
 import Workspace from "@components/Workspace";
 import toast from "solid-toast";
-import Poem from "@lib/types/Poem";
+import PoemManager from "@lib/plugins/PoemManager";
 
 const Draft: Component = () => {
   const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
@@ -53,14 +53,11 @@ const Draft: Component = () => {
       icon: FilePlus2,
       action: async () => {
         await toast.promise(
-          Poem.save(
-            {
-              name: draftPoem.title,
-              text: draftPoem.content,
-              note: draftPoem.note,
-            },
-            "local"
-          ),
+          PoemManager.save({
+            name: draftPoem.title,
+            text: draftPoem.content,
+            note: draftPoem.note,
+          }),
           {
             loading: "loading",
             success: "saved",

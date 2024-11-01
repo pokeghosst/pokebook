@@ -11,7 +11,8 @@ export interface PoemEntity {
 }
 
 export interface PoemCacheRecord {
-  id: string;
+  cacheId?: number;
+  poemId: string;
   name: string;
   createdAt: number;
   modifiedAt: number;

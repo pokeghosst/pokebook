@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "prettier": "^3.3.3",
     "sass": "^1.80.4",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
