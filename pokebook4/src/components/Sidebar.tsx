@@ -19,24 +19,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { For, type Component } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
-import { usePreferences } from "./PreferencesProvider";
+import { usePreferences } from "../contexts/PreferencesProvider";
 
 import { LibraryBig, Settings, SquarePen } from "lucide-solid";
 
 const navMenuItems = [
   {
     icon: SquarePen,
-    label: "menu.draft",
+    label: "Draft",
     url: "/",
   },
   {
     icon: LibraryBig,
-    label: "menu.stash",
+    label: "Poems",
     url: "/stash",
   },
   {
     icon: Settings,
-    label: "menu.settings",
+    label: "Settings",
     url: "/settings",
   },
 ];
@@ -74,10 +74,10 @@ const Sidebar: Component = () => {
           </For>
         </div>
         <div class="sidebar-footer">
-          <button>Shortcuts</button>
+          <button>Keyboard Shortcuts</button>
           <ul>
             <li>
-              <button>About</button>
+              <button>About & Feedback</button>
             </li>
           </ul>
         </div>

@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Eclipse, Menu, PencilRuler } from "lucide-solid";
 
-import { usePreferences } from "./PreferencesProvider";
+import { usePreferences } from "../contexts/PreferencesProvider";
 
 import type { Component } from "solid-js";
 

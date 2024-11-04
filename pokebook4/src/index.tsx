@@ -21,7 +21,7 @@ import { render } from "solid-js/web";
 
 import { Route, Router } from "@solidjs/router";
 
-import { PreferencesProvider } from "@components/PreferencesProvider";
+import { PreferencesProvider } from "./contexts/PreferencesProvider";
 
 import App from "./App";
 

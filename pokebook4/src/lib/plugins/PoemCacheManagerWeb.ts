@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { PoemCacheRecord } from "@lib/types";
 import database from "./DexieManager";
 
 import type {
@@ -23,18 +24,19 @@ import type {
   GetResult,
   PoemCacheManagerPlugin,
   PopOptions,
-  PushOptions,
 } from "@lib/plugins/PoemCacheManagerPlugin.ts";
 
 export class PoemCacheManagerWeb implements PoemCacheManagerPlugin {
-  async push(options: PushOptions) {
-    await database.poemCache.add(options.value);
-  }
-
-  get(options: GetOptions): Promise<GetResult> {
+  get(key: string): Promise<PoemCacheRecord | null> {
     throw new Error("Method not implemented.");
   }
-  pop(options: PopOptions): Promise<void> {
+  pop(key: string): Promise<void> {
     throw new Error("Method not implemented.");
+  }
+  list(): Promise<PoemCacheRecord[]> {
+    throw new Error("Method not implemented.");
+  }
+  async push(poem: PoemCacheRecord) {
+    await database.poemCache.add(poem);
   }
 }

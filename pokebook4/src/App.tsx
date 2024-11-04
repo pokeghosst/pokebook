@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import type { ParentComponent } from "solid-js";
 
-import { usePreferences } from "@components/PreferencesProvider";
+import { usePreferences } from "./contexts/PreferencesProvider";
 
 import { Toaster } from "solid-toast";
 
@@ -28,7 +28,7 @@ import Sidebar from "@components/Sidebar";
 const App: ParentComponent = (props) => {
   const [pref] = usePreferences();
 
-    return (
+  return (
     <>
       <Toaster />
       <Sidebar />

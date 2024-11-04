@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import type { PoemPadProps } from "@lib/types";
 import type { Component } from "solid-js";
 
-import { usePreferences } from "./PreferencesProvider";
+import { usePreferences } from "../contexts/PreferencesProvider";
 
 import Paper from "./Paper";
 

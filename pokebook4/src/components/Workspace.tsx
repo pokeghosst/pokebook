@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { createSignal, type Component } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
-import { usePreferences } from "./PreferencesProvider";
+import { usePreferences } from "../contexts/PreferencesProvider";
 
 import { ArrowRightLeft, ChevronsLeftRight } from "lucide-solid";
 

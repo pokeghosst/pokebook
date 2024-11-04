@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { For, type Component } from "solid-js";
 
-import { usePreferences } from "./PreferencesProvider";
+import { usePreferences } from "../contexts/PreferencesProvider";
 
 import type { ToolbarItem } from "@lib/types";
 

@@ -50,16 +50,14 @@ export default class PoemManager {
     });
 
     await PoemCacheManager.push({
-      value: {
-        poemId: id,
-        name: poem.name,
-        createdAt: now,
-        modifiedAt: now,
-        unsavedChanges: false,
-        poemSnippet:
-          poem.text.slice(0, POEM_SNIPPET_LENGTH) +
-          (poem.text.length > POEM_SNIPPET_LENGTH ? "..." : ""),
-      },
+      poemId: id,
+      name: poem.name,
+      createdAt: now,
+      modifiedAt: now,
+      unsavedChanges: false,
+      poemSnippet:
+        poem.text.slice(0, POEM_SNIPPET_LENGTH) +
+        (poem.text.length > POEM_SNIPPET_LENGTH ? "..." : ""),
     });
 
     // setPoemCache(id, {

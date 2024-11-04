@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createStore } from "solid-js/store";
+import { createStore, produce, reconcile } from "solid-js/store";
 
 import { makePersisted } from "@solid-primitives/storage";
 import { tauriStorage } from "@solid-primitives/storage/tauri";
@@ -38,8 +38,8 @@ const Draft: Component = () => {
 
   const [draftPoem, setDraftPoem] = makePersisted(
     createStore({
-      title: "Unnamed",
-      content: "",
+      name: "Unnamed",
+      text: "",
       note: "",
     }),
     {
@@ -52,18 +52,14 @@ const Draft: Component = () => {
     {
       icon: FilePlus2,
       action: async () => {
-        await toast.promise(
-          PoemManager.save({
-            name: draftPoem.title,
-            text: draftPoem.content,
-            note: draftPoem.note,
-          }),
-          {
-            loading: "loading",
-            success: "saved",
-            error: "error",
-          }
-        );
+        await toast.promise(PoemManager.save(draftPoem), {
+          loading: "loading",
+          success: "saved",
+          error: "error",
+        });
+        setDraftPoem("name", "Unnamed");
+        setDraftPoem("text", "");
+        setDraftPoem("note", "");
       },
       label: "Save",
     },
@@ -71,10 +67,10 @@ const Draft: Component = () => {
 
   const draftPoemNotepad: Component = () => (
     <PoemNotepad
-      title={draftPoem.title}
-      text={draftPoem.content}
-      titleInputHandler={(e) => setDraftPoem("title", e.currentTarget.value)}
-      inputHandler={(e) => setDraftPoem("content", e.currentTarget.value)}
+      title={draftPoem.name}
+      text={draftPoem.text}
+      titleInputHandler={(e) => setDraftPoem("name", e.currentTarget.value)}
+      inputHandler={(e) => setDraftPoem("text", e.currentTarget.value)}
     />
   );
   const draftNoteNotepad: Component = () => (
