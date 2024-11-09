@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createContext, useContext } from "solid-js";
+import { createContext, onMount, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { Filesystem } from "@lib/plugins/Filesystem";
@@ -78,7 +78,11 @@ export const PoemListProvider: ParentComponent<{
 
     setPoemList("poems", poemList.poems.length, poem);
   };
-  const pop = (key: string) => undefined;
+  const pop = (key: string) => alert("not implemented");
+
+  onMount(async () => {
+    setPoemList("poems", await PoemCacheManager.list());
+  });
 
   return (
     <PoemListContext.Provider value={[poemList, { push, pop }]}>

@@ -16,10 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createStore, produce, reconcile } from "solid-js/store";
+import { createStore } from "solid-js/store";
 
 import { makePersisted } from "@solid-primitives/storage";
 import { tauriStorage } from "@solid-primitives/storage/tauri";
+import toast from "solid-toast";
+
+import { usePoemList } from "../contexts/PoemListProvider";
 
 import type { ToolbarItem } from "@lib/types";
 import type { Component } from "solid-js";
@@ -30,11 +33,11 @@ import NoteNotepad from "@components/NoteNotepad";
 import PoemNotepad from "@components/PoemNotepad";
 import Toolbar from "@components/Toolbar";
 import Workspace from "@components/Workspace";
-import toast from "solid-toast";
-import PoemManager from "@lib/plugins/PoemManager";
 
 const Draft: Component = () => {
   const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
+
+  const [, { push }] = usePoemList();
 
   const [draftPoem, setDraftPoem] = makePersisted(
     createStore({
@@ -51,12 +54,9 @@ const Draft: Component = () => {
   const actions: ToolbarItem[] = [
     {
       icon: FilePlus2,
-      action: async () => {
-        await toast.promise(PoemManager.save(draftPoem), {
-          loading: "loading",
-          success: "saved",
-          error: "error",
-        });
+      action: () => {
+        push(draftPoem);
+        toast.success("Poem saved");
         setDraftPoem("name", "Unnamed");
         setDraftPoem("text", "");
         setDraftPoem("note", "");

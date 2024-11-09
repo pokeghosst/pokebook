@@ -27,13 +27,20 @@ import App from "./App";
 
 import "./sass/main.scss";
 
+import WithPoemList from "./routes/layouts/WithPoemList";
 const Draft = lazy(() => import("./routes/Draft"));
+const Stash = lazy(() => import("./routes/Stash"));
+const Settings = lazy(() => import("./routes/Settings"));
 
 render(
   () => (
     <PreferencesProvider>
       <Router root={App}>
-        <Route path="/" component={Draft} />
+        <Route path="/" component={WithPoemList}>
+          <Route path="/" component={Draft} />
+          <Route path="/stash" component={Stash} />
+        </Route>
+        <Route path="/settings" component={Settings} />
       </Router>
     </PreferencesProvider>
   ),

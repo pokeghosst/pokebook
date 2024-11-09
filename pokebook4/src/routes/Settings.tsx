@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,22 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemCacheRecord } from "@lib/types";
-import database from "./DexieManager";
+const Settings = () => {
+  return <div>settings</div>;
+};
 
-import type { PoemCacheManagerPlugin } from "@lib/plugins/PoemCacheManagerPlugin.ts";
-
-export class PoemCacheManagerWeb implements PoemCacheManagerPlugin {
-  get(key: string): Promise<PoemCacheRecord | null> {
-    throw new Error("Method not implemented.");
-  }
-  pop(key: string): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  async list(): Promise<PoemCacheRecord[]> {
-    return await database.poemCache.toArray();
-  }
-  async push(poem: PoemCacheRecord) {
-    await database.poemCache.add(poem);
-  }
-}
+export default Settings;
