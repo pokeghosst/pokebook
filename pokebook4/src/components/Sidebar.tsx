@@ -42,21 +42,10 @@ const navMenuItems = [
 ];
 
 const Sidebar: Component = () => {
-  const [pref, setPref] = usePreferences();
-
-  function closeSidebar() {
-    setPref("isSidebarOpen", "false");
-  }
+  const [pref] = usePreferences();
 
   return (
     <div class="sidebar-nav-wrapper">
-      <div
-        class="sidebar-close-area"
-        classList={{ "sidebar-nav--open": pref.isSidebarOpen === "true" }}
-        onclick={closeSidebar}
-        role="button"
-        tabIndex="0"
-      ></div>
       <div
         class="sidebar"
         classList={{ "sidebar-nav--open": pref.isSidebarOpen === "true" }}
@@ -67,20 +56,19 @@ const Sidebar: Component = () => {
               <a href={item.url}>
                 <div class="list-item">
                   <Dynamic component={item.icon} />
-                  {item.label}
                 </div>
               </a>
             )}
           </For>
         </div>
-        <div class="sidebar-footer">
+        {/* <div class="sidebar-footer">
           <button>Keyboard Shortcuts</button>
           <ul>
             <li>
               <button>About & Feedback</button>
             </li>
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

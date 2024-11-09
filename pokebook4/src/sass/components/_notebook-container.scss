@@ -1,33 +1,37 @@
-@use '../vendors/mq';
+@use "../vendors/mq";
 
 .notebook-container {
-	width: 100%;
-	grid-column: span 1 / span 1;
-	margin-bottom: 1.5rem;
-	vertical-align: top;
-	position: relative;
-	display: inline-block;
+  width: 100%;
+  grid-column: span 1 / span 1;
+  margin-bottom: 1.5rem;
+  vertical-align: top;
+  position: relative;
+  display: inline-block;
 
-	@include mq.mq($until: seedling) {
-		width: 87vw;
-	}
+  @include mq.mq($until: seedling) {
+    width: 87vw;
+
+    .l-sidebar-open & {
+      width: calc(87vw - 52px);
+    }
+  }
 }
 
 .notebook-container-toolbar {
-	position: absolute;
-	right: 0.5rem;
-	top: 0.5rem;
-	z-index: 10;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  z-index: 10;
 
-	> div {
-		display: flex;
+  > div {
+    display: flex;
 
-		button {
-			margin-right: 0.25rem;
-		}
-	}
+    button {
+      margin-right: 0.25rem;
+    }
+  }
 }
 
 .pad-dropdown-menu {
-	border-radius: 0.375rem;
+  border-radius: 0.375rem;
 }
