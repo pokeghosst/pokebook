@@ -28,17 +28,17 @@ const Stash: Component = () => {
         <div class="poem-list">
           {list.poems.map((poem) => (
             <div class="list-item">
-              <a href="#">
+              <a href={`/poem/${poem.poemId}`}>
                 <div class="list-poem">
                   <p class="list-poem-name">{poem.name}</p>
                   <p class="list-poem-snippet">{poem.poemSnippet}</p>
                 </div>
+                <div>
+                  {new Intl.DateTimeFormat("en-US").format(
+                    new Date(poem.createdAt)
+                  )}
+                </div>
               </a>
-              <div>
-                {new Intl.DateTimeFormat("en-US").format(
-                  new Date(poem.createdAt)
-                )}
-              </div>
             </div>
           ))}
         </div>

@@ -16,7 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createContext, onMount, useContext } from "solid-js";
+import {
+  createContext,
+  createResource,
+  createSignal,
+  onMount,
+  useContext,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { Filesystem } from "@lib/plugins/Filesystem";
@@ -56,6 +62,8 @@ export const PoemListProvider: ParentComponent<{
     poems: [] as PoemCacheRecord[],
   });
 
+  // console.log("loading list context");
+
   const push = async (poem: PoemEntity) => {
     const now = Date.now();
     const id = crypto.randomUUID();
@@ -65,7 +73,7 @@ export const PoemListProvider: ParentComponent<{
       data: JSON.stringify(poem),
     });
 
-    await PoemCacheManager.push({
+    const poemCacheRecord: PoemCacheRecord = {
       poemId: id,
       name: poem.name,
       createdAt: now,
@@ -74,14 +82,18 @@ export const PoemListProvider: ParentComponent<{
       poemSnippet:
         poem.text.slice(0, POEM_SNIPPET_LENGTH) +
         (poem.text.length > POEM_SNIPPET_LENGTH ? "..." : ""),
-    });
+    };
 
-    setPoemList("poems", poemList.poems.length, poem);
+    poemCacheRecord.cacheId = await PoemCacheManager.push(poemCacheRecord);
+
+    setPoemList("poems", poemList.poems.length, poemCacheRecord);
   };
   const pop = (key: string) => alert("not implemented");
 
   onMount(async () => {
+    // setTimeout(async () => {
     setPoemList("poems", await PoemCacheManager.list());
+    // }, 1000);
   });
 
   return (

@@ -32,6 +32,9 @@ export class PoemCacheManagerWeb implements PoemCacheManagerPlugin {
     return await database.poemCache.toArray();
   }
   async push(poem: PoemCacheRecord) {
-    await database.poemCache.add(poem);
+    const id = await database.poemCache.add(poem);
+
+    if (!id) throw new Error("Could not save poem to cache");
+    return id;
   }
 }

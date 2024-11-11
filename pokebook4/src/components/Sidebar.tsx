@@ -32,7 +32,7 @@ const navMenuItems = [
   {
     icon: LibraryBig,
     label: "Poems",
-    url: "/stash",
+    url: "/poems",
   },
   {
     icon: Settings,

@@ -55,7 +55,7 @@ const Draft: Component = () => {
     {
       icon: FilePlus2,
       action: () => {
-        push(draftPoem);
+        push({ ...draftPoem });
         toast.success("Poem saved");
         setDraftPoem("name", "Unnamed");
         setDraftPoem("text", "");

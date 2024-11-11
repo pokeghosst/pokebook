@@ -1,15 +1,16 @@
 .poem-list {
-	padding-left: 2rem;
-	padding-right: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 
-	button {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		padding: 1rem;
-	}
+  button,
+  a {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+  }
 
-	.list-item {
-		padding: 0;
-	}
+  .list-item {
+    padding: 0;
+  }
 }
