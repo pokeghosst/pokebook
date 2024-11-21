@@ -34,7 +34,7 @@ const App: ParentComponent = (props) => {
       <Sidebar />
       <div
         class="main-wrapper"
-        classList={{ "l-sidebar-open": pref.isSidebarOpen === "true" }}
+        classList={{ "l-sidebar-open": pref.isSidebarOpen }}
       >
         <main>
           <div>

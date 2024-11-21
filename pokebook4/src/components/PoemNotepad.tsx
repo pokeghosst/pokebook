@@ -28,20 +28,21 @@ const PoemNotepad: Component<PoemPadProps> = (props) => {
 
   return (
     <div class="notebook">
-      <div class="notebook-header">
-        <input
-          type="text"
-          // TODO: Don't forget to sanitize this
-          value={props.title}
-          onInput={props.titleInputHandler}
-          placeholder="Unnamed"
-        ></input>
+      <input
+        type="text"
+        class="notebook-header"
+        // TODO: Don't forget to sanitize this
+        value={props.title}
+        onInput={props.titleInputHandler}
+        placeholder="Unnamed"
+      ></input>
+      <div class="notebook-inner-wrapper">
+        <Paper
+          justification={pref.poemPadJustification}
+          text={props.text}
+          inputHandler={props.inputHandler}
+        />
       </div>
-      <Paper
-        justification={pref.poemPadJustification}
-        text={props.text}
-        inputHandler={props.inputHandler}
-      />
     </div>
   );
 };

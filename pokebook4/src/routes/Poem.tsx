@@ -16,7 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createEffect, createResource, Show } from "solid-js";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  onMount,
+  Show,
+} from "solid-js";
+import { createStore } from "solid-js/store";
 
 import { useParams } from "@solidjs/router";
 
@@ -30,31 +37,45 @@ import PoemNotepad from "@components/PoemNotepad";
 import Toolbar from "@components/Toolbar";
 import Workspace from "@components/Workspace";
 
-const fetchPoem = async (id: string) =>
-  (await Filesystem.readFile({ path: `/${id}.json` })).data;
 const Poem = () => {
   const params = useParams();
-  const [poem] = createResource(params.id, fetchPoem);
+  const [loading, setLoading] = createSignal(true);
+  const [poem, setPoem] = createStore({} as PoemEntity);
 
-  const parsedPoem = () =>
-    poem() ? (JSON.parse(poem() as string) as PoemEntity) : ({} as PoemEntity);
+  onMount(async () => {
+    const poemFile = (await Filesystem.readFile({ path: `/${params.id}.json` }))
+      .data;
+    setPoem(JSON.parse(poemFile as string) as PoemEntity);
+    setLoading(false);
+  });
+
+  createEffect(() => {
+    console.log("current poem state", JSON.stringify(poem));
+    Filesystem.writeFile({
+      path: `/${params.id}.tmp.json`,
+      data: JSON.stringify(poem),
+    });
+  });
 
   const actions: ToolbarItem[] = [];
 
   const poemNotepad: Component = () => (
     <PoemNotepad
-      title={parsedPoem().name}
-      text={parsedPoem().text}
-      titleInputHandler={(e) => {}}
-      inputHandler={(e) => {}}
+      title={poem.name}
+      text={poem.text}
+      titleInputHandler={(e) => setPoem("name", e.currentTarget.value)}
+      inputHandler={(e) => setPoem("text", e.currentTarget.value)}
     />
   );
   const noteNotepad: Component = () => (
-    <NoteNotepad text={parsedPoem().note} inputHandler={(e) => {}} />
+    <NoteNotepad
+      text={poem.note}
+      inputHandler={(e) => setPoem("note", e.currentTarget.value)}
+    />
   );
 
   return (
-    <Show when={poem()}>
+    <Show when={!loading()} fallback={<div>Loading...</div>}>
       <div class="toolbar">
         <Toolbar actions={actions} />
       </div>

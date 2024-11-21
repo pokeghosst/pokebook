@@ -21,13 +21,25 @@ import { Eclipse, Menu, PencilRuler } from "lucide-solid";
 import { usePreferences } from "../contexts/PreferencesProvider";
 
 import type { Component } from "solid-js";
+import { effect } from "solid-js/web";
 
 const Header: Component = () => {
   const [pref, setPref] = usePreferences();
 
   function toggleSidebar() {
-    setPref("isSidebarOpen", pref.isSidebarOpen === "true" ? "false" : "true");
+    setPref("isSidebarOpen", !pref.isSidebarOpen);
   }
+
+  function toggleNightMode() {
+    setPref("isNightMode", !pref.isNightMode);
+  }
+
+  // Something tells me doing this is stinky but I don't want to dig through CSS architecture so let's leave it as a legacy plug
+  effect(() => {
+    document.documentElement.className = pref.isNightMode
+      ? pref.currentNightTheme
+      : pref.currentDayTheme;
+  });
 
   return (
     <div class="header-nav-wrapper">
@@ -38,7 +50,7 @@ const Header: Component = () => {
         <button>
           <PencilRuler strokeWidth={1.7} />
         </button>
-        <button>
+        <button onClick={toggleNightMode}>
           <Eclipse strokeWidth={1.7} />
         </button>
       </div>

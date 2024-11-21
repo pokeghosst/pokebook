@@ -25,19 +25,22 @@ import { makePersisted } from "@solid-primitives/storage";
 const storage = window.__TAURI_INTERNALS__ ? tauriStorage() : localStorage;
 
 const preferencesInit = {
-  isFullWidthPad: "false",
+  isFullWidthPad: false,
+  isSidebarOpen: true,
+  isNightMode: false,
   writingPadState: "[0,1]",
-  isSidebarOpen: "true",
   poemPadJustification: "left",
   // TODO: make it camel case later
   storage_mode: "local",
+  currentDayTheme: "neo-day",
+  currentNightTheme: "neo-night",
 };
 
 type PreferencesType = typeof preferencesInit;
 
-type PreferencesContextType<T extends Record<string, string>> = [
+type PreferencesContextType<T extends Record<string, any>> = [
   preferences: T,
-  setPreference: (key: keyof T, value: string) => void
+  setPreference: (key: keyof T, value: any) => void,
 ];
 
 export const PreferencesContext =
