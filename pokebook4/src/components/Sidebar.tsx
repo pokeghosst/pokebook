@@ -16,12 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { For, type Component } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { createSignal, For, type Component } from "solid-js";
 
 import { usePreferences } from "../contexts/PreferencesProvider";
+import { usePoemList } from "../contexts/PoemListProvider";
 
 import { LibraryBig, Settings, SquarePen } from "lucide-solid";
+import RelativeTime from "./RelativeTime";
 
 const navMenuItems = [
   {
@@ -42,16 +43,41 @@ const navMenuItems = [
 ];
 
 const Sidebar: Component = () => {
-  const [pref] = usePreferences();
+  const [pref, setPref] = usePreferences();
+  const [poemList] = usePoemList();
 
   return (
     <div class="sidebar-nav-wrapper">
       <div
         class="sidebar"
-        classList={{ "sidebar-nav--open": pref.isSidebarOpen === "true" }}
+        classList={{
+          "sidebar-nav--open": pref.isSidebarOpen,
+        }}
       >
         <div class="sidebar-nav-items">
-          <For each={navMenuItems}>
+          <div class="poem-list">
+            <For each={poemList.poems}>
+              {(poem) => (
+                <div class="list-item">
+                  <a
+                    href={`/poem/${poem.poemId}`}
+                    onclick={() => {
+                      setPref("isSidebarOpen", false);
+                    }}
+                  >
+                    <div class="list-poem">
+                      <p class="list-poem-name">{poem.name}</p>
+                      <p class="list-poem-snippet">{poem.poemSnippet}</p>
+                    </div>
+                    <div>
+                      <RelativeTime date={poem.createdAt} />
+                    </div>
+                  </a>
+                </div>
+              )}
+            </For>
+          </div>
+          {/* <For each={navMenuItems}>
             {(item) => (
               <a href={item.url}>
                 <div class="list-item">
@@ -59,7 +85,7 @@ const Sidebar: Component = () => {
                 </div>
               </a>
             )}
-          </For>
+          </For> */}
         </div>
         {/* <div class="sidebar-footer">
           <button>Keyboard Shortcuts</button>

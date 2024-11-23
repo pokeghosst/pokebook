@@ -20,11 +20,18 @@
 }
 
 .sidebar {
+  @include mq.mq($until: sprout) {
+    &.sidebar-nav--open {
+      left: 0;
+      width: 100%;
+    }
+  }
+
   position: fixed;
   top: 0;
-  left: -250px;
+  left: -375px;
   height: 100%;
-  width: fit-content;
+  width: 375px;
   border-right: 1px solid var(--border-color);
   z-index: inherit;
   background-color: var(--base-background);

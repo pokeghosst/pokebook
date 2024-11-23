@@ -6,9 +6,13 @@
   flex-direction: column;
   min-height: 100vh;
 
-  &.l-sidebar-open {
-    margin-left: 52px;
-    width: calc(100% - 52px);
+  // TODO: IDK how good is it to duplicate mq here
+  @include mq.mq(sprout) {
+    &.l-sidebar-open {
+      // TODO: Extract sidebar width into a variable
+      margin-left: 375px;
+      width: calc(100% - 375px);
+    }
   }
 
   main {

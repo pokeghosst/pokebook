@@ -24,7 +24,7 @@ import { usePreferences } from "../contexts/PreferencesProvider";
 import Paper from "./Paper";
 
 const PoemNotepad: Component<PoemPadProps> = (props) => {
-  const [pref, setPref] = usePreferences();
+  const [pref] = usePreferences();
 
   return (
     <div class="notebook">

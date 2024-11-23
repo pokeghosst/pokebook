@@ -10,10 +10,6 @@
 
   @include mq.mq($until: seedling) {
     width: 87vw;
-
-    .l-sidebar-open & {
-      width: calc(87vw - 52px);
-    }
   }
 }
 
