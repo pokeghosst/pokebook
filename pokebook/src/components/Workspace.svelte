@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `let state: number[] = JSON.parse($viewsState);` to `$state` because there's a variable named state.
+     Rename the variable and try again or migrate by hand. -->
 <!--
 PokeBook -- Pokeghost's poetry noteBook
 Copyright (C) 2023-2024 Pokeghost.

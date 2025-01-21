@@ -23,24 +23,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import X from 'lucide-svelte/icons/x';
 
-	export let isOpen = false;
 
-	export let title: string | null = null;
-	export let content: ComponentType;
+	interface Props {
+		isOpen?: boolean;
+		title?: string | null;
+		content: ComponentType;
+	}
+
+	let { isOpen = false, title = null, content }: Props = $props();
 </script>
 
 {#if isOpen}
+	{@const SvelteComponent = content}
 	<div role="dialog" class="modal">
 		<div class="modal-title-bar">
 			{#if title}
 				<div class="modal-title">{title}</div>
 			{/if}
 			<div class="modal-title-side">
-				<button on:click={closeModal}><X /></button>
+				<button onclick={closeModal}><X /></button>
 			</div>
 		</div>
 		<div class="modal-content">
-			<svelte:component this={content} />
+			<SvelteComponent />
 		</div>
 	</div>
 {/if}

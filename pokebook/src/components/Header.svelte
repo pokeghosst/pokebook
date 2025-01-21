@@ -62,11 +62,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="header-nav-wrapper">
-	<button on:click={toggleSidebar}>
+	<button onclick={toggleSidebar}>
 		<Menu />
 	</button>
 	<div class="header-icons">
-		<button on:click={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
-		<button on:click={() => toggleDarkMode()}><Eclipse strokeWidth={1.7} /></button>
+		<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
+		<button onclick={() => toggleDarkMode()}><Eclipse strokeWidth={1.7} /></button>
 	</div>
 </div>

@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
@@ -46,8 +48,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
-	$: $dayTheme, setDayTheme();
-	$: $nightTheme, setNightTheme();
 
 	function setDayTheme() {
 		if ($darkMode === '') {
@@ -116,6 +116,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					});
 			}
 	});
+	run(() => {
+		$dayTheme, setDayTheme();
+	});
+	run(() => {
+		$nightTheme, setNightTheme();
+	});
 </script>
 
 <div class="settings-container">
@@ -141,7 +147,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 	{#if $storageMode !== 'local'}
 		<button
-			on:click={async () =>
+			onclick={async () =>
 				await toast.promise(
 					getCloudAuthUrlPromise($storageMode).then((url) => {
 						Browser.open({ url: url, windowName: '_self' });
@@ -157,7 +163,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
 		>
 		<button
-			on:click={async () => {
+			onclick={async () => {
 				await toast.promise(
 					getCloudLogoutPromise($storageMode),
 					{

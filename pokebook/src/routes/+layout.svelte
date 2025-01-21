@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run, createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { Capacitor } from '@capacitor/core';
 	import { StatusBar } from '@capacitor/status-bar';
 	import { Toaster } from 'svelte-french-toast';
@@ -30,8 +33,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-	$: $darkMode, updateTheme();
+	let { children }: Props = $props();
+
 
 	function rgbToHex(r: number, g: number, b: number) {
 		return (
@@ -67,17 +74,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	App.addListener('backButton', (_) => {
 		window.history.back();
 	});
+	run(() => {
+		$darkMode, updateTheme();
+	});
 </script>
 
 <Modals>
-	<div
-		slot="backdrop"
-		class="backdrop"
-		on:click={closeModal}
-		on:keydown
-		role="button"
-		tabindex="0"
-	/>
+	{#snippet backdrop()}
+		<div
+			
+			class="backdrop"
+			onclick={closeModal}
+			onkeydown={bubble('keydown')}
+			role="button"
+			tabindex="0"
+		></div>
+	{/snippet}
 </Modals>
 
 <Toaster />
@@ -86,7 +98,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<main>
 		<div>
 			<Header />
-			<slot />
+			{@render children?.()}
 		</div>
 	</main>
 </div>

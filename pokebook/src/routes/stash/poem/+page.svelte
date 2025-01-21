@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -49,13 +51,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let unsavedChangesToastId: string;
 
-	let thinking = true;
+	let thinking = $state(true);
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	$: {
+	run(() => {
 		if (!thinking)
 			FilesystemWithPermissions.writeFile({
 				path: `${$currentPoemUri}.tmp`,
@@ -67,7 +69,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 				encoding: Encoding.UTF8
 			});
-	}
+	});
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
