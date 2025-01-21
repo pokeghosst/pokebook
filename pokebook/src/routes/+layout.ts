@@ -1,4 +1,6 @@
-import { Preferences } from '$lib/plugins/Preferences';
+import { browser } from '$app/environment';
+
+import { Preferences } from '@capacitor/preferences';
 
 import { loadTranslations } from '$lib/translations';
 

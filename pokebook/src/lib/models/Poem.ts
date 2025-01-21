@@ -84,8 +84,6 @@ export default class Poem {
 	static async initPoemCacheIfNotExists(storage: string) {
 		const isCachePresent = await PoemCacheDriver.isCachePresent(storage);
 
-		console.log('isCachePresent', isCachePresent);
-
 		if (!isCachePresent) await PoemCacheDriver.initCache(storage);
 	}
 }

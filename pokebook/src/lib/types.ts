@@ -23,9 +23,3 @@ export interface PoemCacheRecord {
 export type MenuItem = { icon: ComponentType<Icon>; label: string; url: string };
 
 export type ToolbarItem = { icon: ComponentType<Icon>; action: () => void; label: string };
-
-declare global {
-	interface Window {
-		__TAURI_INTERNALS__: Record<string, unknown>;
-	}
-}

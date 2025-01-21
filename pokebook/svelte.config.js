@@ -19,9 +19,9 @@ const config = {
 						fallback: '404.html',
 						precompress: false,
 						strict: false
-					})
+				  })
 				: adapterAuto(),
-		alias: { lib: './src/lib/' }
+		alias: { 'lib/': './src/lib/' }
 	}
 };
 

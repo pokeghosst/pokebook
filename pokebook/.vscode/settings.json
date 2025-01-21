@@ -1,0 +1,4 @@
+{
+    "eslint.validate": ["javascript", "typescript", "svelte"],
+    "git.enableCommitSigning": true
+}

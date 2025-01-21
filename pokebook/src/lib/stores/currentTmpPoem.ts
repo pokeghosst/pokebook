@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-import { Preferences } from '../plugins/Preferences';
+import { Preferences } from '@capacitor/preferences';
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 export const currentTmpPoemStore = async () => {

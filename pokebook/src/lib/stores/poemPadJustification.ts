@@ -1,3 +1,3 @@
 import { createStore } from './storeFactory';
 
-export const poemPadJustification = createStore('poem_justification', 'left');
+export const poemPadJustification = await createStore('poem_justification', 'left');

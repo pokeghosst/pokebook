@@ -18,36 +18,35 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onDestroy, onMount, type ComponentType } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	import hotkeys from 'hotkeys-js';
 
-	import { usePreferences, type PreferencesStore } from 'lib/hooks/usePreferences.svelte';
+	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
+	import { viewsState } from '$lib/stores/views';
+	import { writingPadFont } from '$lib/stores/writingPadFont';
+
+	import NotePad from './NotePad.svelte';
+	import PoemPad from './PoemPad.svelte';
 
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
-
-	import type { Icon } from 'lucide-svelte';
-	import NotePad from './NotePad.svelte';
-	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	let {
-		poem,
-		note,
-		actions
-	}: {
-		poem: { title: PreferencesStore; text: PreferencesStore };
-		note: PreferencesStore;
-		actions: { icon: ComponentType<Icon>; action: () => void; label: string }[];
-	} = $props();
+	export let actions: { icon: ComponentType; action: () => void; label: string }[];
+	export let poemProps: { name: Writable<string>; body: Writable<string> };
+	export let noteProps: Writable<string>;
 
-	let writingPadsState = usePreferences('notebook_positions', JSON.stringify(['poem', 'note']));
-	let isFullWidthPad = usePreferences('full_width_pad', 'false');
-	let notebookFont = usePreferences('notebook_font', 'halogen');
+	// Assigning empty function by default because on draft page we don't pass a function here
+	export let unsavedChangesHandler = () => {};
 
-	let currentState = $state('');
+	let state: number[] = JSON.parse($viewsState);
+	let views = [PoemPad, NotePad];
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let props: [any, any] = [poemProps, noteProps];
 
-	// TODO: Maybe refactor hotkeys into a hook or something like that
+	let currentState = '';
+
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
 			expandPoemPad();
@@ -62,48 +61,47 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function swapViews() {
 		currentState = 'transitioning';
 		setTimeout(function () {
-			const state = JSON.parse(writingPadsState.value);
 			[state[0], state[1]] = [state[1], state[0]];
-			writingPadsState.value = JSON.stringify(state);
+			$viewsState = JSON.stringify(state);
 			currentState = '';
-		}, 300);
+		}, 600);
 	}
 
 	function expandPoemPad() {
-		isFullWidthPad.value = isFullWidthPad.value === 'true' ? 'false' : 'true';
+		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
 	}
 </script>
 
-{#snippet pad(state: string)}
-	{#if state === 'poem'}
-		<PoemPad {poem} />
-	{:else if state === 'note'}
-		<NotePad {note} />
-	{:else}
-		D'oh!
-	{/if}
-{/snippet}
-
-<div class="toolbar"><Toolbar {actions} /></div>
-<div
-	class="workspace {isFullWidthPad.value === 'true'
-		? 'l-full-width'
-		: ''} {currentState} {notebookFont.value}"
->
-	<div class="notebook-container">
-		<div class="notebook-container-toolbar">
-			<div>
-				<button onclick={expandPoemPad}>
-					<ChevronsLeftRight class="round-button" />
-				</button>
-				<button onclick={swapViews}>
-					<ArrowRightLeft class="round-button" />
-				</button>
+{#if state}
+	<div class="toolbar"><Toolbar {actions} /></div>
+	<div
+		class="workspace {$isFullWidthPad === 'true'
+			? 'l-full-width'
+			: ''} {currentState} {$writingPadFont}"
+	>
+		<div class="notebook-container">
+			<div class="notebook-container-toolbar">
+				<div>
+					<button on:click={expandPoemPad}>
+						<ChevronsLeftRight class="round-button" />
+					</button>
+					<button on:click={swapViews}>
+						<ArrowRightLeft class="round-button" />
+					</button>
+				</div>
 			</div>
+			<svelte:component
+				this={views[state[0]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[0]]}
+			/>
 		</div>
-		{@render pad(JSON.parse(writingPadsState.value)[0])}
+		<div class="notebook-container">
+			<svelte:component
+				this={views[state[1]]}
+				{unsavedChangesHandler}
+				bind:props={props[state[1]]}
+			/>
+		</div>
 	</div>
-	<div class="notebook-container">
-		{@render pad(JSON.parse(writingPadsState.value)[1])}
-	</div>
-</div>
+{/if}

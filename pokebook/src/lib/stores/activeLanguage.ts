@@ -1,3 +1,3 @@
 import { createStore } from './storeFactory';
 
-export const activeLanguage = createStore('active_language', '');
+export const activeLanguage = await createStore('active_language', '');

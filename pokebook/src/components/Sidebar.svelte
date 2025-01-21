@@ -19,58 +19,56 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { openModal } from 'svelte-modals';
 
-	import { t } from '$lib/translations';
-
-	import { navMenuItems } from '$lib/constants/NavMenuItems';
-
-	import type { PreferencesStore } from 'lib/hooks/usePreferences.svelte';
+	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
 
-	let { isSidebarOpen }: { isSidebarOpen: PreferencesStore } = $props();
-	let sidebarNavOpenClass = $derived(isSidebarOpen.value === 'true' ? 'sidebar-nav--open' : '');
+	import { navMenuItems } from '$lib/constants/NavMenuItems';
+
+	import { t } from '$lib/translations';
 
 	function handleSidebarItemClick() {
 		if (window.innerWidth < 1024) {
-			isSidebarOpen.value = 'false';
+			$isSidebarOpen = 'false';
 		}
 	}
+
+	let sidebarNavOpenClass = '';
+
+	$: $isSidebarOpen === 'true'
+		? (sidebarNavOpenClass = 'sidebar-nav--open')
+		: (sidebarNavOpenClass = '');
 </script>
 
 <div class="sidebar-nav-wrapper">
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="sidebar-close-area {sidebarNavOpenClass}"
-		onclick={() => {
-			isSidebarOpen.value = 'false';
-		}}
+		on:click={() => ($isSidebarOpen = 'false')}
+		on:keydown
 		role="button"
 		tabindex="0"
-	></div>
+	/>
 	<div class="sidebar {sidebarNavOpenClass}">
 		<div class="sidebar-nav-items">
-			{#each navMenuItems as Item, index (navMenuItems[index])}
-				<a href={Item.url} onclick={handleSidebarItemClick}>
+			{#each navMenuItems as item, index (navMenuItems[index])}
+				<a href={item.url} on:click={() => handleSidebarItemClick()}>
 					<div class="list-item">
-						<Item.icon />
-						{$t(Item.label)}
+						<svelte:component this={item.icon} />
+						{$t(item.label)}
 					</div>
 				</a>
 			{/each}
 		</div>
 		<div class="sidebar-footer">
-			<!-- eslint-disable @typescript-eslint/no-explicit-any -->
-			<!-- This doesn't matter since we'll migrate to Melt UI anyway -->
 			<button
-				onclick={() =>
-					openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal as any })}
+				on:click={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
 				<li>
-					<button onclick={() => openModal(Modal, { content: AboutModal as any })}
+					<button on:click={() => openModal(Modal, { content: AboutModal })}
 						>{$t('menu.about')}</button
 					>
 				</li>

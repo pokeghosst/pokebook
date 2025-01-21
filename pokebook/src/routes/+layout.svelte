@@ -23,23 +23,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Modals, closeModal } from 'svelte-modals';
 	import { App } from '@capacitor/app';
 
-	import { usePreferences } from 'lib/hooks/usePreferences.svelte';
+	import { darkMode } from '$lib/stores/darkMode';
+	import { dayTheme } from '$lib/stores/dayTheme';
+	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
+	import { nightTheme } from '$lib/stores/nightTheme';
 
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
-	import { setContext } from 'svelte';
 
-	let dayTheme = usePreferences('day_theme', 'neo-day');
-	let nightTheme = usePreferences('night_theme', 'neo-night');
-	let darkMode = usePreferences('dark_mode', '');
-	let isSidebarOpen = usePreferences('sidebar_open', 'false');
-	let isPokehelpActive = usePreferences('pokehelp_active', 'false');
-
-	setContext('pokehelp', isPokehelpActive);
-
-	$effect(() => {
-		updateTheme();
-	});
+	$: $darkMode, updateTheme();
 
 	function rgbToHex(r: number, g: number, b: number) {
 		return (
@@ -54,13 +46,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function updateTheme() {
-		console.log('updating theme');
 		document.documentElement.className = '';
-		if (darkMode.value !== '') {
-			document.documentElement.classList.add(darkMode.value || '');
-			document.documentElement.classList.add(nightTheme.value || 'chocolate');
+		if ($darkMode !== '') {
+			document.documentElement.classList.add($darkMode || '');
+			document.documentElement.classList.add($nightTheme || 'chocolate');
 		} else {
-			document.documentElement.classList.add(dayTheme.value || 'vanilla');
+			document.documentElement.classList.add($dayTheme || 'vanilla');
 		}
 		// I'm not a big fan of this idea but it's better than an ugly empty bar so it'll do for now
 		if (Capacitor.isNativePlatform()) {
@@ -73,20 +64,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	async function toggleDarkMode() {
-		console.log(darkMode.value);
-		darkMode.value = darkMode.value === 'dark' ? '' : 'dark';
-		console.log(darkMode.value);
-	}
-
-	function togglePokeHelp() {
-		isPokehelpActive.value = isPokehelpActive.value === 'true' ? 'false' : 'true';
-	}
-
-	function toggleSidebar() {
-		isSidebarOpen.value = isSidebarOpen.value === 'true' ? 'false' : 'true';
-	}
-
 	App.addListener('backButton', (_) => {
 		window.history.back();
 	});
@@ -96,19 +73,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div
 		slot="backdrop"
 		class="backdrop"
-		onclick={closeModal}
-		onkeydown={closeModal}
+		on:click={closeModal}
+		on:keydown
 		role="button"
 		tabindex="0"
-	></div>
+	/>
 </Modals>
 
 <Toaster />
-<Sidebar {isSidebarOpen} />
-<div class="main-wrapper {isSidebarOpen.value === 'true' ? 'l-sidebar-open' : ''}">
+<Sidebar />
+<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
 	<main>
 		<div>
-			<Header {toggleSidebar} {togglePokeHelp} {toggleDarkMode} />
+			<Header />
 			<slot />
 		</div>
 	</main>

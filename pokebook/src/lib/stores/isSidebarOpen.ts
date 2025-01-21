@@ -1,3 +1,3 @@
 import { createStore } from './storeFactory';
 
-export const isSidebarOpen = createStore('sidebar_open', 'false');
+export const isSidebarOpen = await createStore('sidebar_open', 'false');

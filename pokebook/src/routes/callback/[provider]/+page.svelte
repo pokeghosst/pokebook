@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	import { Preferences } from '$lib/plugins/Preferences';
+	import { Preferences } from '@capacitor/preferences';
 
 	import { t } from '$lib/translations';
 	import { isStorageProvider } from '$lib/enums/StorageProvider';

@@ -18,15 +18,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
-	import type { PreferencesStore } from 'lib/hooks/usePreferences.svelte';
 
-	let { note }: { note: PreferencesStore } = $props();
+	export let props: Writable<string>;
+	export let unsavedChangesHandler;
 
-	// let lines = $props.split('\n');
+	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
 
 	onMount(() => {
@@ -40,8 +41,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	// $: lines = $props.split('\n');
-	// $: lines, autoResizeNotebook();
+	$: lines = $props.split('\n');
+	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -63,11 +64,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={note.value}
+			bind:value={$props}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-		></textarea>
+			on:change|once={unsavedChangesHandler}
+		/>
 	</div>
 </div>

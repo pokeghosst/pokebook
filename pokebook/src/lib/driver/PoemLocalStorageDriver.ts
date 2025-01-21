@@ -16,57 +16,91 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Directory, Encoding } from '@capacitor/filesystem';
+
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
-import { Filesystem } from '../plugins/Filesystem';
-
-import type { PoemEntity, PoemFileEntity } from '../types';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 import type { IPoemStorageDriver } from './IPoemStorageDriver';
 
+// TODO: Refactor all drivers into classes with static methods
 export const PoemLocalStorageDriver: IPoemStorageDriver = {
-	listPoems: async function (): Promise<PoemFileEntity[]> {
-		const files = (await Filesystem.readDir({ path: '/' })).entries;
-		console.log('files', files);
+	listPoems: async function () {
+		try {
+			const storedFiles = (
+				await FilesystemWithPermissions.readdir({
+					path: 'poems/',
+					directory: Directory.Documents
+				})
+			).files;
 
-		return files.map((file) => ({
-			name: file.name.split('_')[0].replace(/%20/g, ' '),
-			poemUri: file.uri,
-			timestamp: file.ctime
-		}));
+			const poemFiles: PoemFileEntity[] = [];
+			storedFiles.forEach((file) => {
+				poemFiles.push({
+					name: file.name.split('_')[0].replace(/%20/g, ' '),
+					poemUri: file.uri,
+					// ctime is not available on Android 7 and older devices.
+					// The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
+					timestamp: file.ctime ?? file.mtime
+				});
+			});
+			return poemFiles.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
+		} catch (e) {
+			if (e instanceof Error)
+				if (e.message === 'Folder does not exist.') {
+					return [];
+				} else {
+					throw e;
+				}
+			else throw new Error('errors.unknown');
+		}
 	},
-
-	loadPoem: async function (poemUri: string): Promise<PoemEntity> {
-		console.log('loading poem');
-
-		const file = await Filesystem.readFile({ path: `${poemUri}` });
-		console.log(file);
-
-		return new XMLParser().parse(file.data);
+	loadPoem: async function (poemUri: string) {
+		return new XMLParser().parse(
+			(
+				await FilesystemWithPermissions.readFile({
+					path: poemUri,
+					encoding: Encoding.UTF8
+				})
+			).data.toString()
+		);
 	},
-	savePoem: async function (poem: PoemEntity): Promise<{ id: string; timestamp: number }> {
-		const now = Date.now();
-
-		const { uri } = await Filesystem.writeFile({
-			path: `/${poem.name}_${now}.xml`,
-			data: new XMLBuilder({ format: true }).build(poem)
-		});
-
-		return { id: uri, timestamp: now };
+	savePoem: async function (poem: PoemEntity) {
+		const timestamp = Date.now();
+		const id = (
+			await FilesystemWithPermissions.writeFile({
+				path: `poems/${poem.name}_${timestamp}.xml`,
+				data: new XMLBuilder({ format: true }).build(poem),
+				directory: Directory.Documents,
+				encoding: Encoding.UTF8,
+				recursive: true
+			})
+		).uri;
+		return {
+			id,
+			timestamp
+		};
 	},
-	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string | void> {
-		await Filesystem.writeFile({
+	updatePoem: async function (poem: PoemEntity, poemUri: string): Promise<string> {
+		await FilesystemWithPermissions.writeFile({
 			path: poemUri,
-			data: new XMLBuilder({ format: true }).build(poem)
+			data: new XMLBuilder({ format: true }).build(poem),
+			encoding: Encoding.UTF8
 		});
-		const timestamp = poemUri.split('/')[1].split(/_|\.xml/)[1];
-		const newFileUri = `/${poem.name}_${timestamp}.xml`;
-		await Filesystem.rename({
+		const directory = poemUri.split('poems/')[0];
+		const timestamp = poemUri.split('poems/')[1].split(/_|\.xml/)[1];
+		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
+		await FilesystemWithPermissions.rename({
 			from: poemUri,
 			to: newFileUri
 		});
+
 		return newFileUri;
 	},
-	deletePoem: async function (poemUri: string): Promise<void> {
-		await Filesystem.deleteFile({ path: poemUri });
+	deletePoem: async function (poemUri: string) {
+		await FilesystemWithPermissions.deleteFile({
+			path: poemUri
+		});
 	}
 };
