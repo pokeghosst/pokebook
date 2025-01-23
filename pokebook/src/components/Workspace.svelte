@@ -2,7 +2,7 @@
      Rename the variable and try again or migrate by hand. -->
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import hotkeys from 'hotkeys-js';
 
-	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
+	import { isFullWidthPad, notebookFont, writingPadsState } from '$lib/plugins/UserPreferenceFactory.svelte';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
@@ -35,46 +35,79 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
 	import Toolbar from './Toolbar.svelte';
 
-	export let actions: { icon: ComponentType; action: () => void; label: string }[];
-	export let poemProps: { name: Writable<string>; body: Writable<string> };
-	export let noteProps: Writable<string>;
+	// export let actions: { icon: ComponentType; action: () => void; label: string }[];
+	// export let poemProps: { name: Writable<string>; body: Writable<string> };
+	// export let noteProps: Writable<string>;
+
+	let { poemProps, noteProps } = $props();
 
 	// Assigning empty function by default because on draft page we don't pass a function here
-	export let unsavedChangesHandler = () => {};
+	// export let unsavedChangesHandler = () => {};
 
-	let state: number[] = JSON.parse($viewsState);
-	let views = [PoemPad, NotePad];
+	// let padsState: number[] = JSON.parse($viewsState);
+	// let views = [PoemPad, NotePad];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let props: [any, any] = [poemProps, noteProps];
+	// let props: [any, any] = [poemProps, noteProps];
 
-	let currentState = '';
+	// let currentState = $state('');
 
-	onMount(() => {
-		hotkeys('ctrl+e, command+e', function () {
-			expandPoemPad();
-			return false;
-		});
-	});
+	// onMount(() => {
+	// 	hotkeys('ctrl+e, command+e', function () {
+	// 		expandPoemPad();
+	// 		return false;
+	// 	});
+	// });
 
-	onDestroy(() => {
-		hotkeys.unbind('ctrl+e, command+e');
-	});
+	// onDestroy(() => {
+	// 	hotkeys.unbind('ctrl+e, command+e');
+	// });
 
 	function swapViews() {
-		currentState = 'transitioning';
+		// currentState = 'transitioning';
 		setTimeout(function () {
+			const state = writingPadsState.value;
 			[state[0], state[1]] = [state[1], state[0]];
-			$viewsState = JSON.stringify(state);
-			currentState = '';
-		}, 600);
+			writingPadsState.value = state;
+			// currentState = '';
+		}, 300);
 	}
 
 	function expandPoemPad() {
-		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
+		isFullWidthPad.value = !isFullWidthPad.value;
 	}
 </script>
 
-{#if state}
+{#snippet pad(state: string)}
+	{#if state === 'poem'}
+		<PoemPad {poemProps} />
+	{:else if state === 'note'}
+		<NotePad {noteProps} />
+	{:else}
+		D'oh!
+	{/if}
+{/snippet}
+
+<!-- <div class="toolbar"><Toolbar {actions} /></div> -->
+<div class="workspace {isFullWidthPad.value ? 'l-full-width' : ''} {notebookFont.value}">
+	<div class="notebook-container">
+		<div class="notebook-container-toolbar">
+			<div>
+				<button onclick={expandPoemPad}>
+					<ChevronsLeftRight class="round-button" />
+				</button>
+				<button onclick={swapViews}>
+					<ArrowRightLeft class="round-button" />
+				</button>
+			</div>
+		</div>
+		{@render pad(JSON.parse(writingPadsState.value)[0])}
+	</div>
+	<div class="notebook-container">
+		{@render pad(JSON.parse(writingPadsState.value)[1])}
+	</div>
+</div>
+
+<!-- {#if state}
 	<div class="toolbar"><Toolbar {actions} /></div>
 	<div
 		class="workspace {$isFullWidthPad === 'true'
@@ -106,4 +139,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			/>
 		</div>
 	</div>
-{/if}
+{/if} -->
+
+{JSON.stringify(poemProps)}

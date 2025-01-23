@@ -2,7 +2,6 @@
   "eslint.validate": ["javascript", "typescript", "svelte"],
   "git.enableCommitSigning": true,
   "editor.formatOnSave": true,
-  "prettier.documentSelectors": ["**/*.astro"],
   "cSpell.words": [
     "Dexie",
     "localforage",
