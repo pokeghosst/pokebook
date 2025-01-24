@@ -24,7 +24,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import hotkeys from 'hotkeys-js';
 
-	import { isFullWidthPad, notebookFont, writingPadsState } from '$lib/plugins/UserPreferenceFactory.svelte';
+	import {
+		isFullWidthPad,
+		notebookFont,
+		writingPadsState
+	} from '$lib/plugins/UserPreferenceFactory.svelte';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
@@ -34,12 +38,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
 	import Toolbar from './Toolbar.svelte';
+	import type { WorkspaceProps } from '$lib/types';
 
 	// export let actions: { icon: ComponentType; action: () => void; label: string }[];
 	// export let poemProps: { name: Writable<string>; body: Writable<string> };
 	// export let noteProps: Writable<string>;
 
-	let { poemProps, noteProps } = $props();
+	let { poemProp = $bindable(), noteProp }: WorkspaceProps = $props();
+
 
 	// Assigning empty function by default because on draft page we don't pass a function here
 	// export let unsavedChangesHandler = () => {};
@@ -79,9 +85,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 {#snippet pad(state: string)}
 	{#if state === 'poem'}
-		<PoemPad {poemProps} />
+		<PoemPad bind:poemProp={poemProp} />
 	{:else if state === 'note'}
-		<NotePad {noteProps} />
+		<NotePad {noteProp} />
 	{:else}
 		D'oh!
 	{/if}
@@ -100,10 +106,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</div>
-		{@render pad(JSON.parse(writingPadsState.value)[0])}
+		{@render pad(writingPadsState.value[0])}
 	</div>
 	<div class="notebook-container">
-		{@render pad(JSON.parse(writingPadsState.value)[1])}
+		{@render pad(writingPadsState.value[1])}
 	</div>
 </div>
 
@@ -141,4 +147,3 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</div>
 {/if} -->
 
-{JSON.stringify(poemProps)}

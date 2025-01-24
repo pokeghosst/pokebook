@@ -31,6 +31,11 @@ export interface PoemEntity {
 	note: string;
 }
 
+export interface WorkspaceProps {
+	poemProp: Omit<PoemEntity, 'note'>;
+	noteProp: Pick<PoemEntity, 'note'>;
+}
+
 export interface PoemCacheRecord {
 	cacheId?: number;
 	poemId: string;

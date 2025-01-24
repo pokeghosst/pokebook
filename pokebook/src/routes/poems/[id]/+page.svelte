@@ -50,15 +50,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../../../components/Workspace.svelte';
 
 	import type { PageProps } from './$types';
+	import { text } from '@sveltejs/kit';
+	import { notebookFont } from '$lib/plugins/UserPreferenceFactory.svelte';
 
-	let { data: poem }: PageProps = $props();
+	let { data }: PageProps = $props();
+	let poemProp = $state({ name: data.name, text: data.text });
+	const noteProp = $state({ note: data.note });
+
+	$effect(() => {
+		console.log('changing poem...');
+		console.log(poemProp);
+	});
 
 	let unsavedChangesToastId: string;
 
 	let thinking = $state(true);
-
-	let poemProps = { name: poem.name, body: poem.text };
-	let noteProps = poem.note;
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	run(() => {
@@ -207,4 +213,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
 {/if} -->
 
-<Workspace {poemProps} {noteProps} />
+<Workspace bind:poemProp={poemProp} {noteProp} />
