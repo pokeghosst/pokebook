@@ -52,14 +52,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { PageProps } from './$types';
 	import { text } from '@sveltejs/kit';
 	import { notebookFont } from '$lib/plugins/UserPreferenceFactory.svelte';
+	import { poemManager } from '$lib/plugins/PoemManager.svelte';
 
 	let { data }: PageProps = $props();
 	let poemProp = $state({ name: data.name, text: data.text });
 	const noteProp = $state({ note: data.note });
 
 	$effect(() => {
-		console.log('changing poem...');
-		console.log(poemProp);
+		// console.log('changing poem...');
+		const { id: _id, ...poem } = data;
+		// console.log('state props', Object.values({ ...poemProp, ...noteProp }));
+		// console.log('loaded data', Object.values(poem));
+		// console.log(Object.values({ ...poemProp, ...noteProp }).every((val, i) => val === Object.values(poem)[i]));
+		
+		if (!Object.values({ ...poemProp, ...noteProp }).every((val, i) => val === Object.values(poem)[i])) poemManager.update(data.id, { ...poemProp, ...noteProp });
 	});
 
 	let unsavedChangesToastId: string;
@@ -213,4 +219,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
 {/if} -->
 
-<Workspace bind:poemProp={poemProp} {noteProp} />
+<Workspace bind:poemProp {noteProp} />

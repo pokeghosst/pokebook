@@ -6,7 +6,8 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ params }) => {
 	if (browser) {
 		const { poemManager } = await import('$lib/plugins/PoemManager.svelte');
-		return await poemManager.load(params.id);
+		const poem = await poemManager.load(params.id);
+		return { ...poem, id: params.id };
 	}
-	return {} as PoemEntity;
+	return {} as PoemEntity & { id: string };
 };

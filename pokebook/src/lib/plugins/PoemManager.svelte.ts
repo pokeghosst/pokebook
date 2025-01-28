@@ -54,10 +54,7 @@ export default class PoemManager {
 		const now = Date.now();
 		const id = crypto.randomUUID();
 
-		await Filesystem.writeFile({
-			path: `/${id}.json`,
-			data: JSON.stringify(poem)
-		});
+		this.writePoemToFile(id, poem);
 
 		const poemCacheRecord: PoemCacheRecord = {
 			poemId: id,
@@ -77,11 +74,18 @@ export default class PoemManager {
 		this.poemList = [...this.poemList, poemCacheRecord];
 	}
 
-	public async load(id: string): Promise<PoemEntity> {
+	update(id: string, poem: PoemEntity) {
+		// console.log(poem);
+		console.log('Updating the poem...');
+
+		this.writePoemToFile(id, poem);
+	}
+
+	async load(id: string): Promise<PoemEntity> {
 		return JSON.parse((await Filesystem.readFile({ path: `/${id}.json` })).data) as PoemEntity;
 	}
 
-	public get list() {
+	get list() {
 		return this.poemList;
 	}
 	// public static async delete(id: string, storage: string) {
@@ -110,6 +114,14 @@ export default class PoemManager {
 
 	//   if (!isCachePresent) await PoemCacheDriver.initCache(storage);
 	// }
+
+	private async writePoemToFile(id: string, poem: PoemEntity) {
+		console.log('Writing poem to file...');
+		await Filesystem.writeFile({
+			path: `/${id}.json`,
+			data: JSON.stringify(poem)
+		});
+	}
 }
 
 class PoemManagerFactory {
