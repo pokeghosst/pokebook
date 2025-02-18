@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "scripts": {
+    "prepare": "nitropack prepare",
+    "dev": "nitropack dev",
+    "build": "nitropack build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.3.3",
+    "dropbox": "^10.34.0",
+    "fast-xml-parser": "^4.3.3",
+    "googleapis": "^131.0.0",
+    "nitropack": "latest"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2"
+  }
+}

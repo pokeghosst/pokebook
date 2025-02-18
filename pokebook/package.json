@@ -23,15 +23,13 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write .",
-		"tauri": "tauri"
+		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
 		"@capacitor/assets": "^3.0.5",
 		"@sveltejs/adapter-auto": "^3.2.3",
 		"@sveltejs/adapter-static": "^3.0.3",
 		"@sveltejs/kit": "^2.5.21",
-		"@tauri-apps/cli": "^1.6.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"cross-env": "^7.0.3",
