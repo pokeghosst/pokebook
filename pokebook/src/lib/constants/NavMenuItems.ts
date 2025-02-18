@@ -13,7 +13,7 @@ export const navMenuItems: MenuItem[] = [
 	{
 		icon: LibraryBig,
 		label: 'menu.stash',
-		url: '/poems'
+		url: '/stash'
 	},
 	{
 		icon: Settings,

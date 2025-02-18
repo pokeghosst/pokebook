@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
 
 	import { storageMode } from '$lib/stores/storageMode';
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
@@ -32,13 +32,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 
-	import { poemManager } from '$lib/plugins/PoemManager.svelte';
 	import type { PoemCacheRecord } from '$lib/types';
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let cachedPoems: Promise<PoemCacheRecord[]> = $state();
-	let showFallback = $state(false);
+	let cachedPoems: Promise<PoemCacheRecord[]>;
+	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
@@ -61,32 +60,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<!-- {JSON.stringify(poemManager.poemList)} -->
-{#if poemManager.list && poemManager.list.length > 0}
-	<div class="refresh-wrapper">
-		<button class="button" onclick={handleCacheRefresh}>Refresh <RotateCcw /></button>
-	</div>
-	<div class="poem-list">
-		{#each poemManager.list as poem}
-			<div class="list-item">
-				<a href="/poems/{poem.poemId}">
-					<div class="list-poem">
-						<p class="list-poem-name">
-							{poem.name}{poem.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
-						</p>
-						<p class="list-poem-snippet">{poem.poemSnippet}...</p>
-					</div>
-					<div>{new Intl.DateTimeFormat('en-US').format(new Date(poem.createdAt))}</div>
-				</a>
-			</div>
-		{/each}
-	</div>
-{:else}
-	<div class="placeholder-text-wrapper">
-		{$t('workspace.emptyPoemList')}
-	</div>
-{/if}
-<!-- {#await cachedPoems}
+{#await cachedPoems}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
 			<p>Loading...</p>
@@ -95,12 +69,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
 		<div class="refresh-wrapper">
-			<button class="button" onclick={handleCacheRefresh}>Refresh <RotateCcw /></button>
+			<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
 		</div>
 		<div class="poem-list">
 			{#each cacheRecords as record}
 				<div class="list-item">
-					<button onclick={() => goToPoem(record.id)}>
+					<button on:click={() => goToPoem(record.id)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
@@ -121,4 +95,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="placeholder-text-wrapper">
 		{$t(error.message)}
 	</div>
-{/await} -->
+{/await}

@@ -14,7 +14,7 @@
 </script>
 
 <div class="button-group">
-	<button class="button" onclick={decrementFont}><Minus /></button><span class="button"
+	<button class="button" on:click={decrementFont}><Minus /></button><span class="button"
 		>{$writingPadFontSize}px</span
-	><button class="button" onclick={incrementFont}><Plus /></button>
+	><button class="button" on:click={incrementFont}><Plus /></button>
 </div>

@@ -27,8 +27,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemNameStore,
 		draftPoemNoteStore
 	} from '$lib/stores/poemDraft';
+	import { storageMode } from '$lib/stores/storageMode';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
+	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
@@ -39,7 +41,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import Workspace from '../components/Workspace.svelte';
 
-	import { poemManager } from '$lib/plugins/PoemManager.svelte';
 	import type { ToolbarItem } from '$lib/types';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
@@ -83,7 +84,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
 				await toast.promise(
-					poemManager.save({ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore }),
+					Poem.save(
+						{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
+						$storageMode
+					),
 					{
 						loading: `${$t('toasts.savingPoem')}`,
 						success: `${$t('toasts.poemSaved')}`,

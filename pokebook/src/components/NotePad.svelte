@@ -1,8 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: migrating this component would require adding a `$props` rune but there's already a variable named props.
-     Rename the variable and try again or migrate by hand. -->
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2025 Pokeghost.
+Copyright (C) 2023-2024 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -20,18 +18,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
 
-	import type { WorkspaceProps } from '$lib/types';
+	export let props: Writable<string>;
+	export let unsavedChangesHandler;
 
-	let {noteProp} : Pick<WorkspaceProps, 'noteProp'> = $props();
-	// export let unsavedChangesHandler;
-
-	
-	// let lines = $props.split('\n');
+	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
 
 	onMount(() => {
@@ -45,8 +41,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	// $: lines = $props.split('\n');
-	// $: lines, autoResizeNotebook();
+	$: lines = $props.split('\n');
+	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -68,11 +64,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={noteProp.note}
+			bind:value={$props}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-		></textarea>
+			on:change|once={unsavedChangesHandler}
+		/>
 	</div>
 </div>

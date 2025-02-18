@@ -17,9 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run, createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
 	import { openModal } from 'svelte-modals';
 
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
@@ -38,29 +35,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	let sidebarNavOpenClass = $state('');
+	let sidebarNavOpenClass = '';
 
-	run(() => {
-		$isSidebarOpen === 'true'
-			? (sidebarNavOpenClass = 'sidebar-nav--open')
-			: (sidebarNavOpenClass = '');
-	});
+	$: $isSidebarOpen === 'true'
+		? (sidebarNavOpenClass = 'sidebar-nav--open')
+		: (sidebarNavOpenClass = '');
 </script>
 
 <div class="sidebar-nav-wrapper">
 	<div
 		class="sidebar-close-area {sidebarNavOpenClass}"
-		onclick={() => ($isSidebarOpen = 'false')}
-		onkeydown={bubble('keydown')}
+		on:click={() => ($isSidebarOpen = 'false')}
+		on:keydown
 		role="button"
 		tabindex="0"
-	></div>
+	/>
 	<div class="sidebar {sidebarNavOpenClass}">
 		<div class="sidebar-nav-items">
 			{#each navMenuItems as item, index (navMenuItems[index])}
-				<a href={item.url} onclick={() => handleSidebarItemClick()}>
+				<a href={item.url} on:click={() => handleSidebarItemClick()}>
 					<div class="list-item">
-						<item.icon />
+						<svelte:component this={item.icon} />
 						{$t(item.label)}
 					</div>
 				</a>
@@ -68,12 +63,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 		<div class="sidebar-footer">
 			<button
-				onclick={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				on:click={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
 				<li>
-					<button onclick={() => openModal(Modal, { content: AboutModal })}
+					<button on:click={() => openModal(Modal, { content: AboutModal })}
 						>{$t('menu.about')}</button
 					>
 				</li>

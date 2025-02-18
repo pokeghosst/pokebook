@@ -6,26 +6,22 @@
 
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 
-	interface Props {
-		toast: Toast; // let dismissAction: () => void;
-	}
+	export let toast: Toast;
 
-	let { toast }: Props = $props();
-
-	
+	// let dismissAction: () => void;
 </script>
 
 <div class="toast-contents">
 	<p>{$t('toasts.unsavedChanges')}</p>
 	<button
-		onclick={() => {
+		on:click={() => {
 			toast_.dismiss(toast.id);
 			$saveFunction();
 		}}
 		class="action-button action-button--primary">{$t('toasts.buttons.saveChanges')}</button
 	>
 	<button
-		onclick={() => {
+		on:click={() => {
 			toast_.dismiss(toast.id);
 			$discardFunction();
 		}}

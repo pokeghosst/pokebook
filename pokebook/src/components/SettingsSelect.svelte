@@ -21,21 +21,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 
-	interface Props {
-		parameterName: string;
-		labelName: string;
-		bindParameter: string | undefined;
-		options?: { value: string; label: string }[];
-		localizeLabel?: boolean;
-	}
-
-	let {
-		parameterName,
-		labelName,
-		bindParameter = $bindable(),
-		options = [],
-		localizeLabel = true
-	}: Props = $props();
+	export let parameterName: string;
+	export let labelName: string;
+	export let bindParameter: string | undefined;
+	export let options: { value: string; label: string }[] = [];
+	export let localizeLabel = true;
 </script>
 
 <div class="settings-select">

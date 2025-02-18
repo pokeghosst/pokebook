@@ -1,7 +1,7 @@
 {
 	"name": "pokebook",
 	"version": "3.1.0",
-	"description": "Best digital notebook for writing poetry",
+	"description": "Digital notebook for writing poetry",
 	"keywords": [
 		"Poetry",
 		"Writing",
@@ -12,7 +12,7 @@
 	"license": "AGPL-3.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pokeghosst/pokebook"
+		"url": "https://github.com/pokegh0st/pokebook"
 	},
 	"type": "module",
 	"scripts": {
@@ -30,22 +30,22 @@
 		"@capacitor/assets": "^3.0.5",
 		"@sveltejs/adapter-auto": "^3.2.3",
 		"@sveltejs/adapter-static": "^3.0.3",
-		"@sveltejs/kit": "^2.5.27",
-		"@tauri-apps/cli": "^2.2.5",
+		"@sveltejs/kit": "^2.5.21",
+		"@tauri-apps/cli": "^1.6.0",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"cross-env": "^7.0.3",
 		"dotenv": "^16.4.5",
 		"eslint": "^8.54.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.45.1",
-		"prettier": "^3.3.3",
-		"prettier-plugin-svelte": "^3.3.3",
+		"eslint-plugin-svelte": "^2.43.0",
+		"prettier": "^2.8.0",
+		"prettier-plugin-svelte": "^2.8.1",
 		"sass": "^1.77.8",
-		"svelte": "^5.19.1",
-		"typescript": "^5.5.0",
+		"svelte": "^4.2.18",
+		"typescript": "^4.9.5",
 		"typescript-eslint": "^8.1.0",
-		"vite": "^6.0.11",
+		"vite": "^5.4.0",
 		"vite-plugin-top-level-await": "^1.4.4"
 	},
 	"dependencies": {
@@ -59,12 +59,10 @@
 		"@capacitor/preferences": "^6.0.2",
 		"@capacitor/share": "^6.0.2",
 		"@capacitor/status-bar": "^6.0.1",
-		"@tauri-apps/plugin-fs": "^2.2.0",
-		"dexie": "^4.0.11",
 		"fast-xml-parser": "^4.4.1",
 		"hotkeys-js": "^3.13.7",
 		"letter-count": "^5.2.1",
-		"lucide-svelte": "^0.427.0",
+		"lucide-svelte": "^0.439.0",
 		"svelte-french-toast": "^1.2.0",
 		"svelte-modals": "^1.3.0",
 		"sveltekit-i18n": "^2.4.2",

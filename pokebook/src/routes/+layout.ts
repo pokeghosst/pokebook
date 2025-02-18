@@ -1,3 +1,5 @@
+import { browser } from '$app/environment';
+
 import { Preferences } from '@capacitor/preferences';
 
 import { loadTranslations } from '$lib/translations';

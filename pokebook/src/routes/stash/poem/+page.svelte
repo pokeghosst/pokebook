@@ -17,8 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -30,7 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemNote,
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
-	// import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
+	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
@@ -49,31 +47,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 
-	import type { PageProps } from './$types';
-	import { text } from '@sveltejs/kit';
-	import { notebookFont } from '$lib/plugins/UserPreferenceFactory.svelte';
-	import { poemManager } from '$lib/plugins/PoemManager.svelte';
-
-	let { data }: PageProps = $props();
-	let poemProp = $state({ name: data.name, text: data.text });
-	const noteProp = $state({ note: data.note });
-
-	$effect(() => {
-		// console.log('changing poem...');
-		const { id: _id, ...poem } = data;
-		// console.log('state props', Object.values({ ...poemProp, ...noteProp }));
-		// console.log('loaded data', Object.values(poem));
-		// console.log(Object.values({ ...poemProp, ...noteProp }).every((val, i) => val === Object.values(poem)[i]));
-		
-		if (!Object.values({ ...poemProp, ...noteProp }).every((val, i) => val === Object.values(poem)[i])) poemManager.update(data.id, { ...poemProp, ...noteProp });
-	});
-
 	let unsavedChangesToastId: string;
 
-	let thinking = $state(true);
+	let thinking = true;
+
+	let poemProps = { name: currentPoemName, body: currentPoemBody };
+	let noteProps = currentPoemNote;
 
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	run(() => {
+	$: {
 		if (!thinking)
 			FilesystemWithPermissions.writeFile({
 				path: `${$currentPoemUri}.tmp`,
@@ -85,28 +67,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 				encoding: Encoding.UTF8
 			});
-	});
+	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
-	// $saveFunction = async () => {
-	// 	await toast.promise(
-	// 		save(),
-	// 		{
-	// 			loading: `${$t('toasts.savingPoem')}`,
-	// 			success: `${$t('toasts.poemSaved')}`,
-	// 			error: `${$t('errors.poemSaveError')}`
-	// 		},
-	// 		{
-	// 			position: GLOBAL_TOAST_POSITION,
-	// 			style: GLOBAL_TOAST_STYLE
-	// 		}
-	// 	);
-	// };
-	// $discardFunction = async () => {
-	// 	await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
-	// 	await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
-	// 	goto('/stash', { replaceState: false });
-	// };
+	$saveFunction = async () => {
+		await toast.promise(
+			save(),
+			{
+				loading: `${$t('toasts.savingPoem')}`,
+				success: `${$t('toasts.poemSaved')}`,
+				error: `${$t('errors.poemSaveError')}`
+			},
+			{
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			}
+		);
+	};
+	$discardFunction = async () => {
+		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
+		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
+		goto('/stash', { replaceState: false });
+	};
 
 	const deletePoemAction = async () => {
 		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
@@ -145,52 +127,52 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		await goto('/stash', { invalidateAll: true });
 	}
 
-	// let actions = [
-	// 	// TODO: Bad, bad, bad, bad!!!
-	// 	{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
-	// 	{
-	// 		icon: Share2,
-	// 		action: () =>
-	// 			sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
-	// 		label: $t('workspace.sharePoem')
-	// 	},
-	// 	{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
-	// ];
+	let actions = [
+		// TODO: Bad, bad, bad, bad!!!
+		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
+		{
+			icon: Share2,
+			action: () =>
+				sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem')
+		},
+		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
+	];
 
-	// onMount(async () => {
-	// 	if (
-	// 		(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
-	// 	) {
-	// 		unsavedChangesToastId = toast(UnsavedChangesToast, {
-	// 			duration: Infinity,
-	// 			position: GLOBAL_TOAST_POSITION,
-	// 			style: GLOBAL_TOAST_STYLE
-	// 		});
-	// 		const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
-	// 		$currentPoemName = name;
-	// 		$currentPoemBody = text;
-	// 		$currentPoemNote = note;
+	onMount(async () => {
+		if (
+			(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
+		) {
+			unsavedChangesToastId = toast(UnsavedChangesToast, {
+				duration: Infinity,
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
+			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+			$currentPoemName = name;
+			$currentPoemBody = text;
+			$currentPoemNote = note;
 
-	// 		thinking = false;
-	// 	} else {
-	// 		try {
-	// 			const poem = await Poem.load($currentPoemUri, $storageMode);
-	// 			if (poem) {
-	// 				$currentPoemName = poem.name;
-	// 				$currentPoemBody = poem.text;
-	// 				$currentPoemNote = poem.note;
-	// 			}
-	// 		} catch (e) {
-	// 			if (e instanceof Error) {
-	// 				toast.error($t(e.message), {
-	// 					position: GLOBAL_TOAST_POSITION,
-	// 					style: GLOBAL_TOAST_STYLE
-	// 				});
-	// 			}
-	// 		}
-	// 		thinking = false;
-	// 	}
-	// });
+			thinking = false;
+		} else {
+			try {
+				const poem = await Poem.load($currentPoemUri, $storageMode);
+				if (poem) {
+					$currentPoemName = poem.name;
+					$currentPoemBody = poem.text;
+					$currentPoemNote = poem.note;
+				}
+			} catch (e) {
+				if (e instanceof Error) {
+					toast.error($t(e.message), {
+						position: GLOBAL_TOAST_POSITION,
+						style: GLOBAL_TOAST_STYLE
+					});
+				}
+			}
+			thinking = false;
+		}
+	});
 
 	onDestroy(() => {
 		toast.dismiss(unsavedChangesToastId);
@@ -211,12 +193,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<!-- {#if thinking}
+{#if thinking}
 	<div class="placeholder-text-wrapper">
 		<p>Loading...</p>
 	</div>
 {:else}
 	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
-{/if} -->
-
-<Workspace bind:poemProp {noteProp} />
+{/if}
