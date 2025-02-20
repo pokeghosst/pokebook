@@ -21,7 +21,7 @@ const config = {
 						strict: false
 				  })
 				: adapterAuto(),
-		alias: { 'lib/': './src/lib/' }
+		alias: { '$lib': './src/lib/' }
 	}
 };
 

@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,17 +16,72 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
+import {Directory, Encoding} from '@capacitor/filesystem';
+import {Preferences} from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
-import type { PoemCacheRecord, PoemEntity } from '$lib/types';
+import type {PoemEntity} from '$lib/types';
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
-const SNIPPET_LENGTH = 128;
+const SNIPPET_LENGTH = 256;
+const CACHE_PATH = 'poems/poems_local.json';
 
-export default class PoemCacheDriver {
+export interface PoemCacheRecord {
+	id: string;
+	name: string;
+	createdAt?: number;
+	updatedAt?: number;
+	// TODO: This will be dropped but check for backwards compatibility
+	timestamp: string | number; // TODO: Check this later with different drivers, maybe harmonize
+	unsavedChanges: boolean;
+	poemSnippet: string;
+}
+
+export default class PoemCacheManager {
+	// TODO: Think later -- keep this synced to disk w/ $effect rune
+	private poemList: PoemCacheRecord[] | null = $state(null);
+
+	constructor() {
+		this.poemList = null;
+	}
+
+	async initialize() {
+		const isCachePresent = await PoemCacheManager.isCachePresent('local');
+
+		if (!isCachePresent) await PoemCacheManager.initCache('local');
+
+		this.poemList = await PoemCacheManager.getCachedPoems();
+	}
+
+	public async push(id: string, name: string, timestamp: number, poemSnippet: string) {
+		if (!this.poemList) throw new Error('Poem cache not initialized');
+
+		const cacheRecord: PoemCacheRecord = {
+			id,
+			name,
+			createdAt: timestamp,
+			updatedAt: timestamp,
+			timestamp,
+			unsavedChanges: false,
+			poemSnippet
+		};
+
+		this.poemList = [...this.poemList, cacheRecord];
+
+		await this.flushToFile();
+	}
+
+	private async flushToFile() {
+		await FilesystemWithPermissions.writeFile({
+			directory: Directory.Documents,
+			path: CACHE_PATH,
+			encoding: Encoding.UTF8,
+			recursive: true,
+			data: JSON.stringify(this.poemList)
+		});
+	}
+
 	public static async addPoemRecord(storage: string, recordToSave: PoemCacheRecord) {
 		const cachedPoemFile = await this.getCachedPoems(storage);
 		const poemCache = cachedPoemFile;
@@ -34,7 +89,8 @@ export default class PoemCacheDriver {
 		await this.writeToCache(storage, [recordToSave].concat(poemCache));
 	}
 
-	public static async getCachedPoems(storage: string): Promise<PoemCacheRecord[]> {
+	// TODO: This is a stub so I don't break EVERYTHING else
+	public static async getCachedPoems(storage: string = 'local'): Promise<PoemCacheRecord[]> {
 		const poemCacheFile = await FilesystemWithPermissions.readFile({
 			directory: Directory.Documents,
 			path: `poems/poems_${storage}.json`,
@@ -165,5 +221,14 @@ export default class PoemCacheDriver {
 			recursive: true,
 			data: JSON.stringify(data)
 		});
+	}
+}
+
+export class PoemCacheManagerFactory {
+	static async createPoemCacheManager() {
+		console.log('initializing poem cache manager...')
+		const cacheManager = new PoemCacheManager();
+		await cacheManager.initialize();
+		return cacheManager;
 	}
 }

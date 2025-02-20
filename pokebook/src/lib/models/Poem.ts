@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-import PoemCacheDriver from '../driver/PoemCacheDriver';
+import PoemCacheManager, {type PoemCacheRecord} from '../plugins/PoemCacheManager.svelte';
 
-import type { PoemEntity, PoemFileEntity, PoemCacheRecord } from '$lib/types';
+import type { PoemEntity, PoemFileEntity } from '$lib/types';
 
 export default class Poem {
 	private static pickStorageDriver(storage: string) {
@@ -39,7 +39,7 @@ export default class Poem {
 	public static async listFromCache(storage: string): Promise<PoemCacheRecord[]> {
 		await this.initPoemCacheIfNotExists(storage);
 
-		return await PoemCacheDriver.getCachedPoems(storage);
+		return await PoemCacheManager.getCachedPoems(storage);
 	}
 	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
 		return (await this.pickStorageDriver(storage).listPoems()).filter(
@@ -57,12 +57,12 @@ export default class Poem {
 			timestamp: number;
 		};
 
-		await PoemCacheDriver.addPoemRecord(storage, {
+		await PoemCacheManager.addPoemRecord(storage, {
 			id,
 			name: poem.name,
 			timestamp,
 			unsavedChanges: false,
-			poemSnippet: PoemCacheDriver.sliceSnippet(poem.text)
+			poemSnippet: PoemCacheManager.sliceSnippet(poem.text)
 		});
 	}
 	public static async delete(id: string, storage: string) {
@@ -76,14 +76,14 @@ export default class Poem {
 	): Promise<void | string> {
 		const newPoemUri = await this.pickStorageDriver(storage).updatePoem(poem, id);
 
-		await PoemCacheDriver.updateCachedPoem(storage, id, newPoemUri, poem);
+		await PoemCacheManager.updateCachedPoem(storage, id, newPoemUri, poem);
 
 		return newPoemUri;
 	}
 
 	static async initPoemCacheIfNotExists(storage: string) {
-		const isCachePresent = await PoemCacheDriver.isCachePresent(storage);
+		const isCachePresent = await PoemCacheManager.isCachePresent(storage);
 
-		if (!isCachePresent) await PoemCacheDriver.initCache(storage);
+		if (!isCachePresent) await PoemCacheManager.initCache(storage);
 	}
 }

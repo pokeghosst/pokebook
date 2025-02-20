@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
+	import PoemCacheManager, {type PoemCacheRecord} from '$lib/plugins/PoemCacheManager.svelte';
 
 	import { storageMode } from '$lib/stores/storageMode';
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
@@ -31,8 +31,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Poem from '$lib/models/Poem';
 
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
-
-	import type { PoemCacheRecord } from '$lib/types';
 
 	const FALLBACK_DELAY_MS = 100;
 
@@ -56,7 +54,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function handleCacheRefresh() {
-		cachedPoems = PoemCacheDriver.refreshCache($storageMode);
+		cachedPoems = PoemCacheManager.refreshCache($storageMode);
 	}
 </script>
 

@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -32,7 +32,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { storageMode } from '$lib/stores/storageMode';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import PoemCacheManager from '$lib/plugins/PoemCacheManager.svelte';
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
@@ -85,7 +85,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 	};
 	$discardFunction = async () => {
-		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
+		await PoemCacheManager.unsetUnsavedStatus($storageMode, $currentPoemUri);
 		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
 		goto('/stash', { replaceState: false });
 	};
@@ -122,7 +122,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function deletePoem() {
 		await Poem.delete($currentPoemUri, $storageMode);
 		await deleteTmpFile($currentPoemUri);
-		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
+		await PoemCacheManager.popCacheRecord($storageMode, $currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
@@ -141,7 +141,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	onMount(async () => {
 		if (
-			(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
+			(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
 		) {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
@@ -179,7 +179,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function unsavedChangesHandler() {
-		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri);
+		PoemCacheManager.setUnsavedStatus($storageMode, $currentPoemUri);
 	}
 
 	function clearCurrentPoemStorage() {
