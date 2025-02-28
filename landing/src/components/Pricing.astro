@@ -13,21 +13,25 @@ const pricing = [
   },
   {
     platform: "Android App",
-    price: "$1.99 one-time purchase",
+    price: "100% Free to use. Forever",
     button: {
       text: "Download",
       href: "https://play.google.com/store/apps/details?id=art.gosuto.pokebook",
     },
   },
   {
-    platform: "Desktop Version",
-    price: "Coming soon",
+    platform: "Source Code",
+    price: "AGPL-3.0 license",
+    button: {
+      text: "Study",
+      href: "https://github.com/pokeghosst/pokebook"
+    }
   },
 ];
 ---
 
 <section>
-  <h2>Simple, pay-if-you-want* pricing</h2>
+  <h2>Free as in freedom, free as in price</h2>
   <Container>
     <div class="pricing-options">
       {
@@ -44,10 +48,6 @@ const pricing = [
         ))
       }
     </div>
-    <p class="note">
-      *PokeBook is Free and Open Source Software (FOSS). You are free to use,
-      study, and modify it. You can compile and use it at no cost.
-    </p>
   </Container>
 </section>
 
