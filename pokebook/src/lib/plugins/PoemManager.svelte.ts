@@ -16,47 +16,62 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import PoemCacheManager, {PoemCacheManagerFactory} from "$lib/plugins/PoemCacheManager.svelte";
-import type {PoemEntity} from "$lib/types";
-import FilesystemWithPermissions from "$lib/util/FilesystemWithPermissions";
-import {XMLBuilder} from "fast-xml-parser";
-import {Directory, Encoding} from "@capacitor/filesystem";
+import PoemCacheManager, { PoemCacheManagerFactory } from '$lib/plugins/PoemCacheManager.svelte';
+import type { PoemEntity } from '$lib/types';
+import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
+import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { Directory, Encoding } from '@capacitor/filesystem';
 
 const POEM_SNIPPET_LENGTH = 256;
 
 class PoemManager {
+	private cacheManager: PoemCacheManager;
 
-    private cacheManager: PoemCacheManager;
+	constructor(cacheManager: PoemCacheManager) {
+		this.cacheManager = cacheManager;
+	}
 
-    constructor(cacheManager: PoemCacheManager) {
-        this.cacheManager = cacheManager;
-    }
+	public async save(poem: PoemEntity) {
+		const { id, timestamp } = await this.flushToFile(poem);
 
-    public async save(poem: PoemEntity) {
-        const {id, timestamp} = await this.flushToFile(poem);
+		await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text));
+	}
 
-        await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text))
-    }
+	public async load(id: string): Promise<PoemEntity> {
+		return new XMLParser().parse(
+			(
+				await FilesystemWithPermissions.readFile({
+					path: `poems/${id}.xml`,
+					directory: Directory.Documents,
+					encoding: Encoding.UTF8
+				})
+			).data.toString()
+		);
+	}
 
-    private async flushToFile(poem: PoemEntity): Promise<{ id: string, timestamp: number }> {
-        const timestamp = Date.now();
+	public getCacheManager() {
+		return this.cacheManager;
+	}
 
-        const id = (
-            await FilesystemWithPermissions.writeFile({
-                path: `poems/${poem.name}_${timestamp}.xml`,
-                data: new XMLBuilder({ format: true }).build(poem),
-                directory: Directory.Documents,
-                encoding: Encoding.UTF8,
-                recursive: true
-            })
-        ).uri
+	private async flushToFile(poem: PoemEntity): Promise<{ id: string; timestamp: number }> {
+		const timestamp = Date.now();
 
-        return {id, timestamp}
-    }
+		const id = (
+			await FilesystemWithPermissions.writeFile({
+				path: `poems/${poem.name}_${timestamp}.xml`,
+				data: new XMLBuilder({ format: true }).build(poem),
+				directory: Directory.Documents,
+				encoding: Encoding.UTF8,
+				recursive: true
+			})
+		).uri;
 
-    private sliceSnippet(text: string): string {
-        return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
-    }
+		return { id, timestamp };
+	}
+
+	private sliceSnippet(text: string): string {
+		return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
+	}
 }
 
-export const poemManager = new PoemManager(await PoemCacheManagerFactory.createPoemCacheManager())
+export const poemManager = new PoemManager(await PoemCacheManagerFactory.createPoemCacheManager());

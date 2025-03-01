@@ -16,12 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import {Directory, Encoding} from '@capacitor/filesystem';
-import {Preferences} from '@capacitor/preferences';
+import { Directory, Encoding } from '@capacitor/filesystem';
+import { Preferences } from '@capacitor/preferences';
 
 import Poem from '../models/Poem';
 
-import type {PoemEntity} from '$lib/types';
+import type { PoemEntity } from '$lib/types';
 import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 const SNIPPET_LENGTH = 256;
@@ -70,6 +70,10 @@ export default class PoemCacheManager {
 		this.poemList = [...this.poemList, cacheRecord];
 
 		await this.flushToFile();
+	}
+
+	public getPoems() {
+		return this.poemList;
 	}
 
 	private async flushToFile() {
@@ -193,7 +197,7 @@ export default class PoemCacheManager {
 						name: newPoem.name,
 						poemSnippet: this.sliceSnippet(newPoem.text),
 						unsavedChanges: false
-				  }
+					}
 				: poem
 		);
 		await this.writeToCache(storage, updatedPoems);
@@ -226,7 +230,7 @@ export default class PoemCacheManager {
 
 export class PoemCacheManagerFactory {
 	static async createPoemCacheManager() {
-		console.log('initializing poem cache manager...')
+		console.log('initializing poem cache manager...');
 		const cacheManager = new PoemCacheManager();
 		await cacheManager.initialize();
 		return cacheManager;

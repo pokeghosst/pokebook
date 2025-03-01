@@ -70,6 +70,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<a href="/privacy" on:click={closeModal}>{$t('about.privacy')}</a>
 			| <a href="/terms" on:click={closeModal}>{$t('about.terms')}</a>
 		</p>
-		<p>© {new Date().getFullYear()} Pokeghost</p>
+		<p>© 2023-{new Date().getFullYear()} Pokeghost</p>
 	</div>
 </div>
