@@ -16,29 +16,132 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import PoemCacheManager, { PoemCacheManagerFactory } from '$lib/plugins/PoemCacheManager.svelte.js';
 import type { PoemEntity } from '$lib/types';
 import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
 import { XMLParser } from 'fast-xml-parser';
 import { Directory, Encoding } from '@capacitor/filesystem';
-import { PoemDoc } from '$lib/models/PoemDoc';
 
 const POEM_SNIPPET_LENGTH = 256;
+const MANIFEST_FILE = 'manifest.json';
+
+export interface PoemManifestRecord {
+	id: string;
+	name: string;
+	snippet: string;
+	createdAt: number;
+	updatedAt: number;
+	lastSyncedAt: number;
+	unsavedChanges: boolean;
+}
 
 class PoemManager {
-	private readonly cacheManager: PoemCacheManager;
+	// TODO: Think later -- keep this synced to disk w/ $effect rune
+	private poems: PoemManifestRecord[] = $state([]);
 
-	constructor(cacheManager: PoemCacheManager) {
-		this.cacheManager = cacheManager;
+	constructor() {
+		this.poems = [];
 	}
 
-	public async save(poem: PoemEntity) {
-		const poemDoc = new PoemDoc(poem);
+	public async init() {
+		console.log('initializing poem manager...');
 
-		const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
+		try {
+			await FilesystemWithPermissions.stat({
+				path: `poems/${MANIFEST_FILE}`,
+				directory: Directory.Documents
+			});
+		} catch (e) {
+			if (e instanceof Error && e.message === 'Entry does not exist.') {
+				try {
+					await FilesystemWithPermissions.writeFile({
+						path: `poems/${MANIFEST_FILE}`,
+						directory: Directory.Documents,
+						data: JSON.stringify([]),
+						encoding: Encoding.UTF8,
+						recursive: true
+					});
+				} catch (e) {
+					throw `Couldn't create poem manifest file: ${e}`;
+				}
+			} else {
+				throw `Unexpected error: ${e}`;
+			}
+		}
 
-		await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text));
+		this.poems = JSON.parse(
+			(
+				await FilesystemWithPermissions.readFile({
+					directory: Directory.Documents,
+					path: `poems/${MANIFEST_FILE}`,
+					encoding: Encoding.UTF8
+				})
+			).data.toString()
+		);
 	}
+
+	public getPoems() {
+		return this.poems;
+	}
+
+	public async rebuildManifest(): Promise<void> {
+		console.log('building manifest...');
+
+		const dirResult = await FilesystemWithPermissions.readdir({
+			path: `poems`,
+			directory: Directory.Documents
+		});
+
+		const poemFiles = dirResult.files.filter((file) => file.name.endsWith('.xml'));
+
+		const mapPromises = poemFiles.map(async (file) => {
+			const fileContent = await FilesystemWithPermissions.readFile({
+				path: file.uri,
+				encoding: Encoding.UTF8
+			});
+
+			const xmlString = fileContent.data.toString();
+			const parsedXml = new XMLParser().parse(xmlString);
+			const snippet = this.sliceSnippet(parsedXml.text);
+
+			return {
+				id: file.uri,
+				name: file.name.split('_')[0].replace(/%20/g, ' '),
+				snippet,
+				// ctime is not available on Android 7 and older devices.
+				// The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
+				createdAt: file.ctime ?? file.mtime,
+				updatedAt: file.mtime,
+				lastSyncedAt: 0,
+				unsavedChanges: false
+			};
+		});
+
+		const manifestContents = await Promise.all(mapPromises);
+
+		try {
+			await FilesystemWithPermissions.writeFile({
+				path: `poems/${MANIFEST_FILE}`,
+				data: JSON.stringify(manifestContents),
+				directory: Directory.Documents,
+				encoding: Encoding.UTF8,
+				recursive: true
+			});
+		} catch (e) {
+			throw `Couldn't write manifest file: ${e}`;
+		}
+
+		this.poems = manifestContents;
+
+		console.log('manifest built');
+	}
+
+	// public async save(poem: PoemEntity) {
+	// 	const poemDoc = new PoemDoc(poem);
+	//
+	// 	const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
+	//
+	// 	await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text));
+	// }
 
 	public async load(uri: string): Promise<PoemEntity> {
 		return new XMLParser().parse(
@@ -50,10 +153,6 @@ class PoemManager {
 				})
 			).data.toString()
 		);
-	}
-
-	public getCacheManager() {
-		return this.cacheManager;
 	}
 
 	private async flushToFile(
@@ -80,4 +179,12 @@ class PoemManager {
 	}
 }
 
-export const poemManager = new PoemManager(await PoemCacheManagerFactory.createPoemCacheManager());
+class PoemManagerFactory {
+	static async createPoemManager() {
+		const poemManager = new PoemManager();
+		await poemManager.init();
+		return poemManager;
+	}
+}
+
+export const poemManager = await PoemManagerFactory.createPoemManager();

@@ -10,5 +10,8 @@
     "pokebook",
     "pokehelp",
     "tauri"
-  ]
+  ],
+  "[svelte]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

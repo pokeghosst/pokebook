@@ -18,8 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-
-	import { poemManager } from '$lib/service/PoemManager.svelte.js';
+	import { onMount } from 'svelte';
 
 	import { t } from '$lib/translations';
 
@@ -27,43 +26,74 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { currentPoemUri } from '$lib/stores/currentPoem';
 
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
+	import { poemManager, type PoemManifestRecord } from '$lib/service/PoemManager.svelte';
 
-	let cachedPoems = poemManager.getCacheManager().getPoems();
+	const FALLBACK_DELAY_MS = 150;
 
-	import PoemCacheManager from '$lib/plugins/PoemCacheManager.svelte';
+	let cachedPoems: PoemManifestRecord[];
+	let showFallback = false;
+	let fallbackTimeout: ReturnType<typeof setTimeout>;
+
+	onMount(() => {
+		fallbackTimeout = setTimeout(() => {
+			showFallback = true;
+		}, FALLBACK_DELAY_MS);
+
+		cachedPoems = poemManager.getPoems();
+
+		if (cachedPoems.length === 0) {
+			rebuildManifest();
+		}
+
+		return () => clearTimeout(fallbackTimeout);
+	});
 
 	async function goToPoem(poemUri: string) {
 		$currentPoemUri = poemUri;
 		await goto('/stash/poem');
 	}
 
-	async function handleCacheRefresh() {
-		// cachedPoems = PoemCacheManager.refreshCache($storageMode);
-		throw Error('Not implemented');
+	// TODO: Add timeout when rebuilding the manifest
+	function rebuildManifest() {
+		poemManager.rebuildManifest().then(() => {
+			cachedPoems = poemManager.getPoems();
+		});
 	}
 </script>
 
-{#if cachedPoems && cachedPoems.length > 0}
-	<div class="refresh-wrapper">
-		<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
-	</div>
-	<div class="poem-list">
-		{#each cachedPoems as record}
-			<div class="list-item">
-				<button on:click={() => goToPoem(record.id)}>
-					<div class="list-poem">
-						<p class="list-poem-name">
-							{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
-						</p>
-						<p class="list-poem-snippet">{record.poemSnippet}...</p>
-					</div>
-					<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
-				</button>
-			</div>
-		{/each}
-	</div>
-{:else}
+{#await cachedPoems}
+	{#if showFallback}
+		<div class="placeholder-text-wrapper">
+			<p>Loading...</p>
+		</div>
+	{/if}
+{:then cacheRecords}
+	{#if cacheRecords && cacheRecords.length > 0}
+		<div class="refresh-wrapper">
+			<button class="button" on:click={rebuildManifest}>Refresh <RotateCcw /></button>
+		</div>
+		<div class="poem-list">
+			{#each cacheRecords.sort((a, b) => (b.updatedAt as number) - (a.updatedAt as number)) as record}
+				<div class="list-item">
+					<button on:click={() => goToPoem(record.id)}>
+						<div class="list-poem">
+							<p class="list-poem-name">
+								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
+							</p>
+							<p class="list-poem-snippet">{record.snippet}</p>
+						</div>
+						<div>{new Date(record.updatedAt).toLocaleDateString()}</div>
+					</button>
+				</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="placeholder-text-wrapper">
+			{$t('workspace.emptyPoemList')}
+		</div>
+	{/if}
+{:catch error}
 	<div class="placeholder-text-wrapper">
-		{$t('workspace.emptyPoemList')}
+		{$t(error.message)}
 	</div>
-{/if}
+{/await}
