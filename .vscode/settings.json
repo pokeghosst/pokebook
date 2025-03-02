@@ -9,7 +9,8 @@
     "macaron",
     "pokebook",
     "pokehelp",
-    "tauri"
+    "tauri",
+    "ymanifest"
   ],
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

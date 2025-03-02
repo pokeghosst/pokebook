@@ -16,13 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
 import { XMLParser } from 'fast-xml-parser';
 import { Directory, Encoding } from '@capacitor/filesystem';
+import * as Y from 'yjs';
+
+import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
+
+import type { PoemEntity } from '$lib/types';
+import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
 
 const POEM_SNIPPET_LENGTH = 256;
-const MANIFEST_FILE = 'manifest.json';
+const MANIFEST_FILE = '.ymanifest';
 
 export interface PoemManifestRecord {
 	id: string;
@@ -34,12 +38,39 @@ export interface PoemManifestRecord {
 	unsavedChanges: boolean;
 }
 
-class PoemManager {
-	// TODO: Think later -- keep this synced to disk w/ $effect rune
-	private poems: PoemManifestRecord[] = $state([]);
+class SyncManifest {
+	yDoc: Y.Doc;
+	poems: Y.Array<PoemManifestRecord>;
+	lastSync: Y.Map<number>;
 
 	constructor() {
-		this.poems = [];
+		this.yDoc = new Y.Doc();
+		this.poems = this.yDoc.getArray('poems');
+		this.lastSync = this.yDoc.getMap('lastSync');
+	}
+
+	public static fromSerialized(data: Uint8Array): SyncManifest {
+		const manifest = new SyncManifest();
+		Y.applyUpdate(manifest.yDoc, data);
+		return manifest;
+	}
+
+	public serialize(): Uint8Array {
+		return Y.encodeStateAsUpdate(this.yDoc);
+	}
+
+	public mergeWith(otherManifest: SyncManifest) {
+		const update = Y.encodeStateAsUpdate(otherManifest.yDoc);
+		Y.applyUpdate(this.yDoc, update);
+	}
+}
+
+class PoemManager {
+	// TODO: Think later -- keep this synced to disk w/ $effect rune.
+	private syncManifest: SyncManifest;
+
+	constructor() {
+		this.syncManifest = new SyncManifest();
 	}
 
 	public async init() {
@@ -68,19 +99,18 @@ class PoemManager {
 			}
 		}
 
-		this.poems = JSON.parse(
-			(
-				await FilesystemWithPermissions.readFile({
-					directory: Directory.Documents,
-					path: `poems/${MANIFEST_FILE}`,
-					encoding: Encoding.UTF8
-				})
-			).data.toString()
-		);
+		const encodedManifestFile = await FilesystemWithPermissions.readFile({
+			directory: Directory.Documents,
+			path: `poems/${MANIFEST_FILE}`,
+			encoding: Encoding.UTF8
+		});
+		const manifestData = decodeFromBase64(encodedManifestFile.data.toString());
+
+		this.syncManifest = SyncManifest.fromSerialized(manifestData);
 	}
 
 	public getPoems() {
-		return this.poems;
+		return this.syncManifest.poems.toArray();
 	}
 
 	public async rebuildManifest(): Promise<void> {
@@ -118,10 +148,13 @@ class PoemManager {
 
 		const manifestContents = await Promise.all(mapPromises);
 
+		this.syncManifest.poems.delete(0, this.syncManifest.poems.toArray().length);
+		this.syncManifest.poems.insert(0, manifestContents);
+
 		try {
 			await FilesystemWithPermissions.writeFile({
 				path: `poems/${MANIFEST_FILE}`,
-				data: JSON.stringify(manifestContents),
+				data: encodeToBase64(this.syncManifest.serialize()),
 				directory: Directory.Documents,
 				encoding: Encoding.UTF8,
 				recursive: true
@@ -129,8 +162,6 @@ class PoemManager {
 		} catch (e) {
 			throw `Couldn't write manifest file: ${e}`;
 		}
-
-		this.poems = manifestContents;
 
 		console.log('manifest built');
 	}
