@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { poemManager } from '$lib/plugins/PoemManager.svelte';
+	import { poemManager } from '$lib/service/PoemManager.svelte.js';
 
 	import { t } from '$lib/translations';
 
@@ -29,6 +29,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 
 	let cachedPoems = poemManager.getCacheManager().getPoems();
+
+	import PoemCacheManager from '$lib/plugins/PoemCacheManager.svelte';
 
 	async function goToPoem(poemUri: string) {
 		$currentPoemUri = poemUri;

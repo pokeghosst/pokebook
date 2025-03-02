@@ -1,5 +1,5 @@
-import type {Icon} from 'lucide-svelte';
-import type {ComponentType} from 'svelte';
+import type { Icon } from 'lucide-svelte';
+import type { ComponentType } from 'svelte';
 
 export interface PoemFileEntity {
 	name: string;
@@ -10,6 +10,10 @@ export interface PoemEntity {
 	name: string;
 	text: string;
 	note: string;
+	sync?: {
+		ydoc_state: string;
+		last_synced: number;
+	};
 }
 
 export type MenuItem = { icon: ComponentType<Icon>; label: string; url: string };

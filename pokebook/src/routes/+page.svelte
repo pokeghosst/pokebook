@@ -42,7 +42,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-    import {poemManager} from "$lib/plugins/PoemManager.svelte";
+	import { poemManager } from '$lib/service/PoemManager.svelte.js';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
@@ -85,7 +85,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
 				await toast.promise(
-                    poemManager.save({ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore }),
+					poemManager.save({
+						name: $draftPoemNameStore,
+						text: $draftPoemBodyStore,
+						note: $draftPoemNoteStore
+					}),
 					// Poem.save(
 					// 	{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
 					// 	$storageMode

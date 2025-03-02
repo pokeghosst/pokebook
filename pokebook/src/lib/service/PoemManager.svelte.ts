@@ -16,32 +16,35 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import PoemCacheManager, { PoemCacheManagerFactory } from '$lib/plugins/PoemCacheManager.svelte';
+import PoemCacheManager, { PoemCacheManagerFactory } from '$lib/plugins/PoemCacheManager.svelte.js';
 import type { PoemEntity } from '$lib/types';
 import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
+import { XMLParser } from 'fast-xml-parser';
 import { Directory, Encoding } from '@capacitor/filesystem';
+import { PoemDoc } from '$lib/models/PoemDoc';
 
 const POEM_SNIPPET_LENGTH = 256;
 
 class PoemManager {
-	private cacheManager: PoemCacheManager;
+	private readonly cacheManager: PoemCacheManager;
 
 	constructor(cacheManager: PoemCacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
 	public async save(poem: PoemEntity) {
-		const { id, timestamp } = await this.flushToFile(poem);
+		const poemDoc = new PoemDoc(poem);
+
+		const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
 
 		await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text));
 	}
 
-	public async load(id: string): Promise<PoemEntity> {
+	public async load(uri: string): Promise<PoemEntity> {
 		return new XMLParser().parse(
 			(
 				await FilesystemWithPermissions.readFile({
-					path: `poems/${id}.xml`,
+					path: uri,
 					directory: Directory.Documents,
 					encoding: Encoding.UTF8
 				})
@@ -53,13 +56,16 @@ class PoemManager {
 		return this.cacheManager;
 	}
 
-	private async flushToFile(poem: PoemEntity): Promise<{ id: string; timestamp: number }> {
+	private async flushToFile(
+		name: string,
+		data: string
+	): Promise<{ id: string; timestamp: number }> {
 		const timestamp = Date.now();
 
 		const id = (
 			await FilesystemWithPermissions.writeFile({
-				path: `poems/${poem.name}_${timestamp}.xml`,
-				data: new XMLBuilder({ format: true }).build(poem),
+				path: `poems/${name}_${timestamp}.xml`,
+				data: data,
 				directory: Directory.Documents,
 				encoding: Encoding.UTF8,
 				recursive: true
