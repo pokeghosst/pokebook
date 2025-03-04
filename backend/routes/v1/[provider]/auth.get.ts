@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -30,7 +30,9 @@ export default defineEventHandler(async (event) => {
 				return new Response(await DropboxClient.getAuthUrl());
 			}
 			case StorageProvider.GOOGLE: {
-				return new Response(await GoogleDriveClient.getAuthUrl());
+				const authUrl = await GoogleDriveClient.getAuthUrl();
+				// return useRuntimeConfig().serverUrl;
+				return sendRedirect(event, authUrl, 302);
 			}
 			default:
 				return new Response('', { status: 400 });

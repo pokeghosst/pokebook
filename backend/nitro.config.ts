@@ -25,5 +25,6 @@ export default defineNitroConfig({
 				'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization'
 			}
 		}
-	}
+	},
+	compatibilityDate: '2025-03-02'
 });

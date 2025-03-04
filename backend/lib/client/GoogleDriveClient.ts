@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,8 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ripemd160 } from '@noble/hashes/ripemd160';
-import { bytesToHex } from '@noble/hashes/utils';
+import { randomBytes } from 'crypto';
+
 import { XMLBuilder } from 'fast-xml-parser';
 import { google } from 'googleapis';
 
@@ -28,7 +28,7 @@ import type { PoemEntity } from '../types/PoemEntity';
 export const googleClient = new google.auth.OAuth2(
 	useRuntimeConfig().google.clientId,
 	useRuntimeConfig().google.clientSecret,
-	useRuntimeConfig().clientUrl + `/callback/${StorageProvider.GOOGLE}`
+	`${useRuntimeConfig().serverUrl}/callback/${StorageProvider.GOOGLE}`
 );
 
 export class GoogleDriveClient {
@@ -36,18 +36,21 @@ export class GoogleDriveClient {
 		return googleClient.generateAuthUrl({
 			access_type: 'offline',
 			scope: 'https://www.googleapis.com/auth/drive.file',
-			include_granted_scopes: true
+			include_granted_scopes: true,
+			prompt: 'consent'
 		});
 	}
 	public static async processCallback(code: string) {
 		const { tokens } = await googleClient.getToken(code);
 
-		let refreshTokenId;
+		// console.log(tokens);
+
+		let sessionId: string | null;
 
 		if (tokens.refresh_token) {
-			refreshTokenId = bytesToHex(ripemd160(tokens.refresh_token));
+			sessionId = randomBytes(32).toString('base64');
 			await useStorage('redis').setItem(
-				`${StorageProvider.GOOGLE}:${refreshTokenId}`,
+				`${StorageProvider.GOOGLE}:${sessionId}`,
 				tokens.refresh_token
 			);
 		}
@@ -55,7 +58,7 @@ export class GoogleDriveClient {
 		return {
 			accessToken: tokens.access_token,
 			accessTokenExpiration: tokens.expiry_date,
-			refreshTokenId: refreshTokenId
+			sessionId
 		};
 	}
 	public static async revokeTokenAndLogOut(refreshTokenId: string) {
