@@ -3,7 +3,7 @@
 	"justification": "Justificación del poema",
 	"dayTheme": "Tema diurno",
 	"nightTheme": "Tema nocturno",
-	"storage": "Modo de almacenamiento",
+	"storage": "Proveedor de sincronización",
 	"left": "Izquierdo",
 	"right": "Derecho",
 	"center": "Centro",

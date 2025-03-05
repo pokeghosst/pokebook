@@ -25,50 +25,14 @@ import { StorageProvider } from '../enums/StorageProvider';
 
 import type { PoemEntity } from '../types/PoemEntity';
 
-export const googleClient = new google.auth.OAuth2(
-	useRuntimeConfig().google.clientId,
-	useRuntimeConfig().google.clientSecret,
-	`${useRuntimeConfig().serverUrl}/callback/${StorageProvider.GOOGLE}`
-);
-
 export class GoogleDriveClient {
-	public static async getAuthUrl() {
-		return googleClient.generateAuthUrl({
-			access_type: 'offline',
-			scope: 'https://www.googleapis.com/auth/drive.file',
-			include_granted_scopes: true,
-			prompt: 'consent'
-		});
-	}
-	public static async processCallback(code: string) {
-		const { tokens } = await googleClient.getToken(code);
+	public static async revokeTokenAndLogOut(sessionId: string) {
+		const refreshToken = await getUserRefreshToken(sessionId);
 
-		// console.log(tokens);
-
-		let sessionId: string | null;
-
-		if (tokens.refresh_token) {
-			sessionId = randomBytes(32).toString('base64');
-			await useStorage('redis').setItem(
-				`${StorageProvider.GOOGLE}:${sessionId}`,
-				tokens.refresh_token
-			);
-		}
-
-		return {
-			accessToken: tokens.access_token,
-			accessTokenExpiration: tokens.expiry_date,
-			sessionId
-		};
-	}
-	public static async revokeTokenAndLogOut(refreshTokenId: string) {
-		const refreshTokenValue = await useStorage('redis').getItem(
-			`${StorageProvider.GOOGLE}:${refreshTokenId}`
-		);
-
-		if (refreshTokenValue) {
-			googleClient.revokeToken(refreshTokenValue.toString());
-			await useStorage('redis').removeItem(`${StorageProvider.GOOGLE}:${refreshTokenId}`);
+		if (refreshToken) {
+			const googleClient = await createOAuth2ClientFromRefreshToken(sessionId);
+			googleClient.revokeToken(refreshToken);
+			await removeUserRefreshToken(sessionId);
 		}
 	}
 	public static async refreshAccessToken(refreshTokenId: string) {
@@ -84,36 +48,7 @@ export class GoogleDriveClient {
 			accessTokenExpiration: res?.data.expiry_date
 		};
 	}
-	public static async getPokeBookFolderId(accessToken: string) {
-		googleClient.setCredentials({ access_token: accessToken });
 
-		let pokebookFolderId;
-		const drive = google.drive('v3');
-
-		const results = await drive.files.list({
-			q: `mimeType='application/vnd.google-apps.folder' and name='${
-				useRuntimeConfig().pokebookFolderName
-			}'`,
-			fields: 'files(id)',
-			auth: googleClient
-		});
-
-		if (results.data.files && results.data.files.length > 0) {
-			pokebookFolderId = results.data.files[0].id;
-		} else {
-			const response = await drive.files.create({
-				requestBody: {
-					name: useRuntimeConfig().pokebookFolderName,
-					mimeType: 'application/vnd.google-apps.folder'
-				},
-				fields: 'id',
-				auth: googleClient
-			});
-			pokebookFolderId = response.data.id;
-		}
-
-		return pokebookFolderId;
-	}
 	public static async findAllPoems(accessToken: string, pokebookFolderId: string) {
 		googleClient.setCredentials({ access_token: accessToken });
 

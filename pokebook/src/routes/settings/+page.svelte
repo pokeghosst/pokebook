@@ -45,6 +45,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
+	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
 
 	$: $dayTheme, setDayTheme();
 	$: $nightTheme, setNightTheme();
@@ -141,18 +142,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 	{#if $storageMode !== 'local'}
 		<button
-			on:click={async () =>
-				await toast.promise(
-					getCloudAuthUrlPromise($storageMode).then((url) => {
-						Browser.open({ url: url, windowName: '_self' });
-					}),
-					{
-						loading: `${$t('toasts.thingsAreHappening')}`,
-						success: `${$t('toasts.redirecting')}`,
-						error: `${$t('errors.unknown')}`
-					},
-					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
-				)}
+			on:click={() => Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
 			class="action-button action-button--secondary"
 			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
 		>

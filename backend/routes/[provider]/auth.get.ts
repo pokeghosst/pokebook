@@ -16,10 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { DropboxClient } from '../../../lib/client/DropboxClient';
-import { GoogleDriveClient } from '../../../lib/client/GoogleDriveClient';
+import { getGoogleAuthUrl } from '~/lib/client/google-auth';
+import { DropboxClient } from '../../lib/client/DropboxClient';
+import { GoogleDriveClient } from '../../lib/client/GoogleDriveClient';
 
-import { StorageProvider } from '../../../lib/enums/StorageProvider';
+import { StorageProvider } from '../../lib/enums/StorageProvider';
 
 export default defineEventHandler(async (event) => {
 	const provider = getRouterParam(event, 'provider');
@@ -30,7 +31,7 @@ export default defineEventHandler(async (event) => {
 				return new Response(await DropboxClient.getAuthUrl());
 			}
 			case StorageProvider.GOOGLE: {
-				const authUrl = await GoogleDriveClient.getAuthUrl();
+				const authUrl = getGoogleAuthUrl();
 				// return useRuntimeConfig().serverUrl;
 				return sendRedirect(event, authUrl, 302);
 			}

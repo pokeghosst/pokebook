@@ -21,8 +21,10 @@ export default defineNitroConfig({
 		'/**': {
 			cors: true,
 			headers: {
-				'Access-Control-Allow-Origin': '*',
-				'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization'
+				// TODO: For the love of all that is holy, DON'T FORGET TO ADD PRODUCTION HOST
+				'Access-Control-Allow-Origin': 'http://localhost:5173',
+				'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+				'Access-Control-Allow-Credentials': 'true'
 			}
 		}
 	},

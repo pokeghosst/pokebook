@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { GoogleDriveClient } from '~/lib/client/GoogleDriveClient';
+import { processCallback } from '~/lib/client/google-auth';
 
 export default defineEventHandler(async (event) => {
 	const provider = getRouterParam(event, 'provider');
@@ -32,20 +32,14 @@ export default defineEventHandler(async (event) => {
 		switch (provider) {
 			case 'google':
 				try {
-					setCookie(
-						event,
-						'pokebook-session',
-						JSON.stringify(await GoogleDriveClient.processCallback(query.code)),
-						{
-							httpOnly: true,
-							secure: process.env.NODE_ENV === 'production',
-							maxAge: 60 * 60 * 24 * 30,
-							path: '/'
-						}
-					);
+					setCookie(event, 'pokebook-session', JSON.stringify(await processCallback(query.code)), {
+						httpOnly: true,
+						secure: process.env.NODE_ENV === 'production',
+						maxAge: 60 * 60 * 24 * 30,
+						path: '/'
+					});
 
 					return sendRedirect(event, `${useRuntimeConfig().clientUrl}?auth=success`, 302);
-					// return await GoogleDriveClient.processCallback(query.code);
 				} catch (err) {
 					if (err.response?.data?.error === 'invalid_grant') {
 						return sendRedirect(event, `${useRuntimeConfig().clientUrl}?auth=invalid_grant`, 302);

@@ -53,8 +53,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<h2>'Tiramisu'</h2>
-		<small>{$t('about.version')} 3.2</small>
+		<small>{$t('about.version')} 4.0 - 'Tiramisu'</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}
