@@ -26,7 +26,7 @@ import type { PoemEntity } from '$lib/types';
 import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
 
 const POEM_SNIPPET_LENGTH = 256;
-const MANIFEST_FILE = '.ymanifest';
+const MANIFEST_FILE = '.pokemanifest';
 
 export interface PoemManifestRecord {
 	id: string;
@@ -84,13 +84,7 @@ class PoemManager {
 		} catch (e) {
 			if (e instanceof Error && e.message === 'Entry does not exist.') {
 				try {
-					await FilesystemWithPermissions.writeFile({
-						path: `poems/${MANIFEST_FILE}`,
-						directory: Directory.Documents,
-						data: JSON.stringify([]),
-						encoding: Encoding.UTF8,
-						recursive: true
-					});
+					await this.rebuildManifest();
 				} catch (e) {
 					throw `Couldn't create poem manifest file: ${e}`;
 				}
@@ -99,12 +93,13 @@ class PoemManager {
 			}
 		}
 
-		const encodedManifestFile = await FilesystemWithPermissions.readFile({
+		const manifestFile = await FilesystemWithPermissions.readFile({
 			directory: Directory.Documents,
 			path: `poems/${MANIFEST_FILE}`,
 			encoding: Encoding.UTF8
 		});
-		const manifestData = decodeFromBase64(encodedManifestFile.data.toString());
+		const manifestFileContents = manifestFile.data.toString();
+		const manifestData = decodeFromBase64(manifestFileContents);
 
 		this.syncManifest = SyncManifest.fromSerialized(manifestData);
 	}

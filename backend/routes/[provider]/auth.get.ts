@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { getGoogleAuthUrl } from '~/lib/client/google-auth';
 import { DropboxClient } from '../../lib/client/DropboxClient';
-import { GoogleDriveClient } from '../../lib/client/GoogleDriveClient';
 
 import { StorageProvider } from '../../lib/enums/StorageProvider';
 

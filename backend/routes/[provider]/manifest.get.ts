@@ -19,7 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { makeAuthenticatedRequest } from '~/lib/client/google-auth';
 import { getManifest } from '~/lib/client/google-drive';
 
+import type { drive_v3 } from 'googleapis';
+
 export default defineEventHandler(async (event) => {
+	// TODO: Refactor this into middleware
 	const session = JSON.parse(getCookie(event, 'pokebook-session'));
 
 	// console.log(session);
@@ -34,7 +37,7 @@ export default defineEventHandler(async (event) => {
 	}
 
 	try {
-		const result = await makeAuthenticatedRequest({
+		const result = await makeAuthenticatedRequest<drive_v3.Schema$File[]>({
 			accessToken,
 			expiresAt,
 			sessionId,
@@ -49,6 +52,12 @@ export default defineEventHandler(async (event) => {
 				path: '/'
 			});
 		}
+
+		if (result.data.length > 0) {
+			return result.data[0].id;
+		} else {
+			return new Response('{}', { status: 404 });
+		}
 	} catch (err) {
 		if (err.response.status === 401) {
 			throw createError({
@@ -62,8 +71,4 @@ export default defineEventHandler(async (event) => {
 			message: "Couldn't access Google API"
 		});
 	}
-
-	return {
-		message: 'you want my manifest, huh?'
-	};
 });

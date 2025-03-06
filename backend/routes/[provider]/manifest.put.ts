@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,22 +16,31 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { DropboxClient } from '../../../lib/client/DropboxClient';
-import { GoogleDriveClient } from '../../../lib/client/GoogleDriveClient';
-
-import { StorageProvider } from '../../../lib/enums/StorageProvider';
+import { makeAuthenticatedRequest } from '~/lib/client/google-auth';
+import { createManifest } from '~/lib/client/google-drive';
+import { StorageProvider } from '~/lib/enums/StorageProvider';
 
 export default defineEventHandler(async (event) => {
 	const provider = getRouterParam(event, 'provider');
-	const code = getHeader(event, 'Authorization');
+	const manifestContents = await readBody(event);
+
+	const session = JSON.parse(getCookie(event, 'pokebook-session'));
+	const { accessToken, expiresAt, sessionId } = session;
 
 	switch (provider) {
 		case StorageProvider.DROPBOX:
-			return await DropboxClient.processCallback(code);
 		case StorageProvider.GOOGLE: {
-			return await GoogleDriveClient.processCallback(code);
+			const result = await makeAuthenticatedRequest<string>({
+				accessToken,
+				expiresAt,
+				sessionId,
+				requestFn: createManifest
+			});
 		}
 		default:
-			return new Response('', { status: 400 });
+			throw createError({
+				statusCode: 400,
+				message: 'No such provider'
+			});
 	}
 });

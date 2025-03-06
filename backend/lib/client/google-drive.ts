@@ -19,27 +19,46 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { google } from 'googleapis';
 
 import type { OAuth2Client } from 'google-auth-library';
+import type { drive_v3 } from 'googleapis';
 
-export async function getManifest(client: OAuth2Client) {
+export async function getManifest(client: OAuth2Client): Promise<drive_v3.Schema$File[]> {
 	// console.log(client);
 
-	const pokeBookFolderId = await getPokeBookFolderId(client);
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
 
 	const response = await google.drive('v3').files.list({
-		q: `'${pokeBookFolderId}' in parents and trashed=false`,
+		q: `'${pokeBookFolderId}' in parents and trashed=false and name='.pokemanifest'`,
 		orderBy: 'createdTime desc',
 		auth: client,
 		fields: 'nextPageToken,files(id,name,createdTime,properties)'
 	});
 
-	console.log(response.data.files);
+	return response.data.files;
 }
 
-export async function getPokeBookFolderId(client: OAuth2Client): Promise<string> {
+export async function createManifest(client: OAuth2Client, manifest: string): Promise<string> {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	const response = await google.drive('v3').files.create({
+		auth: client,
+		requestBody: {
+			name: '.pokemanifest',
+			parents: [pokeBookFolderId]
+		},
+		media: {
+			mimeType: 'text/xml',
+			body: manifest
+		}
+	});
+
+	return response.data.id;
+}
+
+export async function getOrCreatePokeBookFolderId(client: OAuth2Client): Promise<string> {
 	const drive = google.drive('v3');
 
 	const results = await drive.files.list({
-		q: `mimeType='application/vnd.google-apps.folder' and name='${
+		q: `mimeType='application/vnd.google-apps.folder' and trashed=false and name='${
 			useRuntimeConfig().pokebookFolderName
 		}'`,
 		fields: 'files(id)',
@@ -49,6 +68,7 @@ export async function getPokeBookFolderId(client: OAuth2Client): Promise<string>
 	if (results.data.files && results.data.files.length > 0) {
 		return results.data.files[0].id;
 	} else {
+		console.log('pokebook folder not found');
 		return await createPokeBookFolder(client);
 	}
 }

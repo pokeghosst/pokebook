@@ -10,7 +10,7 @@
     "pokebook",
     "pokehelp",
     "tauri",
-    "ymanifest"
+    "pokemanifest"
   ],
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

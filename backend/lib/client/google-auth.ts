@@ -26,11 +26,12 @@ import type { OAuth2Client } from 'google-auth-library';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
-interface AuthenticatedRequestParams<T> {
+interface AuthenticatedRequestParams<T, P extends any[]> {
 	sessionId: string;
 	accessToken: string | null;
 	expiresAt: number | null;
-	requestFn: (client: OAuth2Client) => Promise<T>;
+	requestFn: (client: OAuth2Client, ...params: P) => Promise<T>;
+	requestParams?: P;
 }
 
 interface AuthenticatedRequestResult<T> {
@@ -106,19 +107,20 @@ export async function createOAuth2ClientFromAccessToken(accessToken: string) {
 	return oauth2Client;
 }
 
-export async function makeAuthenticatedRequest<T>({
+export async function makeAuthenticatedRequest<T, P extends any[]>({
 	sessionId,
 	accessToken,
 	expiresAt,
-	requestFn
-}: AuthenticatedRequestParams<T>): Promise<AuthenticatedRequestResult<T>> {
+	requestFn,
+	requestParams
+}: AuthenticatedRequestParams<T, P>): Promise<AuthenticatedRequestResult<T>> {
 	const isExpired = !accessToken || !expiresAt || Date.now() > expiresAt - TOKEN_EXPIRATION_BUFFER;
 
 	if (!isExpired) {
 		console.log('access token is fresh!');
 		const client = await createOAuth2ClientFromAccessToken(accessToken);
 		return {
-			data: await requestFn(client),
+			data: await requestFn(client, ...requestParams),
 			tokenRefreshed: false
 		};
 	}
@@ -132,7 +134,7 @@ export async function makeAuthenticatedRequest<T>({
 	}
 
 	return {
-		data: await requestFn(client),
+		data: await requestFn(client, ...requestParams),
 		tokenRefreshed: true,
 		newToken: {
 			accessToken: credentials.access_token,
