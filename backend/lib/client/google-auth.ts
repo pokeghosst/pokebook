@@ -26,7 +26,7 @@ import type { OAuth2Client } from 'google-auth-library';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
-interface AuthenticatedRequestParams<T, P extends any[]> {
+interface AuthenticatedRequestParams<T, P extends any[] = []> {
 	sessionId: string;
 	accessToken: string | null;
 	expiresAt: number | null;
@@ -107,12 +107,12 @@ export async function createOAuth2ClientFromAccessToken(accessToken: string) {
 	return oauth2Client;
 }
 
-export async function makeAuthenticatedRequest<T, P extends any[]>({
+export async function makeAuthenticatedRequest<T, P extends any[] = []>({
 	sessionId,
 	accessToken,
 	expiresAt,
 	requestFn,
-	requestParams
+	requestParams = [] as unknown as P
 }: AuthenticatedRequestParams<T, P>): Promise<AuthenticatedRequestResult<T>> {
 	const isExpired = !accessToken || !expiresAt || Date.now() > expiresAt - TOKEN_EXPIRATION_BUFFER;
 
