@@ -161,6 +161,15 @@ class PoemManager {
 		console.log('manifest built');
 	}
 
+	public async retrieveEncodedManifestContents() {
+		const manifestFile = await FilesystemWithPermissions.readFile({
+			directory: Directory.Documents,
+			path: `poems/${MANIFEST_FILE}`,
+			encoding: Encoding.UTF8
+		});
+		return manifestFile.data.toString();
+	}
+
 	// public async save(poem: PoemEntity) {
 	// 	const poemDoc = new PoemDoc(poem);
 	//

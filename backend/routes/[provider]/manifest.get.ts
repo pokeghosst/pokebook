@@ -17,9 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { makeAuthenticatedRequest } from '~/lib/client/google-auth';
-import { getManifest } from '~/lib/client/google-drive';
-
-import type { drive_v3 } from 'googleapis';
+import { findManifest, readManifest } from '~/lib/client/google-drive';
 
 export default defineEventHandler(async (event) => {
 	// TODO: Refactor this into middleware
@@ -37,11 +35,11 @@ export default defineEventHandler(async (event) => {
 	}
 
 	try {
-		const result = await makeAuthenticatedRequest<drive_v3.Schema$File[]>({
+		const result = await makeAuthenticatedRequest({
 			accessToken,
 			expiresAt,
 			sessionId,
-			requestFn: getManifest
+			requestFn: findManifest
 		});
 
 		if (result.tokenRefreshed && result.newToken) {
@@ -54,7 +52,19 @@ export default defineEventHandler(async (event) => {
 		}
 
 		if (result.data.length > 0) {
-			return result.data[0].id;
+			const manifestFileId = result.data[0].id;
+
+			const manifestReadResult = await makeAuthenticatedRequest({
+				accessToken,
+				expiresAt,
+				sessionId,
+				requestFn: readManifest,
+				requestParams: [manifestFileId]
+			});
+
+			return {
+				manifest: manifestReadResult.data
+			};
 		} else {
 			return new Response('{}', { status: 404 });
 		}

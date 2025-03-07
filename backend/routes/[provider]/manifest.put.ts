@@ -30,12 +30,15 @@ export default defineEventHandler(async (event) => {
 	switch (provider) {
 		case StorageProvider.DROPBOX:
 		case StorageProvider.GOOGLE: {
-			const result = await makeAuthenticatedRequest<string>({
+			const result = await makeAuthenticatedRequest({
 				accessToken,
 				expiresAt,
 				sessionId,
-				requestFn: createManifest
+				requestFn: createManifest,
+				requestParams: [manifestContents]
 			});
+
+			console.log(result);
 		}
 		default:
 			throw createError({

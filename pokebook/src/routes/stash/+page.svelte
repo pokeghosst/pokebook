@@ -22,11 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
+	import { poemManager, type PoemManifestRecord } from '$lib/service/PoemManager.svelte';
+
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
 	import { currentPoemUri } from '$lib/stores/currentPoem';
 
+	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
-	import { poemManager, type PoemManifestRecord } from '$lib/service/PoemManager.svelte';
+	import RefreshCcw from 'lucide-svelte/icons/refresh-ccw';
 
 	const FALLBACK_DELAY_MS = 150;
 
@@ -59,6 +63,26 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			cachedPoems = poemManager.getPoems();
 		});
 	}
+
+	async function syncToCloud() {
+		const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+			credentials: 'include'
+		});
+
+		if (manifestResult.status === 404) {
+			console.log('manifest missing, gotta upload one')
+			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			
+			await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+				credentials: 'include',
+				method: 'PUT',
+				body: encodedManifest
+			});
+		} else {
+			const json = await manifestResult.json();
+			console.log(json);
+		}
+	}
 </script>
 
 {#await cachedPoems}
@@ -70,6 +94,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
 		<div class="refresh-wrapper">
+			<button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button>
 			<button class="button" on:click={rebuildManifest}>Refresh <RotateCcw /></button>
 		</div>
 		<div class="poem-list">

@@ -1,15 +1,23 @@
 <script lang="ts">
 	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+	import { poemManager } from '$lib/service/PoemManager.svelte';
 
 	async function handleManifestRequest() {
-		const result = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+		const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
 			credentials: 'include'
 		});
 
-		if (result.status === 404) {
+		if (manifestResult.status === 404) {
 			console.log('manifest missing, gotta upload one')
+			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			
+			await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+				credentials: 'include',
+				method: 'PUT',
+				body: encodedManifest
+			});
 		} else {
-			const json = await result.json();
+			const json = await manifestResult.json();
 			console.log(json);
 		}
 

@@ -21,7 +21,7 @@ import { google } from 'googleapis';
 import type { OAuth2Client } from 'google-auth-library';
 import type { drive_v3 } from 'googleapis';
 
-export async function getManifest(client: OAuth2Client): Promise<drive_v3.Schema$File[]> {
+export async function findManifest(client: OAuth2Client): Promise<drive_v3.Schema$File[]> {
 	// console.log(client);
 
 	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
@@ -34,6 +34,16 @@ export async function getManifest(client: OAuth2Client): Promise<drive_v3.Schema
 	});
 
 	return response.data.files;
+}
+
+export async function readManifest(client: OAuth2Client, manifestId: string): Promise<string> {
+	const manifestResponse = await google.drive('v3').files.get({
+		fileId: manifestId,
+		alt: 'media',
+		auth: client
+	});
+	// I'm not sure why exactly .data is a Schema$File and not a Blob as it should be. Maybe I will investigate, maybe I won't
+	return await (manifestResponse.data as unknown as Blob).text();
 }
 
 export async function createManifest(client: OAuth2Client, manifest: string): Promise<string> {
