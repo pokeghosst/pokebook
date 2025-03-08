@@ -7,10 +7,11 @@
     "localforage",
     "lucide",
     "macaron",
+    "nitropack",
     "pokebook",
     "pokehelp",
-    "tauri",
-    "pokemanifest"
+    "pokemanifest",
+    "tauri"
   ],
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
