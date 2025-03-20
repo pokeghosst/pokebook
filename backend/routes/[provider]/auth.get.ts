@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { getGoogleAuthUrl } from '~/lib/client/google-auth';
-import { DropboxClient } from '../../lib/client/DropboxClient';
+// import { DropboxClient } from '../../lib/client/DropboxClient';
 
 import { StorageProvider } from '../../lib/enums/StorageProvider';
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
 	try {
 		switch (provider) {
 			case StorageProvider.DROPBOX: {
-				return new Response(await DropboxClient.getAuthUrl());
+				// return new Response(await DropboxClient.getAuthUrl());
 			}
 			case StorageProvider.GOOGLE: {
 				const authUrl = getGoogleAuthUrl();

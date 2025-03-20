@@ -42,8 +42,7 @@ export async function readManifest(client: OAuth2Client, manifestId: string): Pr
 		alt: 'media',
 		auth: client
 	});
-	// I'm not sure why exactly .data is a Schema$File and not a Blob as it should be. Maybe I will investigate, maybe I won't
-	return await (manifestResponse.data as unknown as Blob).text();
+	return manifestResponse.data.toString();
 }
 
 export async function createManifest(client: OAuth2Client, manifest: string): Promise<string> {

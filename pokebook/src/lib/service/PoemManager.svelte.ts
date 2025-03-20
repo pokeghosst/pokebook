@@ -29,7 +29,7 @@ const POEM_SNIPPET_LENGTH = 256;
 const MANIFEST_FILE = '.pokemanifest';
 
 export interface PoemManifestRecord {
-	id: string;
+	filesystemPath: string;
 	name: string;
 	snippet: string;
 	createdAt: number;
@@ -129,7 +129,7 @@ class PoemManager {
 			const snippet = this.sliceSnippet(parsedXml.text);
 
 			return {
-				id: file.uri,
+				filesystemPath: file.uri,
 				name: file.name.split('_')[0].replace(/%20/g, ' '),
 				snippet,
 				// ctime is not available on Android 7 and older devices.
@@ -159,6 +159,8 @@ class PoemManager {
 		}
 
 		console.log('manifest built');
+
+		console.log(manifestContents);
 	}
 
 	public async retrieveEncodedManifestContents() {

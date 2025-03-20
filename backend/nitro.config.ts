@@ -17,6 +17,7 @@ export default defineNitroConfig({
 		serverUrl: '',
 		clientUrl: ''
 	},
+
 	routeRules: {
 		'/**': {
 			cors: true,
@@ -29,5 +30,5 @@ export default defineNitroConfig({
 			}
 		}
 	},
-	compatibilityDate: '2025-03-02'
+	compatibilityDate: '2025-03-08'
 });

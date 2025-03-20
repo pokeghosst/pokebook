@@ -100,7 +100,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<div class="poem-list">
 			{#each cacheRecords.sort((a, b) => (b.updatedAt as number) - (a.updatedAt as number)) as record}
 				<div class="list-item">
-					<button on:click={() => goToPoem(record.id)}>
+					<button on:click={() => goToPoem(record.filesystemPath)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
