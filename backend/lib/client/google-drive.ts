@@ -20,6 +20,7 @@ import { google } from 'googleapis';
 
 import type { OAuth2Client } from 'google-auth-library';
 import type { drive_v3 } from 'googleapis';
+import { PoemEntity } from '../types/PoemEntity';
 
 export async function findManifest(client: OAuth2Client): Promise<drive_v3.Schema$File[]> {
 	// console.log(client);
@@ -80,6 +81,34 @@ export async function getOrCreatePokeBookFolderId(client: OAuth2Client): Promise
 		console.log('pokebook folder not found');
 		return await createPokeBookFolder(client);
 	}
+}
+
+export async function listPoems(client: OAuth2Client): Promise<drive_v3.Schema$File[]> {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	const response = await google.drive('v3').files.list({
+		q: `'${pokeBookFolderId}' in parents and trashed=false`,
+		auth: client,
+		fields: 'nextPageToken,files(id,name)'
+	});
+
+	return response.data.files;
+}
+
+export async function uploadPoem(client: OAuth2Client, fileName: string, poemContents: string) {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	google.drive('v3').files.create({
+		auth: client,
+		requestBody: {
+			name: fileName,
+			parents: [pokeBookFolderId]
+		},
+		media: {
+			mimeType: 'text/xml',
+			body: poemContents
+		}
+	});
 }
 
 async function createPokeBookFolder(client: OAuth2Client): Promise<string> {

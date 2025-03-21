@@ -65,19 +65,64 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function syncToCloud() {
+		const t1 = Date.now();
+		console.log(t1)
 		const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
 			credentials: 'include'
 		});
 
 		if (manifestResult.status === 404) {
-			console.log('manifest missing, gotta upload one')
-			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			// console.log('manifest missing, gotta upload one')
+			// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
 			
-			await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+			// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+			// 	credentials: 'include',
+			// 	method: 'PUT',
+			// 	body: encodedManifest
+			// });
+			const result = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/poems`, {
 				credentials: 'include',
-				method: 'PUT',
-				body: encodedManifest
+				method: 'GET'
 			});
+			const remotePoems = await result.json();
+			console.log('remotePoems', remotePoems);
+			console.log('cachedPoems', cachedPoems)
+
+			const poemsToUpload = cachedPoems.filter((poem) => {
+				return !remotePoems.find((remotePoem) => remotePoem.name === poem.filesystemPath.split('poems/')[1]);
+			})
+
+			console.log('poemsToUpload', poemsToUpload)
+
+			const poemContentPromises = poemsToUpload.map(async poem => {
+				const contents = (await poemManager.readFile(poem.filesystemPath)).data
+
+				return {
+					name: poem.filesystemPath.split('poems/')[1],
+					contents
+				}
+			});
+
+			const poemContentsToUpload = await Promise.all(poemContentPromises);
+
+			console.log(poemContentsToUpload)
+
+			await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/upload`, {
+				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify(poemContentsToUpload)
+			})
+
+			// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+			// 	credentials: 'include',
+			// 	method: 'PUT',
+			// 	body: await poemManager.retrieveEncodedManifestContents()
+			// })
+
+			const t2 = Date.now()
+			console.log(t2)
+
+			console.log(t2-t1)
 		} else {
 			const json = await manifestResult.json();
 			console.log(json);

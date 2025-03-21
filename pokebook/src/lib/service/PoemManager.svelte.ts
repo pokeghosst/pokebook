@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { XMLParser } from 'fast-xml-parser';
-import { Directory, Encoding } from '@capacitor/filesystem';
+import { Directory, Encoding, type ReadFileResult } from '@capacitor/filesystem';
 import * as Y from 'yjs';
 
 import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
@@ -185,11 +185,18 @@ class PoemManager {
 			(
 				await FilesystemWithPermissions.readFile({
 					path: uri,
-					directory: Directory.Documents,
+					// directory: Directory.Documents,
 					encoding: Encoding.UTF8
 				})
 			).data.toString()
 		);
+	}
+
+	public async readFile(uri: string): Promise<ReadFileResult> {
+		return await FilesystemWithPermissions.readFile({
+			path: uri,
+			encoding: Encoding.UTF8
+		});
 	}
 
 	private async flushToFile(
