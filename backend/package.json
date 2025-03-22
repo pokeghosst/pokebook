@@ -1,4 +1,6 @@
 {
+	"name": "@pokebook/backend",
+	"version": "0.1.0",
 	"private": true,
 	"scripts": {
 		"prepare": "nitropack prepare",
@@ -7,6 +9,7 @@
 		"preview": "node .output/server/index.mjs"
 	},
 	"dependencies": {
+		"@pokebook/shared": "workspace:^",
 		"dropbox": "^10.34.0",
 		"googleapis": "^146.0.0",
 		"nitropack": "^2.11.5"
