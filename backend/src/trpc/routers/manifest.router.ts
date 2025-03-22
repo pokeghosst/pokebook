@@ -16,18 +16,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
-
-export const createContext = ({ req, res }: CreateExpressContextOptions) => {
-	const {
-		accessToken,
-		expiresAt,
-		sessionId
-	}: { accessToken?: string; expiresAt?: number; sessionId?: string } = JSON.parse(
-		req.cookies['pokebook-session']
-	);
-
-	return { accessToken, expiresAt, sessionId };
-};
-
-export type Context = Awaited<ReturnType<typeof createContext>>;
+import { router, protectedProcedure } from '../trpc';
+import * as googleDrive from '../services/google-drive.service';

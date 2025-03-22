@@ -20,10 +20,11 @@ import 'dotenv/config';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
-import { appRouter } from './trpc/router';
+import { appRouter } from './trpc/routers';
 import { createContext } from './trpc/context';
-import routes from './routes';
+import routes from './routerss';
 
 const app = express();
 
@@ -36,6 +37,8 @@ app.use(
 		methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'DELETE']
 	})
 );
+app.use(cookieParser());
+
 app.use(
 	'/trpc',
 	trpcExpress.createExpressMiddleware({

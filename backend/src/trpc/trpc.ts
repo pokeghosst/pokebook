@@ -16,9 +16,25 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 
-const t = initTRPC.create();
+import type { Context } from './context';
+
+const t = initTRPC.context<Context>().create();
+
+const isAuthenticated = t.middleware(({ ctx, next }) => {
+	if (!ctx.sessionId) {
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+			message: 'Not authenticated'
+		});
+	}
+
+	return next({
+		ctx
+	});
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(isAuthenticated);

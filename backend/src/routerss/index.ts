@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Router } from 'express';
 
-import authRoutes from './auth.routes';
+import authRoutes from './auth.router';
 
 const router: Router = Router();
 

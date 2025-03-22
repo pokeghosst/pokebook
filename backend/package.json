@@ -13,6 +13,7 @@
 		"@fastify/redis": "^7.0.2",
 		"@pokebook/shared": "workspace:^",
 		"@trpc/server": "^11.0.0",
+		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"dropbox": "^10.34.0",
@@ -24,6 +25,7 @@
 		"trpc-nitro-adapter": "^0.7.3"
 	},
 	"devDependencies": {
+		"@types/cookie-parser": "^1.4.8",
 		"@types/cors": "^2.8.17",
 		"@types/crypto-js": "^4.2.2",
 		"@types/express": "^5.0.1",

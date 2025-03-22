@@ -16,15 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-// import { GoogleDriveFactory } from '~/lib/client/GoogleDrive';
-import { publicProcedure, router } from './trpc';
-
-export const appRouter = router({
-	getManifest: publicProcedure.query(async () => {
-		return {
-			text: 'hello world'
-		};
-	})
-});
-
-export type AppRouter = typeof appRouter;
+export const getManifest = () => {};
