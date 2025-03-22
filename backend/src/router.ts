@@ -16,17 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { z } from "zod";
+// import { GoogleDriveFactory } from '~/lib/client/GoogleDrive';
+import { publicProcedure, router } from './trpc';
 
-export const poemFileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  uri: z.string().min(1, "URI is required"),
-  timestamp: z.number().int().positive(),
+export const appRouter = router({
+	getManifest: publicProcedure.query(async () => {
+		return {
+			text: 'hello world'
+		};
+	})
 });
 
-export const manifestResponseSchema = z.object({
-  manifest: z.string().min(1, "Manifest cannot be empty"),
-});
-
-export type PoemFile = z.infer<typeof poemFileSchema>;
-export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
+export type AppRouter = typeof appRouter;

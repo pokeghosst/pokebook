@@ -16,17 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { z } from "zod";
+import { appRouter } from '../trpc/routes';
 
-export const poemFileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  uri: z.string().min(1, "URI is required"),
-  timestamp: z.number().int().positive(),
+import { defineNitroTRPCEventHandler } from 'trpc-nitro-adapter';
+
+export default defineNitroTRPCEventHandler({
+	router: appRouter,
+	createContext: (event) => {
+		const session = JSON.parse(getCookie(event, 'pokebook-session'));
+		const { accessToken, expiresAt, sessionId } = session;
+
+		return { accessToken, expiresAt, sessionId };
+	}
 });
-
-export const manifestResponseSchema = z.object({
-  manifest: z.string().min(1, "Manifest cannot be empty"),
-});
-
-export type PoemFile = z.infer<typeof poemFileSchema>;
-export type ManifestResponse = z.infer<typeof manifestResponseSchema>;

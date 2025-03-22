@@ -16,17 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { z } from "zod";
+import type { PoemFile } from '@pokebook/shared';
+import type { PoemEntity } from '$lib/types';
 
-export const poemFileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  uri: z.string().min(1, "URI is required"),
-  timestamp: z.number().int().positive(),
-});
-
-export const manifestResponseSchema = z.object({
-  manifest: z.string().min(1, "Manifest cannot be empty"),
-});
-
-export type PoemFile = z.infer<typeof poemFileSchema>;
-export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
+export interface StorageDriver {
+	listPoems(): Promise<PoemFile[]>;
+	loadPoem(poemUri: string): Promise<PoemEntity>;
+	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;
+	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
+	deletePoem(poemUri: string): Promise<void>;
+	retrieveEncodedManifest(): Promise<string | null>;
+}

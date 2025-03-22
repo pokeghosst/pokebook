@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
 	} catch (err) {
 		if (err.response.status === 401) {
 			throw createError({
-				statusCode: 401,
+				status: 401,
 				message: "Couldn't authenticate"
 			});
 		}

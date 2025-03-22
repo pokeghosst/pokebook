@@ -1,3 +1,12 @@
 {
-  "extends": "./.nitro/types/tsconfig.json"
+	"compilerOptions": {
+		"target": "es2020",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"declaration": true,
+		"outDir": "./dist",
+		"strict": true
+	},
+	"include": ["src/**/*"]
 }

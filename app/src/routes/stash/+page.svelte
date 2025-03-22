@@ -32,6 +32,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 	import RefreshCcw from 'lucide-svelte/icons/refresh-ccw';
 
+	import { createTRPCClient, httpBatchLink } from '@trpc/client';
+	import type { AppRouter } from '@pokebook/backend/src/router';
+
 	const FALLBACK_DELAY_MS = 150;
 
 	let cachedPoems: PoemManifestRecord[];
@@ -65,68 +68,84 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function syncToCloud() {
-		const t1 = Date.now();
-		console.log(t1)
-		const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-			credentials: 'include'
+		const trpc = createTRPCClient<AppRouter>({
+			links: [
+				httpBatchLink({
+					url: 'http://localhost:3000/trpc',
+					fetch(url, options) {
+						return fetch(url, {
+							...options,
+							credentials: 'include'
+						});
+					}
+				})
+			]
 		});
 
-		if (manifestResult.status === 404) {
-			// console.log('manifest missing, gotta upload one')
-			// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-			
-			// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-			// 	credentials: 'include',
-			// 	method: 'PUT',
-			// 	body: encodedManifest
-			// });
-			const result = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/poems`, {
-				credentials: 'include',
-				method: 'GET'
-			});
-			const remotePoems = await result.json();
-			console.log('remotePoems', remotePoems);
-			console.log('cachedPoems', cachedPoems)
+		const response = await trpc.getManifest.query();
+		console.log(response);
+		// const t1 = Date.now();
+		// console.log(t1)
+		// const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+		// 	credentials: 'include'
+		// });
 
-			const poemsToUpload = cachedPoems.filter((poem) => {
-				return !remotePoems.find((remotePoem) => remotePoem.name === poem.filesystemPath.split('poems/')[1]);
-			})
+		// if (manifestResult.status === 404) {
+		// 	// console.log('manifest missing, gotta upload one')
+		// 	// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
 
-			console.log('poemsToUpload', poemsToUpload)
+		// 	// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+		// 	// 	credentials: 'include',
+		// 	// 	method: 'PUT',
+		// 	// 	body: encodedManifest
+		// 	// });
+		// 	const result = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/poems`, {
+		// 		credentials: 'include',
+		// 		method: 'GET'
+		// 	});
+		// 	const remotePoems = await result.json();
+		// 	console.log('remotePoems', remotePoems);
+		// 	console.log('cachedPoems', cachedPoems)
 
-			const poemContentPromises = poemsToUpload.map(async poem => {
-				const contents = (await poemManager.readFile(poem.filesystemPath)).data
+		// 	const poemsToUpload = cachedPoems.filter((poem) => {
+		// 		return !remotePoems.find((remotePoem) => remotePoem.name === poem.filesystemPath.split('poems/')[1]);
+		// 	})
 
-				return {
-					name: poem.filesystemPath.split('poems/')[1],
-					contents
-				}
-			});
+		// 	console.log('poemsToUpload', poemsToUpload)
 
-			const poemContentsToUpload = await Promise.all(poemContentPromises);
+		// 	const poemContentPromises = poemsToUpload.map(async poem => {
+		// 		const contents = (await poemManager.readFile(poem.filesystemPath)).data
 
-			console.log(poemContentsToUpload)
+		// 		return {
+		// 			name: poem.filesystemPath.split('poems/')[1],
+		// 			contents
+		// 		}
+		// 	});
 
-			await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/upload`, {
-				credentials: 'include',
-				method: 'POST',
-				body: JSON.stringify(poemContentsToUpload)
-			})
+		// 	const poemContentsToUpload = await Promise.all(poemContentPromises);
 
-			// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-			// 	credentials: 'include',
-			// 	method: 'PUT',
-			// 	body: await poemManager.retrieveEncodedManifestContents()
-			// })
+		// 	console.log(poemContentsToUpload)
 
-			const t2 = Date.now()
-			console.log(t2)
+		// 	await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/upload`, {
+		// 		credentials: 'include',
+		// 		method: 'POST',
+		// 		body: JSON.stringify(poemContentsToUpload)
+		// 	})
 
-			console.log(t2-t1)
-		} else {
-			const json = await manifestResult.json();
-			console.log(json);
-		}
+		// 	// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
+		// 	// 	credentials: 'include',
+		// 	// 	method: 'PUT',
+		// 	// 	body: await poemManager.retrieveEncodedManifestContents()
+		// 	// })
+
+		// 	const t2 = Date.now()
+		// 	console.log(t2)
+
+		// 	console.log(t2-t1)
+		// } else {
+		// 	const json = await manifestResult.json();
+		// 	console.log(json);
+		// }
 	}
 </script>
 

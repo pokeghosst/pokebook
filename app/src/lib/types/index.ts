@@ -1,3 +1,5 @@
+export * from './StorageDriver';
+
 import type { Icon } from 'lucide-svelte';
 import type { ComponentType } from 'svelte';
 

@@ -16,17 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { z } from "zod";
+import { initTRPC, TRPCError } from '@trpc/server';
 
-export const poemFileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  uri: z.string().min(1, "URI is required"),
-  timestamp: z.number().int().positive(),
-});
+const t = initTRPC.create();
 
-export const manifestResponseSchema = z.object({
-  manifest: z.string().min(1, "Manifest cannot be empty"),
-});
-
-export type PoemFile = z.infer<typeof poemFileSchema>;
-export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
+export const router = t.router;
+export const publicProcedure = t.procedure;
