@@ -16,35 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import 'dotenv/config';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import express from 'express';
-import cors from 'cors';
 
-import { appRouter } from './trpc/router';
-import { createContext } from './trpc/context';
-import routes from './routes';
+export const createContext = ({ req, res }: trpcExpress.CreateExpressContextOptions) => {
+	return {
+		req,
+		res
+	};
+};
 
-const app = express();
-
-app.use(express.json());
-app.use(
-	cors({
-		origin: 'http://localhost:5173',
-		allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization'],
-		credentials: true,
-		methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'DELETE']
-	})
-);
-app.use(
-	'/trpc',
-	trpcExpress.createExpressMiddleware({
-		router: appRouter,
-		createContext
-	})
-);
-app.use('/', routes);
-
-app.listen(3000, () => {
-	console.log('listening on port 3000');
-});
+export type Context = Awaited<ReturnType<typeof createContext>>;

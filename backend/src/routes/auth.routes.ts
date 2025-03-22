@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import { Router } from 'express';
 
-export function createContext({ req, res }: CreateFastifyContextOptions) {
-	console.log(req.cookies);
-	const cookie = 'cookie';
+import * as oAUthController from '../controllers/oauth.controller';
 
-	return { req, res, cookie };
-}
+const router: Router = Router();
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+router.get('/:provider/auth', oAUthController.getOAuthUrl);
+router.get('/:provider/callback', oAUthController.handleCallback);
+
+export default router;

@@ -17,10 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { randomBytes } from 'crypto';
-
 import { google } from 'googleapis';
-
-import { StorageProvider } from '../enums/StorageProvider';
+import { createClient } from 'redis';
 
 import type { OAuth2Client } from 'google-auth-library';
 
@@ -43,37 +41,40 @@ interface AuthenticatedRequestResult<T> {
 	};
 }
 
-async function getUserRefreshToken(sessionId: string): Promise<string> {
-	return useStorage('redis').getItem<string>(`${StorageProvider.GOOGLE}:${sessionId}`);
+const redis = await createClient({
+	url: `redis://default:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
+})
+	.on('error', (err) => console.log('Redis Client Error', err))
+	.connect();
+
+async function getUserRefreshToken(sessionId: string): Promise<string | null> {
+	return redis.get(`google:${sessionId}`);
 }
 
-async function storeUserRefreshToken(sessionId: string, refreshToken: string) {
-	return useStorage('redis').setItem<string>(
-		`${StorageProvider.GOOGLE}:${sessionId}`,
-		refreshToken
-	);
+async function setUserRefreshToken(sessionId: string, refreshToken: string) {
+	return redis.set(`google:${sessionId}`, refreshToken);
 }
 
-async function removeUserRefreshToken(sessionId: string) {
-	return useStorage('redis').removeItem(`${StorageProvider.GOOGLE}:${sessionId}`);
+async function deleteUserRefreshToken(sessionId: string) {
+	return redis.del(`google:${sessionId}`);
 }
 
 function createOAuth2Client() {
 	return new google.auth.OAuth2(
-		useRuntimeConfig().google.clientId,
-		useRuntimeConfig().google.clientSecret,
-		`${useRuntimeConfig().serverUrl}/callback/${StorageProvider.GOOGLE}`
+		process.env.GOOGLE_CLIENT_ID,
+		process.env.GOOGLE_CLIENT_SECRET,
+		`${process.env.SERVER_URL}/google/callback`
 	);
 }
 
 export async function processCallback(code: string) {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
-	let sessionId: string | null;
+	let sessionId: string | null = null;
 
 	if (tokens.refresh_token) {
 		sessionId = randomBytes(32).toString('base64');
-		await storeUserRefreshToken(sessionId, tokens.refresh_token);
+		await setUserRefreshToken(sessionId, tokens.refresh_token);
 	}
 
 	return {
@@ -88,10 +89,7 @@ async function createOAuth2ClientFromRefreshToken(userId: string) {
 	const refreshToken = await getUserRefreshToken(userId);
 
 	if (!refreshToken) {
-		throw createError({
-			statusCode: 401,
-			message: 'No refresh token found for user'
-		});
+		throw new Error('No refresh token found for user');
 	}
 
 	oauth2Client.setCredentials({
@@ -130,7 +128,7 @@ export async function makeAuthenticatedRequest<T, P extends any[] = []>({
 
 	if (credentials.refresh_token) {
 		console.log('storing refresh token...');
-		await storeUserRefreshToken(sessionId, credentials.refresh_token);
+		await setUserRefreshToken(sessionId, credentials.refresh_token);
 	}
 
 	return {
