@@ -1,19 +1,9 @@
 {
-	"name": "pokebook",
-	"version": "3.1.0",
-	"description": "Digital notebook for writing poetry",
-	"keywords": [
-		"Poetry",
-		"Writing",
-		"Productivity",
-		"Writing software"
-	],
+	"name": "@pokebook/app",
+	"version": "4.0.0",
+	"description": "PokeBook web app",
 	"author": "Pokeghost",
 	"license": "AGPL-3.0",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pokegh0st/pokebook"
-	},
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -57,6 +47,7 @@
 		"@capacitor/preferences": "^6.0.2",
 		"@capacitor/share": "^6.0.2",
 		"@capacitor/status-bar": "^6.0.1",
+		"@pokebook/shared": "workspace:^",
 		"fast-xml-parser": "^4.4.1",
 		"hotkeys-js": "^3.13.7",
 		"letter-count": "^5.2.1",

@@ -40,6 +40,9 @@ importers:
       '@capacitor/status-bar':
         specifier: ^6.0.1
         version: 6.0.2(@capacitor/core@6.2.0)
+      '@pokebook/shared':
+        specifier: workspace:^
+        version: link:../shared
       fast-xml-parser:
         specifier: ^4.4.1
         version: 4.5.3
