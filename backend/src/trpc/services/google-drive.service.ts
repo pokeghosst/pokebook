@@ -73,9 +73,12 @@ export async function getOrCreatePokeBookFolderId(client: OAuth2Client) {
 	});
 
 	if (results.data.files && results.data.files.length > 0) {
-		return results.data.files[0].id;
+		const folderId = results.data.files[0].id;
+
+		if (!folderId) throw new Error('Folder has no ID');
+
+		return folderId;
 	} else {
-		console.log('pokebook folder not found');
 		return await createPokeBookFolder(client);
 	}
 }

@@ -42,7 +42,7 @@ export const handleCallback = async (req: Request, res: Response) => {
 					res.cookie('pokebook-session', JSON.stringify({ accessToken, expiresAt, sessionId }), {
 						httpOnly: true,
 						secure: process.env.NODE_ENV === 'production',
-						maxAge: 60 * 60 * 24 * 30,
+						maxAge: 30 * 24 * 60 * 60 * 1000,
 						path: '/'
 					});
 

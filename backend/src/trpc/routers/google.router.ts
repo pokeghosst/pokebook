@@ -17,12 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
 
 import { protectedProcedure, router } from '../trpc';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
 
 export const googleRouter = router({
+	getPokeBookFolderId: protectedProcedure.query(async ({ ctx }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+		const folderId = await googleDrive.getOrCreatePokeBookFolderId(client);
+
+		return { folderId };
+	}),
 	getManifest: protectedProcedure.query(async ({ ctx }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 		const searchResult = await googleDrive.findManifest(client);
@@ -42,6 +50,13 @@ export const googleRouter = router({
 			return { manifest };
 		}
 
-		return null;
-	})
+		return { manifest: null };
+	}),
+	createManifest: protectedProcedure
+		.input(z.object({ manifest: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+			await googleDrive.createManifest(client, input.manifest);
+		})
 });

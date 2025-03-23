@@ -26,4 +26,5 @@ export interface StorageDriver {
 	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
 	deletePoem(poemUri: string): Promise<void>;
 	retrieveEncodedManifest(): Promise<string | null>;
+	createManifest(encodedManifest: string): Promise<void>;
 }

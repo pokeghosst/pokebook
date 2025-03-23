@@ -71,7 +71,7 @@ const tokenRefresh = t.middleware(async ({ ctx, next }) => {
 			ctx.res.cookie('pokebook-session', JSON.stringify(newToken), {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
-				maxAge: 60 * 60 * 24 * 30,
+				maxAge: 30 * 24 * 60 * 60 * 1000,
 				path: '/'
 			});
 		} catch (e) {

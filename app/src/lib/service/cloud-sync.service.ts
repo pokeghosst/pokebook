@@ -16,16 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { appRouter } from '../trpc/routes';
+import type { StorageDriver } from '$lib/types';
 
-import { defineNitroTRPCEventHandler } from 'trpc-nitro-adapter';
+export class SyncManager {
+	private syncProvider: StorageDriver;
 
-export default defineNitroTRPCEventHandler({
-	router: appRouter,
-	createContext: (event) => {
-		const session = JSON.parse(getCookie(event, 'pokebook-session'));
-		const { accessToken, expiresAt, sessionId } = session;
-
-		return { accessToken, expiresAt, sessionId };
+	constructor(syncProvider: StorageDriver) {
+		this.syncProvider = syncProvider;
 	}
-});
+
+	async getRemoteManifest() {
+		return this.syncProvider.retrieveEncodedManifest();
+	}
+
+	async createManifest(encodedManifest: string) {
+		await this.syncProvider.createManifest(encodedManifest);
+	}
+}
