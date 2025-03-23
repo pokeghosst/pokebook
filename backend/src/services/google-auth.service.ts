@@ -51,7 +51,7 @@ async function getUserRefreshToken(sessionId: string): Promise<string | null> {
 	return redis.get(`google:${sessionId}`);
 }
 
-async function setUserRefreshToken(sessionId: string, refreshToken: string) {
+export async function setUserRefreshToken(sessionId: string, refreshToken: string) {
 	return redis.set(`google:${sessionId}`, refreshToken);
 }
 
@@ -84,7 +84,7 @@ export async function processCallback(code: string) {
 	};
 }
 
-async function createOAuth2ClientFromRefreshToken(userId: string) {
+export async function createOAuth2ClientFromRefreshToken(userId: string) {
 	const oauth2Client = createOAuth2Client();
 	const refreshToken = await getUserRefreshToken(userId);
 
@@ -105,41 +105,41 @@ export async function createOAuth2ClientFromAccessToken(accessToken: string) {
 	return oauth2Client;
 }
 
-export async function makeAuthenticatedRequest<T, P extends any[] = []>({
-	sessionId,
-	accessToken,
-	expiresAt,
-	requestFn,
-	requestParams = [] as unknown as P
-}: AuthenticatedRequestParams<T, P>): Promise<AuthenticatedRequestResult<T>> {
-	const isExpired = !accessToken || !expiresAt || Date.now() > expiresAt - TOKEN_EXPIRATION_BUFFER;
+// export async function makeAuthenticatedRequest<T, P extends any[] = []>({
+// 	sessionId,
+// 	accessToken,
+// 	expiresAt,
+// 	requestFn,
+// 	requestParams = [] as unknown as P
+// }: AuthenticatedRequestParams<T, P>): Promise<AuthenticatedRequestResult<T>> {
+// 	const isExpired = !accessToken || !expiresAt || Date.now() > expiresAt - TOKEN_EXPIRATION_BUFFER;
 
-	if (!isExpired) {
-		console.log('access token is fresh!');
-		const client = await createOAuth2ClientFromAccessToken(accessToken);
-		return {
-			data: await requestFn(client, ...requestParams),
-			tokenRefreshed: false
-		};
-	}
+// 	if (!isExpired) {
+// 		console.log('access token is fresh!');
+// 		const client = await createOAuth2ClientFromAccessToken(accessToken);
+// 		return {
+// 			data: await requestFn(client, ...requestParams),
+// 			tokenRefreshed: false
+// 		};
+// 	}
 
-	const client = await createOAuth2ClientFromRefreshToken(sessionId);
-	const { credentials } = await client.refreshAccessToken();
+// 	const client = await createOAuth2ClientFromRefreshToken(sessionId);
+// 	const { credentials } = await client.refreshAccessToken();
 
-	if (credentials.refresh_token) {
-		console.log('storing refresh token...');
-		await setUserRefreshToken(sessionId, credentials.refresh_token);
-	}
+// 	if (credentials.refresh_token) {
+// 		console.log('storing refresh token...');
+// 		await setUserRefreshToken(sessionId, credentials.refresh_token);
+// 	}
 
-	return {
-		data: await requestFn(client, ...requestParams),
-		tokenRefreshed: true,
-		newToken: {
-			accessToken: credentials.access_token,
-			expiresAt: credentials.expiry_date
-		}
-	};
-}
+// 	return {
+// 		data: await requestFn(client, ...requestParams),
+// 		tokenRefreshed: true,
+// 		newToken: {
+// 			accessToken: credentials.access_token,
+// 			expiresAt: credentials.expiry_date
+// 		}
+// 	};
+// }
 
 export function getGoogleAuthUrl() {
 	return createOAuth2Client().generateAuthUrl({

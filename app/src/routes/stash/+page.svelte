@@ -33,7 +33,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import RefreshCcw from 'lucide-svelte/icons/refresh-ccw';
 
 	import { createTRPCClient, httpBatchLink } from '@trpc/client';
-	import type { AppRouter } from '@pokebook/backend/src/router';
+	// TODO: This is weird and not very nice but I'll look into it later
+	import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
 
 	const FALLBACK_DELAY_MS = 150;
 
@@ -82,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			]
 		});
 
-		const response = await trpc.getManifest.query();
+		const response = await trpc.google.getManifest.query();
 		console.log(response);
 		// const t1 = Date.now();
 		// console.log(t1)

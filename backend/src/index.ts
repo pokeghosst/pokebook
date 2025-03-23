@@ -16,15 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import 'dotenv/config';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import express from 'express';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import 'dotenv/config';
+import express from 'express';
 
-import { appRouter } from './trpc/routers';
+import routes from './routers';
 import { createContext } from './trpc/context';
-import routes from './routerss';
+import { appRouter } from './trpc/routers';
 
 const app = express();
 
@@ -38,7 +38,6 @@ app.use(
 	})
 );
 app.use(cookieParser());
-
 app.use(
 	'/trpc',
 	trpcExpress.createExpressMiddleware({

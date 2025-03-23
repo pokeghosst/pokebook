@@ -18,3 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { router, protectedProcedure } from '../trpc';
 import * as googleDrive from '../services/google-drive.service';
+
+export const googleRouter = router({
+	getManifest: protectedProcedure.query(() => {
+		return googleDrive.getManifest();
+	})
+});

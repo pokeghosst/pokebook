@@ -16,8 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { publicProcedure, router } from '../trpc';
+import { router } from '../trpc';
+import { googleRouter } from './google.router';
 
-export const appRouter = router({});
+export const appRouter = router({
+	google: googleRouter
+});
 
 export type AppRouter = typeof appRouter;

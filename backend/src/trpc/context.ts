@@ -27,7 +27,7 @@ export const createContext = ({ req, res }: CreateExpressContextOptions) => {
 		req.cookies['pokebook-session']
 	);
 
-	return { accessToken, expiresAt, sessionId };
+	return { res, accessToken, expiresAt, sessionId };
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
