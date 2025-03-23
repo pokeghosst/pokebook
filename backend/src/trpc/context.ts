@@ -17,17 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import type { OAuth2Client } from 'google-auth-library';
 
 export const createContext = ({ req, res }: CreateExpressContextOptions) => {
 	const {
 		accessToken,
 		expiresAt,
 		sessionId
-	}: { accessToken?: string; expiresAt?: number; sessionId?: string } = JSON.parse(
+	}: { accessToken: string; expiresAt: number; sessionId: string } = JSON.parse(
 		req.cookies['pokebook-session']
 	);
 
-	return { res, accessToken, expiresAt, sessionId };
+	return {
+		res,
+		accessToken,
+		expiresAt,
+		sessionId
+	};
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

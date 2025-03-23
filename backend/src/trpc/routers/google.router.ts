@@ -16,11 +16,32 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { router, protectedProcedure } from '../trpc';
+import { TRPCError } from '@trpc/server';
+
+import { protectedProcedure, router } from '../trpc';
+import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
 
 export const googleRouter = router({
-	getManifest: protectedProcedure.query(() => {
-		return googleDrive.getManifest();
+	getManifest: protectedProcedure.query(async ({ ctx }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+		const searchResult = await googleDrive.findManifest(client);
+
+		if (searchResult && searchResult.length > 0) {
+			const manifestFileId = searchResult[0].id;
+
+			if (!manifestFileId) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: 'Manifest has no ID'
+				});
+			}
+
+			const manifest = await googleDrive.readManifest(client, manifestFileId);
+
+			return { manifest };
+		}
+
+		return null;
 	})
 });

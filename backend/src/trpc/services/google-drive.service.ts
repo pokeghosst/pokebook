@@ -16,8 +16,106 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export const getManifest = () => {
-	return {
-		manifest: 'manifest'
-	};
-};
+import { google } from 'googleapis';
+
+import type { OAuth2Client } from 'google-auth-library';
+import type { drive_v3 } from 'googleapis';
+
+export async function findManifest(client: OAuth2Client) {
+	// console.log(client);
+
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	const response = await google.drive('v3').files.list({
+		q: `'${pokeBookFolderId}' in parents and trashed=false and name='.pokemanifest'`,
+		orderBy: 'createdTime desc',
+		auth: client,
+		fields: 'nextPageToken,files(id,name,createdTime,properties)'
+	});
+
+	return response.data.files;
+}
+
+export async function readManifest(client: OAuth2Client, manifestId: string) {
+	const manifestResponse = await google.drive('v3').files.get({
+		fileId: manifestId,
+		alt: 'media',
+		auth: client
+	});
+	return manifestResponse.data.toString();
+}
+
+export async function createManifest(client: OAuth2Client, manifest: string) {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	const response = await google.drive('v3').files.create({
+		auth: client,
+		requestBody: {
+			name: '.pokemanifest',
+			parents: [pokeBookFolderId]
+		},
+		media: {
+			mimeType: 'text/xml',
+			body: manifest
+		}
+	});
+
+	return response.data.id;
+}
+
+export async function getOrCreatePokeBookFolderId(client: OAuth2Client) {
+	const drive = google.drive('v3');
+
+	const results = await drive.files.list({
+		q: `mimeType='application/vnd.google-apps.folder' and trashed=false and name='${process.env.POKEBOOK_FOLDER_NAME}'`,
+		fields: 'files(id)',
+		auth: client
+	});
+
+	if (results.data.files && results.data.files.length > 0) {
+		return results.data.files[0].id;
+	} else {
+		console.log('pokebook folder not found');
+		return await createPokeBookFolder(client);
+	}
+}
+
+export async function listPoems(client: OAuth2Client) {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	const response = await google.drive('v3').files.list({
+		q: `'${pokeBookFolderId}' in parents and trashed=false`,
+		auth: client,
+		fields: 'nextPageToken,files(id,name)'
+	});
+
+	return response.data.files;
+}
+
+export async function uploadPoem(client: OAuth2Client, fileName: string, poemContents: string) {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	google.drive('v3').files.create({
+		auth: client,
+		requestBody: {
+			name: fileName,
+			parents: [pokeBookFolderId]
+		},
+		media: {
+			mimeType: 'text/xml',
+			body: poemContents
+		}
+	});
+}
+
+async function createPokeBookFolder(client: OAuth2Client): Promise<string> {
+	const response = await google.drive('v3').files.create({
+		requestBody: {
+			name: process.env.POKEBOOK_FOLDER_NAME,
+			mimeType: 'application/vnd.google-apps.folder'
+		},
+		fields: 'id',
+		auth: client
+	});
+	return response.data.id;
+}
