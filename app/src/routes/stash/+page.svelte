@@ -69,14 +69,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function syncToCloud() {
-		const manifest = await manager.getRemoteManifest();
-		console.log(manifest);
+		manager.sync();
+		// const manifest = await manager.getRemoteManifest();
+		// console.log(manifest);
 
-		if (!manifest) {
-			console.log('creating new manifest');
-			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-			manager.createManifest(encodedManifest);
-		}
+		// if (!manifest) {
+		// 	console.log('creating new manifest');
+		// 	const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+		// 	manager.createManifest(encodedManifest);
+		// }
 
 		// const t1 = Date.now();
 		// console.log(t1)

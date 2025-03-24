@@ -38,7 +38,7 @@ export interface PoemManifestRecord {
 	unsavedChanges: boolean;
 }
 
-class SyncManifest {
+export class SyncManifest {
 	yDoc: Y.Doc;
 	poems: Y.Array<PoemManifestRecord>;
 	lastSync: Y.Map<number>;
@@ -170,6 +170,10 @@ class PoemManager {
 			encoding: Encoding.UTF8
 		});
 		return manifestFile.data.toString();
+	}
+
+	public getManifest() {
+		return this.syncManifest;
 	}
 
 	// public async save(poem: PoemEntity) {

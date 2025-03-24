@@ -89,7 +89,7 @@ export async function listPoems(client: OAuth2Client) {
 	const response = await google.drive('v3').files.list({
 		q: `'${pokeBookFolderId}' in parents and trashed=false`,
 		auth: client,
-		fields: 'nextPageToken,files(id,name)'
+		fields: 'nextPageToken,files(id,name,createdTime)'
 	});
 
 	return response.data.files;

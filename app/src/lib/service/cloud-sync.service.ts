@@ -16,6 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { poemManager, SyncManifest } from './PoemManager.svelte';
+import { decodeFromBase64 } from '$lib/util/base64';
+
 import type { StorageDriver } from '$lib/types';
 
 export class SyncManager {
@@ -31,5 +34,26 @@ export class SyncManager {
 
 	async createManifest(encodedManifest: string) {
 		await this.syncProvider.createManifest(encodedManifest);
+	}
+
+	async sync() {
+		const localManifest = poemManager.getManifest();
+		const remoteManifestEncoded = await this.getRemoteManifest();
+
+		if (!remoteManifestEncoded) {
+			const poemFiles = await this.syncProvider.listPoems();
+			console.log('remotePoems', poemFiles);
+		}
+
+		// const remoteManifest = SyncManifest.fromSerialized(decodeFromBase64(remoteManifestEncoded));
+
+		// console.log('remoteManifest', remoteManifest);
+		// console.log('localManifest', localManifest);
+
+		const localPoems = localManifest.poems;
+		// const remotePoems = remoteManifest.poems;
+
+		console.log('localPoems', localPoems.toArray());
+		// console.log('remotePoems', remotePoems.toArray());
 	}
 }

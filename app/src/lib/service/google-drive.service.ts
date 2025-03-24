@@ -46,8 +46,8 @@ export class GoogleDrive implements StorageDriver {
 		this.pokeBookFolderId = response.folderId;
 	}
 
-	listPoems(): Promise<PoemFile[]> {
-		throw new Error('Method not implemented.');
+	async listPoems(): Promise<PoemFile[]> {
+		return await this.trpc.google.listPoems.query();
 	}
 	loadPoem(poemUri: string): Promise<PoemEntity> {
 		throw new Error('Method not implemented.');

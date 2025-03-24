@@ -21,7 +21,7 @@ import { z } from "zod";
 export const poemFileSchema = z.object({
   name: z.string().min(1, "Name is required"),
   uri: z.string().min(1, "URI is required"),
-  timestamp: z.number().int().positive(),
+  timestamp: z.string(),
 });
 
 export const manifestResponseSchema = z.object({

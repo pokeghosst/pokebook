@@ -19,9 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { protectedProcedure, router } from '../trpc';
+import { PoemFile } from '@pokebook/shared';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
+import { protectedProcedure, router } from '../trpc';
 
 export const googleRouter = router({
 	getPokeBookFolderId: protectedProcedure.query(async ({ ctx }) => {
@@ -58,5 +59,32 @@ export const googleRouter = router({
 			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
 			await googleDrive.createManifest(client, input.manifest);
-		})
+		}),
+	listPoems: protectedProcedure.query(async ({ ctx }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+		const schemaFiles = await googleDrive.listPoems(client);
+
+		if (!schemaFiles) {
+			throw new TRPCError({
+				code: 'NOT_FOUND',
+				message: 'No poem files'
+			});
+		}
+
+		const poemFiles: PoemFile[] = schemaFiles.flatMap((poemFile) => {
+			if (poemFile.name && poemFile.id && poemFile.createdTime) {
+				return [
+					{
+						name: poemFile.name,
+						uri: poemFile.id,
+						timestamp: poemFile.createdTime
+					}
+				];
+			}
+			return [];
+		});
+
+		return poemFiles;
+	})
 });
