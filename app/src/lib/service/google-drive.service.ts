@@ -72,4 +72,7 @@ export class GoogleDrive implements StorageDriver {
 	async createManifest(encodedManifest: string): Promise<void> {
 		await this.trpc.google.createManifest.mutate({ manifest: encodedManifest });
 	}
+	async uploadPoems(poems: { name: string; contents: string }[]) {
+		await this.trpc.google.uploadPoems.mutate(poems);
+	}
 }

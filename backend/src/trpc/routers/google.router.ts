@@ -86,5 +86,14 @@ export const googleRouter = router({
 		});
 
 		return poemFiles;
-	})
+	}),
+	uploadPoems: protectedProcedure
+		.input(z.object({ name: z.string(), contents: z.string() }).array())
+		.mutation(async ({ ctx, input }) => {
+			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+			input.forEach(async (poem) => {
+				await googleDrive.uploadPoem(client, poem.name, poem.contents);
+			});
+		})
 });

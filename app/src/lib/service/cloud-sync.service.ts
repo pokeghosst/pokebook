@@ -44,13 +44,27 @@ export class SyncManager {
 			// If there is no remote manifest, ignore whatever is in the folder assuming it doesn't belong to PokeBook
 			// Otherwise, how did it get here?
 
+			const poemContentPromises = poemManager.getPoems().map(async (poem) => {
+				const name = poem.filesystemPath.split('poems/')[1];
+				const fileResult = await poemManager.readFile(poem.filesystemPath);
+				const contents = fileResult.data.toString();
+
+				return { name, contents };
+			});
+
+			const poemFilesToUpload = await Promise.all(poemContentPromises);
+
+			await this.syncProvider.uploadPoems(poemFilesToUpload);
+
+			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			await this.syncProvider.createManifest(encodedManifest);
+
 			return;
 		}
 
-		const localManifest = poemManager.getManifest();
 		const remoteManifest = SyncManifest.fromSerialized(decodeFromBase64(remoteManifestEncoded));
 
-		const localPoemRecords = localManifest.poems.toArray();
+		const localPoemRecords = poemManager.getPoems();
 		const remoteManifestRecords = remoteManifest.poems.toArray();
 
 		const poemsToUpload = localPoemRecords.filter(
