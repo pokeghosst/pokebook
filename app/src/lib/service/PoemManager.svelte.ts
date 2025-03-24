@@ -30,6 +30,7 @@ const MANIFEST_FILE = '.pokemanifest';
 
 export interface PoemManifestRecord {
 	filesystemPath: string;
+	remoteUri?: string;
 	name: string;
 	snippet: string;
 	createdAt: number;
