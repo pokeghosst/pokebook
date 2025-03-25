@@ -16,11 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { poemManager, SyncManifest } from './PoemManager.svelte';
 import { decodeFromBase64 } from '$lib/util/base64';
+import { poemManager, SyncManifest } from './PoemManager.svelte';
 
 import type { StorageDriver } from '$lib/types';
-import type { PoemFile } from '@pokebook/shared';
 
 export class SyncManager {
 	private syncProvider: StorageDriver;
@@ -54,15 +53,33 @@ export class SyncManager {
 
 			const poemFilesToUpload = await Promise.all(poemContentPromises);
 
-			await this.syncProvider.uploadPoems(poemFilesToUpload);
+			const localPoems = poemManager.getManifest().poems.toArray();
+			const uploadedPoems = await this.syncProvider.uploadPoems(poemFilesToUpload);
 
-			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-			await this.syncProvider.createManifest(encodedManifest);
+			console.log('uploadedPoems', uploadedPoems);
+			const uploadedPoemsMap = new Map(
+				uploadedPoems.map((update) => [update.fileName, update.fileId])
+			);
+
+			const updatedPoems = localPoems.map((poem) => {
+				const remoteFileId = uploadedPoemsMap.get(poem.filesystemPath.split('poems/')[1]);
+				if (remoteFileId !== undefined) {
+					return { ...poem, remoteFileId };
+				}
+
+				return poem;
+			});
+
+			console.log(updatedPoems);
+
+			// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			// await this.syncProvider.createManifest(encodedManifest);
 
 			return;
 		}
 
 		const remoteManifest = SyncManifest.fromSerialized(decodeFromBase64(remoteManifestEncoded));
+		const localManifest = poemManager.getManifest();
 
 		const localPoemRecords = poemManager.getPoems();
 		const remoteManifestRecords = remoteManifest.poems.toArray();
@@ -80,8 +97,14 @@ export class SyncManager {
 				)
 		);
 
+		console.log('localManifest pre-merge', localManifest.poems.toArray());
+
 		console.log('poemsToUpload', poemsToUpload);
 		console.log('poemsToDownload', poemsToDownload);
+
+		localManifest.mergeWith(remoteManifest);
+
+		console.log('localManifest post-merge', localManifest.poems.toArray());
 
 		// console.log('remoteManifest', remoteManifest);
 		// console.log('localManifest', localManifest);

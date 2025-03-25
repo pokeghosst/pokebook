@@ -27,10 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemNameStore,
 		draftPoemNoteStore
 	} from '$lib/stores/poemDraft';
-	import { storageMode } from '$lib/stores/storageMode';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 

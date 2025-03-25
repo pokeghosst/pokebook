@@ -20,7 +20,9 @@ import type { PoemFile } from '@pokebook/shared';
 import type { PoemEntity } from '$lib/types';
 
 export interface StorageDriver {
-	uploadPoems(poems: { name: string; contents: string }[]): Promise<void>;
+	uploadPoems(
+		poems: { name: string; contents: string }[]
+	): Promise<{ fileName: string; fileId: string }[]>;
 	listPoems(): Promise<PoemFile[]>;
 	loadPoem(poemUri: string): Promise<PoemEntity>;
 	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;

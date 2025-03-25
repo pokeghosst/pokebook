@@ -24,18 +24,20 @@ import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
 
 import type { PoemEntity } from '$lib/types';
 import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
+import { PoemDoc } from '$lib/models/PoemDoc';
+import { digestMessage } from '$lib/util/digest';
 
 const POEM_SNIPPET_LENGTH = 256;
 const MANIFEST_FILE = '.pokemanifest';
 
 export interface PoemManifestRecord {
 	filesystemPath: string;
-	remoteUri?: string;
+	remoteFileId?: string;
 	name: string;
 	snippet: string;
 	createdAt: number;
 	updatedAt: number;
-	lastSyncedAt: number;
+	hash: string;
 	unsavedChanges: boolean;
 }
 
@@ -112,10 +114,7 @@ class PoemManager {
 	public async rebuildManifest(): Promise<void> {
 		console.log('building manifest...');
 
-		const dirResult = await FilesystemWithPermissions.readdir({
-			path: `poems`,
-			directory: Directory.Documents
-		});
+		const dirResult = await this.readPoemDirectory();
 
 		const poemFiles = dirResult.files.filter((file) => file.name.endsWith('.xml'));
 
@@ -128,6 +127,7 @@ class PoemManager {
 			const xmlString = fileContent.data.toString();
 			const parsedXml = new XMLParser().parse(xmlString);
 			const snippet = this.sliceSnippet(parsedXml.text);
+			const hash = await digestMessage(xmlString);
 
 			return {
 				filesystemPath: file.uri,
@@ -137,7 +137,7 @@ class PoemManager {
 				// The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
 				createdAt: file.ctime ?? file.mtime,
 				updatedAt: file.mtime,
-				lastSyncedAt: 0,
+				hash,
 				unsavedChanges: false
 			};
 		});
@@ -148,13 +148,7 @@ class PoemManager {
 		this.syncManifest.poems.insert(0, manifestContents);
 
 		try {
-			await FilesystemWithPermissions.writeFile({
-				path: `poems/${MANIFEST_FILE}`,
-				data: encodeToBase64(this.syncManifest.serialize()),
-				directory: Directory.Documents,
-				encoding: Encoding.UTF8,
-				recursive: true
-			});
+			await this.flushManifestToFile();
 		} catch (e) {
 			throw `Couldn't write manifest file: ${e}`;
 		}
@@ -177,13 +171,33 @@ class PoemManager {
 		return this.syncManifest;
 	}
 
-	// public async save(poem: PoemEntity) {
-	// 	const poemDoc = new PoemDoc(poem);
-	//
-	// 	const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
-	//
-	// 	await this.cacheManager.push(id, poem.name, timestamp, this.sliceSnippet(poem.text));
-	// }
+	public async flushManifestToFile() {
+		await FilesystemWithPermissions.writeFile({
+			path: `poems/${MANIFEST_FILE}`,
+			data: encodeToBase64(this.syncManifest.serialize()),
+			directory: Directory.Documents,
+			encoding: Encoding.UTF8,
+			recursive: true
+		});
+	}
+
+	public async save(poem: PoemEntity) {
+		const poemDoc = new PoemDoc(poem);
+
+		const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
+
+		const poemRecord: PoemManifestRecord = {
+			filesystemPath: id,
+			name: poem.name,
+			snippet: this.sliceSnippet(poem.text),
+			createdAt: timestamp,
+			updatedAt: timestamp,
+			unsavedChanges: false
+		};
+
+		this.syncManifest.poems.push([poemRecord]);
+		this.flushManifestToFile();
+	}
 
 	public async load(uri: string): Promise<PoemEntity> {
 		return new XMLParser().parse(
@@ -204,6 +218,7 @@ class PoemManager {
 		});
 	}
 
+	// TODO: Refactor this into a more generic function with two functions on top for flushing manifest and poem file
 	private async flushToFile(
 		name: string,
 		data: string
@@ -221,6 +236,29 @@ class PoemManager {
 		).uri;
 
 		return { id, timestamp };
+	}
+
+	private async readPoemDirectory() {
+		try {
+			return await FilesystemWithPermissions.readdir({
+				path: 'poems',
+				directory: Directory.Documents
+			});
+		} catch (e) {
+			if (e instanceof Error && e.message === 'Folder does not exist.') {
+				await FilesystemWithPermissions.mkdir({
+					path: 'poems',
+					directory: Directory.Documents
+				});
+
+				return await FilesystemWithPermissions.readdir({
+					path: 'poems',
+					directory: Directory.Documents
+				});
+			} else {
+				throw new Error(`Unexpected error: ${e}`);
+			}
+		}
 	}
 
 	private sliceSnippet(text: string): string {

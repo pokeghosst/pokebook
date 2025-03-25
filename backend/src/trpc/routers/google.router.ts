@@ -92,8 +92,17 @@ export const googleRouter = router({
 		.mutation(async ({ ctx, input }) => {
 			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-			input.forEach(async (poem) => {
-				await googleDrive.uploadPoem(client, poem.name, poem.contents);
-			});
-		})
+			const poemPromises = input.map(
+				async (poem) => await googleDrive.uploadPoem(client, poem.name, poem.contents)
+			);
+
+			return await Promise.all(poemPromises);
+		}),
+	downloadPoems: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+		const filePromises = input.map(async (uri) => await googleDrive.downloadPoem(client, uri));
+
+		return await Promise.all(filePromises);
+	})
 });

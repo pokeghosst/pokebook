@@ -132,6 +132,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
+<div class="refresh-wrapper">
+	<button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button>
+	<button class="button" on:click={rebuildManifest}>Refresh <RotateCcw /></button>
+</div>
+
 {#await cachedPoems}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
@@ -140,10 +145,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
-		<div class="refresh-wrapper">
-			<button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button>
-			<button class="button" on:click={rebuildManifest}>Refresh <RotateCcw /></button>
-		</div>
 		<div class="poem-list">
 			{#each cacheRecords.sort((a, b) => (b.updatedAt as number) - (a.updatedAt as number)) as record}
 				<div class="list-item">

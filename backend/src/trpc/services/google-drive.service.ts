@@ -18,8 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { google } from 'googleapis';
 
-import type { OAuth2Client } from 'google-auth-library';
-import type { drive_v3 } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 
 export async function findManifest(client: OAuth2Client) {
 	// console.log(client);
@@ -95,10 +94,20 @@ export async function listPoems(client: OAuth2Client) {
 	return response.data.files;
 }
 
+export async function downloadPoem(client: OAuth2Client, id: string) {
+	const response = await google.drive('v3').files.get({
+		fileId: id,
+		alt: 'media',
+		auth: client
+	});
+
+	return response.data.toString();
+}
+
 export async function uploadPoem(client: OAuth2Client, fileName: string, poemContents: string) {
 	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
 
-	google.drive('v3').files.create({
+	const result = await google.drive('v3').files.create({
 		auth: client,
 		requestBody: {
 			name: fileName,
@@ -109,6 +118,12 @@ export async function uploadPoem(client: OAuth2Client, fileName: string, poemCon
 			body: poemContents
 		}
 	});
+
+	const fileId = result.data.id;
+
+	if (!fileId) throw new Error('File has no ID');
+
+	return { fileName, fileId };
 }
 
 async function createPokeBookFolder(client: OAuth2Client): Promise<string> {
@@ -120,5 +135,10 @@ async function createPokeBookFolder(client: OAuth2Client): Promise<string> {
 		fields: 'id',
 		auth: client
 	});
-	return response.data.id;
+
+	const folderId = response.data.id;
+
+	if (!folderId) throw new Error('Folder has no ID');
+
+	return folderId;
 }
