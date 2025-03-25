@@ -53,6 +53,7 @@ export class SyncManager {
 
 			const poemFilesToUpload = await Promise.all(poemContentPromises);
 
+			const localManifest = poemManager.getManifest();
 			const localPoems = poemManager.getManifest().poems.toArray();
 			const uploadedPoems = await this.syncProvider.uploadPoems(poemFilesToUpload);
 
@@ -72,8 +73,15 @@ export class SyncManager {
 
 			console.log(updatedPoems);
 
-			// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-			// await this.syncProvider.createManifest(encodedManifest);
+			localManifest.poems.delete(0, localManifest.poems.toArray().length);
+			localManifest.poems.insert(0, updatedPoems);
+
+			poemManager.flushManifestToFile();
+
+			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			await this.syncProvider.createManifest(encodedManifest);
+
+			console.log(poemManager.getManifest().poems.toArray());
 
 			return;
 		}

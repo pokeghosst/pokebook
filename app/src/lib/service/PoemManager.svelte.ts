@@ -186,12 +186,15 @@ class PoemManager {
 
 		const { id, timestamp } = await this.flushToFile(poem.name, poemDoc.toXml());
 
+		const hash = await digestMessage(poemDoc.toXml());
+
 		const poemRecord: PoemManifestRecord = {
 			filesystemPath: id,
 			name: poem.name,
 			snippet: this.sliceSnippet(poem.text),
 			createdAt: timestamp,
 			updatedAt: timestamp,
+			hash,
 			unsavedChanges: false
 		};
 
