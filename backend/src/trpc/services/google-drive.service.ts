@@ -95,13 +95,17 @@ export async function listPoems(client: OAuth2Client) {
 }
 
 export async function downloadPoem(client: OAuth2Client, id: string) {
+	console.log('downloading poems');
+
 	const response = await google.drive('v3').files.get({
 		fileId: id,
 		alt: 'media',
 		auth: client
 	});
 
-	return response.data.toString();
+	const contents = response.data.toString();
+
+	return { fileId: id, contents };
 }
 
 export async function uploadPoem(client: OAuth2Client, fileName: string, poemContents: string) {

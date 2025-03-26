@@ -23,6 +23,7 @@ export interface StorageDriver {
 	uploadPoems(
 		poems: { name: string; contents: string }[]
 	): Promise<{ fileName: string; fileId: string }[]>;
+	downloadPoems(ids: string[]): Promise<{ fileId: string; contents: string }[]>;
 	listPoems(): Promise<PoemFile[]>;
 	loadPoem(poemUri: string): Promise<PoemEntity>;
 	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;

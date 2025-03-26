@@ -114,6 +114,32 @@ export class SyncManager {
 
 		console.log('localManifest post-merge', localManifest.poems.toArray());
 
+		const poemIdsToDownload = poemsToDownload.flatMap((poem) =>
+			poem.remoteFileId ? [poem.remoteFileId] : []
+		);
+
+		const downloadedPoems = await this.syncProvider.downloadPoems(poemIdsToDownload);
+
+		console.log('downloadedPoems', downloadedPoems);
+
+		const localPoemArray = localManifest.poems.toArray();
+
+		const poemNameMap = new Map(
+			localPoemArray.map((poem) => [poem.remoteFileId, poem.filesystemPath.split('poems/')[1]])
+		);
+
+		console.log(poemNameMap);
+
+		for (const poem of downloadedPoems) {
+			const fileName = poemNameMap.get(poem.fileId);
+
+			if (!fileName) continue;
+
+			poemManager.flushToFile(fileName, poem.contents);
+		}
+
+		poemManager.flushManifestToFile();
+
 		// console.log('remoteManifest', remoteManifest);
 		// console.log('localManifest', localManifest);
 

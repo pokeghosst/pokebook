@@ -222,10 +222,7 @@ class PoemManager {
 	}
 
 	// TODO: Refactor this into a more generic function with two functions on top for flushing manifest and poem file
-	private async flushToFile(
-		name: string,
-		data: string
-	): Promise<{ id: string; timestamp: number }> {
+	public async flushToFile(name: string, data: string): Promise<{ id: string; timestamp: number }> {
 		const timestamp = Date.now();
 
 		const id = (
