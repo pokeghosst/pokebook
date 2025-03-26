@@ -43,13 +43,11 @@ export interface PoemManifestRecord {
 
 export class SyncManifest {
 	yDoc: Y.Doc;
-	poems: Y.Array<PoemManifestRecord>;
-	lastSync: Y.Map<number>;
+	poems: Y.Map<PoemManifestRecord>;
 
 	constructor() {
 		this.yDoc = new Y.Doc();
-		this.poems = this.yDoc.getArray('poems');
-		this.lastSync = this.yDoc.getMap('lastSync');
+		this.poems = this.yDoc.getMap('poems');
 	}
 
 	public static fromSerialized(data: Uint8Array): SyncManifest {
@@ -65,6 +63,22 @@ export class SyncManifest {
 	public mergeWith(otherManifest: SyncManifest) {
 		const update = Y.encodeStateAsUpdate(otherManifest.yDoc);
 		Y.applyUpdate(this.yDoc, update);
+	}
+
+	public addPoem(poem: PoemManifestRecord) {
+		this.poems.set(poem.filesystemPath, poem);
+	}
+
+	public addPoemsInBatch(poems: PoemManifestRecord[]) {
+		this.yDoc.transact(() => {
+			for (const poem of poems) {
+				this.poems.set(poem.filesystemPath, poem);
+			}
+		});
+	}
+
+	public getAllPoems(): PoemManifestRecord[] {
+		return Array.from(this.poems.values());
 	}
 }
 
@@ -105,10 +119,12 @@ class PoemManager {
 		const manifestData = decodeFromBase64(manifestFileContents);
 
 		this.syncManifest = SyncManifest.fromSerialized(manifestData);
+
+		console.log(this.syncManifest.getAllPoems());
 	}
 
 	public getPoems() {
-		return this.syncManifest.poems.toArray();
+		return Array.from(this.syncManifest.poems.values());
 	}
 
 	public async rebuildManifest(): Promise<void> {
@@ -142,10 +158,13 @@ class PoemManager {
 			};
 		});
 
-		const manifestContents = await Promise.all(mapPromises);
+		const oldManifestContents = this.getManifest().getAllPoems();
+		const newManifestContents = await Promise.all(mapPromises);
+		const newManifest = new SyncManifest();
+		newManifest.addPoemsInBatch(newManifestContents);
 
-		this.syncManifest.poems.delete(0, this.syncManifest.poems.toArray().length);
-		this.syncManifest.poems.insert(0, manifestContents);
+		// this.syncManifest.poems.delete(0, this.syncManifest.poems.toArray().length);
+		// this.syncManifest.poems.insert(0, manifestContents);
 
 		try {
 			await this.flushManifestToFile();
@@ -155,7 +174,13 @@ class PoemManager {
 
 		console.log('manifest built');
 
-		console.log(manifestContents);
+		console.log('old manifest', oldManifestContents);
+		console.log('new manifest', newManifestContents);
+
+		this.syncManifest.mergeWith(newManifest);
+		console.log('merged', this.syncManifest.getAllPoems());
+
+		this.flushManifestToFile();
 	}
 
 	public async retrieveEncodedManifestContents() {
@@ -171,6 +196,7 @@ class PoemManager {
 		return this.syncManifest;
 	}
 
+	// TODO: Move this to SyncManifest class
 	public async flushManifestToFile() {
 		await FilesystemWithPermissions.writeFile({
 			path: `poems/${MANIFEST_FILE}`,
@@ -198,8 +224,54 @@ class PoemManager {
 			unsavedChanges: false
 		};
 
-		this.syncManifest.poems.push([poemRecord]);
+		this.syncManifest.addPoem(poemRecord);
 		this.flushManifestToFile();
+
+		return id;
+	}
+
+	public async update(uri: string, poem: PoemEntity) {
+		const poemDoc = new PoemDoc(poem);
+		const hash = await digestMessage(poemDoc.toXml());
+
+		await FilesystemWithPermissions.writeFile({
+			path: uri,
+			data: poemDoc.toXml(),
+			encoding: Encoding.UTF8
+		});
+
+		const directory = uri.split('poems/')[0];
+		const timestamp = uri.split('poems/')[1].split(/_|\.xml/)[1];
+		const newFileUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
+
+		await FilesystemWithPermissions.rename({
+			from: uri,
+			to: newFileUri
+		});
+
+		const newManifest = Array.from(this.syncManifest.poems.values()).map((poem) => {
+			if (poem.filesystemPath === uri) {
+				return {
+					filesystemPath: newFileUri,
+					name: poem.name,
+					snippet: this.sliceSnippet(poem.snippet),
+					createdAt: poem.createdAt,
+					updatedAt: poem.updatedAt,
+					hash,
+					unsavedChanges: false
+				};
+			} else {
+				return poem;
+			}
+		});
+
+		this.syncManifest.poems.clear();
+		this.syncManifest.addPoemsInBatch(newManifest);
+		// this.syncManifest.poems.delete(0, this.syncManifest.poems.toArray().length);
+		// this.syncManifest.poems.insert(0, newManifest);
+		this.flushManifestToFile();
+
+		return newFileUri;
 	}
 
 	public async load(uri: string): Promise<PoemEntity> {

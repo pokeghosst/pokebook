@@ -109,15 +109,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newPoemUri = await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri,
-			$storageMode
-		);
+		const newUri = await poemManager.update($currentPoemUri, {
+			name: $currentPoemName,
+			text: $currentPoemBody,
+			note: $currentPoemNote
+		});
+		// const newPoemUri = await Poem.update(
+		// 	{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+		// 	$currentPoemUri,
+		// 	$storageMode
+		// );
 
-		if (newPoemUri) $currentPoemUri = newPoemUri;
+		$currentPoemUri = newUri;
 
-		await deleteTmpFile($currentPoemUri);
+		// await deleteTmpFile($currentPoemUri);
 	}
 
 	async function deletePoem() {
@@ -141,40 +146,45 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
-		if (
-			(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
-			true
-		) {
-			unsavedChangesToastId = toast(UnsavedChangesToast, {
-				duration: Infinity,
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-			// const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
-			const { name, text, note } = await poemManager.load(`${$currentPoemUri}.tmp`);
-			$currentPoemName = name;
-			$currentPoemBody = text;
-			$currentPoemNote = note;
+		const { name, text, note } = await poemManager.load($currentPoemUri);
 
-			thinking = false;
-		} else {
-			try {
-				const poem = await Poem.load($currentPoemUri, $storageMode);
-				if (poem) {
-					$currentPoemName = poem.name;
-					$currentPoemBody = poem.text;
-					$currentPoemNote = poem.note;
-				}
-			} catch (e) {
-				if (e instanceof Error) {
-					toast.error($t(e.message), {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					});
-				}
-			}
-			thinking = false;
-		}
+		$currentPoemName = name;
+		$currentPoemBody = text;
+		$currentPoemNote = note;
+		// if (
+		// 	(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
+		// 	true
+		// ) {
+		// 	unsavedChangesToastId = toast(UnsavedChangesToast, {
+		// 		duration: Infinity,
+		// 		position: GLOBAL_TOAST_POSITION,
+		// 		style: GLOBAL_TOAST_STYLE
+		// 	});
+		// 	// const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+		// 	const { name, text, note } = await poemManager.load(`${$currentPoemUri}.tmp`);
+		// 	$currentPoemName = name;
+		// 	$currentPoemBody = text;
+		// 	$currentPoemNote = note;
+
+		thinking = false;
+		// } else {
+		// 	try {
+		// 		const poem = await Poem.load($currentPoemUri, $storageMode);
+		// 		if (poem) {
+		// 			$currentPoemName = poem.name;
+		// 			$currentPoemBody = poem.text;
+		// 			$currentPoemNote = poem.note;
+		// 		}
+		// 	} catch (e) {
+		// 		if (e instanceof Error) {
+		// 			toast.error($t(e.message), {
+		// 				position: GLOBAL_TOAST_POSITION,
+		// 				style: GLOBAL_TOAST_STYLE
+		// 			});
+		// 		}
+		// 	}
+		// 	thinking = false;
+		// }
 	});
 
 	onDestroy(() => {

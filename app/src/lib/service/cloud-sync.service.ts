@@ -54,13 +54,14 @@ export class SyncManager {
 			const poemFilesToUpload = await Promise.all(poemContentPromises);
 
 			const localManifest = poemManager.getManifest();
-			const localPoems = poemManager.getManifest().poems.toArray();
+			const localPoems = poemManager.getManifest().getAllPoems();
 			const uploadedPoems = await this.syncProvider.uploadPoems(poemFilesToUpload);
 
 			console.log('uploadedPoems', uploadedPoems);
 			const uploadedPoemsMap = new Map(
 				uploadedPoems.map((update) => [update.fileName, update.fileId])
 			);
+			console.log('uploadedPoemsMap', uploadedPoemsMap);
 
 			const updatedPoems = localPoems.map((poem) => {
 				const remoteFileId = uploadedPoemsMap.get(poem.filesystemPath.split('poems/')[1]);
@@ -71,17 +72,18 @@ export class SyncManager {
 				return poem;
 			});
 
-			console.log(updatedPoems);
+			console.log('updatedPoems', updatedPoems);
 
-			localManifest.poems.delete(0, localManifest.poems.toArray().length);
-			localManifest.poems.insert(0, updatedPoems);
+			// localManifest.poems.delete(0, localManifest.poems.toArray().length);
+			localManifest.poems.clear();
+			localManifest.addPoemsInBatch(updatedPoems);
 
 			poemManager.flushManifestToFile();
 
 			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
 			await this.syncProvider.createManifest(encodedManifest);
 
-			console.log(poemManager.getManifest().poems.toArray());
+			console.log(poemManager.getManifest().getAllPoems());
 
 			return;
 		}
@@ -90,7 +92,7 @@ export class SyncManager {
 		const localManifest = poemManager.getManifest();
 
 		const localPoemRecords = poemManager.getPoems();
-		const remoteManifestRecords = remoteManifest.poems.toArray();
+		const remoteManifestRecords = remoteManifest.getAllPoems();
 
 		const poemsToUpload = localPoemRecords.filter(
 			(localPoem) =>
@@ -104,15 +106,23 @@ export class SyncManager {
 					(localPoem) => localPoem.filesystemPath === remotePoem.filesystemPath
 				)
 		);
+		const poemsToMerge = localPoemRecords.filter((localPoem) => {
+			const remotePoemRecord = remoteManifestRecords.find(
+				(remotePoem) => remotePoem.filesystemPath === localPoem.filesystemPath
+			);
 
-		console.log('localManifest pre-merge', localManifest.poems.toArray());
+			return remotePoemRecord && remotePoemRecord.hash !== localPoem.hash;
+		});
+
+		console.log('localManifest pre-merge', localManifest.getAllPoems());
 
 		console.log('poemsToUpload', poemsToUpload);
 		console.log('poemsToDownload', poemsToDownload);
+		console.log('poemsToMerge', poemsToMerge);
 
 		localManifest.mergeWith(remoteManifest);
 
-		console.log('localManifest post-merge', localManifest.poems.toArray());
+		console.log('localManifest post-merge', localManifest.getAllPoems());
 
 		const poemIdsToDownload = poemsToDownload.flatMap((poem) =>
 			poem.remoteFileId ? [poem.remoteFileId] : []
@@ -122,7 +132,7 @@ export class SyncManager {
 
 		console.log('downloadedPoems', downloadedPoems);
 
-		const localPoemArray = localManifest.poems.toArray();
+		const localPoemArray = localManifest.getAllPoems();
 
 		const poemNameMap = new Map(
 			localPoemArray.map((poem) => [poem.remoteFileId, poem.filesystemPath.split('poems/')[1]])
