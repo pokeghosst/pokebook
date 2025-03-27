@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { TRPCError } from '@trpc/server';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
-import type { OAuth2Client } from 'google-auth-library';
 
 export const createContext = ({ req, res }: CreateExpressContextOptions) => {
 	if (!req.cookies['pokebook-session']) {

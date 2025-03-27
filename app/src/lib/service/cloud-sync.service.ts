@@ -16,10 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { decodeFromBase64 } from '$lib/util/base64';
+import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
 import { poemManager, SyncManifest } from './PoemManager.svelte';
 
-import type { StorageDriver } from '$lib/types';
+import { PoemDoc } from '$lib/models/PoemDoc';
+import type { PoemEntity, StorageDriver } from '$lib/types';
+import { XMLParser } from 'fast-xml-parser';
 
 export class SyncManager {
 	private syncProvider: StorageDriver;
@@ -78,9 +80,11 @@ export class SyncManager {
 			localManifest.poems.clear();
 			localManifest.addPoemsInBatch(updatedPoems);
 
-			poemManager.flushManifestToFile();
+			await poemManager.flushManifestToFile();
 
-			const encodedManifest = await poemManager.retrieveEncodedManifestContents();
+			console.log(localManifest.getAllPoems());
+
+			const encodedManifest = encodeToBase64(poemManager.getManifest().serialize());
 			await this.syncProvider.createManifest(encodedManifest);
 
 			console.log(poemManager.getManifest().getAllPoems());
@@ -94,21 +98,21 @@ export class SyncManager {
 		const localPoemRecords = poemManager.getPoems();
 		const remoteManifestRecords = remoteManifest.getAllPoems();
 
+		console.log('remoteManifestRecords', remoteManifestRecords);
+
 		const poemsToUpload = localPoemRecords.filter(
 			(localPoem) =>
 				!remoteManifestRecords.find(
-					(remotePoem) => remotePoem.filesystemPath === localPoem.filesystemPath
+					(remotePoem) => remotePoem.remoteFileId === localPoem.remoteFileId
 				)
 		);
 		const poemsToDownload = remoteManifestRecords.filter(
 			(remotePoem) =>
-				!localPoemRecords.find(
-					(localPoem) => localPoem.filesystemPath === remotePoem.filesystemPath
-				)
+				!localPoemRecords.find((localPoem) => localPoem.remoteFileId === remotePoem.remoteFileId)
 		);
 		const poemsToMerge = localPoemRecords.filter((localPoem) => {
 			const remotePoemRecord = remoteManifestRecords.find(
-				(remotePoem) => remotePoem.filesystemPath === localPoem.filesystemPath
+				(remotePoem) => remotePoem.remoteFileId === localPoem.remoteFileId
 			);
 
 			return remotePoemRecord && remotePoemRecord.hash !== localPoem.hash;
@@ -148,14 +152,61 @@ export class SyncManager {
 			poemManager.flushToFile(fileName, poem.contents);
 		}
 
+		const poemContentPromises = poemsToUpload.map(async (poem) => {
+			const name = poem.filesystemPath.split('poems/')[1];
+			const fileResult = await poemManager.readFile(poem.filesystemPath);
+			const contents = fileResult.data.toString();
+
+			return { name, contents };
+		});
+
+		const poemFilesToUpload = await Promise.all(poemContentPromises);
+		const uploadedPoems = await this.syncProvider.uploadPoems(poemFilesToUpload);
+
+		const uploadedPoemsMap = new Map(
+			uploadedPoems.map((update) => [update.fileName, update.fileId])
+		);
+
+		uploadedPoemsMap.forEach((fileName, fileId) => {
+			const localPoemRecord = localManifest.poems.get(fileName);
+
+			if (!localPoemRecord) return;
+
+			localPoemRecord.remoteFileId = fileId;
+			localManifest.poems.set(fileName, localPoemRecord);
+		});
+
+		// MERGING POEMS
+
+		for (const poem of poemsToMerge) {
+			const remoteFileId = poem.remoteFileId;
+
+			if (!remoteFileId) continue;
+
+			const localPoem = await poemManager.load(poem.filesystemPath);
+			const remotePoemFile = (await this.syncProvider.downloadPoems([remoteFileId]))[0];
+			const remotePoem = new XMLParser().parse(remotePoemFile.contents.toString());
+
+			console.log('remotePoem', remotePoem);
+
+			const localPoemYDocState = localPoem.sync?.ydoc_state
+				? decodeFromBase64(localPoem.sync.ydoc_state)
+				: undefined;
+			const remotePoemYDocState = remotePoem.sync?.ydoc_state
+				? decodeFromBase64(remotePoem.sync.ydoc_state)
+				: undefined;
+
+			const localPoemDoc = new PoemDoc(localPoem, localPoemYDocState);
+			const remotePoemDoc = new PoemDoc(remotePoem, remotePoemYDocState);
+
+			console.log('localPoemFile pre-merge', localPoemDoc.toXml());
+
+			localPoemDoc.mergeWith(remotePoemDoc);
+
+			const mergedFile = localPoemDoc.toXml();
+			console.log('mergedFile', mergedFile);
+		}
+
 		poemManager.flushManifestToFile();
-
-		// console.log('remoteManifest', remoteManifest);
-		// console.log('localManifest', localManifest);
-
-		// const remotePoems = remoteManifest.poems;
-
-		// console.log('localPoems', localPoems.toArray());
-		// console.log('remotePoems', remotePoems.toArray());
 	}
 }

@@ -10,7 +10,7 @@ export class PoemDoc {
 	poemText: Y.Text;
 	noteText: Y.Text;
 
-	constructor(poem?: PoemEntity) {
+	constructor(poem?: PoemEntity, yDocState?: Uint8Array) {
 		this.yDoc = new Y.Doc();
 
 		this.titleText = this.yDoc.getText('title');
@@ -35,5 +35,10 @@ export class PoemDoc {
 			}
 		};
 		return new XMLBuilder({ format: true }).build(poemEntity);
+	}
+
+	public mergeWith(otherPoemDoc: PoemDoc) {
+		const update = Y.encodeStateAsUpdate(otherPoemDoc.yDoc);
+		Y.applyUpdate(this.yDoc, update);
 	}
 }

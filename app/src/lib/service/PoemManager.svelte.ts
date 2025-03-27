@@ -249,24 +249,38 @@ class PoemManager {
 			to: newFileUri
 		});
 
-		const newManifest = Array.from(this.syncManifest.poems.values()).map((poem) => {
-			if (poem.filesystemPath === uri) {
-				return {
-					filesystemPath: newFileUri,
-					name: poem.name,
-					snippet: this.sliceSnippet(poem.snippet),
-					createdAt: poem.createdAt,
-					updatedAt: poem.updatedAt,
-					hash,
-					unsavedChanges: false
-				};
-			} else {
-				return poem;
-			}
-		});
+		const oldPoemRecord = this.syncManifest.poems.get(uri);
 
-		this.syncManifest.poems.clear();
-		this.syncManifest.addPoemsInBatch(newManifest);
+		const newPoemRecord = {
+			filesystemPath: newFileUri,
+			remoteFileId: oldPoemRecord?.remoteFileId,
+			name: poem.name,
+			snippet: this.sliceSnippet(poem.text),
+			createdAt: oldPoemRecord?.createdAt ?? Date.now(),
+			updatedAt: Date.now(),
+			hash,
+			unsavedChanges: false
+		};
+
+		this.syncManifest.poems.delete(uri);
+		this.syncManifest.addPoem(newPoemRecord);
+
+		// const newManifest = Array.from(this.syncManifest.poems.values()).map((poem) => {
+		// 	if (poem.filesystemPath === uri) {
+		// 		return {
+		// 			filesystemPath: newFileUri,
+		// 			name: poem.name,
+		// 			snippet: this.sliceSnippet(poem.snippet),
+		// 			createdAt: poem.createdAt,
+		// 			updatedAt: poem.updatedAt,
+		// 			hash,
+		// 			unsavedChanges: false
+		// 		};
+		// 	} else {
+		// 		return poem;
+		// 	}
+		// });
+
 		// this.syncManifest.poems.delete(0, this.syncManifest.poems.toArray().length);
 		// this.syncManifest.poems.insert(0, newManifest);
 		this.flushManifestToFile();
