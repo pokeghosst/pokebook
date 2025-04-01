@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
 import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
-import PoemCacheManager, {type PoemCacheRecord} from '../plugins/PoemCacheManager.svelte';
+import PoemCacheManager, { type PoemCacheRecord } from '../plugins/PoemCacheManager.svelte';
 
 import type { PoemEntity, PoemFileEntity } from '$lib/types';
 

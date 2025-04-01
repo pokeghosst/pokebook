@@ -16,16 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { XMLParser } from 'fast-xml-parser';
 import { Directory, Encoding, type ReadFileResult } from '@capacitor/filesystem';
+import { XMLParser } from 'fast-xml-parser';
 import * as Y from 'yjs';
 
 import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
-
-import type { PoemEntity } from '$lib/types';
 import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
-import { PoemDoc } from '$lib/models/PoemDoc';
 import { digestMessage } from '$lib/util/digest';
+
+import type { PoemDoc } from '$lib/models/PoemDoc';
+import type { DatabasePlugin } from '$lib/plugins/DatabasePlugin';
+import type { PoemEntity } from '$lib/types';
 
 const POEM_SNIPPET_LENGTH = 256;
 const MANIFEST_FILE = '.pokemanifest';
@@ -85,6 +86,7 @@ export class SyncManifest {
 class PoemManager {
 	// TODO: Think later -- keep this synced to disk w/ $effect rune.
 	private syncManifest: SyncManifest;
+	private db: DatabasePlugin;
 
 	constructor() {
 		this.syncManifest = new SyncManifest();

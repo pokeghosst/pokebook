@@ -24,6 +24,14 @@ export class PoemDoc {
 		}
 	}
 
+	public getTitle() {
+		return this.titleText;
+	}
+
+	public importState(update: Uint8Array) {
+		Y.applyUpdate(this.yDoc, update);
+	}
+
 	public toXml() {
 		const poemEntity: PoemEntity = {
 			name: this.titleText.toString(),
@@ -37,8 +45,54 @@ export class PoemDoc {
 		return new XMLBuilder({ format: true }).build(poemEntity);
 	}
 
-	public mergeWith(otherPoemDoc: PoemDoc) {
-		const update = Y.encodeStateAsUpdate(otherPoemDoc.yDoc);
-		Y.applyUpdate(this.yDoc, update);
+	public getState() {
+		return encodeToBase64(Y.encodeStateAsUpdate(this.yDoc));
 	}
 }
+
+// export class PoemDoc {
+// 	yDoc: Y.Doc;
+// 	titleText: Y.Text;
+// 	poemText: Y.Text;
+// 	noteText: Y.Text;
+// 	docId: string;
+
+// 	constructor() {
+// 		this.docId = crypto.randomUUID();
+// 		this.yDoc = new Y.Doc();
+// 		this.titleText = this.yDoc.getText('title');
+// 		this.poemText = this.yDoc.getText('poem');
+// 		this.noteText = this.yDoc.getText('note');
+// 	}
+
+// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// 	public static fromXml(xmlData: any) {
+// 		const doc = new PoemDoc();
+
+// 		doc.titleText.delete(0, doc.titleText.length);
+// 		doc.poemText.delete(0, doc.poemText.length);
+// 		doc.noteText.delete(0, doc.noteText.length);
+
+// 		doc.titleText.insert(0, xmlData.name);
+// 		doc.poemText.insert(0, xmlData.text);
+// 		doc.noteText.insert(0, xmlData.note);
+
+// 		return doc;
+// 	}
+
+// 	public toXml() {
+// 		return new XMLBuilder({ format: true }).build({
+// 			name: this.titleText.toString(),
+// 			text: this.poemText.toString(),
+// 			note: this.poemText.toString()
+// 		});
+// 	}
+
+// 	public exportState() {
+// 		return Y.encodeStateAsUpdate(this.yDoc);
+// 	}
+
+// 	public importState(update: Uint8Array) {
+// 		Y.applyUpdate(this.yDoc, update);
+// 	}
+// }

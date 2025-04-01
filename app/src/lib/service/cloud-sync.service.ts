@@ -196,15 +196,32 @@ export class SyncManager {
 				? decodeFromBase64(remotePoem.sync.ydoc_state)
 				: undefined;
 
-			const localPoemDoc = new PoemDoc(localPoem, localPoemYDocState);
-			const remotePoemDoc = new PoemDoc(remotePoem, remotePoemYDocState);
+			if (!remotePoemYDocState) return;
 
-			console.log('localPoemFile pre-merge', localPoemDoc.toXml());
+			const mergeBase = new PoemDoc();
 
-			localPoemDoc.mergeWith(remotePoemDoc);
+			console.log('mergeBase', mergeBase.toXml());
+			const localState = localPoemYDocState;
 
-			const mergedFile = localPoemDoc.toXml();
-			console.log('mergedFile', mergedFile);
+			// mergeBase.importState(localState!);
+
+			console.log('mergeBase with local state applied', mergeBase.toXml());
+			// console.log('mergeBase with local state delta', mergeBase.poemText.toDelta());
+
+			mergeBase.importState(remotePoemYDocState!);
+
+			console.log('mergeBase with remote state applied', mergeBase.toXml());
+			console.log('mergeBase with remote state delta', mergeBase.poemText.toDelta());
+
+			// const localPoemDoc = new PoemDoc(localPoem, localPoemYDocState);
+			// const remotePoemDoc = new PoemDoc(remotePoem, remotePoemYDocState);
+
+			// console.log('localPoemFile pre-merge', localPoemDoc.toXml());
+
+			// localPoemDoc.applyUpdate(remotePoemYDocState);
+
+			// const mergedFile = localPoemDoc.toXml();
+			// console.log('mergedFile', mergedFile);
 		}
 
 		poemManager.flushManifestToFile();
