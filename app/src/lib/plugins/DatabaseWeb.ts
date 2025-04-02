@@ -17,16 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import Dexie, { type EntityTable } from 'dexie';
-
-export interface PoemRecord {
-	id: string;
-	name: string;
-	text: string;
-	note: string;
-	snippet: string;
-	remoteId: string;
-	syncState: string;
-}
+import type { DatabasePlugin } from './DatabasePlugin';
+import type { Poem, PoemRecord } from '@pokebook/shared';
 
 const db = new Dexie('pokebook4') as Dexie & {
 	poems: EntityTable<PoemRecord, 'id'>;
@@ -36,4 +28,41 @@ db.version(1).stores({
 	poems: 'id, name, text, note, snippet, remoteId, syncState'
 });
 
-export class DatabaseWeb {}
+export class DatabaseWeb implements DatabasePlugin {
+	async save(poem: PoemRecord): Promise<string> {
+		const uuid = crypto.randomUUID();
+
+		await db.poems.add({
+			...poem,
+			id: uuid
+		});
+
+		return uuid;
+	}
+	async get(id: string): Promise<Poem | undefined> {
+		const poem = await db.poems.get(id);
+
+		if (!poem) return undefined;
+
+		return {
+			name: poem.name,
+			text: poem.text,
+			note: poem.note
+		};
+	}
+	async getAll(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet'>[]> {
+		const poems = await db.poems.toArray();
+
+		return poems.map((poem) => ({
+			id: poem.id,
+			name: poem.name,
+			snippet: poem.snippet
+		}));
+	}
+	async update(id: string, poem: PoemRecord): Promise<void> {
+		await db.poems.update(id, poem);
+	}
+	async delete(id: string): Promise<void> {
+		await db.poems.delete(id);
+	}
+}

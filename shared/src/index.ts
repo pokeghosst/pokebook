@@ -18,9 +18,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { z } from "zod";
 
+export const poemSchema = z.object({
+  name: z.string().nonempty("Name is required"),
+  text: z.string().nonempty("Text is required"),
+  note: z.string().nonempty("Note is required"),
+});
+
 export const poemFileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  uri: z.string().min(1, "URI is required"),
+  name: z.string().nonempty("Name is required"),
+  uri: z.string().nonempty("URI is required"),
   timestamp: z.string(),
 });
 
@@ -28,5 +34,17 @@ export const manifestResponseSchema = z.object({
   manifest: z.string().min(1, "Manifest cannot be empty"),
 });
 
+export const poemRecordSchema = z.object({
+  id: z.string().nonempty("ID is required"),
+  name: z.string().nonempty("Name is required"),
+  text: z.string().nonempty("Text is required"),
+  note: z.string().nonempty("Note is required"),
+  snippet: z.string().nonempty("Snippet is required"),
+  remoteId: z.string(),
+  syncState: z.string().nonempty("Sync state is required"),
+});
+
+export type Poem = z.infer<typeof poemSchema>;
 export type PoemFile = z.infer<typeof poemFileSchema>;
 export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
+export type PoemRecord = z.infer<typeof poemRecordSchema>;
