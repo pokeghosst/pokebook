@@ -40,7 +40,9 @@ export const poemRecordSchema = z.object({
   text: z.string().nonempty("Text is required"),
   note: z.string().nonempty("Note is required"),
   snippet: z.string().nonempty("Snippet is required"),
-  remoteId: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  remoteId: z.string().optional(),
   syncState: z.string().nonempty("Sync state is required"),
 });
 
@@ -48,3 +50,7 @@ export type Poem = z.infer<typeof poemSchema>;
 export type PoemFile = z.infer<typeof poemFileSchema>;
 export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
 export type PoemRecord = z.infer<typeof poemRecordSchema>;
+export type PoemListItem = Pick<
+  PoemRecord,
+  "id" | "name" | "snippet" | "createdAt" | "updatedAt"
+>;

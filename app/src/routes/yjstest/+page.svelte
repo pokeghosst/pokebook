@@ -7,7 +7,7 @@
 	localPoem.getTitle().insert(0, 'test');
 	localPoem.getTitle().insert(4, ' more');
 
-	const localPoemState = localPoem.getState();
+	const localPoemState = localPoem.getEncodedState();
 
 	console.log(localPoem.getTitle().toString());
 	console.log(localPoemState);
@@ -15,14 +15,14 @@
 
 	const remotePoem = new PoemDoc();
 
-	remotePoem.importState(stateArray);
+	remotePoem.importEncodedState(stateArray);
 	remotePoem.getTitle().insert(4, ' even');
 
 	console.log(remotePoem.getTitle().toString());
 
-	const remotePoemState = decodeFromBase64(remotePoem.getState());
+	const remotePoemState = decodeFromBase64(remotePoem.getEncodedState());
 
-	localPoem.importState(remotePoemState);
+	localPoem.importEncodedState(remotePoemState);
 
 	console.log(localPoem.getTitle().toString());
 </script>

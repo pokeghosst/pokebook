@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import Dexie, { type EntityTable } from 'dexie';
 import type { DatabasePlugin } from './DatabasePlugin';
-import type { Poem, PoemRecord } from '@pokebook/shared';
+import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 
 const db = new Dexie('pokebook4') as Dexie & {
 	poems: EntityTable<PoemRecord, 'id'>;
@@ -29,12 +29,15 @@ db.version(1).stores({
 });
 
 export class DatabaseWeb implements DatabasePlugin {
-	async save(poem: PoemRecord): Promise<string> {
+	async save(record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
 		const uuid = crypto.randomUUID();
+		const timestamp = new Date();
 
 		await db.poems.add({
-			...poem,
-			id: uuid
+			id: uuid,
+			createdAt: timestamp,
+			updatedAt: timestamp,
+			...record
 		});
 
 		return uuid;
@@ -50,13 +53,18 @@ export class DatabaseWeb implements DatabasePlugin {
 			note: poem.note
 		};
 	}
-	async getAll(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet'>[]> {
+	async getAll(): Promise<PoemRecord[]> {
+		return await db.poems.toArray();
+	}
+	async list(): Promise<PoemListItem[]> {
 		const poems = await db.poems.toArray();
 
 		return poems.map((poem) => ({
 			id: poem.id,
 			name: poem.name,
-			snippet: poem.snippet
+			snippet: poem.snippet,
+			createdAt: poem.createdAt,
+			updatedAt: poem.updatedAt
 		}));
 	}
 	async update(id: string, poem: PoemRecord): Promise<void> {

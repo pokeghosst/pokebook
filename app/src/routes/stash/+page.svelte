@@ -17,146 +17,54 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
+	import { poemManager } from '$lib/service/PoemManager.svelte';
 	import { t } from '$lib/translations';
 
-	import { poemManager, type PoemManifestRecord } from '$lib/service/PoemManager.svelte';
-
-	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
-	import { currentPoemUri } from '$lib/stores/currentPoem';
-
-	import RefreshCcw from 'lucide-svelte/icons/refresh-ccw';
-	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
-	import { SyncManager } from '$lib/service/cloud-sync.service';
-	import { GoogleDrive } from '$lib/service/google-drive.service';
-	import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
-	import { createTRPCClient, httpBatchLink } from '@trpc/client';
+	import type { PoemListItem } from '@pokebook/shared';
 
 	const FALLBACK_DELAY_MS = 150;
 
-	let cachedPoems: PoemManifestRecord[];
+	let poemListPromise: Promise<PoemListItem[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
-
-	const manager = new SyncManager(new GoogleDrive());
 
 	onMount(() => {
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		cachedPoems = poemManager.getPoems();
-
-		if (cachedPoems.length === 0) {
-			rebuildManifest();
-		}
+		poemListPromise = poemManager.list();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
-
-	async function goToPoem(poemUri: string) {
-		$currentPoemUri = poemUri;
-		await goto('/stash/poem');
-	}
-
-	// TODO: Add timeout when rebuilding the manifest
-	function rebuildManifest() {
-		poemManager.rebuildManifest().then(() => {
-			cachedPoems = poemManager.getPoems();
-		});
-	}
-
-	async function syncToCloud() {
-		manager.sync();
-		// const manifest = await manager.getRemoteManifest();
-		// console.log(manifest);
-
-		// if (!manifest) {
-		// 	console.log('creating new manifest');
-		// 	const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-		// 	manager.createManifest(encodedManifest);
-		// }
-
-		// const t1 = Date.now();
-		// console.log(t1)
-		// const manifestResult = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-		// 	credentials: 'include'
-		// });
-		// if (manifestResult.status === 404) {
-		// 	// console.log('manifest missing, gotta upload one')
-		// 	// const encodedManifest = await poemManager.retrieveEncodedManifestContents();
-		// 	// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-		// 	// 	credentials: 'include',
-		// 	// 	method: 'PUT',
-		// 	// 	body: encodedManifest
-		// 	// });
-		// 	const result = await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/poems`, {
-		// 		credentials: 'include',
-		// 		method: 'GET'
-		// 	});
-		// 	const remotePoems = await result.json();
-		// 	console.log('remotePoems', remotePoems);
-		// 	console.log('cachedPoems', cachedPoems)
-		// 	const poemsToUpload = cachedPoems.filter((poem) => {
-		// 		return !remotePoems.find((remotePoem) => remotePoem.name === poem.filesystemPath.split('poems/')[1]);
-		// 	})
-		// 	console.log('poemsToUpload', poemsToUpload)
-		// 	const poemContentPromises = poemsToUpload.map(async poem => {
-		// 		const contents = (await poemManager.readFile(poem.filesystemPath)).data
-		// 		return {
-		// 			name: poem.filesystemPath.split('poems/')[1],
-		// 			contents
-		// 		}
-		// 	});
-		// 	const poemContentsToUpload = await Promise.all(poemContentPromises);
-		// 	console.log(poemContentsToUpload)
-		// 	await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/upload`, {
-		// 		credentials: 'include',
-		// 		method: 'POST',
-		// 		body: JSON.stringify(poemContentsToUpload)
-		// 	})
-		// 	// await fetch(`${PUBLIC_POKEBOOK_SERVER_URL}/google/manifest`, {
-		// 	// 	credentials: 'include',
-		// 	// 	method: 'PUT',
-		// 	// 	body: await poemManager.retrieveEncodedManifestContents()
-		// 	// })
-		// 	const t2 = Date.now()
-		// 	console.log(t2)
-		// 	console.log(t2-t1)
-		// } else {
-		// 	const json = await manifestResult.json();
-		// 	console.log(json);
-		// }
-	}
 </script>
 
 <div class="refresh-wrapper">
-	<button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button>
-	<button class="button" on:click={rebuildManifest}>Refresh <RotateCcw /></button>
+	<!-- <button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button> -->
 </div>
 
-{#await cachedPoems}
+{#await poemListPromise}
 	{#if showFallback}
 		<div class="placeholder-text-wrapper">
 			<p>Loading...</p>
 		</div>
 	{/if}
-{:then cacheRecords}
-	{#if cacheRecords && cacheRecords.length > 0}
+{:then poems}
+	{#if poems && poems.length > 0}
 		<div class="poem-list">
-			{#each cacheRecords.sort((a, b) => (b.updatedAt as number) - (a.updatedAt as number)) as record}
+			{#each poems.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()) as poem}
 				<div class="list-item">
-					<button on:click={() => goToPoem(record.filesystemPath)}>
+					<a href="/poems/{poem.id}">
 						<div class="list-poem">
 							<p class="list-poem-name">
-								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
+								{poem.name}
 							</p>
-							<p class="list-poem-snippet">{record.snippet}</p>
+							<p class="list-poem-snippet">{poem.snippet}</p>
 						</div>
-						<div>{new Date(record.updatedAt).toLocaleDateString()}</div>
-					</button>
+						<div>{poem.updatedAt.toLocaleDateString()}</div>
+					</a>
 				</div>
 			{/each}
 		</div>

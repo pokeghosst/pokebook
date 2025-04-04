@@ -17,12 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { PoemEntity } from '$lib/types';
-import type { PoemRecord } from './DatabaseWeb';
+import type { PoemRecord } from '@pokebook/shared';
 
 export interface DatabasePlugin {
-	save(poem: PoemEntity): Promise<string>;
+	save(record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<string>;
 	get(id: string): Promise<PoemEntity | undefined>;
-	getAll(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet'>[]>;
-	update(id: string, poem: PoemEntity): Promise<void>;
+	getAll(): Promise<PoemRecord[]>;
+	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;
+	update(id: string, poem: PoemRecord): Promise<void>;
 	delete(id: string): Promise<void>;
 }

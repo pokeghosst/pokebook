@@ -208,7 +208,7 @@ export class SyncManager {
 			console.log('mergeBase with local state applied', mergeBase.toXml());
 			// console.log('mergeBase with local state delta', mergeBase.poemText.toDelta());
 
-			mergeBase.importState(remotePoemYDocState!);
+			mergeBase.importEncodedState(remotePoemYDocState!);
 
 			console.log('mergeBase with remote state applied', mergeBase.toXml());
 			console.log('mergeBase with remote state delta', mergeBase.poemText.toDelta());
