@@ -28,12 +28,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 	import { putSyllables } from '$lib/util/PokeHelp';
 
-	let { poemProp, poemNameHandler } : { poemProp: { name: string, text: string }, poemNameHandler: (name: string) => void } = $props();
+	let { poemProp, poemNameChangeHandler } : { poemProp: { name: string, text: string }, poemNameChangeHandler: (name: string) => void } = $props();
 	let name = $state(poemProp.name);
 	let text = $state(poemProp.text);
 
 	$effect(() => {
-		poemNameHandler(name);
+		poemNameChangeHandler(name);
 	})
 
 	// export let props: { name: Writable<string>; body: Writable<string> };

@@ -16,17 +16,29 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import type { PoemRecord } from '@pokebook/shared';
+import { browser } from '$app/environment';
+import { PoemNotFoundError } from '$lib/errors';
 
-export interface DatabasePlugin {
-	save(
-		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
-		idOverride?: string
-	): Promise<string>;
-	get(id: string): Promise<PoemEntity | undefined>;
-	getAll(): Promise<PoemRecord[]>;
-	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;
-	update(id: string, poem: PoemRecord): Promise<void>;
-	delete(id: string): Promise<void>;
-}
+import { poemManager } from '$lib/service/PoemManager';
+import { DRAFT_POEM_ID } from '$lib/util/constants';
+
+import type { PageLoad } from './$types';
+
+export const load: PageLoad = async () => {
+	if (browser) {
+		try {
+			return await poemManager.get(DRAFT_POEM_ID);
+		} catch (e: unknown) {
+			if (e instanceof PoemNotFoundError) {
+				return {
+					name: '',
+					text: '',
+					note: ''
+				};
+			}
+		}
+	}
+
+	// TODO: Come up with proper name
+	throw new Error('Not implemented');
+};

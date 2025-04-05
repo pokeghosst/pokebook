@@ -17,8 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import Dexie, { type EntityTable } from 'dexie';
-import type { DatabasePlugin } from './DatabasePlugin';
+
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
+import type { DatabasePlugin } from './DatabasePlugin';
 
 const db = new Dexie('pokebook4') as Dexie & {
 	poems: EntityTable<PoemRecord, 'id'>;
@@ -29,8 +30,11 @@ db.version(1).stores({
 });
 
 export class DatabaseWeb implements DatabasePlugin {
-	async save(record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
-		const uuid = crypto.randomUUID();
+	async save(
+		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
+		idOverride?: string
+	): Promise<string> {
+		const uuid = idOverride ?? crypto.randomUUID();
 		const timestamp = new Date();
 
 		await db.poems.add({

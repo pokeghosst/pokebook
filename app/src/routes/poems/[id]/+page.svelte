@@ -193,7 +193,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<Workspace
 		poem={{ name: poem.name, text: poem.text }}
 		note={{ note: poem.note }}
-		poemNameHandler={handlePoemNameChange}
+		poemNameChangeHandler={handlePoemNameChange}
 	/>
 {/await}
 <!-- {#if thinking}

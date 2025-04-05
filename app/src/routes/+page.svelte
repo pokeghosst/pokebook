@@ -40,10 +40,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
+	import type { PageProps } from './$types';
+	import type { Poem } from '@pokebook/shared';
 	import { poemManager } from '$lib/service/PoemManager.js';
 
-	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
-	const noteProps = draftPoemNoteStore;
+	let { data }: PageProps = $props();
+
+	const poem: Poem = data;
+
+	function handlePoemNameChange(name: string) {
+		console.log('poem name', name);
+	}
 
 	const actions: ToolbarItem[] = [
 		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
@@ -132,4 +139,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<Workspace {poemProps} {noteProps} {actions} />
+<Workspace
+	poem={{ name: poem.name, text: poem.text }}
+	note={{ note: poem.note }}
+	poemNameChangeHandler={handlePoemNameChange}
+/>
