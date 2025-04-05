@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { PoemNotFoundError } from '$lib/errors';
 import { PoemDoc } from '$lib/models/PoemDoc';
 import { DatabaseWeb } from '$lib/plugins/DatabaseWeb';
 
@@ -88,6 +89,14 @@ class PoemManager {
 		const doc = new PoemDoc(poem);
 
 		return await this.db.save({ ...poem, snippet, syncState: doc.getEncodedState() });
+	}
+
+	public async get(id: string): Promise<Poem> {
+		const poem = await this.db.get(id);
+
+		if (!poem) throw new PoemNotFoundError();
+
+		return poem;
 	}
 
 	// public async init() {

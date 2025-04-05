@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
-import { poemManager, SyncManifest } from './PoemManager.svelte';
+import { poemManager, SyncManifest } from './PoemManager';
 
 import { PoemDoc } from '$lib/models/PoemDoc';
 import type { PoemEntity, StorageDriver } from '$lib/types';

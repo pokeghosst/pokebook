@@ -24,8 +24,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { t } from '$lib/translations';
 
-	export let props: Writable<string>;
-	export let unsavedChangesHandler;
+	// export let props: Writable<string>;
+	// export let unsavedChangesHandler;
+
+	
 
 	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
@@ -41,8 +43,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	$: lines = $props.split('\n');
-	$: lines, autoResizeNotebook();
+	// $: lines = $props.split('\n');
+	// $: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -60,7 +62,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<div class="notebook">
+{JSON.stringify(poemProp)}
+
+<!-- <div class="notebook">
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
@@ -72,4 +76,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
-</div>
+</div> -->

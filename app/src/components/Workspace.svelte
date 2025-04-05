@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -26,26 +26,37 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 
-	import NotePad from './NotePad.svelte';
+	// import NotePad from './NotePad.svelte';
 	import PoemPad from './PoemPad.svelte';
 
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
 	import Toolbar from './Toolbar.svelte';
+	import type { Poem } from '@pokebook/shared';
 
-	export let actions: { icon: ComponentType; action: () => void; label: string }[];
-	export let poemProps: { name: Writable<string>; body: Writable<string> };
-	export let noteProps: Writable<string>;
+	// export let actions: { icon: ComponentType; action: () => void; label: string }[];
+	// export let poemProps: { name: Writable<string>; body: Writable<string> };
+	// export let noteProps: Writable<string>;
+
+	let {
+		poem,
+		note,
+		poemNameHandler
+	}: {
+		poem: Omit<Poem, 'note'>;
+		note: Pick<Poem, 'note'>;
+		poemNameHandler: (name: string) => void;
+	} = $props();
 
 	// Assigning empty function by default because on draft page we don't pass a function here
-	export let unsavedChangesHandler = () => {};
+	// export let unsavedChangesHandler = () => {};
 
-	let state: number[] = JSON.parse($viewsState);
-	let views = [PoemPad, NotePad];
+	let padView: number[] = JSON.parse($viewsState);
+	// let views = [PoemPad, NotePad];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let props: [any, any] = [poemProps, noteProps];
+	// let props: [any, any] = [poemProps, noteProps];
 
-	let currentState = '';
+	let currentState = $state('');
 
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
@@ -61,18 +72,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function swapViews() {
 		currentState = 'transitioning';
 		setTimeout(function () {
-			[state[0], state[1]] = [state[1], state[0]];
-			$viewsState = JSON.stringify(state);
+			[padView[0], padView[1]] = [padView[1], padView[0]];
+			$viewsState = JSON.stringify(padView);
 			currentState = '';
 		}, 600);
 	}
 
 	function expandPoemPad() {
-		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
+		// $isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
 	}
 </script>
 
-{#if state}
+{#snippet pad(state: string)}
+	{#if state === 'poem'}
+		<PoemPad poemProp={poem} {poemNameHandler} />
+	{:else if state === 'note'}
+		<!-- <NotePad {noteProp} /> -->
+	{:else}
+		D'oh!
+	{/if}
+{/snippet}
+
+{@render pad('poem')}
+
+<!-- {#if viewState}
 	<div class="toolbar"><Toolbar {actions} /></div>
 	<div
 		class="workspace {$isFullWidthPad === 'true'
@@ -91,17 +114,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</div>
 			</div>
 			<svelte:component
-				this={views[state[0]]}
+				this={views[viewState[0]]}
 				{unsavedChangesHandler}
-				bind:props={props[state[0]]}
+				bind:props={props[viewState[0]]}
 			/>
 		</div>
 		<div class="notebook-container">
 			<svelte:component
-				this={views[state[1]]}
+				this={views[viewState[1]]}
 				{unsavedChangesHandler}
-				bind:props={props[state[1]]}
+				bind:props={props[viewState[1]]}
 			/>
 		</div>
 	</div>
-{/if}
+{/if} -->

@@ -40,14 +40,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Encoding } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
 
-	import type { PageProps } from './$types';
-
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 
-	import UnsavedChangesToast from '../../../../components/UnsavedChangesToast.svelte';
-	import Workspace from '../../../../components/Workspace.svelte';
+	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
+	import Workspace from '../../../components/Workspace.svelte';
+	import { poemManager } from '$lib/service/PoemManager.js';
 
 	let unsavedChangesToastId: string;
 
@@ -56,24 +55,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
 
-	let { data }: PageProps = $props();
-
-	console.log(data);
-
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	// $: {
-	//     if (!thinking)
-	//         FilesystemWithPermissions.writeFile({
-	//             path: `${$currentPoemUri}.tmp`,
-	//             data: new XMLBuilder({ format: true }).build({
-	//                 name: $currentPoemName,
-	//                 text: $currentPoemBody,
-	//                 note: $currentPoemNote
-	//             }),
-	//
-	//             encoding: Encoding.UTF8
-	//         });
-	// }
+	$: {
+		if (!thinking)
+			FilesystemWithPermissions.writeFile({
+				path: `${$currentPoemUri}.tmp`,
+				data: new XMLBuilder({ format: true }).build({
+					name: $currentPoemName,
+					text: $currentPoemBody,
+					note: $currentPoemNote
+				}),
+
+				encoding: Encoding.UTF8
+			});
+	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
@@ -114,15 +109,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newPoemUri = await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri,
-			$storageMode
-		);
+		const newUri = await poemManager.update($currentPoemUri, {
+			name: $currentPoemName,
+			text: $currentPoemBody,
+			note: $currentPoemNote
+		});
+		// const newPoemUri = await Poem.update(
+		// 	{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
+		// 	$currentPoemUri,
+		// 	$storageMode
+		// );
 
-		if (newPoemUri) $currentPoemUri = newPoemUri;
+		$currentPoemUri = newUri;
 
-		await deleteTmpFile($currentPoemUri);
+		// await deleteTmpFile($currentPoemUri);
 	}
 
 	async function deletePoem() {
@@ -146,39 +146,45 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
-		if (
-			(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
-			true
-		) {
-			unsavedChangesToastId = toast(UnsavedChangesToast, {
-				duration: Infinity,
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
-			$currentPoemName = name;
-			$currentPoemBody = text;
-			$currentPoemNote = note;
+		const { name, text, note } = await poemManager.load($currentPoemUri);
 
-			thinking = false;
-		} else {
-			try {
-				const poem = await Poem.load($currentPoemUri, $storageMode);
-				if (poem) {
-					$currentPoemName = poem.name;
-					$currentPoemBody = poem.text;
-					$currentPoemNote = poem.note;
-				}
-			} catch (e) {
-				if (e instanceof Error) {
-					toast.error($t(e.message), {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					});
-				}
-			}
-			thinking = false;
-		}
+		$currentPoemName = name;
+		$currentPoemBody = text;
+		$currentPoemNote = note;
+		// if (
+		// 	(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
+		// 	true
+		// ) {
+		// 	unsavedChangesToastId = toast(UnsavedChangesToast, {
+		// 		duration: Infinity,
+		// 		position: GLOBAL_TOAST_POSITION,
+		// 		style: GLOBAL_TOAST_STYLE
+		// 	});
+		// 	// const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+		// 	const { name, text, note } = await poemManager.load(`${$currentPoemUri}.tmp`);
+		// 	$currentPoemName = name;
+		// 	$currentPoemBody = text;
+		// 	$currentPoemNote = note;
+
+		thinking = false;
+		// } else {
+		// 	try {
+		// 		const poem = await Poem.load($currentPoemUri, $storageMode);
+		// 		if (poem) {
+		// 			$currentPoemName = poem.name;
+		// 			$currentPoemBody = poem.text;
+		// 			$currentPoemNote = poem.note;
+		// 		}
+		// 	} catch (e) {
+		// 		if (e instanceof Error) {
+		// 			toast.error($t(e.message), {
+		// 				position: GLOBAL_TOAST_POSITION,
+		// 				style: GLOBAL_TOAST_STYLE
+		// 			});
+		// 		}
+		// 	}
+		// 	thinking = false;
+		// }
 	});
 
 	onDestroy(() => {

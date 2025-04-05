@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { poemManager } from '$lib/service/PoemManager.svelte';
+	import { poemManager } from '$lib/service/PoemManager';
 	import { t } from '$lib/translations';
 
 	import type { PoemListItem } from '@pokebook/shared';

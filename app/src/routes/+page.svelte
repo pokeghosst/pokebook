@@ -40,7 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import { poemManager } from '$lib/service/PoemManager.svelte.js';
+	import { poemManager } from '$lib/service/PoemManager.js';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;

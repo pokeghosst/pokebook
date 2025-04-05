@@ -18,8 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
+	
 	import { count } from 'letter-count';
 
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
@@ -29,27 +28,39 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 	import { putSyllables } from '$lib/util/PokeHelp';
 
-	export let props: { name: Writable<string>; body: Writable<string> };
-	export let unsavedChangesHandler;
+	let { poemProp, poemNameHandler } : { poemProp: { name: string, text: string }, poemNameHandler: (name: string) => void } = $props();
+	let name = $state(poemProp.name);
+	let text = $state(poemProp.text);
 
-	let poemNameStoreProp = props.name;
-	let poemBodyStoreProp = props.body;
+	$effect(() => {
+		poemNameHandler(name);
+	})
+
+	// export let props: { name: Writable<string>; body: Writable<string> };
+	// export let unsavedChangesHandler;
+
+	// let poemNameStoreProp = props.name;
+	// let poemBodyStoreProp = props.body;
 
 	// Overlays
-	let syllableRows: string;
-	let stats: Record<string, string | number>;
+	// TODO: Since poemProp is neither a $state nor a bindable prop, this won't work as it should, BUT for now this is just a placeholder
+	let lines: string[] = $derived(text.split('\n'))
+	let syllableRows: string = $derived(putSyllables(lines))
+	let stats: Record<string, string | number> = $derived(count(text))
 
-	let lines: string[] = $poemBodyStoreProp.split('\n');
+	// let lines: string[] = $poemBodyStoreProp.split('\n');
 
 	let poemTextarea: HTMLTextAreaElement;
 
-	$: lines = $poemBodyStoreProp.split('\n');
-	$: $poemBodyStoreProp, autoResizeNotebook();
+	// $: lines = $poemBodyStoreProp.split('\n');
+	// $: $poemBodyStoreProp, autoResizeNotebook();
 
 	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	$: $isPokehelpActive, autoResizeNotebook();
+	// $: $isPokehelpActive, autoResizeNotebook();
 
-	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
+	// $: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
+
+
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -61,16 +72,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			resizeObserver.disconnect();
 		};
 	});
-
-	function updatePokeHelpOverlays() {
-		stats = count($poemBodyStoreProp);
-		syllableRows = putSyllables(lines);
-	}
-
-	function sanitizePoemTitle() {
-		const forbiddenChars = /[./_]/g;
-		$poemNameStoreProp = $poemNameStoreProp.replace(forbiddenChars, '');
-	}
 
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
@@ -88,13 +89,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
+<!-- on:change|once={unsavedChangesHandler} -->
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={$poemNameStoreProp}
-		on:input={sanitizePoemTitle}
+		bind:value={name}
 		placeholder={$t('workspace.unnamed')}
-		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -108,14 +108,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={$poemBodyStoreProp}
+			bind:value={text}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+		></textarea>
+		<!-- on:change|once={unsavedChangesHandler} -->
 	</div>
 </div>
