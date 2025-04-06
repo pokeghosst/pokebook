@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
@@ -42,15 +42,32 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { ToolbarItem } from '$lib/types';
 	import type { PageProps } from './$types';
 	import type { Poem } from '@pokebook/shared';
+
 	import { poemManager } from '$lib/service/PoemManager.js';
+	import { handleInput } from '$lib/util';
 
 	let { data }: PageProps = $props();
 
 	const poem: Poem = data;
 
-	function handlePoemNameChange(name: string) {
+	function handlePoemNameChange(event: Event) {
+		const name = handleInput(event.target as HTMLInputElement);
 		console.log('poem name', name);
 	}
+
+	function handlePoemTextChange(event: InputEvent) {
+		const text = handleInput(event.target as HTMLTextAreaElement);
+		console.log('poem text', text)
+	}
+
+	function handlePoemNoteChange(event: InputEvent) {
+		const note = handleInput(event.target as HTMLTextAreaElement);
+		console.log('poem note', note);
+	}
+
+	setContext('poemNameChangeHandler', handlePoemNameChange);
+	setContext('poemTextChangeHandler', handlePoemTextChange);
+	setContext('poemNoteChangeHandler', handlePoemNoteChange);
 
 	const actions: ToolbarItem[] = [
 		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
@@ -142,5 +159,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <Workspace
 	poem={{ name: poem.name, text: poem.text }}
 	note={{ note: poem.note }}
-	poemNameChangeHandler={handlePoemNameChange}
 />

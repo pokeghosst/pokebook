@@ -40,12 +40,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let {
 		poem,
-		note,
-		poemNameChangeHandler
+		note
 	}: {
 		poem: Omit<Poem, 'note'>;
 		note: Pick<Poem, 'note'>;
-		poemNameChangeHandler: (name: string) => void;
 	} = $props();
 
 	// Assigning empty function by default because on draft page we don't pass a function here
@@ -85,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 {#snippet pad(state: string)}
 	{#if state === 'poem'}
-		<PoemPad poemProp={poem} {poemNameChangeHandler} />
+		<PoemPad poemProp={poem} />
 	{:else if state === 'note'}
 		<!-- <NotePad {noteProp} /> -->
 	{:else}
