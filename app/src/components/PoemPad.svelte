@@ -20,13 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount, getContext } from 'svelte';
 
 	import { count } from 'letter-count';
+	import { syllable } from 'syllable';
+	import { t } from '$lib/translations';
 
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
-
-	import { t } from '$lib/translations';
-	import { putSyllables } from '$lib/util/PokeHelp';
 
 	let { poemProp }: { poemProp: { name: string; text: string } } = $props();
 	let name = $state(poemProp.name);
@@ -36,7 +35,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	const poemTextChangeHandler = getContext('poemTextChangeHandler') as (event: Event) => void
 
 	let lines: string[] = $derived(text.split('\n'));
-	let syllableRows: string = $derived(putSyllables(lines));
+	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)))
 	let stats: Record<string, string | number> = $derived(count(text));
 
 	let poemTextarea: HTMLTextAreaElement;
@@ -76,6 +75,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
+{#snippet syllableLine(syllableCount: number, line: string)}
+	<span class="poem-syllable-count">{syllableCount}</span>
+	<span style="color: transparent; margin-left: 5px">${line}</span>
+	<br/>
+{/snippet}
+
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
@@ -91,7 +96,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				)}: {stats.lines}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-				{@html syllableRows}
+				{#each lines as line, i}
+					{@render syllableLine(syllableCounts[i], line)}
+				{/each}
 			</div>
 		{/if}
 		<textarea
