@@ -40,7 +40,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let poemTextarea: HTMLTextAreaElement;
 
-	// $: lines = $poemBodyStoreProp.split('\n');
 	// $: $poemBodyStoreProp, autoResizeNotebook();
 
 	// To avoid text going beyond the notepad when the poem is padded/un-padded

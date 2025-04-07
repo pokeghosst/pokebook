@@ -17,63 +17,60 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
+	import { getContext } from 'svelte';
 
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
 
-	// export let props: Writable<string>;
-	// export let unsavedChangesHandler;
+	let { noteProp }: { noteProp: { note: string } } = $props();
+	let note = $state(noteProp.note);
 
+	const poemNoteChangeHandler = getContext('poemNoteChangeHandler') as (event: Event) => void
+
+	// let lines: string[] = $derived(note.split('\n'));
 	
-
-	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
 
-	onMount(() => {
-		// Resize the notebook when switching between single/dual panes
-		const resizeObserver = new ResizeObserver(autoResizeNotebook);
-		resizeObserver.observe(noteTextarea);
+	// onMount(() => {
+	// 	// Resize the notebook when switching between single/dual panes
+	// 	const resizeObserver = new ResizeObserver(autoResizeNotebook);
+	// 	resizeObserver.observe(noteTextarea);
 
-		return () => {
-			resizeObserver.unobserve(noteTextarea);
-			resizeObserver.disconnect();
-		};
-	});
+	// 	return () => {
+	// 		resizeObserver.unobserve(noteTextarea);
+	// 		resizeObserver.disconnect();
+	// 	};
+	// });
 
-	// $: lines = $props.split('\n');
 	// $: lines, autoResizeNotebook();
 
-	async function autoResizeNotebook() {
-		// Requesting the animation frame twice is the most reliable way to
-		// have correct auto resizing even on long text in MOST cases
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				if (noteTextarea) {
-					const scrollPosition = window.scrollY;
-					noteTextarea.style.height = 'auto';
-					noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
-					window.scrollTo(0, scrollPosition);
-				}
-			});
-		});
-	}
+	// async function autoResizeNotebook() {
+	// 	// Requesting the animation frame twice is the most reliable way to
+	// 	// have correct auto resizing even on long text in MOST cases
+	// 	requestAnimationFrame(() => {
+	// 		requestAnimationFrame(() => {
+	// 			if (noteTextarea) {
+	// 				const scrollPosition = window.scrollY;
+	// 				noteTextarea.style.height = 'auto';
+	// 				noteTextarea.style.height = `${noteTextarea.scrollHeight}px`;
+	// 				window.scrollTo(0, scrollPosition);
+	// 			}
+	// 		});
+	// 	});
+	// }
 </script>
 
-{JSON.stringify(poemProp)}
-
-<!-- <div class="notebook">
+<div class="notebook">
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={$props}
+			bind:value={note}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+			oninput={poemNoteChangeHandler}
+		></textarea>
 	</div>
-</div> -->
+</div>

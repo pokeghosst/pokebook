@@ -32,7 +32,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
@@ -40,11 +39,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import type { PageProps } from './$types';
 	import type { Poem } from '@pokebook/shared';
+	import type { PageProps } from './$types';
 
-	import { handleInput } from '$lib/util';
 	import { putDraftPoem, savePoem } from '$lib/service/poems.service';
+	import { handleInput } from '$lib/util';
 
 	let { data }: PageProps = $props();
 
@@ -69,16 +68,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	setContext('poemTextChangeHandler', handlePoemTextChange);
 	setContext('poemNoteChangeHandler', handlePoemNoteChange);
 
-	const actions: ToolbarItem[] = [
-		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
+	const toolbarActions: ToolbarItem[] = [
 		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
+		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') },
 		{
 			icon: Share2,
 			action: () =>
 				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
 			label: $t('workspace.sharePoem')
-		},
-		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
+		}
 	];
 
 	onMount(async () => {
@@ -95,14 +93,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
 
-	async function newPoem() {
-		if (confirm($t('workspace.isSavePoem'))) {
-			stashPoem();
-		} else {
-			clearDraftPoem();
-		}
-	}
-
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
@@ -112,10 +102,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 						text: $draftPoemBodyStore,
 						note: $draftPoemNoteStore
 					}),
-					// Poem.save(
-					// 	{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
-					// 	$storageMode
-					// ),
 					{
 						loading: `${$t('toasts.savingPoem')}`,
 						success: `${$t('toasts.poemSaved')}`,
@@ -159,4 +145,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <Workspace
 	poem={{ name: poem.name, text: poem.text }}
 	note={{ note: poem.note }}
+	{toolbarActions}
 />

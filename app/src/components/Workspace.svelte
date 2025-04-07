@@ -17,21 +17,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount, type ComponentType } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
-	import hotkeys from 'hotkeys-js';
+	import { onDestroy, onMount } from 'svelte';
 
 	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
-
-	// import NotePad from './NotePad.svelte';
-	import PoemPad from './PoemPad.svelte';
+	import hotkeys from 'hotkeys-js';
 
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
+
+	import NotePad from './NotePad.svelte';
+	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
+
+	import type { ToolbarItem } from '$lib/types';
 	import type { Poem } from '@pokebook/shared';
 
 	// export let actions: { icon: ComponentType; action: () => void; label: string }[];
@@ -40,16 +40,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let {
 		poem,
-		note
-	}: {
-		poem: Omit<Poem, 'note'>;
-		note: Pick<Poem, 'note'>;
-	} = $props();
+		note,
+		toolbarActions
+	}: { poem: Omit<Poem, 'note'>; note: Pick<Poem, 'note'>; toolbarActions: ToolbarItem[] } =
+		$props();
 
 	// Assigning empty function by default because on draft page we don't pass a function here
 	// export let unsavedChangesHandler = () => {};
 
-	let padView: number[] = JSON.parse($viewsState);
+	let padView = $state(['poem', 'note']);
 	// let views = [PoemPad, NotePad];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	// let props: [any, any] = [poemProps, noteProps];
@@ -85,44 +84,32 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{#if state === 'poem'}
 		<PoemPad poemProp={poem} />
 	{:else if state === 'note'}
-		<!-- <NotePad {noteProp} /> -->
+		<NotePad noteProp={note} />
 	{:else}
 		D'oh!
 	{/if}
 {/snippet}
 
-{@render pad('poem')}
-
-<!-- {#if viewState}
-	<div class="toolbar"><Toolbar {actions} /></div>
-	<div
-		class="workspace {$isFullWidthPad === 'true'
-			? 'l-full-width'
-			: ''} {currentState} {$writingPadFont}"
-	>
-		<div class="notebook-container">
-			<div class="notebook-container-toolbar">
-				<div>
-					<button on:click={expandPoemPad}>
-						<ChevronsLeftRight class="round-button" />
-					</button>
-					<button on:click={swapViews}>
-						<ArrowRightLeft class="round-button" />
-					</button>
-				</div>
+<div class="toolbar"><Toolbar actions={toolbarActions} /></div>
+<div
+	class="workspace {$isFullWidthPad === 'true'
+		? 'l-full-width'
+		: ''} {currentState} {$writingPadFont}"
+>
+	<div class="notebook-container">
+		<div class="notebook-container-toolbar">
+			<div>
+				<button onclick={expandPoemPad}>
+					<ChevronsLeftRight class="round-button" />
+				</button>
+				<button onclick={swapViews}>
+					<ArrowRightLeft class="round-button" />
+				</button>
 			</div>
-			<svelte:component
-				this={views[viewState[0]]}
-				{unsavedChangesHandler}
-				bind:props={props[viewState[0]]}
-			/>
 		</div>
-		<div class="notebook-container">
-			<svelte:component
-				this={views[viewState[1]]}
-				{unsavedChangesHandler}
-				bind:props={props[viewState[1]]}
-			/>
-		</div>
+		{@render pad(padView[0])}
 	</div>
-{/if} -->
+	<div class="notebook-container">
+		{@render pad(padView[1])}
+	</div>
+</div>
