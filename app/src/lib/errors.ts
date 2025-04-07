@@ -38,3 +38,9 @@ export class PoemNotFoundError extends PokeBookError {
 		super('POEM_NOT_FOUND');
 	}
 }
+
+export class DexieError extends PokeBookError {
+	constructor() {
+		super('DEXIE_ERROR');
+	}
+}

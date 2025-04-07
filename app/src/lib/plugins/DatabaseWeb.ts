@@ -20,13 +20,15 @@ import Dexie, { type EntityTable } from 'dexie';
 
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
+import { DexieError } from '$lib/errors';
+import { DRAFT_POEM_ID } from '$lib/util/constants';
 
 const db = new Dexie('pokebook4') as Dexie & {
 	poems: EntityTable<PoemRecord, 'id'>;
 };
 
 db.version(1).stores({
-	poems: 'id, name, text, note, snippet, remoteId, syncState'
+	poems: '&id, name, text, note, snippet, remoteId, syncState'
 });
 
 export class DatabaseWeb implements DatabasePlugin {
@@ -45,6 +47,34 @@ export class DatabaseWeb implements DatabasePlugin {
 		});
 
 		return uuid;
+	}
+	async putDraft(draftUpdate: Partial<Poem>): Promise<void> {
+		const timestamp = new Date();
+		try {
+			const savedDraft = await db.poems.get(DRAFT_POEM_ID);
+
+			if (savedDraft) {
+				await db.poems.put({
+					...savedDraft,
+					...draftUpdate,
+					updatedAt: timestamp
+				});
+			} else {
+				await db.poems.add({
+					id: DRAFT_POEM_ID,
+					createdAt: timestamp,
+					updatedAt: timestamp,
+					name: draftUpdate.name ?? '',
+					text: draftUpdate.text ?? '',
+					note: draftUpdate.note ?? '',
+					snippet: '',
+					syncState: ''
+				});
+			}
+		} catch (e: unknown) {
+			console.error(e);
+			throw new DexieError().withCause(e);
+		}
 	}
 	async get(id: string): Promise<Poem | undefined> {
 		const poem = await db.poems.get(id);

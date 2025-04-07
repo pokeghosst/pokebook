@@ -16,15 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import type { PoemRecord } from '@pokebook/shared';
+import type { Poem, PoemRecord } from '@pokebook/shared';
 
 export interface DatabasePlugin {
 	save(
 		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
 		idOverride?: string
 	): Promise<string>;
-	get(id: string): Promise<PoemEntity | undefined>;
+	putDraft(draftUpdate: Partial<Poem>): Promise<void>;
+	get(id: string): Promise<Poem | undefined>;
 	getAll(): Promise<PoemRecord[]>;
 	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;
 	update(id: string, poem: PoemRecord): Promise<void>;

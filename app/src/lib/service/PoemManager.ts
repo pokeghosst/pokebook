@@ -99,6 +99,10 @@ class PoemManager {
 		return poem;
 	}
 
+	public async putDraft(draftUpdate: Partial<Poem>) {
+		await this.db.putDraft(draftUpdate);
+	}
+
 	// public async init() {
 	// 	console.log('initializing poem manager...');
 

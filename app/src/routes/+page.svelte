@@ -52,17 +52,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function handlePoemNameChange(event: Event) {
 		const name = handleInput(event.target as HTMLInputElement);
-		console.log('poem name', name);
+		poemManager.putDraft({ name });
 	}
 
 	function handlePoemTextChange(event: InputEvent) {
 		const text = handleInput(event.target as HTMLTextAreaElement);
-		console.log('poem text', text)
+		poemManager.putDraft({ text });
 	}
 
 	function handlePoemNoteChange(event: InputEvent) {
 		const note = handleInput(event.target as HTMLTextAreaElement);
-		console.log('poem note', note);
+		poemManager.putDraft({ note });
 	}
 
 	setContext('poemNameChangeHandler', handlePoemNameChange);
