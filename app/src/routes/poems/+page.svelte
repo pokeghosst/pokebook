@@ -19,8 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { poemManager } from '$lib/service/PoemManager';
 	import { t } from '$lib/translations';
+	import { listPoems } from '@pokebook/backend/src/trpc/services/google-drive.service';
 
 	import type { PoemListItem } from '@pokebook/shared';
 
@@ -35,7 +35,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		poemListPromise = poemManager.list();
+		poemListPromise = listPoems();
 
 		return () => clearTimeout(fallbackTimeout);
 	});

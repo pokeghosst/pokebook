@@ -46,7 +46,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
-	import { poemManager } from '$lib/service/PoemManager.js';
 
 	let unsavedChangesToastId: string;
 
@@ -109,7 +108,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newUri = await poemManager.update($currentPoemUri, {
+		const newUri = await updatePoem($currentPoemUri, {
 			name: $currentPoemName,
 			text: $currentPoemBody,
 			note: $currentPoemNote
@@ -146,7 +145,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
-		const { name, text, note } = await poemManager.load($currentPoemUri);
+		const { name, text, note } = await loadPoem($currentPoemUri);
 
 		$currentPoemName = name;
 		$currentPoemBody = text;

@@ -43,8 +43,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { PageProps } from './$types';
 	import type { Poem } from '@pokebook/shared';
 
-	import { poemManager } from '$lib/service/PoemManager.js';
 	import { handleInput } from '$lib/util';
+	import { putDraftPoem, savePoem } from '$lib/service/poems.service';
 
 	let { data }: PageProps = $props();
 
@@ -52,17 +52,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function handlePoemNameChange(event: Event) {
 		const name = handleInput(event.target as HTMLInputElement);
-		poemManager.putDraft({ name });
+		putDraftPoem({ name });
 	}
 
 	function handlePoemTextChange(event: InputEvent) {
 		const text = handleInput(event.target as HTMLTextAreaElement);
-		poemManager.putDraft({ text });
+		putDraftPoem({ text });
 	}
 
 	function handlePoemNoteChange(event: InputEvent) {
 		const note = handleInput(event.target as HTMLTextAreaElement);
-		poemManager.putDraft({ note });
+		putDraftPoem({ note });
 	}
 
 	setContext('poemNameChangeHandler', handlePoemNameChange);
@@ -107,7 +107,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
 				await toast.promise(
-					poemManager.save({
+					savePoem({
 						name: $draftPoemNameStore,
 						text: $draftPoemBodyStore,
 						note: $draftPoemNoteStore

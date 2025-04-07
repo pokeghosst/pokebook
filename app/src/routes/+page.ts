@@ -18,8 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { browser } from '$app/environment';
 import { PoemNotFoundError } from '$lib/errors';
+import { getPoem } from '$lib/service/poems.service';
 
-import { poemManager } from '$lib/service/PoemManager';
 import { DRAFT_POEM_ID } from '$lib/util/constants';
 
 import type { PageLoad } from './$types';
@@ -27,7 +27,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async () => {
 	if (browser) {
 		try {
-			return await poemManager.get(DRAFT_POEM_ID);
+			return await getPoem(DRAFT_POEM_ID);
 		} catch (e: unknown) {
 			if (e instanceof PoemNotFoundError) {
 				return {

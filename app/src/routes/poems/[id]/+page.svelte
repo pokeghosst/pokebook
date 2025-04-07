@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
+	import { getPoem } from '$lib/service/poems.service';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
 
@@ -27,17 +28,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 
 	import Workspace from '@/components/Workspace.svelte';
-	import { poemManager } from '$lib/service/PoemManager';
 
-	import type { PageProps } from './$types';
 	import type { Poem } from '@pokebook/shared';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	// let poemProps = { name: currentPoemName, body: currentPoemBody };
 	// let noteProps = currentPoemNote;
 
-	let poemPromise: Promise<Poem> = poemManager.get(data.poemId);
+	let poemPromise: Promise<Poem> = getPoem(data.poemId);
 
 	function handlePoemNameChange(name: string) {
 		console.log('poem name', name);
