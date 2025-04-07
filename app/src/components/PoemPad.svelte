@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount, getContext } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import { count } from 'letter-count';
 	import { syllable } from 'syllable';
@@ -27,16 +27,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
-	let { poemProp }: { poemProp: { name: string; text: string } } = $props();
-	let name = $state(poemProp.name);
-	let text = $state(poemProp.text);
+	let { poemProp = $bindable() }: { poemProp: { name: string; text: string } } = $props();
 
-	const poemNameChangeHandler = getContext('poemNameChangeHandler') as (event: Event) => void
-	const poemTextChangeHandler = getContext('poemTextChangeHandler') as (event: Event) => void
-
-	let lines: string[] = $derived(text.split('\n'));
-	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)))
-	let stats: Record<string, string | number> = $derived(count(text));
+	let lines: string[] = $derived(poemProp.text.split('\n'));
+	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
+	let stats: Record<string, string | number> = $derived(count(poemProp.text));
 
 	let poemTextarea: HTMLTextAreaElement;
 
@@ -77,16 +72,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {#snippet syllableLine(syllableCount: number, line: string)}
 	<span class="poem-syllable-count">{syllableCount}</span>
 	<span style="color: transparent; margin-left: 5px">${line}</span>
-	<br/>
+	<br />
 {/snippet}
 
 <div class="notebook" id="poem-notebook">
-	<input
-		class="notebook-header"
-		bind:value={name}
-		oninput={poemNameChangeHandler}
-		placeholder={$t('workspace.unnamed')}
-	/>
+	<input class="notebook-header" bind:value={poemProp.name} placeholder={$t('workspace.unnamed')} />
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
 			<div class="poem-stats">
@@ -101,8 +91,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={text}
-			oninput={poemTextChangeHandler}
+			bind:value={poemProp.text}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"

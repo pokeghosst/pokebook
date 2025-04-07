@@ -39,11 +39,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// export let noteProps: Writable<string>;
 
 	let {
-		poem,
-		note,
+		poem = $bindable(),
+		note = $bindable(),
 		toolbarActions
-	}: { poem: Omit<Poem, 'note'>; note: Pick<Poem, 'note'>; toolbarActions: ToolbarItem[] } =
-		$props();
+	}: {
+		poem: Omit<Poem, 'note'>;
+		note: Pick<Poem, 'note'>;
+		toolbarActions: ToolbarItem[];
+	} = $props();
 
 	// Assigning empty function by default because on draft page we don't pass a function here
 	// export let unsavedChangesHandler = () => {};
@@ -82,9 +85,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 {#snippet pad(state: string)}
 	{#if state === 'poem'}
-		<PoemPad poemProp={poem} />
+		<PoemPad bind:poemProp={poem} />
 	{:else if state === 'note'}
-		<NotePad noteProp={note} />
+		<NotePad bind:noteProp={note} />
 	{:else}
 		D'oh!
 	{/if}

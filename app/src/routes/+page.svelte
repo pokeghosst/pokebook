@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount, setContext } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
@@ -43,30 +43,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { PageProps } from './$types';
 
 	import { putDraftPoem, savePoem } from '$lib/service/poems.service';
-	import { handleInput } from '$lib/util';
 
 	let { data }: PageProps = $props();
 
-	const poem: Poem = data;
+	const poemData: Poem = data;
+	let poem = $state({ name: poemData.name, text: poemData.text });
+	let note = $state({ note: poemData.note });
 
-	function handlePoemNameChange(event: Event) {
-		const name = handleInput(event.target as HTMLInputElement);
-		putDraftPoem({ name });
-	}
+	$effect(() => {
+		putDraftPoem({ name: poem.name });
+	});
 
-	function handlePoemTextChange(event: InputEvent) {
-		const text = handleInput(event.target as HTMLTextAreaElement);
-		putDraftPoem({ text });
-	}
+	$effect(() => {
+		putDraftPoem({ text: poem.text });
+	});
 
-	function handlePoemNoteChange(event: InputEvent) {
-		const note = handleInput(event.target as HTMLTextAreaElement);
-		putDraftPoem({ note });
-	}
-
-	setContext('poemNameChangeHandler', handlePoemNameChange);
-	setContext('poemTextChangeHandler', handlePoemTextChange);
-	setContext('poemNoteChangeHandler', handlePoemNoteChange);
+	$effect(() => {
+		putDraftPoem({ note: note.note });
+	});
 
 	const toolbarActions: ToolbarItem[] = [
 		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
@@ -142,8 +136,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<Workspace
-	poem={{ name: poem.name, text: poem.text }}
-	note={{ note: poem.note }}
-	{toolbarActions}
-/>
+<Workspace bind:poem bind:note {toolbarActions} />

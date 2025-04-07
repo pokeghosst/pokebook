@@ -17,19 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { getContext } from 'svelte';
-
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	import { t } from '$lib/translations';
 
-	let { noteProp }: { noteProp: { note: string } } = $props();
-	let note = $state(noteProp.note);
-
-	const poemNoteChangeHandler = getContext('poemNoteChangeHandler') as (event: Event) => void
+	let { noteProp = $bindable() }: { noteProp: { note: string } } = $props();
 
 	// let lines: string[] = $derived(note.split('\n'));
-	
+
 	let noteTextarea: HTMLTextAreaElement;
 
 	// onMount(() => {
@@ -65,12 +60,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={note}
+			bind:value={noteProp.note}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-			oninput={poemNoteChangeHandler}
 		></textarea>
 	</div>
 </div>
