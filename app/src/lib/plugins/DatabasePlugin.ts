@@ -23,7 +23,7 @@ export interface DatabasePlugin {
 		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
 		idOverride?: string
 	): Promise<string>;
-	putDraft(draftUpdate: Partial<Poem>): Promise<void>;
+	putPartialUpdate(id: string, update: Partial<Poem>): Promise<void>;
 	get(id: string): Promise<Poem | undefined>;
 	getAll(): Promise<PoemRecord[]>;
 	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;

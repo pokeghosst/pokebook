@@ -17,46 +17,45 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 
-	import { getPoem } from '$lib/service/poems.service';
+	import { putPartialUpdate } from '$lib/service/poems.service';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
+	import toast from 'svelte-french-toast';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 
 	import Workspace from '@/components/Workspace.svelte';
+	import UnsavedChangesToast from '@/components/UnsavedChangesToast.svelte';
 
+	import type { PageProps, ToolbarItem } from '$lib/types';
 	import type { Poem } from '@pokebook/shared';
-	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	// let poemProps = { name: currentPoemName, body: currentPoemBody };
-	// let noteProps = currentPoemNote;
+	const poemId: string = data.poemId;
+	const poemData: Poem = data.poem;
+	const tmpPoemData: Poem | undefined = data.tmpPoem;
+	let unsavedChangesToastId: string | undefined = undefined;
 
-	let poemPromise: Promise<Poem> = getPoem(data.poemId);
+	let poem = $state({
+		name: tmpPoemData?.name || poemData.name,
+		text: tmpPoemData?.text || poemData.text
+	});
+	let note = $state({ note: tmpPoemData?.note || poemData.note });
 
-	function handlePoemNameChange(name: string) {
-		console.log('poem name', name);
+	// TODO: Proper debouncing for all update handlers + preventing tab closing until all changes are written
+	function updateDraftPoemName(value: string) {
+		console.log('changing poem name');
+		poem.name = value;
+		putPartialUpdate(`${poemId}.tmp`, { name: value });
 	}
 
-	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	// $: {
-	//     if (!thinking)
-	//         FilesystemWithPermissions.writeFile({
-	//             path: `${$currentPoemUri}.tmp`,
-	//             data: new XMLBuilder({ format: true }).build({
-	//                 name: $currentPoemName,
-	//                 text: $currentPoemBody,
-	//                 note: $currentPoemNote
-	//             }),
-	//
-	//             encoding: Encoding.UTF8
-	//         });
-	// }
+	setContext('poemNameHandler', updateDraftPoemName);
 
 	$saveFunction = async () => {
 		alert('Not implemented');
@@ -119,8 +118,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		// await goto('/stash', { invalidateAll: true });
 	}
 
-	let actions = [
-		// TODO: Bad, bad, bad, bad!!!
+	let toolbarActions: ToolbarItem[] = [
 		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
 		{
 			icon: Share2,
@@ -138,11 +136,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		// 	(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
 		// 	true
 		// ) {
-		// 	unsavedChangesToastId = toast(UnsavedChangesToast, {
-		// 		duration: Infinity,
-		// 		position: GLOBAL_TOAST_POSITION,
-		// 		style: GLOBAL_TOAST_STYLE
-		// 	});
+		if (tmpPoemData) {
+			unsavedChangesToastId = toast(UnsavedChangesToast, {
+				duration: Infinity,
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
+		}
 		// 	const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
 		// 	$currentPoemName = name;
 		// 	$currentPoemBody = text;
@@ -169,16 +169,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	onDestroy(() => {
-		// toast.dismiss(unsavedChangesToastId);
+		toast.dismiss(unsavedChangesToastId);
 	});
-
-	function unsavedChangesHandler() {
-		// PoemCacheManager.setUnsavedStatus($storageMode, $currentPoemUri);
-	}
-
-	function clearCurrentPoemStorage() {
-		// $currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
-	}
 
 	async function deleteTmpFile(fileUri: string) {
 		// try {
@@ -187,18 +179,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-{#await poemPromise}
-	Loading...
-{:then poem}
-	<Workspace
-		poem={{ name: poem.name, text: poem.text }}
-		note={{ note: poem.note }}
-	/>
-{/await}
-<!-- {#if thinking}
-	<div class="placeholder-text-wrapper">
-		<p>Loading...</p>
-	</div>
-{:else}
-	
-{/if} -->
+<Workspace bind:poem bind:note />

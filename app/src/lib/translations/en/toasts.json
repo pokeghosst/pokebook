@@ -6,7 +6,7 @@
 	"somethingWrong": "Something went wrong! But don't fret. First, try to re-login. If it doesn't help, report this problem with the following info:",
 	"unauthorized": "Unauthorized! Try to log out and log in again!",
 	"gDriveRedirect": "Heads up! You will be redirected to log in. Oke?",
-	"unsavedChanges": "You may have unsaved changes here. Save or discard them before proceeding.",
+	"unsavedChanges": "You have unsaved changes here. Save or discard them before proceeding.",
 	"poemCopiedToClipboard": "Poem copied to clipboard!",
 	"signedInOk": "Signed in successfully!",
 	"signingOut": "Signing out...",

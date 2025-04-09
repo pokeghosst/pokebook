@@ -19,8 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	import { listPoems } from '$lib/service/poems.service';
 	import { t } from '$lib/translations';
-	import { listPoems } from '@pokebook/backend/src/trpc/services/google-drive.service';
 
 	import type { PoemListItem } from '@pokebook/shared';
 

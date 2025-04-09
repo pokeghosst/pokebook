@@ -18,10 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import Dexie, { type EntityTable } from 'dexie';
 
+import { DexieError } from '$lib/errors';
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
-import { DexieError } from '$lib/errors';
-import { DRAFT_POEM_ID } from '$lib/util/constants';
 
 const db = new Dexie('pokebook4') as Dexie & {
 	poems: EntityTable<PoemRecord, 'id'>;
@@ -48,25 +47,24 @@ export class DatabaseWeb implements DatabasePlugin {
 
 		return uuid;
 	}
-	async putDraft(draftUpdate: Partial<Poem>): Promise<void> {
+	async putPartialUpdate(id: string, update: Partial<Poem>): Promise<void> {
 		const timestamp = new Date();
 		try {
-			const savedDraft = await db.poems.get(DRAFT_POEM_ID);
+			const savedPoem = await db.poems.get(id);
 
-			if (savedDraft) {
-				await db.poems.put({
-					...savedDraft,
-					...draftUpdate,
+			if (savedPoem) {
+				await db.poems.update(id, {
+					...update,
 					updatedAt: timestamp
 				});
 			} else {
 				await db.poems.add({
-					id: DRAFT_POEM_ID,
+					id,
 					createdAt: timestamp,
 					updatedAt: timestamp,
-					name: draftUpdate.name ?? '',
-					text: draftUpdate.text ?? '',
-					note: draftUpdate.note ?? '',
+					name: update.name ?? '',
+					text: update.text ?? '',
+					note: update.note ?? '',
 					snippet: '',
 					syncState: ''
 				});

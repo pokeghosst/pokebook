@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onDestroy, onMount, setContext } from 'svelte';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import { deletePoem, putDraftPoem, savePoem } from '$lib/service/poems.service';
+	import { deletePoem, putPartialUpdate, savePoem } from '$lib/service/poems.service';
 	import { t } from '$lib/translations';
 	import { DRAFT_POEM_ID, GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
@@ -44,17 +44,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function updatePoemName(value: string) {
 		poem.name = value;
-		putDraftPoem({ name: value });
+		putPartialUpdate(DRAFT_POEM_ID, { name: value });
 	}
 
 	function updatePoemText(value: string) {
 		poem.text = value;
-		putDraftPoem({ text: value });
+		putPartialUpdate(DRAFT_POEM_ID, { text: value });
 	}
 
 	function updatePoemNote(value: string) {
 		note.note = value;
-		putDraftPoem({ note: value });
+		putPartialUpdate(DRAFT_POEM_ID, { note: value });
 	}
 
 	setContext('poemNameHandler', updatePoemName);

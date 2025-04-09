@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemNotFoundError } from '$lib/errors';
 import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
 
@@ -31,10 +30,8 @@ export async function savePoem(poem: Poem): Promise<string> {
 	return await Database.save({ ...poem, snippet, syncState: doc.getEncodedState() });
 }
 
-export async function getPoem(id: string): Promise<Poem> {
+export async function getPoem(id: string): Promise<Poem | undefined> {
 	const poem = await Database.get(id);
-
-	if (!poem) throw new PoemNotFoundError();
 
 	return poem;
 }
@@ -43,8 +40,8 @@ export async function deletePoem(id: string) {
 	await Database.delete(id);
 }
 
-export async function putDraftPoem(draftUpdate: Partial<Poem>) {
-	await Database.putDraft(draftUpdate);
+export async function putPartialUpdate(id: string, update: Partial<Poem>) {
+	await Database.putPartialUpdate(id, update);
 }
 
 export async function listPoems(): Promise<PoemListItem[]> {
