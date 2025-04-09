@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 
 	import { count } from 'letter-count';
 	import { syllable } from 'syllable';
@@ -34,6 +34,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let stats: Record<string, string | number> = $derived(count(poemProp.text));
 
 	let poemTextarea: HTMLTextAreaElement;
+
+	const updatePoemName = getContext('poemNameHandler');
+	const updatePoemText = getContext('poemTextHandler');
 
 	// $: $poemBodyStoreProp, autoResizeNotebook();
 
@@ -76,7 +79,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {/snippet}
 
 <div class="notebook" id="poem-notebook">
-	<input class="notebook-header" bind:value={poemProp.name} placeholder={$t('workspace.unnamed')} />
+	<input
+		class="notebook-header"
+		bind:value={() => poemProp.name, updatePoemName}
+		placeholder={$t('workspace.unnamed')}
+	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
 			<div class="poem-stats">
@@ -91,7 +98,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={poemProp.text}
+			bind:value={() => poemProp.text, updatePoemText}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"

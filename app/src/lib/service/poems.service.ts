@@ -39,6 +39,10 @@ export async function getPoem(id: string): Promise<Poem> {
 	return poem;
 }
 
+export async function deletePoem(id: string) {
+	await Database.delete(id);
+}
+
 export async function putDraftPoem(draftUpdate: Partial<Poem>) {
 	await Database.putDraft(draftUpdate);
 }

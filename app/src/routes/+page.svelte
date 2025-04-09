@@ -17,20 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-
-	import hotkeys from 'hotkeys-js';
-	import toast from 'svelte-french-toast';
-
-	import {
-		draftPoemBodyStore,
-		draftPoemNameStore,
-		draftPoemNoteStore
-	} from '$lib/stores/poemDraft';
+	import { onDestroy, onMount, setContext } from 'svelte';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
+	import { deletePoem, putDraftPoem, savePoem } from '$lib/service/poems.service';
 	import { t } from '$lib/translations';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { DRAFT_POEM_ID, GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import hotkeys from 'hotkeys-js';
+	import toast from 'svelte-french-toast';
 
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
@@ -42,35 +36,35 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { Poem } from '@pokebook/shared';
 	import type { PageProps } from './$types';
 
-	import { putDraftPoem, savePoem } from '$lib/service/poems.service';
-
 	let { data }: PageProps = $props();
 
 	const poemData: Poem = data;
 	let poem = $state({ name: poemData.name, text: poemData.text });
 	let note = $state({ note: poemData.note });
 
-	$effect(() => {
-		putDraftPoem({ name: poem.name });
-	});
+	function updatePoemName(value: string) {
+		poem.name = value;
+		putDraftPoem({ name: value });
+	}
 
-	$effect(() => {
-		putDraftPoem({ text: poem.text });
-	});
+	function updatePoemText(value: string) {
+		poem.text = value;
+		putDraftPoem({ text: value });
+	}
 
-	$effect(() => {
-		putDraftPoem({ note: note.note });
-	});
+	function updatePoemNote(value: string) {
+		note.note = value;
+		putDraftPoem({ note: value });
+	}
+
+	setContext('poemNameHandler', updatePoemName);
+	setContext('poemTextHandler', updatePoemText);
+	setContext('poemNoteHandler', updatePoemNote);
 
 	const toolbarActions: ToolbarItem[] = [
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
-		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') },
-		{
-			icon: Share2,
-			action: () =>
-				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem')
-		}
+		{ icon: Save, action: stashAction, label: $t('workspace.savePoem') },
+		{ icon: Trash2, action: forgetAction, label: $t('workspace.forgetPoem') },
+		{ icon: Share2, action: shareAction, label: $t('workspace.sharePoem') }
 	];
 
 	onMount(async () => {
@@ -78,7 +72,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			return true;
 		};
 		hotkeys('ctrl+shift+n, command+shift+n', function () {
-			stashPoem();
+			stashAction();
 			return false;
 		});
 	});
@@ -87,15 +81,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
 
-	async function stashPoem() {
-		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
+	async function stashAction() {
+		if (poem.name !== '' && poem.text !== '') {
 			try {
 				await toast.promise(
-					savePoem({
-						name: $draftPoemNameStore,
-						text: $draftPoemBodyStore,
-						note: $draftPoemNoteStore
-					}),
+					savePoem({ ...poem, ...note }),
 					{
 						loading: `${$t('toasts.savingPoem')}`,
 						success: `${$t('toasts.poemSaved')}`,
@@ -106,7 +96,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 						style: GLOBAL_TOAST_STYLE
 					}
 				);
-				clearDraftPoem();
+				clearDraft();
 			} catch (e) {
 				console.log(e);
 				if (e instanceof Error)
@@ -123,16 +113,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	function forgetDraft() {
+	function forgetAction() {
 		if (confirm($t('toasts.forgetConfirm'))) {
-			clearDraftPoem();
+			clearDraft();
 		}
 	}
 
-	function clearDraftPoem() {
-		draftPoemNameStore.set('');
-		draftPoemBodyStore.set('');
-		draftPoemNoteStore.set('');
+	function shareAction() {
+		sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard'));
+	}
+
+	async function clearDraft() {
+		poem = { name: '', text: '' };
+		note = { note: '' };
+		await deletePoem(DRAFT_POEM_ID);
 	}
 </script>
 
