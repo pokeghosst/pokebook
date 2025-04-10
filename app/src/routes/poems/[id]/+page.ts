@@ -28,12 +28,9 @@ export const load: PageLoad = async ({ params }) => {
 		const poemId = params.id;
 
 		const poem = await getPoem(poemId);
-
 		if (!poem) throw new PoemNotFoundError();
 
-		const tmpPoem = await getPoem(`${poemId}.tmp`);
-
-		return { poemId, poem, tmpPoem };
+		return { poemId, poem };
 	}
 
 	// TODO: Come up with proper name
