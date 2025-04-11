@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PokeBook</string>
+    <string name="title_activity_main">PokeBook</string>
+    <string name="package_name">art.gosuto.pokebook</string>
+    <string name="custom_url_scheme">art.gosuto.pokebook</string>
+</resources>
