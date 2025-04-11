@@ -1,10 +1,6 @@
-import { browser } from '$app/environment';
-
-import { Preferences } from '@capacitor/preferences';
-
-import { loadTranslations } from '$lib/translations';
-
+import { Preferences } from '$lib/plugins/Preferences';
 import { activeLanguage } from '$lib/stores/activeLanguage';
+import { loadTranslations } from '$lib/translations';
 
 import '../sass/main.scss';
 

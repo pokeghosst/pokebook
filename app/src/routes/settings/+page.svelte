@@ -22,11 +22,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { Browser } from '@capacitor/browser';
 	import { Capacitor } from '@capacitor/core';
-	import { Preferences } from '@capacitor/preferences';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import toast from 'svelte-french-toast';
 
-	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -37,10 +35,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { storageOptions } from '$lib/constants/StorageOptions';
-	import {
-		getGoogleDriveAuthUrl,
-		googleDriveLogout
-	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
@@ -71,28 +65,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	function getCloudAuthUrlPromise(storage: string) {
-		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
-		switch (storage) {
-			case 'dropbox':
-				return getDropboxAuthUrl();
-			case 'google':
-				return getGoogleDriveAuthUrl();
-			default:
-				throw new Error();
-		}
-	}
+	// function getCloudAuthUrlPromise(storage: string) {
+	// 	Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
+	// 	switch (storage) {
+	// 		case 'dropbox':
+	// 			return getDropboxAuthUrl();
+	// 		case 'google':
+	// 			return getGoogleDriveAuthUrl();
+	// 		default:
+	// 			throw new Error();
+	// 	}
+	// }
 
-	async function getCloudLogoutPromise(storage: string) {
-		switch (storage) {
-			case 'dropbox':
-				return await dropboxLogout();
-			case 'google':
-				return await googleDriveLogout();
-			default:
-				throw new Error();
-		}
-	}
+	// async function getCloudLogoutPromise(storage: string) {
+	// 	switch (storage) {
+	// 		case 'dropbox':
+	// 			return await dropboxLogout();
+	// 		case 'google':
+	// 			return await googleDriveLogout();
+	// 		default:
+	// 			throw new Error();
+	// 	}
+	// }
 
 	onMount(() => {
 		const authStatus = $page.url.searchParams.get('status');
@@ -142,11 +136,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 	{#if $storageMode !== 'local'}
 		<button
-			on:click={() => Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
+			on:click={() =>
+				Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
 			class="action-button action-button--secondary"
 			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
 		>
-		<button
+		<!-- <button
 			on:click={async () => {
 				await toast.promise(
 					getCloudLogoutPromise($storageMode),
@@ -161,7 +156,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}}
 			class="action-button action-button--secondary"
 			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
-		>
+		> -->
 	{/if}
 	<SettingsSelect
 		parameterName="language"
