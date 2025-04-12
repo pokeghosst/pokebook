@@ -99,8 +99,8 @@ export class DatabaseWeb implements DatabasePlugin {
 			updatedAt: poem.updatedAt
 		}));
 	}
-	async update(id: string, poem: PoemRecord): Promise<void> {
-		await db.poems.update(id, poem);
+	async update(record: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void> {
+		await db.poems.update(record.id, { ...record, updatedAt: new Date() });
 	}
 	async delete(id: string): Promise<void> {
 		await db.poems.delete(id);

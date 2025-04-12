@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
 
-import type { Poem, PoemListItem } from '@pokebook/shared';
+import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 
 const POEM_SNIPPET_LENGTH = 256;
 
@@ -40,12 +40,30 @@ export async function deletePoem(id: string) {
 	await Database.delete(id);
 }
 
+export async function updatePoem(id: string, poem: Poem) {
+	const record: Omit<PoemRecord, 'createdAt' | 'updatedAt'> = {
+		...poem,
+		id,
+		snippet: sliceSnippet(poem.text),
+		syncState: 'BOGUS'
+	};
+	await Database.update(record);
+}
+
 export async function putPartialUpdate(id: string, update: Partial<Poem>) {
 	await Database.putPartialUpdate(id, update);
 }
 
-export async function listPoems(): Promise<PoemListItem[]> {
-	return await Database.list();
+export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boolean })[]> {
+	const allPoems = await Database.list();
+	return allPoems.flatMap((poem) => {
+		if (poem.id.includes('.tmp')) return [];
+
+		return {
+			...poem,
+			unsavedChanges: !!allPoems.find((p) => p.id === `${poem.id}.tmp`)
+		};
+	});
 }
 
 function sliceSnippet(text: string): string {

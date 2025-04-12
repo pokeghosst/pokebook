@@ -34,10 +34,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { ToolbarItem } from '$lib/types';
 	import type { Poem } from '@pokebook/shared';
 
-	// export let actions: { icon: ComponentType; action: () => void; label: string }[];
-	// export let poemProps: { name: Writable<string>; body: Writable<string> };
-	// export let noteProps: Writable<string>;
-
 	let {
 		poem = $bindable(),
 		note = $bindable(),
@@ -48,14 +44,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		toolbarActions: ToolbarItem[];
 	} = $props();
 
-	// Assigning empty function by default because on draft page we don't pass a function here
-	// export let unsavedChangesHandler = () => {};
-
 	let padView = $state(['poem', 'note']);
-	// let views = [PoemPad, NotePad];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	// let props: [any, any] = [poemProps, noteProps];
-
 	let currentState = $state('');
 
 	onMount(() => {

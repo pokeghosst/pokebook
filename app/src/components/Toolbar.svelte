@@ -1,36 +1,38 @@
 <script lang="ts">
+	import { padFonts } from '$lib/constants/PadFonts';
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { t } from '$lib/translations';
+	import { getContext } from 'svelte';
 
 	import AlignCenter from 'lucide-svelte/icons/align-center';
 	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignRight from 'lucide-svelte/icons/align-right';
-
-	import { padFonts } from '$lib/constants/PadFonts';
-
-	import type { ToolbarItem } from '$lib/types';
-	import { ChevronDown } from 'lucide-svelte';
+	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import FontSize from './FontSize.svelte';
 
-	export let actions: ToolbarItem[];
+	import type { ToolbarItem } from '$lib/types';
+
+	let { actions }: { actions: ToolbarItem[] } = $props();
+	let unsavedChanges = getContext('unsavedChanges');
 </script>
 
 <div class="toolbar-menu">
 	<div class="button-group">
 		<button
-			on:click={() => ($poemPadJustification = 'left')}
+			onclick={() => ($poemPadJustification = 'left')}
 			class={`button ${$poemPadJustification === 'left' ? 'active' : ''}`}
 		>
 			<AlignLeft />
 		</button>
 		<button
-			on:click={() => ($poemPadJustification = 'center')}
+			onclick={() => ($poemPadJustification = 'center')}
 			class={`button ${$poemPadJustification === 'center' ? 'active' : ''}`}
 		>
 			<AlignCenter />
 		</button>
 		<button
-			on:click={() => ($poemPadJustification = 'right')}
+			onclick={() => ($poemPadJustification = 'right')}
 			class={`button ${$poemPadJustification === 'right' ? 'active' : ''}`}
 		>
 			<AlignRight />
@@ -50,9 +52,12 @@
 	</div>
 	<FontSize />
 	{#each actions as action}
-		<button on:click={() => action.action()} class="button">
-			<svelte:component this={action.icon} />
+		<button onclick={() => action.action()} class="button">
+			<action.icon />
 			{action.label}
 		</button>
 	{/each}
+	{#if unsavedChanges}
+		{$t('workspace.unsavedChanges')}
+	{/if}
 </div>

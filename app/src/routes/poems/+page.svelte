@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const FALLBACK_DELAY_MS = 150;
 
-	let poemListPromise: Promise<PoemListItem[]>;
+	let poemListPromise: Promise<(PoemListItem & { unsavedChanges: boolean })[]>;
 	let showFallback = false;
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -60,6 +60,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{poem.name}
+								{#if poem.unsavedChanges}
+									({$t('workspace.unsavedChanges')})
+								{/if}
 							</p>
 							<p class="list-poem-snippet">{poem.snippet}</p>
 						</div>

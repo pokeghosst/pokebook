@@ -27,6 +27,6 @@ export interface DatabasePlugin {
 	get(id: string): Promise<Poem | undefined>;
 	getAll(): Promise<PoemRecord[]>;
 	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;
-	update(id: string, poem: PoemRecord): Promise<void>;
+	update(poem: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void>;
 	delete(id: string): Promise<void>;
 }
