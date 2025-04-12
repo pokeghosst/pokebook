@@ -18,20 +18,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 
 	import { deletePoem, putPartialUpdate, updatePoem } from '$lib/service/poems.service';
 	import { t } from '$lib/translations';
 
+	import Workspace from '@/components/Workspace.svelte';
 	import ClipboardX from 'lucide-svelte/icons/clipboard-x';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import Workspace from '@/components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import type { PageProps } from './$types';
 	import type { Poem } from '@pokebook/shared';
+	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
@@ -91,7 +91,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			action: () => {
 				alert('Not implemented');
 			},
-			// sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
+			// sharePoem
 			label: $t('workspace.sharePoem')
 		},
 		{ icon: Save, action: saveAction, label: $t('workspace.savePoem') },
@@ -99,43 +99,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			? { icon: ClipboardX, action: discardTmpAction, label: $t('workspace.discardChanges') }
 			: { icon: Trash2, action: deleteAction, label: $t('workspace.forgetPoem') }
 	];
-
-	onMount(async () => {
-		// if (
-		// 	(await PoemCacheManager.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges ===
-		// 	true
-		// ) {
-		// if (tmpPoemData) {
-		// 	unsavedChangesToastId = toast(UnsavedChangesToast, {
-		// 		duration: Infinity,
-		// 		position: GLOBAL_TOAST_POSITION,
-		// 		style: GLOBAL_TOAST_STYLE
-		// 	});
-		// }
-		// 	const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
-		// 	$currentPoemName = name;
-		// 	$currentPoemBody = text;
-		// 	$currentPoemNote = note;
-		// 	thinking = false;
-		// } else {
-		// 	try {
-		// 		const poem = await Poem.load($currentPoemUri, $storageMode);
-		// 		if (poem) {
-		// 			$currentPoemName = poem.name;
-		// 			$currentPoemBody = poem.text;
-		// 			$currentPoemNote = poem.note;
-		// 		}
-		// 	} catch (e) {
-		// 		if (e instanceof Error) {
-		// 			toast.error($t(e.message), {
-		// 				position: GLOBAL_TOAST_POSITION,
-		// 				style: GLOBAL_TOAST_STYLE
-		// 			});
-		// 		}
-		// 	}
-		// 	thinking = false;
-		// }
-	});
 </script>
 
 <Workspace bind:poem bind:note {toolbarActions} />

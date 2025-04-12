@@ -17,76 +17,50 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { Capacitor } from '@capacitor/core';
-	import { StatusBar } from '@capacitor/status-bar';
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
-	import { App } from '@capacitor/app';
 
-	import { darkMode } from '$lib/stores/darkMode';
-	import { dayTheme } from '$lib/stores/dayTheme';
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import { nightTheme } from '$lib/stores/nightTheme';
-
+	import appState from '$lib/AppState.svelte';
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 
-	$: $darkMode, updateTheme();
+	let { children } = $props();
 
-	function rgbToHex(r: number, g: number, b: number) {
-		return (
-			'#' +
-			[r, g, b]
-				.map((x) => {
-					const hex = x.toString(16);
-					return hex.length === 1 ? '0' + hex : hex;
-				})
-				.join('')
-		);
-	}
+	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		appState.value.darkModeEnabled;
+		updateTheme();
+	});
 
 	function updateTheme() {
 		document.documentElement.className = '';
-		if ($darkMode !== '') {
-			document.documentElement.classList.add($darkMode || '');
-			document.documentElement.classList.add($nightTheme || 'chocolate');
+		if (appState.value.darkModeEnabled) {
+			document.documentElement.classList.add('dark');
+			document.documentElement.classList.add(appState.value.dayTheme);
 		} else {
-			document.documentElement.classList.add($dayTheme || 'vanilla');
-		}
-		// I'm not a big fan of this idea but it's better than an ugly empty bar so it'll do for now
-		if (Capacitor.isNativePlatform()) {
-			const backgroundColorValues = getComputedStyle(document.body)
-				.getPropertyValue('background-color')
-				.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-			const [, red, green, blue] = backgroundColorValues!.map(Number);
-			const backgroundColorHex = rgbToHex(red, green, blue);
-			StatusBar.setBackgroundColor({ color: backgroundColorHex });
+			document.documentElement.classList.add(appState.value.nightTheme);
 		}
 	}
-
-	App.addListener('backButton', (_) => {
-		window.history.back();
-	});
 </script>
 
 <Modals>
 	<div
 		slot="backdrop"
 		class="backdrop"
-		on:click={closeModal}
-		on:keydown
+		onclick={closeModal}
+		onkeydown={closeModal}
 		role="button"
 		tabindex="0"
-	/>
+	></div>
 </Modals>
 
 <Toaster />
 <Sidebar />
-<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+<div class="main-wrapper {appState.value.sidebarOpen ? 'l-sidebar-open' : ''}">
 	<main>
 		<div>
 			<Header />
-			<slot />
+			{@render children?.()}
 		</div>
 	</main>
 </div>

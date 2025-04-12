@@ -19,15 +19,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
+	import appState from '$lib/AppState.svelte';
 	import hotkeys from 'hotkeys-js';
 
-	import { darkMode } from '$lib/stores/darkMode';
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
-
+	import Eclipse from 'lucide-svelte/icons/eclipse';
 	import Menu from 'lucide-svelte/icons/menu';
 	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
-	import Eclipse from 'lucide-svelte/icons/eclipse';
 
 	onMount(() => {
 		// TODO: Extract hotkey-related logic into separate function possibly
@@ -49,15 +46,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	async function toggleDarkMode() {
-		$darkMode === 'dark' ? ($darkMode = '') : ($darkMode = 'dark');
+		appState.value = { darkModeEnabled: !appState.value.darkModeEnabled };
 	}
 
 	function togglePokeHelp() {
-		$isPokehelpActive === 'true' ? ($isPokehelpActive = 'false') : ($isPokehelpActive = 'true');
+		appState.value = { pokeHelpEnabled: !appState.value.pokeHelpEnabled };
 	}
 
 	function toggleSidebar() {
-		$isSidebarOpen === 'true' ? ($isSidebarOpen = 'false') : ($isSidebarOpen = 'true');
+		appState.value = { sidebarOpen: !appState.value.sidebarOpen };
 	}
 </script>
 

@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
-	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
 	import hotkeys from 'hotkeys-js';
@@ -31,6 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
+	import appState from '$lib/AppState.svelte';
 	import type { ToolbarItem } from '$lib/types';
 	import type { Poem } from '@pokebook/shared';
 
@@ -68,7 +68,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function expandPoemPad() {
-		// $isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
+		appState.value.padFullWidth = !appState.value.padFullWidth;
 	}
 </script>
 
@@ -84,7 +84,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <div class="toolbar"><Toolbar actions={toolbarActions} /></div>
 <div
-	class="workspace {$isFullWidthPad === 'true'
+	class="workspace {appState.value.padFullWidth
 		? 'l-full-width'
 		: ''} {currentState} {$writingPadFont}"
 >
