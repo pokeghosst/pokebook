@@ -12,25 +12,25 @@
 	import { ChevronDown } from 'lucide-svelte';
 	import FontSize from './FontSize.svelte';
 
-	let { actions }: { actions: ToolbarItem[] } = $props();
+	export let actions: ToolbarItem[];
 </script>
 
 <div class="toolbar-menu">
 	<div class="button-group">
 		<button
-			onclick={() => ($poemPadJustification = 'left')}
+			on:click={() => ($poemPadJustification = 'left')}
 			class={`button ${$poemPadJustification === 'left' ? 'active' : ''}`}
 		>
 			<AlignLeft />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'center')}
+			on:click={() => ($poemPadJustification = 'center')}
 			class={`button ${$poemPadJustification === 'center' ? 'active' : ''}`}
 		>
 			<AlignCenter />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'right')}
+			on:click={() => ($poemPadJustification = 'right')}
 			class={`button ${$poemPadJustification === 'right' ? 'active' : ''}`}
 		>
 			<AlignRight />
@@ -50,7 +50,7 @@
 	</div>
 	<FontSize />
 	{#each actions as action}
-		<button onclick={() => action.action()} class="button">
+		<button on:click={() => action.action()} class="button">
 			<svelte:component this={action.icon} />
 			{action.label}
 		</button>

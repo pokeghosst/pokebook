@@ -47,7 +47,7 @@ export class DatabaseWeb implements DatabasePlugin {
 
 		return uuid;
 	}
-	async putPartialUpdate(id: string, update: Partial<PoemRecord>): Promise<void> {
+	async putPartialUpdate(id: string, update: Partial<Poem>): Promise<void> {
 		const timestamp = new Date();
 		try {
 			const savedPoem = await db.poems.get(id);
