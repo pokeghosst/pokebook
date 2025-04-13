@@ -1,155 +1,155 @@
 @use './abstracts/mq-settings';
 
-@import 'variables/font-variables';
-@import './abstracts/mixins';
+@use 'variables/font-variables';
+@use 'abstracts/mixins';
 
-@import './base/base';
-@import './base/reset';
-@import './base/typography';
+@use 'base/base';
+@use 'base/reset';
+@use 'base/typography';
 
-@import './themes/font-classes';
+@use 'themes/font-classes';
 
-@import './themes/colors.vanilla';
-@import './themes/colors.strawberry';
-@import './themes/colors.lemon';
-@import './themes/colors.chocolate';
-@import './themes/colors.cookie';
-@import './themes/colors.cherry';
-@import './themes/colors.coral';
-@import './themes/colors.lobelia';
-@import './themes/colors.velvet';
-@import './themes/colors.terminal';
-@import './themes/colors.neoday';
-@import './themes/colors.neonight';
+@use 'themes/colors.vanilla' as colorsVanilla;
+@use 'themes/colors.strawberry' as colorsStrawberry;
+@use 'themes/colors.lemon' as colorsLemon;
+@use 'themes/colors.chocolate' as colorsChocolate;
+@use 'themes/colors.cookie' as colorsCookie;
+@use 'themes/colors.cherry' as colorsCherry;
+@use 'themes/colors.coral' as colorsCoral;
+@use 'themes/colors.lobelia' as colorsLobelia;
+@use 'themes/colors.velvet' as colorsVelvet;
+@use 'themes/colors.terminal' as colorsTerminal;
+@use 'themes/colors.neoday' as colorsNeoDay;
+@use 'themes/colors.neonight' as colorsNeoNight;
 
-@import './layout/header';
-@import './layout/workspace';
-@import './layout/sidebar';
-@import './layout/wrapper';
-@import './layout/toolbar';
+@use 'layout/header';
+@use 'layout/workspace';
+@use 'layout/sidebar';
+@use 'layout/wrapper';
+@use 'layout/toolbar';
 
-@import './pages/settings';
-@import './pages/stash';
+@use 'pages/settings';
+@use 'pages/stash';
 
-@import './components/notebook-container';
-@import './components/notebook';
-@import './components/settings-select';
-@import './components/list';
-@import './components/placeholder-text';
-@import './components/pad-dropdown';
-@import './components/round_button';
-@import './components/action-button';
-@import './components/modal';
-@import './components/kbd';
-@import './components/modal-hotkeys';
-@import './components/modal-about';
-@import './components/toast';
-@import './components/toolbar-menu';
-@import './components/refresh-button';
-@import './components/button';
+@use 'components/notebook-container';
+@use 'components/notebook';
+@use 'components/settings-select';
+@use 'components/list';
+@use 'components/placeholder-text';
+@use 'components/pad-dropdown';
+@use 'components/round_button';
+@use 'components/action-button';
+@use 'components/modal';
+@use 'components/kbd';
+@use 'components/modal-hotkeys';
+@use 'components/modal-about';
+@use 'components/toast';
+@use 'components/toolbar-menu';
+@use 'components/refresh-button';
+@use 'components/button';
 
 // Day themes
 
 :root.vanilla {
-	@include spread-map($theme-light-vanilla);
+	@include mixins.spread-map(colorsVanilla.$theme-light-vanilla);
 }
 
 :root.strawberry {
-	@include spread-map($theme-light-strawberry);
+	@include mixins.spread-map(colorsStrawberry.$theme-light-strawberry);
 }
 
 :root.lemon {
-	@include spread-map($theme-light-lemon);
+	@include mixins.spread-map(colorsLemon.$theme-light-lemon);
 }
 
 :root.cookie {
-	@include spread-map($theme-light-cookie);
+	@include mixins.spread-map(colorsCookie.$theme-light-cookie);
 }
 
 :root.cherry {
-	@include spread-map($theme-light-cherry);
+	@include mixins.spread-map(colorsCherry.$theme-light-cherry);
 }
 
 :root.coral {
-	@include spread-map($theme-light-coral);
+	@include mixins.spread-map(colorsCoral.$theme-light-coral);
 }
 
 :root.neo-day {
-	@include spread-map($theme-light-neo);
+	@include mixins.spread-map(colorsNeoDay.$theme-light-neo);
 }
 
 // Night themes
 
 :root.chocolate {
-	@include spread-map($theme-dark-chocolate);
+	@include mixins.spread-map(colorsChocolate.$theme-dark-chocolate);
 }
 
 :root.black-lobelia {
-	@include spread-map($theme-dark-lobelia);
+	@include mixins.spread-map(colorsLobelia.$theme-dark-lobelia);
 }
 
 :root.red-velvet {
-	@include spread-map($theme-dark-velvet);
+	@include mixins.spread-map(colorsVelvet.$theme-dark-velvet);
 }
 
 :root.terminal {
-	@include spread-map($theme-dark-terminal);
+	@include mixins.spread-map(colorsTerminal.$theme-dark-terminal);
 }
 
 :root.neo-night {
-	@include spread-map($theme-dark-neo);
+	@include mixins.spread-map(colorsNeoNight.$theme-dark-neo);
 }
 
 // Fonts
 
 .workspace.sans {
-	@include spread-map($font-family-sans);
+	@include mixins.spread-map(font-classes.$font-family-sans);
 }
 
 .workspace.serif {
-	@include spread-map($font-family-serif);
+	@include mixins.spread-map(font-classes.$font-family-serif);
 }
 
 .workspace.oldattic {
-	@include spread-map($font-family-oldattic);
+	@include mixins.spread-map(font-classes.$font-family-oldattic);
 }
 
 .workspace.crimson {
-	@include spread-map($font-family-crimsonroman);
+	@include mixins.spread-map(font-classes.$font-family-crimsonroman);
 }
 
 .workspace.comic {
-	@include spread-map($font-family-comic);
+	@include mixins.spread-map(font-classes.$font-family-comic);
 }
 
 .workspace.consolas {
-	@include spread-map($font-family-consolas);
+	@include mixins.spread-map(font-classes.$font-family-consolas);
 }
 
 .workspace.lucida {
-	@include spread-map($font-family-lucida);
+	@include mixins.spread-map(font-classes.$font-family-lucida);
 }
 
 .workspace.halogen {
-	@include spread-map($font-family-halogen);
+	@include mixins.spread-map(font-classes.$font-family-halogen);
 }
 
 .workspace.hashtag {
-	@include spread-map($font-family-hashtag);
+	@include mixins.spread-map(font-classes.$font-family-hashtag);
 }
 
 .workspace.ammys {
-	@include spread-map($font-family-ammys);
+	@include mixins.spread-map(font-classes.$font-family-ammys);
 }
 
 .workspace.journal {
-	@include spread-map($font-family-journal);
+	@include mixins.spread-map(font-classes.$font-family-journal);
 }
 
 .workspace.damagrafik {
-	@include spread-map($font-family-damagrafik);
+	@include mixins.spread-map(font-classes.$font-family-damagrafik);
 }
 
 .workspace.jphand {
-	@include spread-map($font-family-jphand);
+	@include mixins.spread-map(font-classes.$font-family-jphand);
 }

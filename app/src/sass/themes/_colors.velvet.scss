@@ -1,19 +1,19 @@
-@import '../variables/color-variables';
+@use '../variables/color-variables';
 
 $theme-dark-velvet: (
-	$--base-background: #240309,
-	$--base-color: #f5f5f4,
-	$--notebook-header-bg: #51040f,
-	$--notebook-header-color: #f7ece1,
-	$--notebook-paper-background: #a88c8e,
-	$--notebook-paper-line: #664646,
-	$--notebook-text-color: #360202,
-	$--list-item-hover-color: #a88c8e,
-	$--border-color: #664646,
-	$--border-color-darker: #360202,
-	$--notebook-box-shadow-bg: #a88c8e,
-	$--notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
-	$--select-background: #a88c8e,
-	$--select-text-color: #240309,
-	$--round-button-background: #360202
+	color-variables.$base-background: #240309,
+	color-variables.$base-color: #f5f5f4,
+	color-variables.$notebook-header-bg: #51040f,
+	color-variables.$notebook-header-color: #f7ece1,
+	color-variables.$notebook-paper-background: #a88c8e,
+	color-variables.$notebook-paper-line: #664646,
+	color-variables.$notebook-text-color: #360202,
+	color-variables.$list-item-hover-color: #a88c8e,
+	color-variables.$border-color: #664646,
+	color-variables.$border-color-darker: #360202,
+	color-variables.$notebook-box-shadow-bg: #a88c8e,
+	color-variables.$notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
+	color-variables.$select-background: #a88c8e,
+	color-variables.$select-text-color: #240309,
+	color-variables.$round-button-background: #360202
 );

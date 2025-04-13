@@ -9,5 +9,12 @@ export default defineConfig({
 			promiseExportName: '__tla',
 			promiseImportName: (i) => `__tla_${i}`
 		})
-	]
+	],
+	css: {
+		preprocessorOptions: {
+			scss: {
+				api: 'modern-compiler'
+			}
+		}
+	}
 });
