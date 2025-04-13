@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount, setContext } from 'svelte';
 
-	import { sharePoem } from '$lib/actions/sharePoem';
 	import { deletePoem, putPartialUpdate, savePoem } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
 	import { DRAFT_POEM_ID, GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
@@ -120,7 +119,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function shareAction() {
-		sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard'));
+		// sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard'));
 	}
 
 	async function clearDraft() {
