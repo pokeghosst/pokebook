@@ -1,9 +1,32 @@
 @font-face {
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 400;
+	src: url('/fonts/Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Lato';
+	font-style: italic;
+	font-weight: 400;
+	src: url('/fonts/Lato-Italic.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/Lato-Bold.ttf') format('truetype');
+}
+
+@font-face {
 	font-family: 'Halogen';
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/Halogen.ttf');
-	src: local(''), url('/fonts/Halogen.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/Halogen.ttf') format('truetype');
 }
 
 @font-face {
@@ -11,7 +34,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/Hashtag.ttf');
-	src: local(''), url('/fonts/Hashtag.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/Hashtag.ttf') format('truetype');
 }
 
 @font-face {
@@ -19,7 +44,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/Ammys Handwriting.ttf');
-	src: local(''), url('/fonts/Ammys Handwriting.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/Ammys Handwriting.ttf') format('truetype');
 }
 
 @font-face {
@@ -27,7 +54,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/JOURNAL.TTF');
-	src: local(''), url('/fonts/JOURNAL.TTF') format('truetype');
+	src:
+		local(''),
+		url('/fonts/JOURNAL.TTF') format('truetype');
 }
 
 @font-face {
@@ -35,7 +64,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/DamagrafikScript-Regular.ttf');
-	src: local(''), url('/fonts/DamagrafikScript-Regular.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/DamagrafikScript-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -43,7 +74,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/JPHSL.TTF');
-	src: local(''), url('/fonts/JPHSL.TTF') format('truetype');
+	src:
+		local(''),
+		url('/fonts/JPHSL.TTF') format('truetype');
 }
 
 @font-face {
@@ -51,7 +84,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/ARIALN.woff');
-	src: local(''), url('/fonts/ARIALN.woff') format('woff');
+	src:
+		local(''),
+		url('/fonts/ARIALN.woff') format('woff');
 }
 
 @font-face {
@@ -59,7 +94,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/times-old-attic.bold.ttf');
-	src: local(''), url('/fonts/times-old-attic.bold.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/times-old-attic.bold.ttf') format('truetype');
 }
 
 @font-face {
@@ -67,7 +104,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/crimson.roman.ttf');
-	src: local(''), url('/fonts/crimson.roman.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/crimson.roman.ttf') format('truetype');
 }
 
 @font-face {
@@ -75,7 +114,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/LDFComicSans.ttf');
-	src: local(''), url('/fonts/LDFComicSans.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/LDFComicSans.ttf') format('truetype');
 }
 
 @font-face {
@@ -83,7 +124,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/TikiTropic.ttf');
-	src: local(''), url('/fonts/TikiTropic.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/TikiTropic.ttf') format('truetype');
 }
 
 @font-face {
@@ -91,7 +134,9 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/LucidaConsoleRegular.ttf');
-	src: local(''), url('/fonts/LucidaConsoleRegular.ttf') format('truetype');
+	src:
+		local(''),
+		url('/fonts/LucidaConsoleRegular.ttf') format('truetype');
 }
 
 @font-face {
@@ -99,5 +144,7 @@
 	font-style: normal;
 	font-weight: 500;
 	src: url('/fonts/Consolas.woff');
-	src: local(''), url('/fonts/Consolas.woff') format('woff');
+	src:
+		local(''),
+		url('/fonts/Consolas.woff') format('woff');
 }
