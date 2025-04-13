@@ -1,20 +1,20 @@
 .action-button {
-  border-radius: 12px;
-  padding: 0.5rem 0.8rem;
-  margin: 0 0.5rem;
+	border-radius: 12px;
+	padding: 0.5rem 0.8rem;
+	margin: 0 0.5rem;
 
-  &:hover {
-    background-color: var(--list-item-hover-color);
-    outline: none;
-    color: var(--base-color);
-  }
+	&:hover {
+		background-color: var(--list-item-hover-color);
+		outline: none;
+		color: var(--base-color);
+	}
 }
 
 .action-button--primary {
-  background: var(--base-color);
-  color: var(--base-background);
+	background: var(--base-color);
+	color: var(--base-background);
 }
 
 .action-button--secondary {
-  outline: 1px solid var(--border-color-darker);
+	outline: 1px solid var(--border-color-darker);
 }

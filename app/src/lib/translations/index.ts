@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import i18n from 'sveltekit-i18n';
 import en from './en';
 import es from './es';
-import ru from './ru'
+import ru from './ru';
 import lang from './lang';
 
 const config = {
