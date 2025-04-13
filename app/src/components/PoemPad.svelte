@@ -19,13 +19,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { getContext, onMount } from 'svelte';
 
+	import appState from '$lib/AppState.svelte';
+	import { t } from '$lib/translations';
 	import { count } from 'letter-count';
 	import { syllable } from 'syllable';
-	import { t } from '$lib/translations';
-
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 
 	let { poemProp = $bindable() }: { poemProp: { name: string; text: string } } = $props();
 
@@ -35,13 +32,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let poemTextarea: HTMLTextAreaElement;
 
-	const updatePoemName = getContext('poemNameHandler');
-	const updatePoemText = getContext('poemTextHandler');
+	const updatePoemName: () => void = getContext('poemNameHandler');
+	const updatePoemText: () => void = getContext('poemTextHandler');
 
 	// $: $poemBodyStoreProp, autoResizeNotebook();
 
 	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	// $: $isPokehelpActive, autoResizeNotebook();
+	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		appState.value.pokeHelpEnabled;
+		autoResizeNotebook();
+	});
 
 	// $: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
 
@@ -85,7 +86,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
-		{#if $isPokehelpActive === 'true'}
+		{#if appState.value.pokeHelpEnabled}
 			<div class="poem-stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
@@ -99,11 +100,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{/if}
 		<textarea
 			bind:value={() => poemProp.text, updatePoemText}
-			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
+			class="paper {appState.value.poemPadJustification} {appState.value.pokeHelpEnabled
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
-			style={`font-size: ${$writingPadFontSize}px`}
+			style={`font-size: ${appState.value.writingPadFontSize}px`}
 			bind:this={poemTextarea}
 		></textarea>
 	</div>

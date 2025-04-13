@@ -19,8 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { getContext } from 'svelte';
 
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
+	import appState from '$lib/AppState.svelte';
 
 	let { noteProp = $bindable() }: { noteProp: { note: string } } = $props();
 
@@ -28,7 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let noteTextarea: HTMLTextAreaElement;
 
-	const updatePoemNote = getContext('poemNoteHandler');
+	const updatePoemNote: () => void = getContext('poemNoteHandler');
 
 	// onMount(() => {
 	// 	// Resize the notebook when switching between single/dual panes
@@ -66,7 +66,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			bind:value={() => noteProp.note, updatePoemNote}
 			class="paper"
 			id="note-textarea"
-			style={`font-size: ${$writingPadFontSize}px`}
+			style={`font-size: ${appState.value.writingPadFontSize}px`}
 			bind:this={noteTextarea}
 		></textarea>
 	</div>

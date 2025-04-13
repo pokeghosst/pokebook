@@ -25,6 +25,11 @@ interface State {
 	padFullWidth: boolean;
 	dayTheme: string;
 	nightTheme: string;
+	activeLanguage: string;
+	poemPadJustification: string;
+	padPositions: ('poem' | 'note')[];
+	writingPadFont: string;
+	writingPadFontSize: number;
 }
 
 const defaultState: State = {
@@ -33,7 +38,12 @@ const defaultState: State = {
 	sidebarOpen: true,
 	padFullWidth: false,
 	dayTheme: 'neo-day',
-	nightTheme: 'neo-night'
+	nightTheme: 'neo-night',
+	activeLanguage: '',
+	poemPadJustification: 'left',
+	padPositions: ['poem', 'note'],
+	writingPadFont: 'halogen',
+	writingPadFontSize: 16
 };
 
 const stateFromPreferences: Partial<State> = JSON.parse(

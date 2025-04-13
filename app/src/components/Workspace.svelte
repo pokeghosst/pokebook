@@ -19,8 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
-	import { viewsState } from '$lib/stores/views';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import appState from '$lib/AppState.svelte';
 	import hotkeys from 'hotkeys-js';
 
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
@@ -30,7 +29,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	import appState from '$lib/AppState.svelte';
 	import type { ToolbarItem } from '$lib/types';
 	import type { Poem } from '@pokebook/shared';
 
@@ -44,9 +42,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		toolbarActions: ToolbarItem[];
 	} = $props();
 
-	let padView = $state(['poem', 'note']);
-	let currentState = $state('');
-
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
 			expandPoemPad();
@@ -59,12 +54,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function swapViews() {
-		currentState = 'transitioning';
-		setTimeout(function () {
-			[padView[0], padView[1]] = [padView[1], padView[0]];
-			$viewsState = JSON.stringify(padView);
-			currentState = '';
-		}, 600);
+		[appState.value.padPositions[0], appState.value.padPositions[1]] = [
+			appState.value.padPositions[1],
+			appState.value.padPositions[0]
+		];
 	}
 
 	function expandPoemPad() {
@@ -84,9 +77,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <div class="toolbar"><Toolbar actions={toolbarActions} /></div>
 <div
-	class="workspace {appState.value.padFullWidth
-		? 'l-full-width'
-		: ''} {currentState} {$writingPadFont}"
+	class="workspace {appState.value.padFullWidth ? 'l-full-width' : ''} {appState.value
+		.writingPadFont}"
 >
 	<div class="notebook-container">
 		<div class="notebook-container-toolbar">
@@ -99,9 +91,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</div>
-		{@render pad(padView[0])}
+		{@render pad(appState.value.padPositions[0])}
 	</div>
 	<div class="notebook-container">
-		{@render pad(padView[1])}
+		{@render pad(appState.value.padPositions[1])}
 	</div>
 </div>

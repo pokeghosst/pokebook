@@ -1,7 +1,6 @@
 <script lang="ts">
+	import appState from '$lib/AppState.svelte';
 	import { padFonts } from '$lib/constants/PadFonts';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
 	import { t } from '$lib/translations';
 	import { getContext } from 'svelte';
 
@@ -15,31 +14,38 @@
 
 	let { actions }: { actions: ToolbarItem[] } = $props();
 	let unsavedChanges = getContext('unsavedChanges');
+
+	function updateWritingPadFont(value: string) {
+		appState.value = { writingPadFont: value };
+	}
 </script>
 
 <div class="toolbar-menu">
 	<div class="button-group">
 		<button
-			onclick={() => ($poemPadJustification = 'left')}
-			class={`button ${$poemPadJustification === 'left' ? 'active' : ''}`}
+			onclick={() => (appState.value = { poemPadJustification: 'left' })}
+			class={`button ${appState.value.poemPadJustification === 'left' ? 'active' : ''}`}
 		>
 			<AlignLeft />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'center')}
-			class={`button ${$poemPadJustification === 'center' ? 'active' : ''}`}
+			onclick={() => (appState.value = { poemPadJustification: 'center' })}
+			class={`button ${appState.value.poemPadJustification === 'center' ? 'active' : ''}`}
 		>
 			<AlignCenter />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'right')}
-			class={`button ${$poemPadJustification === 'right' ? 'active' : ''}`}
+			onclick={() => (appState.value = { poemPadJustification: 'right' })}
+			class={`button ${appState.value.poemPadJustification === 'right' ? 'active' : ''}`}
 		>
 			<AlignRight />
 		</button>
 	</div>
 	<div class="settings-select">
-		<select bind:value={$writingPadFont} style="margin: 0; min-width: 130px;">
+		<select
+			bind:value={() => appState.value.writingPadFont, updateWritingPadFont}
+			style="margin: 0; min-width: 130px;"
+		>
 			{#each padFonts as option}
 				<option value={option.value}>
 					{option.label}

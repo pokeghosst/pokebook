@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
+	import { loadTranslations } from '$lib/translations';
 
 	import appState from '$lib/AppState.svelte';
 	import Header from '../components/Header.svelte';
@@ -27,18 +28,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let { children } = $props();
 
 	$effect(() => {
+		loadTranslations(appState.value.activeLanguage);
+	});
+
+	$effect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		appState.value.darkModeEnabled;
 		updateTheme();
 	});
 
 	function updateTheme() {
-		document.documentElement.className = '';
 		if (appState.value.darkModeEnabled) {
-			document.documentElement.classList.add('dark');
-			document.documentElement.classList.add(appState.value.dayTheme);
+			document.documentElement.className = appState.value.nightTheme;
 		} else {
-			document.documentElement.classList.add(appState.value.nightTheme);
+			document.documentElement.className = appState.value.dayTheme;
 		}
 	}
 </script>
