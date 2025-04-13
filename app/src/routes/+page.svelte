@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onDestroy, onMount, setContext } from 'svelte';
 
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import { deletePoem, putPartialUpdate, savePoem } from '$lib/service/poems.service';
+	import { deletePoem, putPartialUpdate, savePoem } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
 	import { DRAFT_POEM_ID, GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';

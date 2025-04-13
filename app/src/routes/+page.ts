@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { browser } from '$app/environment';
 
-import { getPoem } from '$lib/service/poems.service';
+import { getPoem } from '$lib/services/poems.service';
 
 import { DRAFT_POEM_ID } from '$lib/util/constants';
 

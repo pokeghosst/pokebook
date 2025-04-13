@@ -17,9 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { browser } from '$app/environment';
-import { PoemNotFoundError } from '$lib/errors';
+import { PoemNotFoundError } from '$lib/util/errors';
 
-import { getPoem } from '$lib/service/poems.service';
+import { getPoem } from '$lib/services/poems.service';
 
 import type { PageLoad } from './$types';
 

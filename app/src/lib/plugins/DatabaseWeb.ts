@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import Dexie, { type EntityTable } from 'dexie';
 
-import { DexieError } from '$lib/errors';
+import { DexieError } from '$lib/util/errors';
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
 

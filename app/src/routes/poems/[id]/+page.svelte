@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { goto } from '$app/navigation';
 	import { setContext } from 'svelte';
 
-	import { deletePoem, putPartialUpdate, updatePoem } from '$lib/service/poems.service';
+	import { deletePoem, putPartialUpdate, updatePoem } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
 
 	import Workspace from '@/components/Workspace.svelte';
