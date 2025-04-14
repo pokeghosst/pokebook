@@ -57,7 +57,7 @@ export async function putPartialUpdate(id: string, update: Partial<Poem>) {
 export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boolean })[]> {
 	const allPoems = await Database.list();
 	return allPoems.flatMap((poem) => {
-		if (poem.id.includes('.tmp')) return [];
+		if (poem.id.includes('.tmp') || poem.id === 'draft') return [];
 
 		return {
 			...poem,

@@ -54,7 +54,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:then poems}
 	{#if poems && poems.length > 0}
 		<div class="poem-list">
-			{#each poems.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()) as poem}
+			{#each poems.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()) as poem (poem.id)}
 				<div class="list-item">
 					<a href="/poems/{poem.id}">
 						<div class="list-poem">
