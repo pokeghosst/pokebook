@@ -56,7 +56,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<small>{$t('about.version')} 4.0 - 'Tiramisu'</small>
 	</div>
 	<ul class="about-links">
-		{#each socialPlatforms as platform}
+		{#each socialPlatforms as platform (platform.title)}
 			<li>
 				<a href={platform.url} target="_blank">
 					<span class="about-links-title">{$t(platform.title)}</span><br />

@@ -20,6 +20,12 @@
 }
 
 @font-face {
+	font-family: 'Lovelace';
+	font-weight: 700;
+	src: url('/fonts/Lovelace-Bold.otf');
+}
+
+@font-face {
 	font-family: 'Halogen';
 	font-style: normal;
 	font-weight: 500;
@@ -117,16 +123,6 @@
 	src:
 		local(''),
 		url('/fonts/LDFComicSans.ttf') format('truetype');
-}
-
-@font-face {
-	font-family: 'Tiki Tropic';
-	font-style: normal;
-	font-weight: 500;
-	src: url('/fonts/TikiTropic.ttf');
-	src:
-		local(''),
-		url('/fonts/TikiTropic.ttf') format('truetype');
 }
 
 @font-face {
