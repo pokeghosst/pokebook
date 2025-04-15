@@ -18,7 +18,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/adapter-static": "^3.0.8",
-		"@sveltejs/kit": "^2.20.5",
+		"@sveltejs/kit": "^2.20.6",
 		"@typescript-eslint/eslint-plugin": "^8.29.1",
 		"@typescript-eslint/parser": "^8.29.1",
 		"cross-env": "^7.0.3",
