@@ -49,13 +49,13 @@ importers:
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^6.0.0
-        version: 6.0.0(@sveltejs/kit@2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))
+        version: 6.0.0(@sveltejs/kit@2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
-        version: 3.0.8(@sveltejs/kit@2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))
+        version: 3.0.8(@sveltejs/kit@2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))
       '@sveltejs/kit':
-        specifier: ^2.20.5
-        version: 2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
+        specifier: ^2.20.6
+        version: 2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.29.1
         version: 8.29.1(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint@9.24.0)(typescript@5.8.3)
@@ -666,8 +666,8 @@ packages:
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
 
-  '@polka/url@1.0.0-next.28':
-    resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
+  '@polka/url@1.0.0-next.29':
+    resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
   '@redis/bloom@1.2.0':
     resolution: {integrity: sha512-HG2DFjYKbpNmVXsa0keLHp/3leGJz1mjh09f2RLGGLQZzSHpkmZWuwJbAvo3QcRY8p80m5+ZdXZdYOSBLlp7Cg==}
@@ -822,8 +822,8 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
 
-  '@sveltejs/kit@2.20.5':
-    resolution: {integrity: sha512-zT/97KvVUo19jEGZa972ls7KICjPCB53j54TVxnEFT5VEwL16G+YFqRVwJbfxh7AmS7/Ptr1rKF7Qt4FBMDNlw==}
+  '@sveltejs/kit@2.20.6':
+    resolution: {integrity: sha512-ImUkSQ//Xf4N9r0HHAe5vRA7RyQ7U1Ue1YUT235Ig+IiIqbsixEulHTHrP5LtBiC8xOkJoPZQ1VZ/nWHNOaGGw==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
@@ -2641,7 +2641,7 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.1
     optional: true
 
-  '@polka/url@1.0.0-next.28': {}
+  '@polka/url@1.0.0-next.29': {}
 
   '@redis/bloom@1.2.0(@redis/client@1.6.0)':
     dependencies:
@@ -2737,16 +2737,16 @@ snapshots:
     dependencies:
       acorn: 8.14.1
 
-  '@sveltejs/adapter-auto@6.0.0(@sveltejs/kit@2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))':
+  '@sveltejs/adapter-auto@6.0.0(@sveltejs/kit@2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))':
     dependencies:
-      '@sveltejs/kit': 2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
+      '@sveltejs/kit': 2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
       import-meta-resolve: 4.1.0
 
-  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))':
+  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))':
     dependencies:
-      '@sveltejs/kit': 2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
+      '@sveltejs/kit': 2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
 
-  '@sveltejs/kit@2.20.5(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))':
+  '@sveltejs/kit@2.20.6(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3)))(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))':
     dependencies:
       '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.26.2)(vite@6.2.6(@types/node@22.14.1)(sass@1.86.3)(terser@5.39.0)(tsx@4.19.3))
       '@types/cookie': 0.6.0
@@ -4082,7 +4082,7 @@ snapshots:
 
   sirv@3.0.1:
     dependencies:
-      '@polka/url': 1.0.0-next.28
+      '@polka/url': 1.0.0-next.29
       mrmime: 2.0.1
       totalist: 3.0.1
 
