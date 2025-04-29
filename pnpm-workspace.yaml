@@ -2,3 +2,4 @@ packages:
   - "app"
   - "backend"
   - "shared"
+  - "landing"

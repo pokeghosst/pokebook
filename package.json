@@ -15,7 +15,7 @@
     "url": "https://github.com/pokeghosst/pokebook"
   },
   "scripts": {
-    "dev": "pnpm --parallel -r run dev",
+    "dev": "pnpm --filter=\"./{app,backend,shared}\" --parallel run dev",
     "build": "pnpm -r run build"
   },
   "packageManager": "pnpm@10.10.0"
