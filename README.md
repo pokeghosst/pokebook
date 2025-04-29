@@ -9,14 +9,6 @@
 
 > PokeBook is your own digital notebook for writing poetry. Get into a creative flow with distraction-free environment and never worry about saving what you write!
 
-# Patrons
-
-PokeBook is supported by these awesome people!
-| | | |
-|-------------------------------------------------------|---------------------------------------------|-------------------------------------------------------------|
-| | [GlueBall](https://twitter.com/MrThernlund) | _"Better to execute what is, than to never compile at all"_ |
-|<img src="./patrons/j33.png" width="50px" alt="J33"/> | J33 | |
-
 # What makes PokeBook so cool?
 
 - Workspace split into two independent notepads – jot down notes in one and write the poem in another!
