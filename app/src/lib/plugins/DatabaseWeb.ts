@@ -74,7 +74,7 @@ export class DatabaseWeb implements DatabasePlugin {
 			throw new DexieError().withCause(e);
 		}
 	}
-	async get(id: string): Promise<Poem | undefined> {
+	async get(id: string): Promise<(Poem & { syncState: string }) | undefined> {
 		const poem = await db.poems.get(id);
 
 		if (!poem) return undefined;
@@ -82,7 +82,8 @@ export class DatabaseWeb implements DatabasePlugin {
 		return {
 			name: poem.name,
 			text: poem.text,
-			note: poem.note
+			note: poem.note,
+			syncState: poem.syncState
 		};
 	}
 	async getAll(): Promise<PoemRecord[]> {

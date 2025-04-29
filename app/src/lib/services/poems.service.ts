@@ -18,14 +18,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
+import { diffChars } from 'diff';
 
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
+import type { Text as YText } from 'yjs';
+import { PoemNotFoundError } from '$lib/util/errors';
 
 const POEM_SNIPPET_LENGTH = 256;
 
 export async function savePoem(poem: Poem): Promise<string> {
 	const snippet = sliceSnippet(poem.text);
-	const doc = new PoemDoc(poem);
+	const doc = PoemDoc.fromPoem(poem);
 
 	return await Database.save({ ...poem, snippet, syncState: doc.getEncodedState() });
 }
@@ -41,13 +44,27 @@ export async function deletePoem(id: string) {
 }
 
 export async function updatePoem(id: string, poem: Poem) {
-	const record: Omit<PoemRecord, 'createdAt' | 'updatedAt'> = {
+	const oldRecord = await Database.get(id);
+
+	if (!oldRecord) throw new PoemNotFoundError();
+
+	console.log(oldRecord);
+
+	const poemDoc = PoemDoc.fromEncodedState(oldRecord.syncState);
+
+	poemDoc
+		.setTitle(applyDiffToYText(oldRecord.name, poem.name, poemDoc.getTitle()))
+		.setText(applyDiffToYText(oldRecord.text, poem.text, poemDoc.getText()))
+		.setNote(applyDiffToYText(oldRecord.note, poem.note, poemDoc.getNote()));
+
+	const newRecord: Omit<PoemRecord, 'createdAt' | 'updatedAt'> = {
 		...poem,
 		id,
 		snippet: sliceSnippet(poem.text),
-		syncState: 'BOGUS'
+		syncState: poemDoc.getEncodedState()
 	};
-	await Database.update(record);
+
+	await Database.update(newRecord);
 }
 
 export async function putPartialUpdate(id: string, update: Partial<Poem>) {
@@ -68,4 +85,23 @@ export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boo
 
 function sliceSnippet(text: string): string {
 	return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
+}
+
+function applyDiffToYText(oldString: string, newString: string, yText: YText) {
+	const diffs = diffChars(oldString, newString);
+	let currentPosition = 0;
+	const yTextCopy = yText;
+
+	diffs.forEach((diff) => {
+		if (diff.added) {
+			yTextCopy.insert(currentPosition, diff.value);
+			currentPosition += diff.value.length;
+		} else if (diff.removed) {
+			yTextCopy.delete(currentPosition, diff.value.length);
+		} else {
+			currentPosition += diff.value.length;
+		}
+	});
+
+	return yTextCopy;
 }

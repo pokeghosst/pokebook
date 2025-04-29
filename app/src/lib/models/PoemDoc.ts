@@ -1,43 +1,71 @@
 import * as Y from 'yjs';
+import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
 
 import type { PoemEntity } from '$lib/types';
-import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
+import type { Text as YText } from 'yjs';
 
 export class PoemDoc {
 	yDoc: Y.Doc;
-	titleText: Y.Text;
-	poemText: Y.Text;
-	noteText: Y.Text;
+	#titleText: Y.Text;
+	#poemText: Y.Text;
+	#noteText: Y.Text;
 
-	constructor(poem?: PoemEntity) {
+	constructor() {
 		this.yDoc = new Y.Doc();
 
-		this.titleText = this.yDoc.getText('title');
-		this.poemText = this.yDoc.getText('poem');
-		this.noteText = this.yDoc.getText('note');
+		this.#titleText = this.yDoc.getText('title');
+		this.#poemText = this.yDoc.getText('poem');
+		this.#noteText = this.yDoc.getText('note');
+	}
 
-		if (poem) {
-			this.titleText.insert(0, poem.name);
-			this.poemText.insert(0, poem.text);
-			this.noteText.insert(0, poem.note);
-		}
+	public static fromPoem(poem: PoemEntity) {
+		const doc = new PoemDoc();
+
+		doc.#titleText.insert(0, poem.name);
+		doc.#poemText.insert(0, poem.text);
+		doc.#noteText.insert(0, poem.note);
+
+		return doc;
+	}
+
+	public static fromEncodedState(update: string) {
+		console.log(update);
+		const doc = new PoemDoc();
+		const stateArray: Uint8Array = decodeFromBase64(update);
+
+		Y.applyUpdate(doc.yDoc, stateArray);
+
+		return doc;
 	}
 
 	public getTitle() {
-		return this.titleText;
+		return this.#titleText;
 	}
 
 	public getText() {
-		return this.poemText;
+		return this.#poemText;
 	}
 
 	public getNote() {
-		return this.noteText;
+		return this.#noteText;
 	}
 
-	public importEncodedState(update: string) {
-		const stateArray: Uint8Array = decodeFromBase64(update);
-		Y.applyUpdate(this.yDoc, stateArray);
+	public setTitle(title: YText) {
+		this.#titleText = title;
+
+		return this;
+	}
+
+	public setText(text: YText) {
+		this.#poemText = text;
+
+		return this;
+	}
+
+	public setNote(note: YText) {
+		this.#noteText = note;
+
+		return this;
 	}
 
 	public getEncodedState() {

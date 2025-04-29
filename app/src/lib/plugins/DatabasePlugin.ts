@@ -24,7 +24,7 @@ export interface DatabasePlugin {
 		idOverride?: string
 	): Promise<string>;
 	putPartialUpdate(id: string, update: Partial<Poem>): Promise<void>;
-	get(id: string): Promise<Poem | undefined>;
+	get(id: string): Promise<(Poem & { syncState: string }) | undefined>;
 	getAll(): Promise<PoemRecord[]>;
 	list(): Promise<Pick<PoemRecord, 'id' | 'name' | 'snippet' | 'createdAt' | 'updatedAt'>[]>;
 	update(poem: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void>;
