@@ -47,7 +47,7 @@ export class GoogleDrive implements StorageDriver {
 	}
 
 	async listPoems(): Promise<PoemFile[]> {
-		return await this.trpc.google.listPoems.query();
+		return await this.trpc.google.list.query();
 	}
 	loadPoem(poemUri: string): Promise<PoemEntity> {
 		throw new Error('Method not implemented.');
@@ -73,7 +73,7 @@ export class GoogleDrive implements StorageDriver {
 		await this.trpc.google.createManifest.mutate({ manifest: encodedManifest });
 	}
 	async uploadPoems(poems: { name: string; contents: string }[]) {
-		return await this.trpc.google.uploadPoems.mutate(poems);
+		return await this.trpc.google.upload.mutate(poems);
 	}
 	async downloadPoems(ids: string[]) {
 		return await this.trpc.google.downloadPoems.query(ids);

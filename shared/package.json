@@ -11,9 +11,6 @@
     "build": "tsc -p ./",
     "dev": "tsc -p ./ --watch"
   },
-  "devDependencies": {
-    "typescript": "^5.5.0"
-  },
   "dependencies": {
     "zod": "^3.24.2"
   },

@@ -30,6 +30,7 @@ interface State {
 	padPositions: ('poem' | 'note')[];
 	writingPadFont: string;
 	writingPadFontSize: number;
+	syncProvider: string;
 }
 
 const defaultState: State = {
@@ -43,7 +44,8 @@ const defaultState: State = {
 	poemPadJustification: 'left',
 	padPositions: ['poem', 'note'],
 	writingPadFont: 'halogen',
-	writingPadFontSize: 16
+	writingPadFontSize: 16,
+	syncProvider: 'local'
 };
 
 const stateFromPreferences: Partial<State> = JSON.parse(

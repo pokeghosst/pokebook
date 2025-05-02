@@ -16,10 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { poemRecordSchema } from '@pokebook/shared';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
-import { PoemFile } from '@pokebook/shared';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
 import { protectedProcedure, router } from '../trpc';
@@ -32,38 +31,10 @@ export const googleRouter = router({
 
 		return { folderId };
 	}),
-	getManifest: protectedProcedure.query(async ({ ctx }) => {
-		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
-		const searchResult = await googleDrive.findManifest(client);
-
-		if (searchResult && searchResult.length > 0) {
-			const manifestFileId = searchResult[0].id;
-
-			if (!manifestFileId) {
-				throw new TRPCError({
-					code: 'INTERNAL_SERVER_ERROR',
-					message: 'Manifest has no ID'
-				});
-			}
-
-			const manifest = await googleDrive.readManifest(client, manifestFileId);
-
-			return { manifest };
-		}
-
-		return { manifest: null };
-	}),
-	createManifest: protectedProcedure
-		.input(z.object({ manifest: z.string() }))
-		.mutation(async ({ ctx, input }) => {
-			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
-
-			await googleDrive.createManifest(client, input.manifest);
-		}),
-	listPoems: protectedProcedure.query(async ({ ctx }) => {
+	list: protectedProcedure.query(async ({ ctx }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-		const schemaFiles = await googleDrive.listPoems(client);
+		const schemaFiles = await googleDrive.list(client);
 
 		if (!schemaFiles) {
 			throw new TRPCError({
@@ -72,32 +43,25 @@ export const googleRouter = router({
 			});
 		}
 
-		const poemFiles: PoemFile[] = schemaFiles.flatMap((poemFile) => {
-			if (poemFile.name && poemFile.id && poemFile.createdTime) {
+		return schemaFiles.flatMap((schemaFile) => {
+			if (schemaFile.name && schemaFile.createdTime && schemaFile.modifiedTime) {
 				return [
 					{
-						name: poemFile.name,
-						uri: poemFile.id,
-						timestamp: poemFile.createdTime
+						fileName: schemaFile.name,
+						createdAt: Date.parse(schemaFile.createdTime),
+						updatedAt: Date.parse(schemaFile.modifiedTime)
 					}
 				];
 			}
 			return [];
 		});
-
-		return poemFiles;
 	}),
-	uploadPoems: protectedProcedure
-		.input(z.object({ name: z.string(), contents: z.string() }).array())
-		.mutation(async ({ ctx, input }) => {
-			const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
-
-			const poemPromises = input.map(
-				async (poem) => await googleDrive.uploadPoem(client, poem.name, poem.contents)
-			);
-
-			return await Promise.all(poemPromises);
-		}),
+	upload: protectedProcedure.input(poemRecordSchema.array()).mutation(async ({ ctx, input }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+		input.forEach(async (record) => {
+			await googleDrive.upload(client, record.id, record);
+		});
+	}),
 	downloadPoems: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 

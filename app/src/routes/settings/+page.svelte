@@ -16,30 +16,30 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!-- <script lang="ts">
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+<script lang="ts">
+	// import { page } from '$app/stores';
+	// import { onMount } from 'svelte';
 
-	import { Browser } from '@capacitor/browser';
-	import { Capacitor } from '@capacitor/core';
-	import { StatusBar, Style } from '@capacitor/status-bar';
-	import toast from 'svelte-french-toast';
+	// import { Browser } from '@capacitor/browser';
+	// import { Capacitor } from '@capacitor/core';
+	// import { StatusBar, Style } from '@capacitor/status-bar';
+	// import toast from 'svelte-french-toast';
 
-	import { activeLanguage } from '$lib/stores/activeLanguage';
-	import { darkMode } from '$lib/stores/darkMode';
-	import { dayTheme } from '$lib/stores/dayTheme';
-	import { nightTheme } from '$lib/stores/nightTheme';
-	import { storageMode } from '$lib/stores/storageMode';
+	// import { activeLanguage } from '$lib/stores/activeLanguage';
+	// import { darkMode } from '$lib/stores/darkMode';
+	// import { dayTheme } from '$lib/stores/dayTheme';
+	// import { nightTheme } from '$lib/stores/nightTheme';
+	// import { storageMode } from '$lib/stores/storageMode';
 
-	import { dayThemes } from '$lib/constants/DayThemes';
-	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	import { nightThemes } from '$lib/constants/NightThemes';
-	import { storageOptions } from '$lib/constants/StorageOptions';
-	import { t } from '$lib/translations';
-	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	// import { dayThemes } from '$lib/constants/DayThemes';
+	// import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	// import { nightThemes } from '$lib/constants/NightThemes';
+	// import { storageOptions } from '$lib/constants/StorageOptions';
+	// import { t } from '$lib/translations';
+	// import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	import SettingsSelect from '../../components/SettingsSelect.svelte';
-	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public'; -->
+	// import SettingsSelect from '../../components/SettingsSelect.svelte';
+	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
 
 	// $: $dayTheme, setDayTheme();
 	// $: $nightTheme, setNightTheme();
@@ -88,81 +88,85 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// 	}
 	// }
 
-// 	onMount(() => {
-// 		const authStatus = $page.url.searchParams.get('status');
-// 		if (authStatus)
-// 			switch (authStatus) {
-// 				case 'ok':
-// 					toast.success('Signed in successfully!', {
-// 						position: GLOBAL_TOAST_POSITION,
-// 						style: GLOBAL_TOAST_STYLE
-// 					});
-// 					break;
-// 				case 'authorizationError':
-// 					toast.error($t('errors.authorization'), {
-// 						position: GLOBAL_TOAST_POSITION,
-// 						style: GLOBAL_TOAST_STYLE
-// 					});
-// 					break;
-// 				default:
-// 					toast.error($t('errors.unknown'), {
-// 						position: GLOBAL_TOAST_POSITION,
-// 						style: GLOBAL_TOAST_STYLE
-// 					});
-// 			}
-// 	});
-// </script>
+	// 	onMount(() => {
+	// 		const authStatus = $page.url.searchParams.get('status');
+	// 		if (authStatus)
+	// 			switch (authStatus) {
+	// 				case 'ok':
+	// 					toast.success('Signed in successfully!', {
+	// 						position: GLOBAL_TOAST_POSITION,
+	// 						style: GLOBAL_TOAST_STYLE
+	// 					});
+	// 					break;
+	// 				case 'authorizationError':
+	// 					toast.error($t('errors.authorization'), {
+	// 						position: GLOBAL_TOAST_POSITION,
+	// 						style: GLOBAL_TOAST_STYLE
+	// 					});
+	// 					break;
+	// 				default:
+	// 					toast.error($t('errors.unknown'), {
+	// 						position: GLOBAL_TOAST_POSITION,
+	// 						style: GLOBAL_TOAST_STYLE
+	// 					});
+	// 			}
+	// 	});
+	//
+</script>
 
-// <div class="settings-container">
-// 	<SettingsSelect
-// 		parameterName="dayTheme"
-// 		labelName={$t('settings.dayTheme')}
-// 		bind:bindParameter={$dayTheme}
-// 		options={dayThemes}
-// 	/>
-// 	<SettingsSelect
-// 		parameterName="nightTheme"
-// 		labelName={$t('settings.nightTheme')}
-// 		bind:bindParameter={$nightTheme}
-// 		options={nightThemes}
-// 	/>
-// 	{#if !Capacitor.isNativePlatform()}
-// 		<SettingsSelect
-// 			parameterName="storageMode"
-// 			labelName={$t('settings.storage')}
-// 			bind:bindParameter={$storageMode}
-// 			options={storageOptions}
-// 		/>
-// 	{/if}
-// 	{#if $storageMode !== 'local'}
-// 		<button
-// 			on:click={() =>
-// 				Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
-// 			class="action-button action-button--secondary"
-// 			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
-// 		>
-// 		<!-- <button
-// 			on:click={async () => {
-// 				await toast.promise(
-// 					getCloudLogoutPromise($storageMode),
-// 					{
-// 						loading: `${$t('toasts.signingOut')}`,
-// 						success: `${$t('toasts.signedOutOk')}`,
-// 						error: `${$t('errors.signOutError')}`
-// 					},
-// 					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
-// 				);
-// 				$storageMode = 'local';
-// 			}}
-// 			class="action-button action-button--secondary"
-// 			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
-// 		> -->
-// 	{/if}
-// 	<SettingsSelect
-// 		parameterName="language"
-// 		labelName={$t('settings.language')}
-// 		bind:bindParameter={$activeLanguage}
-// 		options={localizationLanguages}
-// 		localizeLabel={false}
-// 	/>
-// </div>
+<!-- <div class="settings-container">
+	<SettingsSelect
+		parameterName="dayTheme"
+		labelName={$t('settings.dayTheme')}
+		bind:bindParameter={$dayTheme}
+		options={dayThemes}
+	/>
+	<SettingsSelect
+		parameterName="nightTheme"
+		labelName={$t('settings.nightTheme')}
+		bind:bindParameter={$nightTheme}
+		options={nightThemes}
+	/>
+	{#if !Capacitor.isNativePlatform()}
+		<SettingsSelect
+			parameterName="storageMode"
+			labelName={$t('settings.storage')}
+			bind:bindParameter={$storageMode}
+			options={storageOptions}
+		/>
+	{/if}
+	{#if $storageMode !== 'local'}
+		<button
+			on:click={() =>
+				Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
+			class="action-button action-button--secondary"
+			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
+		>
+		<button
+			on:click={async () => {
+				await toast.promise(
+					getCloudLogoutPromise($storageMode),
+					{
+						loading: `${$t('toasts.signingOut')}`,
+						success: `${$t('toasts.signedOutOk')}`,
+						error: `${$t('errors.signOutError')}`
+					},
+					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
+				);
+				$storageMode = 'local';
+			}}
+			class="action-button action-button--secondary"
+			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
+		>
+	{/if}
+	<SettingsSelect
+		parameterName="language"
+		labelName={$t('settings.language')}
+		bind:bindParameter={$activeLanguage}
+		options={localizationLanguages}
+		localizeLabel={false}
+	/>
+</div>
+-->
+
+<a href="{PUBLIC_POKEBOOK_SERVER_URL}/google/auth">Google Drive login</a>

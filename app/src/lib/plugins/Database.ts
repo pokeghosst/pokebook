@@ -16,37 +16,31 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { makeProxy } from '$lib/util';
+
 import type { DatabasePlugin } from './DatabasePlugin';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let pluginPromise: any;
+let pluginInstance: DatabasePlugin | null = null;
+let pluginPromise: Promise<DatabasePlugin> | null = null;
 
-async function getImplementation() {
+// TODO: Quadruple-check this later because if you're an idiot, `Dexie: Need to reopen db` may happen and all poems will go poof!!!
+async function getImplementation(): Promise<DatabasePlugin> {
+	if (pluginInstance) {
+		return pluginInstance;
+	}
+
 	if (!pluginPromise) {
-		if (window.__TAURI_INTERNALS__) {
+		if (typeof window !== 'undefined' && window.__TAURI_INTERNALS__) {
 			pluginPromise = null;
 			// pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
 		} else {
-			pluginPromise = import('./DatabaseWeb').then((m) => new m.DatabaseWeb());
+			pluginPromise = import('./DatabaseWeb').then((m) => {
+				pluginInstance = new m.DatabaseWeb();
+				return pluginInstance;
+			});
 		}
 	}
 	return pluginPromise;
 }
 
-// TODO: Refactor into a util function (maybe)
-export const Database = new Proxy(
-	{},
-	{
-		get(_, prop) {
-			return async (...args: unknown[]) => {
-				const impl = await getImplementation();
-				const method = impl[prop];
-				if (typeof method === 'function') {
-					return method.apply(impl, args);
-				} else {
-					throw new Error(`Method ${String(prop)} does not exist on implementation`);
-				}
-			};
-		}
-	}
-) as DatabasePlugin;
+export const Database = makeProxy<DatabasePlugin>(getImplementation);

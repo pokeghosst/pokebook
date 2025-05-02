@@ -18,5 +18,8 @@
     "dev": "pnpm --filter=\"./{app,backend,shared}\" --parallel run dev",
     "build": "pnpm -r run build"
   },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
   "packageManager": "pnpm@10.10.0"
 }

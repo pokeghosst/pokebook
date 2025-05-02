@@ -22,23 +22,32 @@ import { DexieError } from '$lib/util/errors';
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
 
-const db = new Dexie('pokebook4') as Dexie & {
-	poems: EntityTable<PoemRecord, 'id'>;
-};
+class PokeBookDB extends Dexie {
+	poems!: EntityTable<PoemRecord, 'id'>;
 
-db.version(1).stores({
-	poems: '&id, name, text, note, snippet, remoteId, syncState'
-});
+	constructor() {
+		super('pokebook4');
+		this.version(1).stores({
+			poems: '&id, name, text, note, snippet, remoteId, syncState'
+		});
+	}
+}
 
 export class DatabaseWeb implements DatabasePlugin {
+	#db: PokeBookDB;
+
+	constructor() {
+		this.#db = new PokeBookDB();
+	}
+
 	async save(
 		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
 		idOverride?: string
 	): Promise<string> {
 		const uuid = idOverride ?? crypto.randomUUID();
-		const timestamp = new Date();
+		const timestamp = Date.now();
 
-		await db.poems.add({
+		await this.#db.poems.add({
 			id: uuid,
 			createdAt: timestamp,
 			updatedAt: timestamp,
@@ -48,17 +57,17 @@ export class DatabaseWeb implements DatabasePlugin {
 		return uuid;
 	}
 	async putPartialUpdate(id: string, update: Partial<Poem>): Promise<void> {
-		const timestamp = new Date();
+		const timestamp = Date.now();
 		try {
-			const savedPoem = await db.poems.get(id);
+			const savedPoem = await this.#db.poems.get(id);
 
 			if (savedPoem) {
-				await db.poems.update(id, {
+				await this.#db.poems.update(id, {
 					...update,
 					updatedAt: timestamp
 				});
 			} else {
-				await db.poems.add({
+				await this.#db.poems.add({
 					id,
 					createdAt: timestamp,
 					updatedAt: timestamp,
@@ -75,7 +84,7 @@ export class DatabaseWeb implements DatabasePlugin {
 		}
 	}
 	async get(id: string): Promise<(Poem & { syncState: string }) | undefined> {
-		const poem = await db.poems.get(id);
+		const poem = await this.#db.poems.get(id);
 
 		if (!poem) return undefined;
 
@@ -87,23 +96,24 @@ export class DatabaseWeb implements DatabasePlugin {
 		};
 	}
 	async getAll(): Promise<PoemRecord[]> {
-		return await db.poems.toArray();
+		return await this.#db.poems.toArray();
 	}
 	async list(): Promise<PoemListItem[]> {
-		const poems = await db.poems.toArray();
+		const poems = await this.#db.poems.toArray();
 
 		return poems.map((poem) => ({
 			id: poem.id,
 			name: poem.name,
 			snippet: poem.snippet,
 			createdAt: poem.createdAt,
-			updatedAt: poem.updatedAt
+			updatedAt: poem.updatedAt,
+			remoteId: poem.remoteId
 		}));
 	}
 	async update(record: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void> {
-		await db.poems.update(record.id, { ...record, updatedAt: new Date() });
+		await this.#db.poems.update(record.id, { ...record, updatedAt: Date.now() });
 	}
 	async delete(id: string): Promise<void> {
-		await db.poems.delete(id);
+		await this.#db.poems.delete(id);
 	}
 }

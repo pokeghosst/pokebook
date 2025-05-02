@@ -16,17 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
-
-export interface DatabasePlugin {
-	save(
-		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
-		idOverride?: string
-	): Promise<string>;
-	putPartialUpdate(id: string, update: Partial<Poem>): Promise<void>;
-	get(id: string): Promise<(Poem & { syncState: string }) | undefined>;
-	getAll(): Promise<PoemRecord[]>;
-	list(): Promise<PoemListItem[]>;
-	update(poem: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void>;
-	delete(id: string): Promise<void>;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function makeProxy<T>(getImplementationFn: () => Promise<any>): T {
+	return new Proxy(
+		{},
+		{
+			get(_, prop) {
+				return async (...args: unknown[]) => {
+					const impl = await getImplementationFn();
+					const method = impl[prop];
+					if (typeof method === 'function') {
+						return method.apply(impl, args);
+					} else {
+						throw new Error(`Method ${String(prop)} does not exist on implementation`);
+					}
+				};
+			}
+		}
+	) as T;
 }

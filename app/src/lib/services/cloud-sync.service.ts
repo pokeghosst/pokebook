@@ -16,7 +16,28 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { Database } from '$lib/plugins/Database';
+import type { PoemListItem } from '@pokebook/shared';
+import { CloudStorage } from '../plugins/CloudStorage';
+
 export async function sync() {
+	const remoteFiles = await CloudStorage.list();
+	console.log(remoteFiles);
+	const localFiles = await Database.list();
+	console.log(localFiles);
+	const filesToDownload = remoteFiles.filter(
+		(remoteFile) => !localFiles.find((localFile) => localFile.id === remoteFile.fileName)
+	);
+	console.log('filesToDownload', filesToDownload);
+	const filesToUpload = localFiles.filter(
+		(localFile) => !remoteFiles.find((remoteFile) => remoteFile.fileName === localFile.id)
+	);
+	console.log('filesToUpload', filesToUpload);
+
+	// Download remote
+
+	await uploadFiles(filesToUpload);
+
 	// const remoteManifestEncoded = await this.getRemoteManifest();
 	// if (!remoteManifestEncoded) {
 	// 	// If there is no remote manifest, ignore whatever is in the folder assuming it doesn't belong to PokeBook
@@ -145,4 +166,19 @@ export async function sync() {
 	// 	// console.log('mergedFile', mergedFile);
 	// }
 	// poemManager.flushManifestToFile();
+}
+
+async function uploadFiles(filesToUpload: PoemListItem[]) {
+	const localRecords = (
+		await Promise.all(
+			filesToUpload.map(async (fileMeta) => {
+				const fileContents = await Database.get(fileMeta.id);
+				if (!fileContents) return [];
+
+				return [{ ...fileMeta, ...fileContents }];
+			})
+		)
+	).flat();
+
+	await CloudStorage.upload(localRecords);
 }

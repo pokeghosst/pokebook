@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
   app:
     dependencies:
@@ -95,9 +99,6 @@ importers:
       svelte:
         specifier: ^5.26.2
         version: 5.28.2
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
       typescript-eslint:
         specifier: ^8.29.1
         version: 8.29.1(eslint@9.24.0)(typescript@5.8.3)
@@ -115,7 +116,7 @@ importers:
         version: link:../shared
       '@trpc/server':
         specifier: ^11.1.1
-        version: 11.1.1(typescript@5.8.2)
+        version: 11.1.1(typescript@5.8.3)
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -168,9 +169,6 @@ importers:
       tsx:
         specifier: ^4.19.3
         version: 4.19.3
-      typescript:
-        specifier: ^5.5.0
-        version: 5.8.2
 
   landing:
     dependencies:
@@ -202,10 +200,6 @@ importers:
       zod:
         specifier: ^3.24.2
         version: 3.24.2
-    devDependencies:
-      typescript:
-        specifier: ^5.5.0
-        version: 5.8.2
 
 packages:
 
@@ -3457,11 +3451,6 @@ packages:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '>=4.8.4 <5.9.0'
 
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
@@ -4887,10 +4876,6 @@ snapshots:
     dependencies:
       '@trpc/server': 11.1.1(typescript@5.8.3)
       typescript: 5.8.3
-
-  '@trpc/server@11.1.1(typescript@5.8.2)':
-    dependencies:
-      typescript: 5.8.2
 
   '@trpc/server@11.1.1(typescript@5.8.3)':
     dependencies:
@@ -7535,8 +7520,6 @@ snapshots:
       typescript: 5.8.3
     transitivePeerDependencies:
       - supports-color
-
-  typescript@5.8.2: {}
 
   typescript@5.8.3: {}
 

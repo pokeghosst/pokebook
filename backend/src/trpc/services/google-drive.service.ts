@@ -18,49 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { google } from 'googleapis';
 
+import { PoemRecord } from '@pokebook/shared';
 import { OAuth2Client } from 'google-auth-library';
-
-export async function findManifest(client: OAuth2Client) {
-	// console.log(client);
-
-	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
-
-	const response = await google.drive('v3').files.list({
-		q: `'${pokeBookFolderId}' in parents and trashed=false and name='.pokemanifest'`,
-		orderBy: 'createdTime desc',
-		auth: client,
-		fields: 'nextPageToken,files(id,name,createdTime,properties)'
-	});
-
-	return response.data.files;
-}
-
-export async function readManifest(client: OAuth2Client, manifestId: string) {
-	const manifestResponse = await google.drive('v3').files.get({
-		fileId: manifestId,
-		alt: 'media',
-		auth: client
-	});
-	return manifestResponse.data.toString();
-}
-
-export async function createManifest(client: OAuth2Client, manifest: string) {
-	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
-
-	const response = await google.drive('v3').files.create({
-		auth: client,
-		requestBody: {
-			name: '.pokemanifest',
-			parents: [pokeBookFolderId]
-		},
-		media: {
-			mimeType: 'text/xml',
-			body: manifest
-		}
-	});
-
-	return response.data.id;
-}
 
 export async function getOrCreatePokeBookFolderId(client: OAuth2Client) {
 	const drive = google.drive('v3');
@@ -82,13 +41,13 @@ export async function getOrCreatePokeBookFolderId(client: OAuth2Client) {
 	}
 }
 
-export async function listPoems(client: OAuth2Client) {
+export async function list(client: OAuth2Client) {
 	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
 
 	const response = await google.drive('v3').files.list({
 		q: `'${pokeBookFolderId}' in parents and trashed=false`,
 		auth: client,
-		fields: 'nextPageToken,files(id,name,createdTime)'
+		fields: 'nextPageToken,files(name,createdTime,modifiedTime)'
 	});
 
 	return response.data.files;
@@ -108,7 +67,7 @@ export async function downloadPoem(client: OAuth2Client, id: string) {
 	return { fileId: id, contents };
 }
 
-export async function uploadPoem(client: OAuth2Client, fileName: string, poemContents: string) {
+export async function upload(client: OAuth2Client, fileName: string, record: PoemRecord) {
 	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
 
 	const result = await google.drive('v3').files.create({
@@ -118,8 +77,8 @@ export async function uploadPoem(client: OAuth2Client, fileName: string, poemCon
 			parents: [pokeBookFolderId]
 		},
 		media: {
-			mimeType: 'text/xml',
-			body: poemContents
+			mimeType: 'application/json',
+			body: JSON.stringify(record)
 		}
 	});
 

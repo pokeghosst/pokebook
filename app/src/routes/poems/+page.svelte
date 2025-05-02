@@ -21,6 +21,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { listPoems } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
+	import { sync } from '$lib/services/cloud-sync.service';
+
+	import { RefreshCcw } from 'lucide-svelte';
 
 	import type { PoemListItem } from '@pokebook/shared';
 
@@ -42,7 +45,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="refresh-wrapper">
-	<!-- <button class="button" on:click={syncToCloud}>Sync <RefreshCcw /></button> -->
+	<button class="button" on:click={sync}>Sync <RefreshCcw /></button>
 </div>
 
 {#await poemListPromise}
@@ -54,7 +57,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:then poems}
 	{#if poems && poems.length > 0}
 		<div class="poem-list">
-			{#each poems.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()) as poem (poem.id)}
+			{#each poems.sort((a, b) => b.updatedAt - a.updatedAt) as poem (poem.id)}
 				<div class="list-item">
 					<a href="/poems/{poem.id}">
 						<div class="list-poem">
@@ -66,7 +69,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 							</p>
 							<p class="list-poem-snippet">{poem.snippet}</p>
 						</div>
-						<div>{poem.updatedAt.toLocaleDateString()}</div>
+						<div>{new Date(poem.updatedAt).toLocaleDateString()}</div>
 					</a>
 				</div>
 			{/each}
