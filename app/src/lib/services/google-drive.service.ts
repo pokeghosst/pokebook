@@ -76,6 +76,6 @@ export class GoogleDrive implements StorageDriver {
 		return await this.trpc.google.upload.mutate(poems);
 	}
 	async downloadPoems(ids: string[]) {
-		return await this.trpc.google.downloadPoems.query(ids);
+		return await this.trpc.google.download.query(ids);
 	}
 }

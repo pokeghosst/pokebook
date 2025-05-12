@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 
 import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
-import type { PoemRecord } from '@pokebook/shared';
+import type { PoemRecord, RemoteFileListItem } from '@pokebook/shared';
 import type { CloudStoragePlugin } from './CloudStoragePlugin';
 
 export class CloudStorageGoogle implements CloudStoragePlugin {
@@ -39,14 +39,14 @@ export class CloudStorageGoogle implements CloudStoragePlugin {
 	// TODO: Remove retrieving PokeBook folder ID in Google Drive backend functions
 	#pokebookFolderId: string | null = null;
 
-	get(ids: string[]): Promise<PoemRecord[] | undefined> {
-		throw new Error('Method not implemented.');
-	}
-	async list(): Promise<{ fileName: string; createdAt: number; updatedAt: number }[]> {
+	async list(): Promise<RemoteFileListItem[]> {
 		return await this.#trpc.google.list.query();
 	}
 	async upload(records: PoemRecord[]): Promise<void> {
 		await this.#trpc.google.upload.mutate(records);
+	}
+	download(ids: string[]): Promise<PoemRecord[] | undefined> {
+		return this.#trpc.google.download.query(ids);
 	}
 	delete(id: string): Promise<void> {
 		throw new Error('Method not implemented.');

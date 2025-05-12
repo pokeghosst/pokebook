@@ -47,13 +47,13 @@ export async function list(client: OAuth2Client) {
 	const response = await google.drive('v3').files.list({
 		q: `'${pokeBookFolderId}' in parents and trashed=false`,
 		auth: client,
-		fields: 'nextPageToken,files(name,createdTime,modifiedTime)'
+		fields: 'nextPageToken,files(id,name,createdTime,modifiedTime)'
 	});
 
 	return response.data.files;
 }
 
-export async function downloadPoem(client: OAuth2Client, id: string) {
+export async function download(client: OAuth2Client, id: string) {
 	console.log('downloading poems');
 
 	const response = await google.drive('v3').files.get({
@@ -62,9 +62,10 @@ export async function downloadPoem(client: OAuth2Client, id: string) {
 		auth: client
 	});
 
-	const contents = response.data.toString();
+	console.log('>> response.data', response.data);
+	const contents = response.data;
 
-	return { fileId: id, contents };
+	return { fileId: id, contents: contents };
 }
 
 export async function upload(client: OAuth2Client, fileName: string, record: PoemRecord) {

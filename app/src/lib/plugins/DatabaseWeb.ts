@@ -41,16 +41,16 @@ export class DatabaseWeb implements DatabasePlugin {
 	}
 
 	async save(
-		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
-		idOverride?: string
+		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'> &
+			Partial<Pick<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>>
 	): Promise<string> {
-		const uuid = idOverride ?? crypto.randomUUID();
+		const uuid = record.id ?? crypto.randomUUID();
 		const timestamp = Date.now();
 
 		await this.#db.poems.add({
 			id: uuid,
-			createdAt: timestamp,
-			updatedAt: timestamp,
+			createdAt: record.createdAt ?? timestamp,
+			updatedAt: record.updatedAt ?? timestamp,
 			...record
 		});
 

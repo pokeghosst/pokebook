@@ -17,26 +17,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Database } from '$lib/plugins/Database';
-import type { PoemListItem } from '@pokebook/shared';
+import type { PoemListItem, PoemRecord, RemoteFileListItem } from '@pokebook/shared';
 import { CloudStorage } from '../plugins/CloudStorage';
 
 export async function sync() {
 	const remoteFiles = await CloudStorage.list();
-	console.log(remoteFiles);
 	const localFiles = await Database.list();
-	console.log(localFiles);
-	const filesToDownload = remoteFiles.filter(
-		(remoteFile) => !localFiles.find((localFile) => localFile.id === remoteFile.fileName)
-	);
+
+	const filesToDownload = getFilesToDownload(remoteFiles, localFiles);
+	const filesToUpload = getFilesToUpload(localFiles, remoteFiles);
+	// const filesToMerge = getFilesToMerge(localFiles, remoteFiles);
+
+	console.log('remoteFiles', remoteFiles);
+	console.log('localFiles', localFiles);
 	console.log('filesToDownload', filesToDownload);
-	const filesToUpload = localFiles.filter(
-		(localFile) => !remoteFiles.find((remoteFile) => remoteFile.fileName === localFile.id)
-	);
 	console.log('filesToUpload', filesToUpload);
+	// console.log('filesToMerge', filesToMerge);
 
 	// Download remote
+	const downloadedFiles = await CloudStorage.download(filesToDownload.map((file) => file.fileId));
+	console.log('downloadedFiles', downloadedFiles);
+	saveFiles(downloadedFiles);
 
-	await uploadFiles(filesToUpload);
+	// await uploadFiles(filesToUpload);
 
 	// const remoteManifestEncoded = await this.getRemoteManifest();
 	// if (!remoteManifestEncoded) {
@@ -168,6 +171,22 @@ export async function sync() {
 	// poemManager.flushManifestToFile();
 }
 
+function getFilesToUpload(localFiles: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
+	return localFiles.filter(
+		(localFile) => !remoteFiles.find((remoteFile) => remoteFile.fileName === localFile.id)
+	);
+}
+
+function getFilesToDownload(remoteFiles: RemoteFileListItem[], localFiles: PoemListItem[]) {
+	return remoteFiles.filter(
+		(remoteFile) => !localFiles.find((localFile) => localFile.id === remoteFile.fileName)
+	);
+}
+
+function getFilesToMerge(localFiles: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
+	throw new Error('Not implemented');
+}
+
 async function uploadFiles(filesToUpload: PoemListItem[]) {
 	const localRecords = (
 		await Promise.all(
@@ -181,4 +200,10 @@ async function uploadFiles(filesToUpload: PoemListItem[]) {
 	).flat();
 
 	await CloudStorage.upload(localRecords);
+}
+
+async function saveFiles(files: PoemRecord[]) {
+	for (const file of files) {
+		await Database.save(file);
+	}
 }

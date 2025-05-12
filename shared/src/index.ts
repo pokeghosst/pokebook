@@ -46,6 +46,13 @@ export const poemRecordSchema = z.object({
   syncState: z.string().nonempty("Sync state is required"),
 });
 
+export const remoteFileListItemSchema = z.object({
+  fileId: z.string().nonempty("File ID is required"),
+  fileName: z.string().nonempty("File name is required"),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 export type Poem = z.infer<typeof poemSchema>;
 export type PoemFile = z.infer<typeof poemFileSchema>;
 export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
@@ -54,3 +61,4 @@ export type PoemListItem = Pick<
   PoemRecord,
   "id" | "name" | "snippet" | "createdAt" | "updatedAt" | "remoteId"
 >;
+export type RemoteFileListItem = z.infer<typeof remoteFileListItemSchema>;

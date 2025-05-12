@@ -20,8 +20,8 @@ import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 
 export interface DatabasePlugin {
 	save(
-		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>,
-		idOverride?: string
+		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'> &
+			Partial<Pick<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>>
 	): Promise<string>;
 	putPartialUpdate(id: string, update: Partial<Poem>): Promise<void>;
 	get(id: string): Promise<(Poem & { syncState: string }) | undefined>;

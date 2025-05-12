@@ -16,11 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemRecord } from '@pokebook/shared';
+import type { PoemRecord, RemoteFileListItem } from '@pokebook/shared';
 
 export interface CloudStoragePlugin {
-	download(ids: string[]): Promise<PoemRecord[] | undefined>;
-	list(): Promise<{ fileName: string; createdAt: number; updatedAt: number }[]>;
+	download(ids: string[]): Promise<PoemRecord[]>;
+	list(): Promise<RemoteFileListItem[]>;
 	upload(records: PoemRecord[]): Promise<void>;
 	// update(poem: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void>;
 	delete(id: string): Promise<void>;

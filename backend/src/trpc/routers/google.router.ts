@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { poemRecordSchema } from '@pokebook/shared';
+import { PoemRecord, poemRecordSchema } from '@pokebook/shared';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
@@ -44,9 +44,10 @@ export const googleRouter = router({
 		}
 
 		return schemaFiles.flatMap((schemaFile) => {
-			if (schemaFile.name && schemaFile.createdTime && schemaFile.modifiedTime) {
+			if (schemaFile.id && schemaFile.name && schemaFile.createdTime && schemaFile.modifiedTime) {
 				return [
 					{
+						fileId: schemaFile.id,
 						fileName: schemaFile.name,
 						createdAt: Date.parse(schemaFile.createdTime),
 						updatedAt: Date.parse(schemaFile.modifiedTime)
@@ -62,11 +63,15 @@ export const googleRouter = router({
 			await googleDrive.upload(client, record.id, record);
 		});
 	}),
-	downloadPoems: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
+	download: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-		const filePromises = input.map(async (uri) => await googleDrive.downloadPoem(client, uri));
+		const files = await Promise.all(
+			input.map(async (uri) => await googleDrive.download(client, uri))
+		);
 
-		return await Promise.all(filePromises);
+		console.log('>> files', files);
+
+		return files.map((file) => file.contents as PoemRecord);
 	})
 });
