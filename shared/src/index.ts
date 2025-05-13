@@ -44,13 +44,13 @@ export const poemRecordSchema = z.object({
   updatedAt: z.number(),
   remoteId: z.string().optional(),
   syncState: z.string().nonempty("Sync state is required"),
+  syncStateHash: z.string().nonempty("Sync state hash is required"),
 });
 
 export const remoteFileListItemSchema = z.object({
   fileId: z.string().nonempty("File ID is required"),
   fileName: z.string().nonempty("File name is required"),
-  createdAt: z.number(),
-  updatedAt: z.number(),
+  syncStateHash: z.string().nonempty("Sync state hash is required"),
 });
 
 export type Poem = z.infer<typeof poemSchema>;
@@ -59,6 +59,12 @@ export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
 export type PoemRecord = z.infer<typeof poemRecordSchema>;
 export type PoemListItem = Pick<
   PoemRecord,
-  "id" | "name" | "snippet" | "createdAt" | "updatedAt" | "remoteId"
+  | "id"
+  | "name"
+  | "snippet"
+  | "createdAt"
+  | "updatedAt"
+  | "remoteId"
+  | "syncStateHash"
 >;
 export type RemoteFileListItem = z.infer<typeof remoteFileListItemSchema>;

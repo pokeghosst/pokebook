@@ -22,6 +22,6 @@ export interface CloudStoragePlugin {
 	download(ids: string[]): Promise<PoemRecord[]>;
 	list(): Promise<RemoteFileListItem[]>;
 	upload(records: PoemRecord[]): Promise<void>;
-	// update(poem: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void>;
+	update(poem: PoemRecord[]): Promise<void>;
 	delete(id: string): Promise<void>;
 }

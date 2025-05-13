@@ -18,19 +18,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
+import { PoemNotFoundError } from '$lib/util/errors';
 import { diffChars } from 'diff';
 
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { Text as YText } from 'yjs';
-import { PoemNotFoundError } from '$lib/util/errors';
 
 const POEM_SNIPPET_LENGTH = 256;
 
 export async function savePoem(poem: Poem): Promise<string> {
 	const snippet = sliceSnippet(poem.text);
 	const doc = PoemDoc.fromPoem(poem);
+	const syncStateHash = await doc.getEncodedStateHash();
 
-	return await Database.save({ ...poem, snippet, syncState: doc.getEncodedState() });
+	return await Database.save({ ...poem, snippet, syncState: doc.getEncodedState(), syncStateHash });
 }
 
 export async function getPoem(id: string): Promise<Poem | undefined> {
@@ -57,17 +58,20 @@ export async function updatePoem(id: string, poem: Poem) {
 		.setText(applyDiffToYText(oldRecord.text, poem.text, poemDoc.getText()))
 		.setNote(applyDiffToYText(oldRecord.note, poem.note, poemDoc.getNote()));
 
+	const syncStateHash = await poemDoc.getEncodedStateHash();
+
 	const newRecord: Omit<PoemRecord, 'createdAt' | 'updatedAt'> = {
 		...poem,
 		id,
 		snippet: sliceSnippet(poem.text),
-		syncState: poemDoc.getEncodedState()
+		syncState: poemDoc.getEncodedState(),
+		syncStateHash
 	};
 
 	await Database.update(newRecord);
 }
 
-export async function putPartialUpdate(id: string, update: Partial<Poem>) {
+export async function putPartialUpdate(id: string, update: Partial<PoemRecord>) {
 	await Database.putPartialUpdate(id, update);
 }
 
@@ -83,7 +87,7 @@ export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boo
 	});
 }
 
-function sliceSnippet(text: string): string {
+export function sliceSnippet(text: string): string {
 	return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
 }
 

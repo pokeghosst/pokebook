@@ -45,6 +45,9 @@ export class CloudStorageGoogle implements CloudStoragePlugin {
 	async upload(records: PoemRecord[]): Promise<void> {
 		await this.#trpc.google.upload.mutate(records);
 	}
+	async update(records: PoemRecord[]): Promise<void> {
+		await this.#trpc.google.update.mutate(records);
+	}
 	download(ids: string[]): Promise<PoemRecord[] | undefined> {
 		return this.#trpc.google.download.query(ids);
 	}

@@ -21,6 +21,8 @@ import { google } from 'googleapis';
 import { PoemRecord } from '@pokebook/shared';
 import { OAuth2Client } from 'google-auth-library';
 
+export const FILE_NAME_TIMESTAMP_DIVIDER = '@';
+
 export async function getOrCreatePokeBookFolderId(client: OAuth2Client) {
 	const drive = google.drive('v3');
 
@@ -47,7 +49,7 @@ export async function list(client: OAuth2Client) {
 	const response = await google.drive('v3').files.list({
 		q: `'${pokeBookFolderId}' in parents and trashed=false`,
 		auth: client,
-		fields: 'nextPageToken,files(id,name,createdTime,modifiedTime)'
+		fields: 'nextPageToken,files(id,name)'
 	});
 
 	return response.data.files;
@@ -74,7 +76,7 @@ export async function upload(client: OAuth2Client, fileName: string, record: Poe
 	const result = await google.drive('v3').files.create({
 		auth: client,
 		requestBody: {
-			name: fileName,
+			name: `${fileName}${FILE_NAME_TIMESTAMP_DIVIDER}${record.syncStateHash}`,
 			parents: [pokeBookFolderId]
 		},
 		media: {
@@ -88,6 +90,26 @@ export async function upload(client: OAuth2Client, fileName: string, record: Poe
 	if (!fileId) throw new Error('File has no ID');
 
 	return { fileName, fileId };
+}
+
+export async function update(client: OAuth2Client, fileId: string, record: PoemRecord) {
+	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
+
+	console.log('>>> updating poem', record);
+
+	const result = await google.drive('v3').files.update({
+		auth: client,
+		fileId,
+		requestBody: {
+			name: `${record.id}${FILE_NAME_TIMESTAMP_DIVIDER}${record.syncStateHash}`
+		},
+		media: {
+			mimeType: 'application/json',
+			body: JSON.stringify(record)
+		}
+	});
+
+	console.log(result);
 }
 
 async function createPokeBookFolder(client: OAuth2Client): Promise<string> {

@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import Dexie, { type EntityTable } from 'dexie';
 
 import { DexieError } from '$lib/util/errors';
-import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
+import type { PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
 
 class PokeBookDB extends Dexie {
@@ -56,7 +56,7 @@ export class DatabaseWeb implements DatabasePlugin {
 
 		return uuid;
 	}
-	async putPartialUpdate(id: string, update: Partial<Poem>): Promise<void> {
+	async putPartialUpdate(id: string, update: Partial<PoemRecord>): Promise<void> {
 		const timestamp = Date.now();
 		try {
 			const savedPoem = await this.#db.poems.get(id);
@@ -75,7 +75,8 @@ export class DatabaseWeb implements DatabasePlugin {
 					text: update.text ?? '',
 					note: update.note ?? '',
 					snippet: '',
-					syncState: ''
+					syncState: '',
+					syncStateHash: ''
 				});
 			}
 		} catch (e: unknown) {
@@ -83,22 +84,14 @@ export class DatabaseWeb implements DatabasePlugin {
 			throw new DexieError().withCause(e);
 		}
 	}
-	async get(id: string): Promise<(Poem & { syncState: string }) | undefined> {
-		const poem = await this.#db.poems.get(id);
-
-		if (!poem) return undefined;
-
-		return {
-			name: poem.name,
-			text: poem.text,
-			note: poem.note,
-			syncState: poem.syncState
-		};
+	async get(id: string): Promise<PoemRecord | undefined> {
+		return await this.#db.poems.get(id);
 	}
 	async getAll(): Promise<PoemRecord[]> {
 		return await this.#db.poems.toArray();
 	}
 	async list(): Promise<PoemListItem[]> {
+		// TODO: Isn't there a way that doesn't require reading a full database?
 		const poems = await this.#db.poems.toArray();
 
 		return poems.map((poem) => ({
@@ -107,7 +100,8 @@ export class DatabaseWeb implements DatabasePlugin {
 			snippet: poem.snippet,
 			createdAt: poem.createdAt,
 			updatedAt: poem.updatedAt,
-			remoteId: poem.remoteId
+			remoteId: poem.remoteId,
+			syncStateHash: poem.syncStateHash
 		}));
 	}
 	async update(record: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void> {

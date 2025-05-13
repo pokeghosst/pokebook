@@ -16,11 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemRecord, poemRecordSchema } from '@pokebook/shared';
+import { poemRecordSchema } from '@pokebook/shared';
+import type { PoemRecord } from '@pokebook/shared';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
+import { FILE_NAME_TIMESTAMP_DIVIDER } from '../services/google-drive.service';
 import { protectedProcedure, router } from '../trpc';
 
 export const googleRouter = router({
@@ -44,13 +46,13 @@ export const googleRouter = router({
 		}
 
 		return schemaFiles.flatMap((schemaFile) => {
-			if (schemaFile.id && schemaFile.name && schemaFile.createdTime && schemaFile.modifiedTime) {
+			if (schemaFile.id && schemaFile.name) {
+				const [fileName, syncStateHash] = schemaFile.name.split(FILE_NAME_TIMESTAMP_DIVIDER);
 				return [
 					{
 						fileId: schemaFile.id,
-						fileName: schemaFile.name,
-						createdAt: Date.parse(schemaFile.createdTime),
-						updatedAt: Date.parse(schemaFile.modifiedTime)
+						fileName,
+						syncStateHash
 					}
 				];
 			}
@@ -63,14 +65,21 @@ export const googleRouter = router({
 			await googleDrive.upload(client, record.id, record);
 		});
 	}),
+	update: protectedProcedure.input(poemRecordSchema.array()).mutation(async ({ ctx, input }) => {
+		console.log('>>>>>>>> updating poem');
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+		input.forEach(async (record) => {
+			if (!record.remoteId) return;
+
+			await googleDrive.update(client, record.remoteId, record);
+		});
+	}),
 	download: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
 		const files = await Promise.all(
 			input.map(async (uri) => await googleDrive.download(client, uri))
 		);
-
-		console.log('>> files', files);
 
 		return files.map((file) => file.contents as PoemRecord);
 	})

@@ -3,6 +3,7 @@ import { decodeFromBase64, encodeToBase64 } from '$lib/util/base64';
 
 import type { PoemEntity } from '$lib/types';
 import type { Text as YText } from 'yjs';
+import { digestMessage } from '$lib/util/digest';
 
 export class PoemDoc {
 	yDoc: Y.Doc;
@@ -68,8 +69,20 @@ export class PoemDoc {
 		return this;
 	}
 
+	public getState() {
+		return Y.encodeStateAsUpdate(this.yDoc);
+	}
+
 	public getEncodedState() {
 		return encodeToBase64(Y.encodeStateAsUpdate(this.yDoc));
+	}
+
+	public getEncodedStateHash() {
+		return digestMessage(this.getEncodedState());
+	}
+
+	public applyUpdate(update: Uint8Array) {
+		Y.applyUpdate(this.yDoc, update);
 	}
 }
 
