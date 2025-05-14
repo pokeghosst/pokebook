@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023, 2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -21,17 +21,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 
-	export let parameterName: string;
-	export let labelName: string;
-	export let bindParameter: string | undefined;
-	export let options: { value: string; label: string }[] = [];
-	export let localizeLabel = true;
+	let {
+		parameterName,
+		labelName,
+		bindParameter,
+		options = [],
+		localizeLabel = true
+	}: {
+		parameterName: string;
+		labelName: string;
+		bindParameter?: string;
+		options: { value: string; label: string }[];
+		localizeLabel?: boolean;
+	} = $props();
 </script>
 
 <div class="settings-select">
 	<label for={parameterName}>{labelName}</label>
 	<select bind:value={bindParameter} name={parameterName}>
-		{#each options as option}
+		{#each options as option (option.label)}
 			<option value={option.value}>
 				{localizeLabel ? $t(option.label) : option.label}
 			</option>
