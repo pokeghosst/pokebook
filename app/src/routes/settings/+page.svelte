@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,6 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+	import appState from '$lib/AppState.svelte';
+	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
+	import { syncProviders } from '$lib/constants/syncProviders';
+	import { t } from '$lib/translations';
 	// import { page } from '$app/stores';
 	// import { onMount } from 'svelte';
 
@@ -31,39 +38,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// import { nightTheme } from '$lib/stores/nightTheme';
 	// import { storageMode } from '$lib/stores/storageMode';
 
-	// import { dayThemes } from '$lib/constants/DayThemes';
-	// import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	// import { nightThemes } from '$lib/constants/NightThemes';
-	// import { storageOptions } from '$lib/constants/StorageOptions';
-	// import { t } from '$lib/translations';
 	// import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 
-	// import SettingsSelect from '../../components/SettingsSelect.svelte';
-	import { PUBLIC_POKEBOOK_SERVER_URL } from '$env/static/public';
+	import SettingsSelect from '../../components/SettingsSelect.svelte';
+
+	function updateDayTheme(value: string) {
+		appState.value = { dayTheme: value };
+	}
+
+	function updateNightTheme(value: string) {
+		appState.value = { nightTheme: value };
+	}
+
+	function updateSyncProvider(value: string) {
+		appState.value = { syncProvider: value };
+	}
+
+	function updateLanguage(value: string) {
+		appState.value = { activeLanguage: value };
+	}
 
 	// $: $dayTheme, setDayTheme();
 	// $: $nightTheme, setNightTheme();
-
-	// function setDayTheme() {
-	// 	if ($darkMode === '') {
-	// 		document.documentElement.className = '';
-	// 		document.documentElement.classList.add($dayTheme || 'vanilla');
-	// 		if (Capacitor.isNativePlatform()) {
-	// 			StatusBar.setStyle({ style: Style.Light });
-	// 		}
-	// 	}
-	// }
-
-	// function setNightTheme() {
-	// 	if ($darkMode === 'dark') {
-	// 		document.documentElement.className = '';
-	// 		document.documentElement.classList.add($darkMode || '');
-	// 		document.documentElement.classList.add($nightTheme || 'chocolate');
-	// 		if (Capacitor.isNativePlatform()) {
-	// 			StatusBar.setStyle({ style: Style.Dark });
-	// 		}
-	// 	}
-	// }
 
 	// function getCloudAuthUrlPromise(storage: string) {
 	// 	Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
@@ -114,59 +110,40 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	//
 </script>
 
-<!-- <div class="settings-container">
+<div class="settings-container">
 	<SettingsSelect
 		parameterName="dayTheme"
 		labelName={$t('settings.dayTheme')}
-		bind:bindParameter={$dayTheme}
+		bindValue={appState.value.dayTheme}
+		bindFunction={updateDayTheme}
 		options={dayThemes}
 	/>
 	<SettingsSelect
 		parameterName="nightTheme"
 		labelName={$t('settings.nightTheme')}
-		bind:bindParameter={$nightTheme}
+		bindValue={appState.value.nightTheme}
+		bindFunction={updateNightTheme}
 		options={nightThemes}
 	/>
-	{#if !Capacitor.isNativePlatform()}
-		<SettingsSelect
-			parameterName="storageMode"
-			labelName={$t('settings.storage')}
-			bind:bindParameter={$storageMode}
-			options={storageOptions}
-		/>
-	{/if}
-	{#if $storageMode !== 'local'}
-		<button
-			on:click={() =>
-				Browser.open({ url: `${PUBLIC_POKEBOOK_SERVER_URL}/google/auth`, windowName: '_self' })}
-			class="action-button action-button--secondary"
-			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
-		>
-		<button
-			on:click={async () => {
-				await toast.promise(
-					getCloudLogoutPromise($storageMode),
-					{
-						loading: `${$t('toasts.signingOut')}`,
-						success: `${$t('toasts.signedOutOk')}`,
-						error: `${$t('errors.signOutError')}`
-					},
-					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
-				);
-				$storageMode = 'local';
-			}}
-			class="action-button action-button--secondary"
-			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
-		>
-	{/if}
 	<SettingsSelect
 		parameterName="language"
 		labelName={$t('settings.language')}
-		bind:bindParameter={$activeLanguage}
+		bindValue={appState.value.activeLanguage}
+		bindFunction={updateLanguage}
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
+	<SettingsSelect
+		parameterName="storageMode"
+		labelName={$t('settings.storage')}
+		bindValue={appState.value.syncProvider}
+		bindFunction={updateSyncProvider}
+		options={syncProviders}
+	/>
+	<a
+		href="{PUBLIC_POKEBOOK_SERVER_URL}/{appState.value.syncProvider}/auth"
+		class="action-button action-button--secondary"
+	>
+		{$t('settings.login')} {$t(`settings.${appState.value.syncProvider}`)}</a
+	>
 </div>
--->
-
-<a href="{PUBLIC_POKEBOOK_SERVER_URL}/google/auth">Google Drive login</a>

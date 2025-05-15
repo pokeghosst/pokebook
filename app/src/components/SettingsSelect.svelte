@@ -24,13 +24,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let {
 		parameterName,
 		labelName,
-		bindParameter,
+		bindValue,
+		bindFunction,
 		options = [],
 		localizeLabel = true
 	}: {
 		parameterName: string;
 		labelName: string;
-		bindParameter?: string;
+		bindValue: string;
+		bindFunction: (value: string) => void;
 		options: { value: string; label: string }[];
 		localizeLabel?: boolean;
 	} = $props();
@@ -38,7 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <div class="settings-select">
 	<label for={parameterName}>{labelName}</label>
-	<select bind:value={bindParameter} name={parameterName}>
+	<select bind:value={() => bindValue, bindFunction} name={parameterName}>
 		{#each options as option (option.label)}
 			<option value={option.value}>
 				{localizeLabel ? $t(option.label) : option.label}
