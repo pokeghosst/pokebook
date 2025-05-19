@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -40,7 +40,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <ul>
-	{#each hotkeys as hotkey}
+	{#each hotkeys as hotkey (hotkey.keys)}
 		<li>
 			<div class="hotkeys-item">
 				<div class="hotkeys-item-keys">

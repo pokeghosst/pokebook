@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal } from 'svelte-modals';
+	import { Modals } from 'svelte-modals';
 	import { loadTranslations } from '$lib/translations';
 
 	import appState from '$lib/AppState.svelte';
@@ -47,14 +47,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <Modals>
-	<div
-		slot="backdrop"
-		class="backdrop"
-		onclick={closeModal}
-		onkeydown={closeModal}
-		role="button"
-		tabindex="0"
-	></div>
+	{#snippet backdrop({ close })}
+		<div
+			class="backdrop"
+			onclick={() => close()}
+			onkeydown={() => close()}
+			role="presentation"
+			aria-roledescription="backdrop"
+		></div>
+	{/snippet}
 </Modals>
 
 <Toaster />

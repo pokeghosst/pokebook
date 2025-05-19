@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { openModal } from 'svelte-modals';
+	import { modals } from 'svelte-modals';
 
 	import appState from '$lib/AppState.svelte';
 	import { navMenuItems } from '$lib/constants/NavMenuItems';
@@ -61,12 +61,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 		<div class="sidebar-footer">
 			<button
-				onclick={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				onclick={() => modals.open(Modal, { title: $t('workspace.hotkeys'), child: HotkeysModal })}
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
 				<li>
-					<button onclick={() => openModal(Modal, { content: AboutModal })}
+					<button onclick={() => modals.open(Modal, { child: AboutModal })}
 						>{$t('menu.about')}</button
 					>
 				</li>

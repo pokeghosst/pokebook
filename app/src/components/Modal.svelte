@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,16 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type { ComponentType } from 'svelte';
-
-	import { closeModal } from 'svelte-modals';
-
 	import X from 'lucide-svelte/icons/x';
 
-	export let isOpen = false;
-
-	export let title: string | null = null;
-	export let content: ComponentType;
+	const {
+		isOpen,
+		close,
+		title,
+		child
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	}: any = $props();
 </script>
 
 {#if isOpen}
@@ -36,11 +35,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				<div class="modal-title">{title}</div>
 			{/if}
 			<div class="modal-title-side">
-				<button on:click={closeModal}><X /></button>
+				<button onclick={close}><X /></button>
 			</div>
 		</div>
 		<div class="modal-content">
-			<svelte:component this={content} />
+			{@render child?.(close)}
 		</div>
 	</div>
 {/if}
