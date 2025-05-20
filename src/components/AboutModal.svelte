@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -38,7 +38,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'GitHub'
 		},
 		{
-			url: 'https://discord.gg/XfwmEHwa2k',
+			url: 'https://discord.gg/wQwVUUfxya',
 			title: 'about.discord',
 			handle: 'Poke!Suite'
 		},
@@ -53,7 +53,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<small>{$t('about.version')} 3.1 - "Carrot Cake"</small>
+		<small>{$t('about.version')} 3.1s - "Carrot Cake"</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}

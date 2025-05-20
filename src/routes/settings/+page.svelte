@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,32 +18,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-
-	import { Browser } from '@capacitor/browser';
-	import { Capacitor } from '@capacitor/core';
-	import { Preferences } from '@capacitor/preferences';
-	import { StatusBar, Style } from '@capacitor/status-bar';
-	import toast from 'svelte-french-toast';
-
+	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
 	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import {
+		getGoogleDriveAuthUrl,
+		googleDriveLogout
+	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
 	import { storageMode } from '$lib/stores/storageMode';
-
-	import { dayThemes } from '$lib/constants/DayThemes';
-	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	import { nightThemes } from '$lib/constants/NightThemes';
-	import { storageOptions } from '$lib/constants/StorageOptions';
-	import {
-		getGoogleDriveAuthUrl,
-		googleDriveLogout
-	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-
+	import { Browser } from '@capacitor/browser';
+	import { Capacitor } from '@capacitor/core';
+	import { Preferences } from '@capacitor/preferences';
+	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
+	import { storageOptions } from 'lib//constants/StorageOptions';
+	import Poem from 'lib//models/Poem';
+	import { onMount } from 'svelte';
+	import toast from 'svelte-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
@@ -91,6 +89,36 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			default:
 				throw new Error();
 		}
+	}
+
+	async function exportPoems() {
+		const cachedPoems = await Poem.listFromCache($storageMode);
+
+		const files = await Promise.all(
+			cachedPoems.map(async (meta) => {
+				const poem = await Poem.load(meta.id, $storageMode);
+				const filename = `poem_${poem.name}_${meta.timestamp}.json`;
+
+				return {
+					data: JSON.stringify(poem, null, 2),
+					filename
+				};
+			})
+		);
+
+		const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
+		const zipPromises = files.map(async (file) => {
+			return zipWriter.add(file.filename, new TextReader(file.data));
+		});
+
+		await Promise.all(zipPromises);
+		const blob = await zipWriter.close();
+
+		Object.assign(document.createElement('a'), {
+			download: `pokebook_poems_${Date.now()}.zip`,
+			href: URL.createObjectURL(blob),
+			textContent: 'Download zip file'
+		}).click();
 	}
 
 	onMount(() => {
@@ -180,4 +208,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
+
+	<button class="action-button action-button--primary" on:click={exportPoems}
+		>Export poems from current storage</button
+	>
+	<p style="margin-top: 1rem">
+		Export now working? <a href="https://discord.gg/wQwVUUfxya" style="text-decoration: underline;"
+			>Get help on Discord!</a
+		>
+	</p>
 </div>
