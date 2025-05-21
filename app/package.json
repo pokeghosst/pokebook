@@ -39,6 +39,7 @@
 		"@pokebook/backend": "workspace:^",
 		"@pokebook/shared": "workspace:^",
 		"@trpc/client": "^11.0.0",
+		"@zip.js/zip.js": "^2.7.62",
 		"dexie": "^4.0.11",
 		"diff": "^7.0.0",
 		"hotkeys-js": "^3.13.7",

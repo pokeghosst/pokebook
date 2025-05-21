@@ -12,5 +12,7 @@
 	"local": "Almacenamiento local",
 	"language": "Idioma",
 	"login": "Iniciar sesión en",
-	"logout": "Cerrar sesión"
+	"logout": "Cerrar sesión",
+	"import": "Importar poemas",
+	"export": "Exportar poemas"
 }

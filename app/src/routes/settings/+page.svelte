@@ -24,23 +24,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { syncProviders } from '$lib/constants/syncProviders';
 	import { t } from '$lib/translations';
-	// import { page } from '$app/stores';
-	// import { onMount } from 'svelte';
-
-	// import { Browser } from '@capacitor/browser';
-	// import { Capacitor } from '@capacitor/core';
-	// import { StatusBar, Style } from '@capacitor/status-bar';
-	// import toast from 'svelte-french-toast';
-
-	// import { activeLanguage } from '$lib/stores/activeLanguage';
-	// import { darkMode } from '$lib/stores/darkMode';
-	// import { dayTheme } from '$lib/stores/dayTheme';
-	// import { nightTheme } from '$lib/stores/nightTheme';
-	// import { storageMode } from '$lib/stores/storageMode';
-
-	// import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
+	import { getPoem, listPoems } from '$lib/services/poems.service';
 
 	function updateDayTheme(value: string) {
 		appState.value = { dayTheme: value };
@@ -58,56 +45,38 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		appState.value = { activeLanguage: value };
 	}
 
-	// $: $dayTheme, setDayTheme();
-	// $: $nightTheme, setNightTheme();
+	function importPoems() {}
 
-	// function getCloudAuthUrlPromise(storage: string) {
-	// 	Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
-	// 	switch (storage) {
-	// 		case 'dropbox':
-	// 			return getDropboxAuthUrl();
-	// 		case 'google':
-	// 			return getGoogleDriveAuthUrl();
-	// 		default:
-	// 			throw new Error();
-	// 	}
-	// }
+	async function exportPoems() {
+		const poemList = await listPoems();
 
-	// async function getCloudLogoutPromise(storage: string) {
-	// 	switch (storage) {
-	// 		case 'dropbox':
-	// 			return await dropboxLogout();
-	// 		case 'google':
-	// 			return await googleDriveLogout();
-	// 		default:
-	// 			throw new Error();
-	// 	}
-	// }
+		const filePromises = poemList.map(async (meta) => {
+			const poem = await getPoem(meta.id);
+			if (!poem) return [];
 
-	// 	onMount(() => {
-	// 		const authStatus = $page.url.searchParams.get('status');
-	// 		if (authStatus)
-	// 			switch (authStatus) {
-	// 				case 'ok':
-	// 					toast.success('Signed in successfully!', {
-	// 						position: GLOBAL_TOAST_POSITION,
-	// 						style: GLOBAL_TOAST_STYLE
-	// 					});
-	// 					break;
-	// 				case 'authorizationError':
-	// 					toast.error($t('errors.authorization'), {
-	// 						position: GLOBAL_TOAST_POSITION,
-	// 						style: GLOBAL_TOAST_STYLE
-	// 					});
-	// 					break;
-	// 				default:
-	// 					toast.error($t('errors.unknown'), {
-	// 						position: GLOBAL_TOAST_POSITION,
-	// 						style: GLOBAL_TOAST_STYLE
-	// 					});
-	// 			}
-	// 	});
-	//
+			return [
+				{
+					data: JSON.stringify(poem, null, 2),
+					filename: `poem_${poem.name}_${meta.createdAt}.json`
+				}
+			];
+		});
+		const files = (await Promise.all(filePromises)).flat();
+
+		const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
+		const zipPromises = files.map(async (file) => {
+			return zipWriter.add(file.filename, new TextReader(file.data));
+		});
+
+		await Promise.all(zipPromises);
+		const blob = await zipWriter.close();
+
+		Object.assign(document.createElement('a'), {
+			download: `pokebook_poems_${Date.now()}.zip`,
+			href: URL.createObjectURL(blob),
+			textContent: 'Download zip file'
+		}).click();
+	}
 </script>
 
 <div class="settings-container">
@@ -140,10 +109,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bindFunction={updateSyncProvider}
 		options={syncProviders}
 	/>
-	<a
-		href="{PUBLIC_POKEBOOK_SERVER_URL}/{appState.value.syncProvider}/auth"
-		class="action-button action-button--secondary"
-	>
-		{$t('settings.login')} {$t(`settings.${appState.value.syncProvider}`)}</a
-	>
+	<div>
+		<a
+			href="{PUBLIC_POKEBOOK_SERVER_URL}/{appState.value.syncProvider}/auth"
+			class="action-button action-button--secondary"
+		>
+			{$t('settings.login')} {$t(`settings.${appState.value.syncProvider}`)}</a
+		>
+	</div>
+	<div class="settings-poem-actions">
+		<button class="action-button action-button--secondary" onclick={exportPoems}
+			>{$t('settings.export')}</button
+		>
+		<form>
+			<button class="action-button action-button--secondary" onclick={importPoems}
+				>{$t('settings.import')}</button
+			>
+		</form>
+	</div>
 </div>

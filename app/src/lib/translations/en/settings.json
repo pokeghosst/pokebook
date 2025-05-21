@@ -12,5 +12,7 @@
 	"local": "Local storage",
 	"language": "Language",
 	"login": "Log in to",
-	"logout": "Log out of"
+	"logout": "Log out of",
+	"import": "Import poems",
+	"export": "Export poems"
 }
