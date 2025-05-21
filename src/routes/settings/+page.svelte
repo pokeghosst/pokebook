@@ -98,9 +98,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			cachedPoems.map(async (meta) => {
 				const poem = await Poem.load(meta.id, $storageMode);
 				const filename = `poem_${poem.name}_${meta.timestamp}.json`;
+				const file = { ...poem, createdAt: meta.timestamp, updatedAt: meta.timestamp };
 
 				return {
-					data: JSON.stringify(poem, null, 2),
+					data: JSON.stringify(file, null, 2),
 					filename
 				};
 			})
