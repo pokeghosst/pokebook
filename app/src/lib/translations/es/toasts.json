@@ -18,5 +18,6 @@
 	"buttons": {
 		"saveChanges": "Ahorrar",
 		"discardChanges": "Desechar"
-	}
+	},
+	"imported": "Poemas importados:"
 }

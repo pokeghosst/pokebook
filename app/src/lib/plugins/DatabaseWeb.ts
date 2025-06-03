@@ -69,14 +69,14 @@ export class DatabaseWeb implements DatabasePlugin {
 			} else {
 				await this.#db.poems.add({
 					id,
-					createdAt: timestamp,
-					updatedAt: timestamp,
+					createdAt: update.createdAt ?? timestamp,
+					updatedAt: update.updatedAt ?? timestamp,
 					name: update.name ?? '',
 					text: update.text ?? '',
 					note: update.note ?? '',
-					snippet: '',
-					syncState: '',
-					syncStateHash: ''
+					snippet: update.snippet ?? '',
+					syncState: update.syncState ?? '',
+					syncStateHash: update.syncStateHash ?? ''
 				});
 			}
 		} catch (e: unknown) {

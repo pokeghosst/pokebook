@@ -23,11 +23,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { syncProviders } from '$lib/constants/syncProviders';
+	import { getPoem, listPoems, putPartialUpdate } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
-	import { BlobWriter, TextReader, ZipWriter } from '@zip.js/zip.js';
+	import {
+		BlobReader,
+		BlobWriter,
+		TextReader,
+		TextWriter,
+		ZipReader,
+		ZipWriter
+	} from '@zip.js/zip.js';
+
+	import type { PoemEntity } from '$lib/types';
 
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
-	import { getPoem, listPoems } from '$lib/services/poems.service';
 
 	function updateDayTheme(value: string) {
 		appState.value = { dayTheme: value };
@@ -45,7 +54,49 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		appState.value = { activeLanguage: value };
 	}
 
-	function importPoems() {}
+	async function importPoems(event: SubmitEvent) {
+		event.preventDefault();
+		const target = event.target as HTMLFormElement;
+		const fileInput = target.poemArchive as HTMLInputElement;
+		const file: File | undefined = fileInput.files?.[0];
+
+		if (!file || !file.type.startsWith('application/zip')) {
+			// TODO: Toast here
+			alert('Please select a zip file');
+			return;
+		}
+
+		const blobReader = new BlobReader(file);
+		const zipReader = new ZipReader(blobReader);
+
+		const entries = await zipReader.getEntries();
+
+		const poemPromises = entries.map(async (entry) => {
+			if (!entry.filename.endsWith('.json') || !entry.getData) return [];
+
+			const textWriter = new TextWriter();
+
+			const text = await entry.getData(textWriter);
+			try {
+				return JSON.parse(text);
+			} catch (e) {
+				console.warn('Failed to parse', entry.filename, e);
+				return [];
+			}
+		});
+
+		await zipReader.close();
+
+		const poems: Partial<PoemEntity>[] = (await Promise.all(poemPromises)).flat();
+		const poemsWithIds = poems.map((poem) => ({ ...poem, id: crypto.randomUUID() }));
+
+		for (const poem of poemsWithIds) {
+			await putPartialUpdate(poem.id, poem);
+		}
+
+		// TODO: Toast here
+		alert(`Successfully imported ${poemsWithIds.length} poems`);
+	}
 
 	async function exportPoems() {
 		const poemList = await listPoems();
@@ -121,10 +172,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<button class="action-button action-button--secondary" onclick={exportPoems}
 			>{$t('settings.export')}</button
 		>
-		<form>
-			<button class="action-button action-button--secondary" onclick={importPoems}
-				>{$t('settings.import')}</button
-			>
+		<h4>
+			{$t('settings.import')}
+		</h4>
+		<form onsubmit={importPoems}>
+			<input type="file" name="poemArchive" required />
+			<button class="action-button action-button--secondary">{$t('settings.import')}</button>
 		</form>
 	</div>
 </div>

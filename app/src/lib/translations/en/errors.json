@@ -14,5 +14,6 @@
 		"poemList": "Could not load poem list. Please log out and log in again!",
 		"invalidGrant": "The access code is incorrect or has expired.",
 		"poemNotFound": "Couldn't find this poem. Does it exist?"
-	}
+	},
+	"noZip": "Please select a .zip file"
 }

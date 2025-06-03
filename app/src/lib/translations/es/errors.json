@@ -14,5 +14,6 @@
 		"poemList": "No se pudo cargar la lista de poemas. ¡Cierre sesión e inicie sesión nuevamente!",
 		"invalidGrant": "El código de acceso es incorrecto o ha caducado.",
 		"poemNotFound": "No pude encontrar este poema. ¿Existe?"
-	}
+	},
+	"noZip": "Por favor, seleccione un archivo .zip"
 }
