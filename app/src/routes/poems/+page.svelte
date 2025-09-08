@@ -26,6 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { RefreshCcw } from 'lucide-svelte';
 
 	import type { PoemListItem } from '@pokebook/shared';
+	import toast from 'svelte-french-toast';
 
 	const FALLBACK_DELAY_MS = 150;
 
@@ -42,10 +43,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 		return () => clearTimeout(fallbackTimeout);
 	});
+
+	async function trySync() {
+		try {
+			await sync();
+		} catch (e: unknown) {
+			if (e instanceof Error) toast.error($t(e.message));
+		}
+	}
 </script>
 
 <div class="refresh-wrapper">
-	<button class="button" on:click={sync}>Sync <RefreshCcw /></button>
+	<button class="button" onclick={trySync}>Sync <RefreshCcw /></button>
 </div>
 
 {#await poemListPromise}

@@ -24,30 +24,43 @@ import type { PoemListItem, PoemRecord, RemoteFileListItem } from '@pokebook/sha
 import { putPartialUpdate, sliceSnippet } from './poems.service';
 
 export async function sync() {
-	const remoteFiles = await CloudStorage.list();
-	const localFiles = await Database.list();
+	try {
+		const remoteFiles = await CloudStorage.list();
+		const localFiles = await Database.list();
 
-	const filesToDownload = getFilesToDownload(remoteFiles, localFiles);
-	const filesToUpload = getFilesToUpload(localFiles, remoteFiles);
-	const filesToMerge = getFilesToMerge(localFiles, remoteFiles);
+		const filesToDownload = getFilesToDownload(remoteFiles, localFiles);
+		const filesToUpload = getFilesToUpload(localFiles, remoteFiles);
+		const filesToMerge = getFilesToMerge(localFiles, remoteFiles);
 
-	console.log('remoteFiles', remoteFiles);
-	console.log('localFiles', localFiles);
-	console.log('filesToDownload', filesToDownload);
-	console.log('filesToUpload', filesToUpload);
-	console.log('filesToMerge', filesToMerge);
+		console.log('remoteFiles', remoteFiles);
+		console.log('localFiles', localFiles);
+		console.log('filesToDownload', filesToDownload);
+		console.log('filesToUpload', filesToUpload);
+		console.log('filesToMerge', filesToMerge);
 
-	// Download remote
-	const downloadedFiles = await CloudStorage.download(filesToDownload.map((file) => file.fileId));
-	console.log('downloadedFiles', downloadedFiles);
-	saveFiles(downloadedFiles);
+		// Download remote
+		const downloadedFiles = await CloudStorage.download(filesToDownload.map((file) => file.fileId));
+		console.log('downloadedFiles', downloadedFiles);
+		saveFiles(downloadedFiles);
 
-	// Upload local
-	await uploadFiles(filesToUpload);
+		// Upload local
+		await uploadFiles(filesToUpload);
 
-	// Merge into local
-	await mergeIntoLocalFiles(filesToMerge, remoteFiles);
-	// Reupload merged
+		// Merge into local
+		await mergeIntoLocalFiles(filesToMerge, remoteFiles);
+		// Reupload merged
+	} catch (e: unknown) {
+		if (e instanceof Error) {
+			const message = e.message;
+
+			switch (message) {
+				case 'Not authenticated':
+					throw new Error('errors.authentication');
+				default:
+					throw new Error('errors.unknown');
+			}
+		}
+	}
 }
 
 function getFilesToUpload(localFiles: PoemListItem[], remoteFiles: RemoteFileListItem[]) {

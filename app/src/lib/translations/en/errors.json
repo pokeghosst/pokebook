@@ -2,6 +2,7 @@
 	"unknown": "Something mysterious happened. Please report this error!",
 	"storageModeUnknown": "Such storage mode doesn't exist!",
 	"authorization": "Could not authorize, try again! If the problem persists, please report it.",
+	"authentication": "Not authenticated. Try logging in with your provider again",
 	"authTokenExpired": "Looks like your session expired, please log in again!",
 	"refreshToken": "Could not find your refresh token anywhere! Please log out and log in again.",
 	"noStorageProvider": "Such storage provider doesn't exist!",

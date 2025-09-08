@@ -2,6 +2,7 @@
 	"unknown": "Algo misterioso sucedió. ¡Por favor informe este error!",
 	"storageModeUnknown": "¡Ese modo de almacenamiento no existe!",
 	"authorization": "No se pudo autorizar, ¡inténtalo de nuevo! Si el problema persiste, infórmalo.",
+	"authentication": "No autenticado. Intenta iniciar sesión con tu proveedor nuevamente.",
 	"authTokenExpired": "Parece que su sesión expiró, ¡inicie sesión nuevamente!",
 	"refreshToken": "¡No pude encontrar su token de actualización en ninguna parte! Por favor cierre sesión e inicie sesión nuevamente.",
 	"noStorageProvider": "¡Este proveedor de almacenamiento no existe!",
