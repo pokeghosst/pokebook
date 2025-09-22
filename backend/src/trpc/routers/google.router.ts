@@ -16,14 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { poemRecordSchema } from '@pokebook/shared';
-import type { PoemRecord } from '@pokebook/shared';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+
+import { poemRecordSchema } from '@pokebook/shared';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
 import { FILE_NAME_TIMESTAMP_DIVIDER } from '../services/google-drive.service';
 import { protectedProcedure, router } from '../trpc';
+
+import type { PoemRecord } from '@pokebook/shared';
 
 export const googleRouter = router({
 	getPokeBookFolderId: protectedProcedure.query(async ({ ctx }) => {

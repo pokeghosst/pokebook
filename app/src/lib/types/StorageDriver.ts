@@ -16,19 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemFile } from '@pokebook/shared';
 import type { PoemEntity } from '$lib/types';
+import type { RemoteFileListItem } from '@pokebook/shared';
 
 export interface StorageDriver {
 	uploadPoems(
 		poems: { name: string; contents: string }[]
 	): Promise<{ fileName: string; fileId: string }[]>;
 	downloadPoems(ids: string[]): Promise<{ fileId: string; contents: string }[]>;
-	listPoems(): Promise<PoemFile[]>;
+	listPoems(): Promise<RemoteFileListItem[]>;
 	loadPoem(poemUri: string): Promise<PoemEntity>;
 	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;
 	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
 	deletePoem(poemUri: string): Promise<void>;
-	retrieveEncodedManifest(): Promise<string | null>;
-	createManifest(encodedManifest: string): Promise<void>;
 }

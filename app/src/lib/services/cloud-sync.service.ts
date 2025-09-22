@@ -47,8 +47,7 @@ export async function sync() {
 		await uploadFiles(filesToUpload);
 
 		// Merge into local
-		await mergeIntoLocalFiles(filesToMerge, remoteFiles);
-		// Reupload merged
+		await reconcileFiles(filesToMerge, remoteFiles);
 	} catch (e: unknown) {
 		if (e instanceof Error) {
 			const message = e.message;
@@ -104,10 +103,7 @@ async function saveFiles(files: PoemRecord[]) {
 	}
 }
 
-async function mergeIntoLocalFiles(
-	filesToMerge: PoemListItem[],
-	remoteFiles: RemoteFileListItem[]
-) {
+async function reconcileFiles(filesToMerge: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
 	for (const localFileMeta of filesToMerge) {
 		const remoteFileMeta = remoteFiles.find(
 			(remoteFile) => remoteFile.fileName === localFileMeta.id

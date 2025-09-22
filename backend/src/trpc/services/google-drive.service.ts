@@ -93,8 +93,6 @@ export async function upload(client: OAuth2Client, fileName: string, record: Poe
 }
 
 export async function update(client: OAuth2Client, fileId: string, record: PoemRecord) {
-	const pokeBookFolderId = await getOrCreatePokeBookFolderId(client);
-
 	console.log('>>> updating poem', record);
 
 	const result = await google.drive('v3').files.update({

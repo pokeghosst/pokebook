@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,14 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
-// TODO: This is weird and not very nice but I'll look into it later
-import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
 
 import type { PoemEntity, StorageDriver } from '$lib/types';
-import type { PoemFile } from '@pokebook/shared';
+import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
+import type { RemoteFileListItem } from '@pokebook/shared';
 
 export class GoogleDrive implements StorageDriver {
-	private trpc = createTRPCClient<AppRouter>({
+	#trpc = createTRPCClient<AppRouter>({
 		links: [
 			httpBatchLink({
 				url: 'http://localhost:3000/trpc',
@@ -37,17 +36,17 @@ export class GoogleDrive implements StorageDriver {
 			})
 		]
 	});
-	private pokeBookFolderId: string | null = null;
+	#pokeBookFolderId: string | null = null;
 
 	async getPokeBookFolderId() {
 		console.log('getting pokebook folder id');
-		const response = await this.trpc.google.getPokeBookFolderId.query();
+		const response = await this.#trpc.google.getPokeBookFolderId.query();
 		console.log('got pokebook folder id');
-		this.pokeBookFolderId = response.folderId;
+		this.#pokeBookFolderId = response.folderId;
 	}
 
-	async listPoems(): Promise<PoemFile[]> {
-		return await this.trpc.google.list.query();
+	async listPoems(): Promise<RemoteFileListItem[]> {
+		return await this.#trpc.google.list.query();
 	}
 	loadPoem(poemUri: string): Promise<PoemEntity> {
 		throw new Error('Method not implemented.');
@@ -61,21 +60,18 @@ export class GoogleDrive implements StorageDriver {
 	deletePoem(poemUri: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	async retrieveEncodedManifest(): Promise<string | null> {
-		// TODO: Store PokeBook folder ID in user preferences and use this only if it's missing
-		// if (!this.pokeBookFolderId) await this.getPokeBookFolderId();
+	// async retrieveEncodedManifest(): Promise<string | null> {
+	// 	// TODO: Store PokeBook folder ID in user preferences and use this only if it's missing
+	// 	// if (!this.pokeBookFolderId) await this.getPokeBookFolderId();
 
-		const response = await this.trpc.google.getManifest.query();
+	// 	const response = await this.#trpc.google.getManifest.query();
 
-		return response.manifest;
-	}
-	async createManifest(encodedManifest: string): Promise<void> {
-		await this.trpc.google.createManifest.mutate({ manifest: encodedManifest });
-	}
+	// 	return response.manifest;
+	// }
 	async uploadPoems(poems: { name: string; contents: string }[]) {
-		return await this.trpc.google.upload.mutate(poems);
+		return await this.#trpc.google.upload.mutate(poems);
 	}
 	async downloadPoems(ids: string[]) {
-		return await this.trpc.google.download.query(ids);
+		return await this.#trpc.google.download.query(ids);
 	}
 }
