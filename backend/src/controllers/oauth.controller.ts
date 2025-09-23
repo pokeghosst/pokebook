@@ -16,8 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Request, Response } from 'express';
 import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
+
+import type { Request, Response } from 'express';
+import type { gaxios } from 'google-auth-library';
 
 export const getOAuthUrl = (req: Request, res: Response) => {
 	const { provider } = req.params;
@@ -47,8 +49,8 @@ export const handleCallback = async (req: Request, res: Response) => {
 					});
 
 					res.redirect(`${process.env.CLIENT_URL}/?auth=success`);
-				} catch (e) {
-					if (e.response?.data?.error === 'invalid_grant') {
+				} catch (e: unknown) {
+					if ((e as gaxios.GaxiosError).response?.data?.error === 'invalid_grant') {
 						res.redirect(`${process.env.CLIENT_URL}/?auth=invalid_grant`);
 					} else {
 						res.redirect(`${process.env.CLIENT_URL}/?auth=unknown`);
