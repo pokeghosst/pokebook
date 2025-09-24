@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
+import { encryptCookie } from '../util/cookies';
 
 import type { Request, Response } from 'express';
 import type { gaxios } from 'google-auth-library';
@@ -41,9 +42,16 @@ export const handleCallback = async (req: Request, res: Response) => {
 				try {
 					const { accessToken, expiresAt, sessionId } = await processCallback(code);
 
-					res.cookie('pokebook-session', JSON.stringify({ accessToken, expiresAt, sessionId }), {
+					// TODO: Key rotation
+					const encryptedCookie = encryptCookie({
+						accessToken: accessToken || null,
+						expiresAt: expiresAt || null,
+						sessionId: sessionId || null
+					});
+					res.cookie('pokebook-session', encryptedCookie, {
 						httpOnly: true,
 						secure: process.env.NODE_ENV === 'production',
+						sameSite: 'strict',
 						maxAge: 30 * 24 * 60 * 60 * 1000,
 						path: '/'
 					});
