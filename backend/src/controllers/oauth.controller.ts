@@ -43,11 +43,9 @@ export const handleCallback = async (req: Request, res: Response) => {
 					const { accessToken, expiresAt, sessionId } = await processCallback(code);
 
 					// TODO: Key rotation
-					const encryptedCookie = encryptCookie({
-						accessToken: accessToken || null,
-						expiresAt: expiresAt || null,
-						sessionId: sessionId || null
-					});
+					const encryptedCookie = encryptCookie({ accessToken, expiresAt, sessionId });
+					console.log(encryptCookie);
+
 					res.cookie('pokebook-session', encryptedCookie, {
 						httpOnly: true,
 						secure: process.env.NODE_ENV === 'production',
@@ -61,6 +59,8 @@ export const handleCallback = async (req: Request, res: Response) => {
 					if ((e as gaxios.GaxiosError).response?.data?.error === 'invalid_grant') {
 						res.redirect(`${process.env.CLIENT_URL}/?auth=invalid_grant`);
 					} else {
+						// TODO: Proper error handling?
+						console.error(e);
 						res.redirect(`${process.env.CLIENT_URL}/?auth=unknown`);
 					}
 				}

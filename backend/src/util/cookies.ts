@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 interface CookieData {
-	accessToken: string | null;
-	expiresAt: number | null;
-	sessionId: string | null;
+	accessToken: string;
+	expiresAt: number;
+	sessionId: string;
 }
 
 export function encryptCookie(data: CookieData): string {
@@ -37,32 +37,28 @@ export function encryptCookie(data: CookieData): string {
 
 	const authTag = cipher.getAuthTag();
 
-	// Format: iv.authTag.encryptedData
+	// iv.authTag.encryptedData
 	return `${iv.toString('hex')}.${authTag.toString('hex')}.${encrypted}`;
 }
 
-export function decryptCookie(encryptedData: string): CookieData | null {
-	try {
-		const key = Buffer.from(process.env.COOKIE_ENCRYPTION_KEY!, 'base64');
-		const [ivHex, authTagHex, encrypted] = encryptedData.split('.');
+export function decryptCookie(encryptedData: string): CookieData {
+	const key = Buffer.from(process.env.COOKIE_ENCRYPTION_KEY!, 'base64');
+	const [ivHex, authTagHex, encrypted] = encryptedData.split('.');
 
-		if (!ivHex || !authTagHex || !encrypted) {
-			return null;
-		}
-
-		const iv = Buffer.from(ivHex, 'hex');
-		const authTag = Buffer.from(authTagHex, 'hex');
-
-		const decipher = createDecipheriv('aes-256-gcm', key, iv);
-		decipher.setAAD(Buffer.from('pokebook-session', 'utf8'));
-		decipher.setAuthTag(authTag);
-
-		let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-		decrypted += decipher.final('utf8');
-
-		return JSON.parse(decrypted);
-	} catch (error) {
-		console.error('Cookie decryption failed:', error);
-		return null;
+	if (!ivHex || !authTagHex || !encrypted) {
+		// TODO: Custom errors
+		throw Error('Malformed cookie!');
 	}
+
+	const iv = Buffer.from(ivHex, 'hex');
+	const authTag = Buffer.from(authTagHex, 'hex');
+
+	const decipher = createDecipheriv('aes-256-gcm', key, iv);
+	decipher.setAAD(Buffer.from('pokebook-session', 'utf8'));
+	decipher.setAuthTag(authTag);
+
+	let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+	decrypted += decipher.final('utf8');
+
+	return JSON.parse(decrypted);
 }

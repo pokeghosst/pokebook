@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { TRPCError } from '@trpc/server';
 import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import { decryptCookie } from '../util/cookies';
 
 export const createContext = ({ req, res }: CreateExpressContextOptions) => {
 	if (!req.cookies['pokebook-session']) {
@@ -27,19 +28,11 @@ export const createContext = ({ req, res }: CreateExpressContextOptions) => {
 		});
 	}
 
-	const {
-		accessToken,
-		expiresAt,
-		sessionId
-	}: { accessToken: string; expiresAt: number; sessionId: string } = JSON.parse(
-		req.cookies['pokebook-session']
-	);
+	const decryptedCookie = decryptCookie(req.cookies['pokebook-session']);
 
 	return {
 		res,
-		accessToken,
-		expiresAt,
-		sessionId
+		...decryptedCookie
 	};
 };
 
