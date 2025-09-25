@@ -18,46 +18,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { randomBytes } from 'crypto';
 import { google } from 'googleapis';
-import { createClient } from 'redis';
+
+import { getUserRefreshToken, setUserRefreshToken } from './redis.service';
 
 import type { OAuth2Client } from 'google-auth-library';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
-
-interface AuthenticatedRequestParams<T, P extends any[] = []> {
-	sessionId: string;
-	accessToken: string | null;
-	expiresAt: number | null;
-	requestFn: (client: OAuth2Client, ...params: P) => Promise<T>;
-	requestParams?: P;
-}
-
-interface AuthenticatedRequestResult<T> {
-	data: T;
-	tokenRefreshed: boolean;
-	newToken?: {
-		accessToken: string;
-		expiresAt: number;
-	};
-}
-
-const redis = await createClient({
-	url: `redis://default:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-})
-	.on('error', (err) => console.log('Redis Client Error', err))
-	.connect();
-
-async function getUserRefreshToken(sessionId: string): Promise<string | null> {
-	return redis.get(`google:${sessionId}`);
-}
-
-export async function setUserRefreshToken(sessionId: string, refreshToken: string) {
-	return redis.set(`google:${sessionId}`, refreshToken);
-}
-
-async function deleteUserRefreshToken(sessionId: string) {
-	return redis.del(`google:${sessionId}`);
-}
 
 function createOAuth2Client() {
 	return new google.auth.OAuth2(
@@ -84,7 +50,7 @@ export async function processCallback(code: string) {
 	};
 }
 
-export async function createOAuth2ClientFromRefreshToken(userId: string) {
+export async function createOAuth2ClientFromRefreshToken(userId: string): Promise<OAuth2Client> {
 	const oauth2Client = createOAuth2Client();
 	const refreshToken = await getUserRefreshToken(userId);
 
@@ -99,47 +65,13 @@ export async function createOAuth2ClientFromRefreshToken(userId: string) {
 	return oauth2Client;
 }
 
-export async function createOAuth2ClientFromAccessToken(accessToken: string) {
+export async function createOAuth2ClientFromAccessToken(
+	accessToken: string
+): Promise<OAuth2Client> {
 	const oauth2Client = createOAuth2Client();
 	oauth2Client.setCredentials({ access_token: accessToken });
 	return oauth2Client;
 }
-
-// export async function makeAuthenticatedRequest<T, P extends any[] = []>({
-// 	sessionId,
-// 	accessToken,
-// 	expiresAt,
-// 	requestFn,
-// 	requestParams = [] as unknown as P
-// }: AuthenticatedRequestParams<T, P>): Promise<AuthenticatedRequestResult<T>> {
-// 	const isExpired = !accessToken || !expiresAt || Date.now() > expiresAt - TOKEN_EXPIRATION_BUFFER;
-
-// 	if (!isExpired) {
-// 		console.log('access token is fresh!');
-// 		const client = await createOAuth2ClientFromAccessToken(accessToken);
-// 		return {
-// 			data: await requestFn(client, ...requestParams),
-// 			tokenRefreshed: false
-// 		};
-// 	}
-
-// 	const client = await createOAuth2ClientFromRefreshToken(sessionId);
-// 	const { credentials } = await client.refreshAccessToken();
-
-// 	if (credentials.refresh_token) {
-// 		console.log('storing refresh token...');
-// 		await setUserRefreshToken(sessionId, credentials.refresh_token);
-// 	}
-
-// 	return {
-// 		data: await requestFn(client, ...requestParams),
-// 		tokenRefreshed: true,
-// 		newToken: {
-// 			accessToken: credentials.access_token,
-// 			expiresAt: credentials.expiry_date
-// 		}
-// 	};
-// }
 
 export function getGoogleAuthUrl() {
 	return createOAuth2Client().generateAuthUrl({
