@@ -25,14 +25,14 @@ const redis = await createClient({
 	.connect();
 
 export async function getUserRefreshToken(sessionId: string): Promise<string | null> {
-	return redis.get(`google:${sessionId}`);
+	return redis.get(sessionId);
 }
 
 export async function setUserRefreshToken(sessionId: string, refreshToken: string) {
-	return redis.set(`google:${sessionId}`, refreshToken);
+	return redis.set(sessionId, refreshToken);
 }
 
 // TODO: Implement token deletion!
 export async function deleteUserRefreshToken(sessionId: string) {
-	return redis.del(`google:${sessionId}`);
+	return redis.del(sessionId);
 }
