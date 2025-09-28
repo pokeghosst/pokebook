@@ -16,25 +16,24 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
+import { createTRPCClient, createWSClient, wsLink } from '@trpc/client';
 
 import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
 import type { PoemRecord, RemoteFileListItem } from '@pokebook/shared';
 import type { CloudStoragePlugin } from './CloudStoragePlugin';
 
+const wsClient = createWSClient({
+	url: `ws://localhost:3001`,
+	connectionParams: async () => {
+		return {
+			token: 'supersecret'
+		};
+	}
+});
+
 export class CloudStorageGoogle implements CloudStoragePlugin {
 	#trpc = createTRPCClient<AppRouter>({
-		links: [
-			httpBatchLink({
-				url: 'http://localhost:3000/trpc',
-				fetch(url, options) {
-					return fetch(url, {
-						...options,
-						credentials: 'include'
-					});
-				}
-			})
-		]
+		links: [wsLink({ client: wsClient })]
 	});
 	// TODO: Remove retrieving PokeBook folder ID in Google Drive backend functions
 	#pokebookFolderId: string | null = null;

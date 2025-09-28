@@ -18,73 +18,72 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { initTRPC, TRPCError } from '@trpc/server';
 
-import {
-	createOAuth2ClientFromAccessToken,
-	createOAuth2ClientFromRefreshToken,
-	setUserRefreshToken
-} from '../services/google-auth.service';
+import { createOAuth2ClientFromRefreshToken } from '../services/google-auth.service';
+import { setUserRefreshToken } from '../services/redis.service';
 
-import type { Context } from './context';
+import type { Context } from './wsContext';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
 const t = initTRPC.context<Context>().create();
 
-const tokenRefresh = t.middleware(async ({ ctx, next }) => {
-	if (!ctx.sessionId) {
-		throw new TRPCError({
-			code: 'UNAUTHORIZED',
-			message: 'Not authenticated'
-		});
-	}
+// TODO: This is hardcoded for Google
+// const tokenRefresh = t.middleware(async ({ ctx, next }) => {ooooooooooooooo
+// 	if (!ctx.sessionId) {
+// 		throw new TRPCError({
+// 			code: 'UNAUTHORIZED',
+// 			message: 'Not authenticated'
+// 		});
+// 	}
 
-	const isExpired =
-		!ctx.accessToken || !ctx.expiresAt || Date.now() > ctx.expiresAt - TOKEN_EXPIRATION_BUFFER;
+// 	const isExpired =
+// 		!ctx.accessToken || !ctx.expiresAt || Date.now() > ctx.expiresAt - TOKEN_EXPIRATION_BUFFER;
 
-	if (isExpired) {
-		try {
-			const client = await createOAuth2ClientFromRefreshToken(ctx.sessionId);
-			const { credentials } = await client.refreshAccessToken();
-			const { access_token, expiry_date } = credentials;
+// 	if (isExpired) {
+// 		try {
+// 			const client = await createOAuth2ClientFromRefreshToken(ctx.sessionId);
+// 			const { credentials } = await client.refreshAccessToken();
+// 			const { access_token, expiry_date } = credentials;
 
-			if (!access_token || !expiry_date) {
-				throw new TRPCError({
-					code: 'UNAUTHORIZED',
-					message: 'Got no access token'
-				});
-			}
+// 			if (!access_token || !expiry_date) {
+// 				throw new TRPCError({
+// 					code: 'UNAUTHORIZED',
+// 					message: 'Got no access token'
+// 				});
+// 			}
 
-			if (credentials.refresh_token) {
-				console.log('storing refresh token...');
-				await setUserRefreshToken(ctx.sessionId, credentials.refresh_token);
-			}
+// 			if (credentials.refresh_token) {
+// 				console.log('storing refresh token...');
+// 				await setUserRefreshToken(ctx.sessionId, credentials.refresh_token);
+// 			}
 
-			ctx.accessToken = access_token;
-			ctx.expiresAt = expiry_date;
+// 			ctx.accessToken = access_token;
+// 			ctx.expiresAt = expiry_date;
 
-			const newToken = {
-				accessToken: access_token,
-				expiresAt: expiry_date,
-				sessionId: ctx.sessionId
-			};
+// 			const newToken = {
+// 				accessToken: access_token,
+// 				expiresAt: expiry_date,
+// 				sessionId: ctx.sessionId
+// 			};
 
-			ctx.res.cookie('pokebook-session', JSON.stringify(newToken), {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === 'production',
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				path: '/'
-			});
-		} catch (e) {
-			throw new TRPCError({
-				code: 'UNAUTHORIZED',
-				message: 'Failed to refresh token'
-			});
-		}
-	}
+// 			ctx.res.cookie('pokebook-session', JSON.stringify(newToken), {
+// 				httpOnly: true,
+// 				secure: process.env.NODE_ENV === 'production',
+// 				maxAge: 30 * 24 * 60 * 60 * 1000,
+// 				path: '/'
+// 			});
+// 		} catch (e) {
+// 			throw new TRPCError({
+// 				code: 'UNAUTHORIZED',
+// 				message: 'Failed to refresh token'
+// 			});
+// 		}
+// 	}
 
-	return next({ ctx });
-});
+// 	return next({ ctx });
+// });
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
-export const protectedProcedure = t.procedure.use(tokenRefresh);
+// export const protectedProcedure = t.procedure.use(tokenRefresh);
+export const protectedProcedure = t.procedure;
