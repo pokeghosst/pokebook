@@ -16,10 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
-import { encryptCookie } from '../util/cookies';
-
+import { randomBytes } from 'crypto';
 import type { Request, Response } from 'express';
+
+import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
+import { createSession } from '../services/redis.service';
+
 import type { gaxios } from 'google-auth-library';
 
 export const getOAuthUrl = (req: Request, res: Response) => {
@@ -33,6 +35,7 @@ export const getOAuthUrl = (req: Request, res: Response) => {
 
 export const handleCallback = async (req: Request, res: Response) => {
 	const { provider } = req.params;
+	const sessionId = randomBytes(32).toString('hex');
 
 	switch (provider) {
 		case 'google':
@@ -40,28 +43,42 @@ export const handleCallback = async (req: Request, res: Response) => {
 
 			if (code && typeof code === 'string') {
 				try {
-					const { accessToken, expiresAt, sessionId } = await processCallback(code);
+					const callbackResult = await processCallback(code);
 
-					// TODO: Key rotation
-					const encryptedCookie = encryptCookie({ accessToken, expiresAt, sessionId });
-					console.log(encryptCookie);
+					if (
+						!callbackResult.refreshToken ||
+						!callbackResult.accessToken ||
+						!callbackResult.expiresAt
+					)
+						throw new Error('callback');
 
-					res.cookie('pokebook-session', encryptedCookie, {
+					if ((await createSession(sessionId, callbackResult)) === null)
+						res.redirect(`${process.env.CLIENT_URL}/?auth=err_session_save`);
+
+					res.cookie('pokebook-session', sessionId, {
 						httpOnly: true,
 						secure: process.env.NODE_ENV === 'production',
 						sameSite: 'strict',
-						maxAge: 30 * 24 * 60 * 60 * 1000,
+						maxAge: 30 * 24 * 60 * 60 * 1000, // TODO: Reflect this expiration in Redis (auto-delete) and/or extend maxAge
 						path: '/'
 					});
 
 					res.redirect(`${process.env.CLIENT_URL}/?auth=success`);
 				} catch (e: unknown) {
+					// TODO: Proper error handling/logging?
+					console.error(e);
+
 					if ((e as gaxios.GaxiosError).response?.data?.error === 'invalid_grant') {
 						res.redirect(`${process.env.CLIENT_URL}/?auth=invalid_grant`);
 					} else {
-						// TODO: Proper error handling?
-						console.error(e);
-						res.redirect(`${process.env.CLIENT_URL}/?auth=unknown`);
+						if (e instanceof Error) {
+							switch (e.message) {
+								case 'callback':
+									res.redirect(`${process.env.CLIENT_URL}/?auth=callback_error`);
+									break;
+							}
+							res.redirect(`${process.env.CLIENT_URL}/?auth=unknown`);
+						}
 					}
 				}
 			}

@@ -24,15 +24,15 @@ const redis = await createClient({
 	.on('error', (err) => console.error('Redis Client Error', err))
 	.connect();
 
-export async function getUserRefreshToken(sessionId: string): Promise<string | null> {
+export async function getSession(sessionId: string): Promise<string | null> {
 	return redis.get(sessionId);
 }
 
-export async function setUserRefreshToken(sessionId: string, refreshToken: string) {
-	return redis.set(sessionId, refreshToken);
+export async function createSession<T = Record<string, unknown>>(sessionId: string, data: T) {
+	return redis.set(sessionId, JSON.stringify(data));
 }
 
-// TODO: Implement token deletion!
-export async function deleteUserRefreshToken(sessionId: string) {
+// TODO: Don't forget to actually delete sessions on logging out
+export async function deleteSession(sessionId: string) {
 	return redis.del(sessionId);
 }

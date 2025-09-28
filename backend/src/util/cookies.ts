@@ -47,7 +47,7 @@ export function decryptCookie(encryptedData: string): CookieData {
 
 	if (!ivHex || !authTagHex || !encrypted) {
 		// TODO: Custom errors
-		throw Error('Malformed cookie!');
+		throw new Error('Malformed cookie!');
 	}
 
 	const iv = Buffer.from(ivHex, 'hex');

@@ -16,10 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { randomBytes } from 'crypto';
 import { google } from 'googleapis';
 
-import { getUserRefreshToken, setUserRefreshToken } from './redis.service';
+import { getSession } from './redis.service';
 
 import type { OAuth2Client } from 'google-auth-library';
 
@@ -36,23 +35,17 @@ function createOAuth2Client() {
 export async function processCallback(code: string) {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
-	let sessionId: string | null = null;
-
-	if (tokens.refresh_token) {
-		sessionId = randomBytes(32).toString('base64');
-		await setUserRefreshToken(sessionId, tokens.refresh_token);
-	}
-
 	return {
+		refreshToken: tokens.refresh_token,
 		accessToken: tokens.access_token,
-		expiresAt: tokens.expiry_date,
-		sessionId
+		expiresAt: tokens.expiry_date
 	};
 }
 
+// TODO: SessionID?
 export async function createOAuth2ClientFromRefreshToken(userId: string): Promise<OAuth2Client> {
 	const oauth2Client = createOAuth2Client();
-	const refreshToken = await getUserRefreshToken(userId);
+	const refreshToken = await getSession(userId);
 
 	if (!refreshToken) {
 		throw new Error('No refresh token found for user');
