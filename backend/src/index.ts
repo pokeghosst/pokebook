@@ -22,6 +22,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
 import { WebSocketServer } from 'ws';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import routes from './routers';
 import { appRouter } from './trpc/routers';
@@ -56,9 +57,29 @@ const handler = applyWSSHandler({
 	}
 });
 
-app.listen(3000, () => {
-	console.log('listening on port 3000');
-});
+app.use(
+	'/ws',
+	createProxyMiddleware({
+		target: 'http://localhost:3001',
+		changeOrigin: true,
+		ws: true,
+		on: {
+			proxyReq: (proxyReq, req) => {
+				proxyReq.setHeader('Upgrade', req.headers.upgrade || '');
+				proxyReq.setHeader('Connection', req.headers.connection || '');
+				proxyReq.setHeader('Host', req.headers.host || '');
+			}
+		}
+	})
+);
+
+app.use(
+	'/',
+	createProxyMiddleware({
+		target: 'http://localhost:3000',
+		changeOrigin: true
+	})
+);
 
 wss.on('connection', (ws) => {
 	console.log(`Connection (${wss.clients.size})`);
@@ -66,7 +87,11 @@ wss.on('connection', (ws) => {
 		console.log(`Connection (${wss.clients.size})`);
 	});
 });
-console.log('✅ WebSocket Server listening on ws://localhost:3001');
+
+app.listen(3000, () => {
+	console.log('listening on port 3000');
+});
+
 process.on('SIGTERM', () => {
 	console.log('SIGTERM');
 	handler.broadcastReconnectNotification();
