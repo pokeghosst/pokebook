@@ -17,13 +17,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
+import { parseCookie } from '../util/cookies';
 
 export const createContext = async (opts: CreateWSSContextFnOptions) => {
-	const token = opts.info.connectionParams?.token;
+	const cookie = opts.req.headers.cookie;
 
-	console.log('token from client', token);
+	if (!cookie) throw new Error('no cookie');
 
-	return {};
+	const sessionId = parseCookie(cookie, 'pokebook-session');
+
+	if (!sessionId) throw new Error('no session ID in cookie');
+
+	return { sessionId };
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

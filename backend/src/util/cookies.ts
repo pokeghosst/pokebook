@@ -62,3 +62,9 @@ export function decryptCookie(encryptedData: string): CookieData {
 
 	return JSON.parse(decrypted);
 }
+
+export function parseCookie(cookie: string, key: string) {
+	const cookies = cookie.split('; ');
+	const targetCookie = cookies.find((cookie) => cookie.startsWith(`${key}=`));
+	return targetCookie ? targetCookie.split('=')[1] : null;
+}
