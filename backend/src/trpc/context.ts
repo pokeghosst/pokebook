@@ -17,23 +17,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { TRPCError } from '@trpc/server';
-import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
-import { decryptCookie } from '../util/cookies';
+import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 
-export const createContext = ({ req, res }: CreateExpressContextOptions) => {
-	if (!req.cookies['pokebook-session']) {
+import { parseCookie } from '../util/cookies';
+
+export const createContext = async (opts: CreateWSSContextFnOptions) => {
+	const cookie = opts.req.headers.cookie;
+
+	if (!cookie)
 		throw new TRPCError({
 			code: 'UNAUTHORIZED',
 			message: 'Not authenticated'
 		});
-	}
 
-	const decryptedCookie = decryptCookie(req.cookies['pokebook-session']);
+	const sessionId = parseCookie(cookie, 'pokebook-session');
 
-	return {
-		res,
-		...decryptedCookie
-	};
+	if (!sessionId)
+		throw new TRPCError({
+			code: 'UNAUTHORIZED',
+			message: 'Not authenticated'
+		});
+
+	return { sessionId };
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
