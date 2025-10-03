@@ -20,9 +20,10 @@ import { randomBytes } from 'crypto';
 import type { Request, Response } from 'express';
 
 import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
-import { createSession } from '../services/redis.service';
+import { ProviderTokenStore } from '../services/provider-token-store.service';
 
 import type { gaxios } from 'google-auth-library';
+import type { GoogleTokens } from '../types/provider-tokens';
 
 export const getOAuthUrl = (req: Request, res: Response) => {
 	const { provider } = req.params;
@@ -43,19 +44,15 @@ export const handleCallback = async (req: Request, res: Response) => {
 
 			if (code && typeof code === 'string') {
 				try {
-					const callbackResult = await processCallback(code);
+					const googleTokenStore = new ProviderTokenStore<GoogleTokens>('google');
+					const tokens = await processCallback(code);
 
-					if (
-						!callbackResult.refreshToken ||
-						!callbackResult.accessToken ||
-						!callbackResult.expiresAt
-					)
+					if (!tokens.refreshToken || !tokens.accessToken || !tokens.expiresAt)
 						throw new Error('callback');
 
-					if ((await createSession(sessionId, callbackResult)) === null)
-						res.redirect(`${process.env.CLIENT_URL}/?auth=err_session_save`);
+					await googleTokenStore.save(sessionId, tokens);
 
-					res.cookie('pokebook-session', sessionId, {
+					res.cookie('pokebook-session', `google.${sessionId}`, {
 						httpOnly: true,
 						secure: process.env.NODE_ENV === 'production',
 						sameSite: 'strict',

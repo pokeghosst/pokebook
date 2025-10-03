@@ -16,23 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { createClient } from 'redis';
-
-const redis = await createClient({
-	url: `redis://default:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-})
-	.on('error', (err) => console.error('Redis Client Error', err))
-	.connect();
-
-export async function getSession(sessionId: string): Promise<string | null> {
-	return redis.get(sessionId);
+export interface GoogleTokens {
+	provider: 'google';
+	refreshToken: string;
+	accessToken: string;
+	expiresAt: number;
 }
 
-export async function createSession<T = Record<string, unknown>>(sessionId: string, data: T) {
-	return redis.set(sessionId, JSON.stringify(data));
-}
-
-// TODO: Don't forget to actually delete sessions on logging out
-export async function deleteSession(sessionId: string) {
-	return redis.del(sessionId);
-}
+export type ProviderTokens = GoogleTokens;
+export type ProviderName = ProviderTokens['provider'];

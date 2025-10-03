@@ -18,11 +18,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { google } from 'googleapis';
 
-import { getSession } from './redis.service';
+import { ProviderTokenStore } from './provider-token-store.service';
 
 import type { OAuth2Client } from 'google-auth-library';
+import type { GoogleTokens } from '../types/provider-tokens';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
+
+const googleTokenStore = new ProviderTokenStore<GoogleTokens>('google');
 
 function createOAuth2Client() {
 	return new google.auth.OAuth2(
@@ -32,27 +35,27 @@ function createOAuth2Client() {
 	);
 }
 
-export async function processCallback(code: string) {
+export async function processCallback(code: string): Promise<Omit<GoogleTokens, 'provider'>> {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
 	return {
-		refreshToken: tokens.refresh_token,
-		accessToken: tokens.access_token,
-		expiresAt: tokens.expiry_date
+		refreshToken: tokens.refresh_token!,
+		accessToken: tokens.access_token!,
+		expiresAt: tokens.expiry_date!
 	};
 }
 
 // TODO: SessionID?
 export async function createOAuth2ClientFromRefreshToken(userId: string): Promise<OAuth2Client> {
 	const oauth2Client = createOAuth2Client();
-	const refreshToken = await getSession(userId);
+	const tokens = await googleTokenStore.get(userId);
 
-	if (!refreshToken) {
-		throw new Error('No refresh token found for user');
+	if (!tokens) {
+		throw new Error('No tokens found for user');
 	}
 
 	oauth2Client.setCredentials({
-		refresh_token: refreshToken
+		refresh_token: tokens.refreshToken
 	});
 
 	return oauth2Client;
