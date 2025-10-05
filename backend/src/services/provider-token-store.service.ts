@@ -27,11 +27,8 @@ const redis = await createClient({
 	.connect();
 
 export class ProviderTokenStore<T extends ProviderTokens> {
-	constructor(private readonly provider: T['provider']) {}
-
-	async save(sessionId: string, tokens: Omit<T, 'provider'>): Promise<void> {
-		const dataWithProvider = { ...tokens, provider: this.provider } as T;
-		await redis.set(sessionId, JSON.stringify(dataWithProvider));
+	async save(sessionId: string, tokens: T): Promise<void> {
+		await redis.set(sessionId, JSON.stringify(tokens));
 	}
 
 	async get(sessionId: string): Promise<T | null> {
@@ -42,14 +39,7 @@ export class ProviderTokenStore<T extends ProviderTokens> {
 		}
 
 		try {
-			const parsed = JSON.parse(data) as T;
-
-			if (parsed.provider !== this.provider) {
-				console.warn(`Provider mismatch: expected ${this.provider}, got ${parsed.provider}`);
-				return null;
-			}
-
-			return parsed;
+			return JSON.parse(data) as T;
 		} catch (error) {
 			console.error('Failed to parse token data:', error);
 			return null;

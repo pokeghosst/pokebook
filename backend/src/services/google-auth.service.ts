@@ -25,7 +25,7 @@ import type { GoogleTokens } from '../types/provider-tokens';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
-const googleTokenStore = new ProviderTokenStore<GoogleTokens>('google');
+const googleTokenStore = new ProviderTokenStore<GoogleTokens>();
 
 function createOAuth2Client() {
 	return new google.auth.OAuth2(
@@ -35,7 +35,7 @@ function createOAuth2Client() {
 	);
 }
 
-export async function processCallback(code: string): Promise<Omit<GoogleTokens, 'provider'>> {
+export async function processCallback(code: string): Promise<GoogleTokens> {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
 	return {

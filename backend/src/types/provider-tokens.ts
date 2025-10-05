@@ -17,11 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 export interface GoogleTokens {
-	provider: 'google';
 	refreshToken: string;
 	accessToken: string;
 	expiresAt: number;
 }
 
 export type ProviderTokens = GoogleTokens;
-export type ProviderName = ProviderTokens['provider'];

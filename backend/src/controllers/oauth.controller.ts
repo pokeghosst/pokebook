@@ -44,7 +44,7 @@ export const handleCallback = async (req: Request, res: Response) => {
 
 			if (code && typeof code === 'string') {
 				try {
-					const googleTokenStore = new ProviderTokenStore<GoogleTokens>('google');
+					const googleTokenStore = new ProviderTokenStore<GoogleTokens>();
 					const tokens = await processCallback(code);
 
 					if (!tokens.refreshToken || !tokens.accessToken || !tokens.expiresAt)
