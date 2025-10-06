@@ -16,10 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export interface GoogleTokens {
+const DEFAULT_TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
+
+export class GoogleTokens {
 	refreshToken: string;
 	accessToken: string;
 	expiresAt: number;
+
+	constructor(refreshToken: string, accessToken: string, expiresAt: number) {
+		this.refreshToken = refreshToken;
+		this.accessToken = accessToken;
+		this.expiresAt = expiresAt;
+	}
+
+	isExpired(bufferMs: number = DEFAULT_TOKEN_EXPIRATION_BUFFER): boolean {
+		return Date.now() > this.expiresAt - bufferMs;
+	}
 }
 
 export type ProviderTokens = GoogleTokens;

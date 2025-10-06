@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { google } from 'googleapis';
 
 import { ProviderTokenStore } from './provider-token-store.service';
+import { GoogleTokens } from '../types/provider-tokens';
 
 import type { OAuth2Client } from 'google-auth-library';
-import type { GoogleTokens } from '../types/provider-tokens';
 
 const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
@@ -38,11 +38,11 @@ function createOAuth2Client() {
 export async function processCallback(code: string): Promise<GoogleTokens> {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
-	return {
-		refreshToken: tokens.refresh_token!,
-		accessToken: tokens.access_token!,
-		expiresAt: tokens.expiry_date!
-	};
+	return new GoogleTokens(
+		tokens.refresh_token!,
+		tokens.access_token!,
+		tokens.expiry_date!
+	);
 }
 
 // TODO: SessionID?
