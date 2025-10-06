@@ -3,11 +3,7 @@ export * from './StorageDriver';
 import type { Icon } from 'lucide-svelte';
 import type { ComponentType } from 'svelte';
 
-export interface PoemFileEntity {
-	name: string;
-	poemUri: string;
-	timestamp: string | number;
-}
+// TODO: Drop this!
 export interface PoemEntity {
 	name: string;
 	text: string;

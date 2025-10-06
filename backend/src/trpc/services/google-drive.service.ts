@@ -56,15 +56,12 @@ export async function list(client: OAuth2Client) {
 }
 
 export async function download(client: OAuth2Client, id: string) {
-	console.log('downloading poems');
-
 	const response = await google.drive('v3').files.get({
 		fileId: id,
 		alt: 'media',
 		auth: client
 	});
 
-	console.log('>> response.data', response.data);
 	const contents = response.data;
 
 	return { fileId: id, contents: contents };
@@ -93,8 +90,6 @@ export async function upload(client: OAuth2Client, fileName: string, record: Poe
 }
 
 export async function update(client: OAuth2Client, fileId: string, record: PoemRecord) {
-	console.log('>>> updating poem', record);
-
 	const result = await google.drive('v3').files.update({
 		auth: client,
 		fileId,

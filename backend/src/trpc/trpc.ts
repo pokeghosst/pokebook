@@ -16,14 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { initTRPC, TRPCError } from '@trpc/server';
+import { initTRPC } from '@trpc/server';
 
-import { createOAuth2ClientFromRefreshToken } from '../services/google-auth.service';
-import { setUserRefreshToken } from '../services/redis.service';
-
-import type { Context } from './wsContext';
-
-const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
+import type { Context } from './context';
 
 const t = initTRPC.context<Context>().create();
 

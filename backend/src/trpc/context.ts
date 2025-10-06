@@ -17,9 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { TRPCError } from '@trpc/server';
-import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
-
 import { parseCookie } from '../util/cookies';
+
+import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 
 export const createContext = async (opts: CreateWSSContextFnOptions) => {
 	const cookie = opts.req.headers.cookie;
@@ -37,6 +37,10 @@ export const createContext = async (opts: CreateWSSContextFnOptions) => {
 			code: 'UNAUTHORIZED',
 			message: 'Not authenticated'
 		});
+
+	// const session = await getSess(sessionId);
+
+	// console.log('session', session);
 
 	return { sessionId };
 };

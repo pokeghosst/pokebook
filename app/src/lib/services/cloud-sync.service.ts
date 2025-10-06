@@ -69,7 +69,6 @@ function getFilesToUpload(localFiles: PoemListItem[], remoteFiles: RemoteFileLis
 }
 
 function getFilesToDownload(remoteFiles: RemoteFileListItem[], localFiles: PoemListItem[]) {
-	// TODO: It may be easier to use hashes as remote file names and compare them
 	return remoteFiles.filter(
 		(remoteFile) => !localFiles.find((localFile) => localFile.id === remoteFile.fileName)
 	);

@@ -26,7 +26,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import routes from './routers';
 import { appRouter } from './trpc/routers';
-import { createContext } from './trpc/wsContext';
+import { createContext } from './trpc/context';
 
 const wss = new WebSocketServer({
 	port: 3001

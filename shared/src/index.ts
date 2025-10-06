@@ -24,16 +24,6 @@ export const poemSchema = z.object({
   note: z.string().nonempty("Note is required"),
 });
 
-export const poemFileSchema = z.object({
-  name: z.string().nonempty("Name is required"),
-  uri: z.string().nonempty("URI is required"),
-  timestamp: z.string(),
-});
-
-export const manifestResponseSchema = z.object({
-  manifest: z.string().min(1, "Manifest cannot be empty"),
-});
-
 export const poemRecordSchema = z.object({
   id: z.string().nonempty("ID is required"),
   name: z.string().nonempty("Name is required"),
@@ -54,8 +44,6 @@ export const remoteFileListItemSchema = z.object({
 });
 
 export type Poem = z.infer<typeof poemSchema>;
-export type PoemFile = z.infer<typeof poemFileSchema>;
-export type ManifestResponse = z.infer<typeof manifestResponseSchema>;
 export type PoemRecord = z.infer<typeof poemRecordSchema>;
 export type PoemListItem = Pick<
   PoemRecord,

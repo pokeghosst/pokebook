@@ -25,7 +25,7 @@ import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
 import type { CloudStoragePlugin } from './CloudStoragePlugin';
 
 const wsClient = createWSClient({
-	url: `ws://localhost:3001`
+	url: `ws://localhost:3000/ws`
 });
 
 const trpc = createTRPCClient<AppRouter>({
