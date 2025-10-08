@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { createClient } from 'redis';
 
-import type { ProviderTokens } from '../types/provider-tokens';
+import { CloudToken } from '../models/cloud-token';
 
 const redis = await createClient({
 	url: `redis://default:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
@@ -26,20 +26,21 @@ const redis = await createClient({
 	.on('error', (err) => console.error('Redis Client Error', err))
 	.connect();
 
-export class ProviderTokenStore<T extends ProviderTokens> {
-	async save(sessionId: string, tokens: T): Promise<void> {
+export class ProviderTokenStore {
+	async save(sessionId: string, tokens: CloudToken): Promise<void> {
 		await redis.set(sessionId, JSON.stringify(tokens));
 	}
 
-	async get(sessionId: string): Promise<T | null> {
+	async get(sessionId: string): Promise<CloudToken | null> {
 		const data = await redis.get(sessionId);
+		console.log(data);
 
 		if (!data) {
 			return null;
 		}
 
 		try {
-			return JSON.parse(data) as T;
+			return CloudToken.fromJSON(JSON.parse(data));
 		} catch (error) {
 			console.error('Failed to parse token data:', error);
 			return null;

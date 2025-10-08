@@ -18,10 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 const DEFAULT_TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
 
-export class GoogleTokens {
-	refreshToken: string;
-	accessToken: string;
-	expiresAt: number;
+export class CloudToken {
+	readonly refreshToken: string;
+	readonly accessToken: string;
+	readonly expiresAt: number;
 
 	constructor(refreshToken: string, accessToken: string, expiresAt: number) {
 		this.refreshToken = refreshToken;
@@ -32,6 +32,11 @@ export class GoogleTokens {
 	isExpired(bufferMs: number = DEFAULT_TOKEN_EXPIRATION_BUFFER): boolean {
 		return Date.now() > this.expiresAt - bufferMs;
 	}
-}
 
-export type ProviderTokens = GoogleTokens;
+	static fromJSON(data: any): CloudToken {
+		if (!data.refreshToken || !data.accessToken || !data.expiresAt)
+			throw new Error('Incorrect token structure');
+
+		return new CloudToken(data.refreshToken, data.accessToken, data.expiresAt);
+	}
+}

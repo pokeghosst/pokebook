@@ -18,14 +18,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { google } from 'googleapis';
 
+import { CloudToken } from '../models/cloud-token';
 import { ProviderTokenStore } from './provider-token-store.service';
-import { GoogleTokens } from '../types/provider-tokens';
 
 import type { OAuth2Client } from 'google-auth-library';
 
-const TOKEN_EXPIRATION_BUFFER = 5 * 60 * 1000;
-
-const googleTokenStore = new ProviderTokenStore<GoogleTokens>();
+const googleTokenStore = new ProviderTokenStore();
 
 function createOAuth2Client() {
 	return new google.auth.OAuth2(
@@ -35,30 +33,34 @@ function createOAuth2Client() {
 	);
 }
 
-export async function processCallback(code: string): Promise<GoogleTokens> {
+export async function processCallback(code: string) {
 	const { tokens } = await createOAuth2Client().getToken(code);
 
-	return new GoogleTokens(
-		tokens.refresh_token!,
-		tokens.access_token!,
-		tokens.expiry_date!
-	);
+	return new CloudToken(tokens.refresh_token!, tokens.access_token!, tokens.expiry_date!);
 }
 
-// TODO: SessionID?
-export async function createOAuth2ClientFromRefreshToken(userId: string): Promise<OAuth2Client> {
-	const oauth2Client = createOAuth2Client();
-	const tokens = await googleTokenStore.get(userId);
+export async function refreshAccessToken(refreshToken: string): Promise<CloudToken> {
+	const client = await createOAuth2ClientFromRefreshToken(refreshToken);
+	const { credentials } = await client.refreshAccessToken();
+	const { access_token, expiry_date } = credentials;
 
-	if (!tokens) {
-		throw new Error('No tokens found for user');
+	if (!access_token || !expiry_date) {
+		throw new Error('Got no access token');
 	}
 
-	oauth2Client.setCredentials({
-		refresh_token: tokens.refreshToken
+	return new CloudToken(refreshToken, access_token, expiry_date);
+}
+
+export async function createOAuth2ClientFromRefreshToken(
+	refreshToken: string
+): Promise<OAuth2Client> {
+	const client = createOAuth2Client();
+
+	client.setCredentials({
+		refresh_token: refreshToken
 	});
 
-	return oauth2Client;
+	return client;
 }
 
 export async function createOAuth2ClientFromAccessToken(

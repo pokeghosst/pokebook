@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { TRPCError } from '@trpc/server';
+
+import { refreshAccessToken } from '../services/google-auth.service';
+import { ProviderTokenStore } from '../services/provider-token-store.service';
 import { parseCookie } from '../util/cookies';
 
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
@@ -30,19 +33,40 @@ export const createContext = async (opts: CreateWSSContextFnOptions) => {
 			message: 'Not authenticated'
 		});
 
-	const sessionId = parseCookie(cookie, 'pokebook-session');
+	const pokebookSession = parseCookie(cookie, 'pokebook-session');
 
-	if (!sessionId)
+	if (!pokebookSession)
 		throw new TRPCError({
 			code: 'UNAUTHORIZED',
 			message: 'Not authenticated'
 		});
 
-	// const session = await getSess(sessionId);
+	const [cloudProvider, sessionId] = pokebookSession.split('.');
 
-	// console.log('session', session);
+	switch (cloudProvider) {
+		case 'google':
+			const tokenStore = new ProviderTokenStore();
+			const token = await tokenStore.get(sessionId);
 
-	return { sessionId };
+			if (!token)
+				throw new TRPCError({
+					code: 'UNAUTHORIZED',
+					message: 'Not authenticated'
+				});
+
+			if (token.isExpired()) {
+				const newToken = await refreshAccessToken(token.refreshToken);
+				await tokenStore.save(sessionId, newToken);
+				return newToken;
+			}
+
+			return token;
+		default:
+			throw new TRPCError({
+				code: 'UNAUTHORIZED',
+				message: 'Unsupported provider'
+			});
+	}
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
