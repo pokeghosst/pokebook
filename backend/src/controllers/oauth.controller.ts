@@ -21,7 +21,6 @@ import type { Request, Response } from 'express';
 
 import { getGoogleAuthUrl, processCallback } from '../services/google-auth.service';
 import { ProviderTokenStore } from '../services/provider-token-store.service';
-import { GoogleTokens } from '../types/provider-tokens';
 
 import type { gaxios } from 'google-auth-library';
 
@@ -44,7 +43,7 @@ export const handleCallback = async (req: Request, res: Response) => {
 
 			if (code && typeof code === 'string') {
 				try {
-					const googleTokenStore = new ProviderTokenStore<GoogleTokens>();
+					const googleTokenStore = new ProviderTokenStore();
 					const tokens = await processCallback(code);
 
 					if (!tokens.refreshToken || !tokens.accessToken || !tokens.expiresAt)

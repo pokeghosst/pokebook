@@ -27,62 +27,75 @@ import { protectedProcedure, router } from '../trpc';
 
 import type { PoemRecord } from '@pokebook/shared';
 
-export const googleRouter = router({
-	getPokeBookFolderId: protectedProcedure.query(async ({ ctx }) => {
-		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+const getPokeBookFolderId = protectedProcedure.query(async ({ ctx }) => {
+	const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-		const folderId = await googleDrive.getOrCreatePokeBookFolderId(client);
+	const folderId = await googleDrive.getOrCreatePokeBookFolderId(client);
 
-		return { folderId };
-	}),
-	list: protectedProcedure.query(async ({ ctx }) => {
-		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+	return { folderId };
+});
 
-		const schemaFiles = await googleDrive.list(client);
+const list = protectedProcedure.query(async ({ ctx }) => {
+	const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-		if (!schemaFiles) {
-			throw new TRPCError({
-				code: 'NOT_FOUND',
-				message: 'No poem files'
-			});
-		}
+	const schemaFiles = await googleDrive.list(client);
 
-		return schemaFiles.flatMap((schemaFile) => {
-			if (schemaFile.id && schemaFile.name) {
-				const [fileName, syncStateHash] = schemaFile.name.split(FILE_NAME_TIMESTAMP_DIVIDER);
-				return [
-					{
-						fileId: schemaFile.id,
-						fileName,
-						syncStateHash
-					}
-				];
-			}
-			return [];
+	if (!schemaFiles) {
+		throw new TRPCError({
+			code: 'NOT_FOUND',
+			message: 'No poem files'
 		});
-	}),
-	upload: protectedProcedure.input(poemRecordSchema.array()).mutation(async ({ ctx, input }) => {
+	}
+
+	return schemaFiles.flatMap((schemaFile) => {
+		if (schemaFile.id && schemaFile.name) {
+			const [fileName, syncStateHash] = schemaFile.name.split(FILE_NAME_TIMESTAMP_DIVIDER);
+			return [
+				{
+					fileId: schemaFile.id,
+					fileName,
+					syncStateHash
+				}
+			];
+		}
+		return [];
+	});
+});
+
+const upload = protectedProcedure
+	.input(poemRecordSchema.array())
+	.mutation(async ({ ctx, input }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 		input.forEach(async (record) => {
 			await googleDrive.upload(client, record.id, record);
 		});
-	}),
-	update: protectedProcedure.input(poemRecordSchema.array()).mutation(async ({ ctx, input }) => {
-		console.log('>>>>>>>> updating poem');
+	});
+
+const update = protectedProcedure
+	.input(poemRecordSchema.array())
+	.mutation(async ({ ctx, input }) => {
 		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 		input.forEach(async (record) => {
 			if (!record.remoteId) return;
 
 			await googleDrive.update(client, record.remoteId, record);
 		});
-	}),
-	download: protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
-		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+	});
 
-		const files = await Promise.all(
-			input.map(async (uri) => await googleDrive.download(client, uri))
-		);
+const download = protectedProcedure.input(z.string().array()).query(async ({ ctx, input }) => {
+	const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
 
-		return files.map((file) => file.contents as PoemRecord);
-	})
+	const files = await Promise.all(
+		input.map(async (uri) => await googleDrive.download(client, uri))
+	);
+
+	return files.map((file) => file.contents as PoemRecord);
+});
+
+export const googleRouter = router({
+	getPokeBookFolderId,
+	list,
+	upload,
+	update,
+	download
 });
