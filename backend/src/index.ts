@@ -49,7 +49,16 @@ app.use('/', routes);
 const handler = applyWSSHandler({
 	wss,
 	router: appRouter,
-	createContext,
+	createContext: async (opts) => {
+		try {
+			return await createContext(opts);
+		} catch (error) {
+			// Close connection with custom code for auth errors
+			// WebSocket close codes 4000-4999 are available for application use
+			opts.res.close(4401, 'Unauthorized');
+			throw error;
+		}
+	},
 	keepAlive: {
 		enabled: true,
 		pingMs: 30000,

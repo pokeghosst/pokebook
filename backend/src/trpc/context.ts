@@ -28,6 +28,7 @@ export const createContext = async (opts: CreateWSSContextFnOptions) => {
 	const cookie = opts.req.headers.cookie;
 
 	if (!cookie)
+		// TODO: No reason to have TRPCError here
 		throw new TRPCError({
 			code: 'UNAUTHORIZED',
 			message: 'Not authenticated'
