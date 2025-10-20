@@ -2,6 +2,7 @@
   "name": "@pokebook/shared",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Shared types for PokeBook",
   "author": "Pokeghost <pokeghost@disroot.org>",
   "license": "AGPL-3.0",
