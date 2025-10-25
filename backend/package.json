@@ -17,6 +17,7 @@
 		"http-proxy-middleware": "^3.0.5",
 		"redis": "^4.7.0",
 		"ws": "^8.18.3",
+		"yjs": "^13.6.23",
 		"zod": "^3.24.2"
 	},
 	"devDependencies": {
