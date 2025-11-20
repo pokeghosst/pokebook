@@ -13,6 +13,7 @@
     "dev": "tsc -p ./ --watch"
   },
   "dependencies": {
+    "yjs": "^13.6.27",
     "zod": "^3.24.2"
   },
   "packageManager": "pnpm@10.6.3"

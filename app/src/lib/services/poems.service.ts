@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemDoc } from '$lib/models/PoemDoc';
+import { PoemDoc } from '@pokebook/shared';
 import { Database } from '$lib/plugins/Database';
 import { PoemNotFoundError } from '$lib/util/errors';
 import { diffChars } from 'diff';

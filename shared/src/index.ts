@@ -131,10 +131,18 @@ export type PoemListItem = Pick<
   | "stateVector"
 >;
 export type RemoteFileListItem = z.infer<typeof remoteFileListItemSchema>;
-export type ClientDocumentMetadata = z.infer<typeof clientDocumentMetadataSchema>;
+export type ClientDocumentMetadata = z.infer<
+  typeof clientDocumentMetadataSchema
+>;
 export type SyncPlanResponse = z.infer<typeof syncPlanResponseSchema>;
 export type PushUpdate = z.infer<typeof pushUpdateSchema>;
 export type PullRequest = z.infer<typeof pullRequestSchema>;
-export type ExchangeUpdatesRequest = z.infer<typeof exchangeUpdatesRequestSchema>;
-export type ExchangeUpdatesResponse = z.infer<typeof exchangeUpdatesResponseSchema>;
+export type ExchangeUpdatesRequest = z.infer<
+  typeof exchangeUpdatesRequestSchema
+>;
+export type ExchangeUpdatesResponse = z.infer<
+  typeof exchangeUpdatesResponseSchema
+>;
 export type CreateDocumentRequest = z.infer<typeof createDocumentRequestSchema>;
+
+export { PoemDoc } from "./models/PoemDoc";
