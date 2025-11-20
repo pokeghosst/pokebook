@@ -30,8 +30,15 @@ export async function savePoem(poem: Poem): Promise<string> {
 	const snippet = sliceSnippet(poem.text);
 	const doc = PoemDoc.fromPoem(poem);
 	const syncStateHash = await doc.getEncodedStateHash();
+	const stateVector = doc.getEncodedStateVector();
 
-	return await Database.save({ ...poem, snippet, syncState: doc.getEncodedState(), syncStateHash });
+	return await Database.save({
+		...poem,
+		snippet,
+		syncState: doc.getEncodedState(),
+		syncStateHash,
+		stateVector
+	});
 }
 
 export async function getPoem(id: string): Promise<Poem | undefined> {
@@ -59,13 +66,15 @@ export async function updatePoem(id: string, poem: Poem) {
 		.setNote(applyDiffToYText(oldRecord.note, poem.note, poemDoc.getNote()));
 
 	const syncStateHash = await poemDoc.getEncodedStateHash();
+	const stateVector = poemDoc.getEncodedStateVector();
 
 	const newRecord: Omit<PoemRecord, 'createdAt' | 'updatedAt'> = {
 		...poem,
 		id,
 		snippet: sliceSnippet(poem.text),
 		syncState: poemDoc.getEncodedState(),
-		syncStateHash
+		syncStateHash,
+		stateVector
 	};
 
 	await Database.update(newRecord);

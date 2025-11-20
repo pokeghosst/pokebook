@@ -99,54 +99,29 @@ export class PoemDoc {
 		return digestMessage(this.getEncodedState());
 	}
 
+	public getStateVector() {
+		return Y.encodeStateVector(this.yDoc);
+	}
+
+	public getEncodedStateVector() {
+		return encodeToBase64(this.getStateVector());
+	}
+
+	public getDiffUpdate(targetStateVector: Uint8Array): Uint8Array {
+		return Y.encodeStateAsUpdate(this.yDoc, targetStateVector);
+	}
+
+	public getEncodedDiffUpdate(targetStateVector: string): string {
+		const vector = decodeFromBase64(targetStateVector);
+		return encodeToBase64(this.getDiffUpdate(vector));
+	}
+
 	public applyUpdate(update: Uint8Array) {
 		Y.applyUpdate(this.yDoc, update);
 	}
+
+	public applyEncodedUpdate(encodedUpdate: string) {
+		const update = decodeFromBase64(encodedUpdate);
+		this.applyUpdate(update);
+	}
 }
-
-// export class PoemDoc {
-// 	yDoc: Y.Doc;
-// 	titleText: Y.Text;
-// 	poemText: Y.Text;
-// 	noteText: Y.Text;
-// 	docId: string;
-
-// 	constructor() {
-// 		this.docId = crypto.randomUUID();
-// 		this.yDoc = new Y.Doc();
-// 		this.titleText = this.yDoc.getText('title');
-// 		this.poemText = this.yDoc.getText('poem');
-// 		this.noteText = this.yDoc.getText('note');
-// 	}
-
-// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// 	public static fromXml(xmlData: any) {
-// 		const doc = new PoemDoc();
-
-// 		doc.titleText.delete(0, doc.titleText.length);
-// 		doc.poemText.delete(0, doc.poemText.length);
-// 		doc.noteText.delete(0, doc.noteText.length);
-
-// 		doc.titleText.insert(0, xmlData.name);
-// 		doc.poemText.insert(0, xmlData.text);
-// 		doc.noteText.insert(0, xmlData.note);
-
-// 		return doc;
-// 	}
-
-// 	public toXml() {
-// 		return new XMLBuilder({ format: true }).build({
-// 			name: this.titleText.toString(),
-// 			text: this.poemText.toString(),
-// 			note: this.poemText.toString()
-// 		});
-// 	}
-
-// 	public exportState() {
-// 		return Y.encodeStateAsUpdate(this.yDoc);
-// 	}
-
-// 	public importState(update: Uint8Array) {
-// 		Y.applyUpdate(this.yDoc, update);
-// 	}
-// }

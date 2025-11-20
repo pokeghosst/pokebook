@@ -17,7 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import type { AppRouter } from '@pokebook/backend/src/trpc/routers';
-import type { PoemRecord, RemoteFileListItem } from '@pokebook/shared';
+import type {
+	PoemRecord,
+	RemoteFileListItem,
+	ClientDocumentMetadata,
+	SyncPlanResponse,
+	ExchangeUpdatesRequest,
+	ExchangeUpdatesResponse,
+	CreateDocumentRequest
+} from '@pokebook/shared';
 import type { TRPCClient } from '@trpc/client';
 import type { CloudStoragePlugin } from './CloudStoragePlugin';
 
@@ -30,8 +38,11 @@ export class CloudStorageGoogle implements CloudStoragePlugin {
 	// TODO: Remove retrieving PokeBook folder ID in Google Drive backend functions
 	#pokebookFolderId: string | null = null;
 
+	// Old methods (deprecated, keep for backward compatibility)
 	async list(): Promise<RemoteFileListItem[]> {
-		return await this.#trpc.google.list.query();
+		const result = await this.#trpc.google.list.query();
+		// Add empty stateVector for backward compatibility
+		return result.map((item) => ({ ...item, stateVector: '' }));
 	}
 	async upload(records: PoemRecord[]): Promise<void> {
 		await this.#trpc.google.upload.mutate(records);
@@ -39,11 +50,26 @@ export class CloudStorageGoogle implements CloudStoragePlugin {
 	async update(records: PoemRecord[]): Promise<void> {
 		await this.#trpc.google.update.mutate(records);
 	}
-	download(ids: string[]): Promise<PoemRecord[] | undefined> {
-		return this.#trpc.google.download.query(ids);
+	async download(ids: string[]): Promise<PoemRecord[]> {
+		const result = await this.#trpc.google.download.query(ids);
+		return result || [];
 	}
-	delete(id: string): Promise<void> {
+	async delete(_id: string): Promise<void> {
 		throw new Error('Method not implemented.');
+	}
+
+	// New vector-based methods
+	async computeSyncPlan(clientDocs: ClientDocumentMetadata[]): Promise<SyncPlanResponse> {
+		console.log('Received client docs:', clientDocs);
+		return await this.#trpc.google.computeSyncPlan.query(clientDocs);
+	}
+
+	async exchangeUpdates(request: ExchangeUpdatesRequest): Promise<ExchangeUpdatesResponse> {
+		return await this.#trpc.google.exchangeUpdates.mutate(request);
+	}
+
+	async createDocument(request: CreateDocumentRequest): Promise<{ fileId: string }> {
+		return await this.#trpc.google.createDocument.mutate(request);
 	}
 
 	private async getPokebookFolderId(): Promise<string> {

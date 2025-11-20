@@ -35,12 +35,86 @@ export const poemRecordSchema = z.object({
   remoteId: z.string().optional(),
   syncState: z.string().nonempty("Sync state is required"),
   syncStateHash: z.string().nonempty("Sync state hash is required"),
+  stateVector: z.string().nonempty("State vector is required"),
 });
 
 export const remoteFileListItemSchema = z.object({
   fileId: z.string().nonempty("File ID is required"),
   fileName: z.string().nonempty("File name is required"),
   syncStateHash: z.string().nonempty("Sync state hash is required"),
+  stateVector: z.string().nonempty("State vector is required"),
+});
+
+// Sync operation schemas
+export const clientDocumentMetadataSchema = z.object({
+  documentId: z.string().nonempty("Document ID is required"),
+  stateVector: z.string().nonempty("State vector is required"),
+});
+
+export const syncPlanResponseSchema = z.object({
+  newRemoteDocuments: z.array(
+    z.object({
+      documentId: z.string(),
+      fileId: z.string(),
+      metadata: z.object({
+        name: z.string(),
+        snippet: z.string(),
+        createdAt: z.number(),
+        updatedAt: z.number(),
+      }),
+    })
+  ),
+  newLocalDocuments: z.array(
+    z.object({
+      documentId: z.string(),
+    })
+  ),
+  documentsToSync: z.array(
+    z.object({
+      documentId: z.string(),
+      localVector: z.string(),
+      serverVector: z.string(),
+      fileId: z.string(),
+    })
+  ),
+});
+
+export const pushUpdateSchema = z.object({
+  documentId: z.string().nonempty("Document ID is required"),
+  update: z.string().nonempty("Update is required"),
+  newVector: z.string().nonempty("New vector is required"),
+});
+
+export const pullRequestSchema = z.object({
+  documentId: z.string().nonempty("Document ID is required"),
+  clientVector: z.string().nonempty("Client vector is required"),
+});
+
+export const exchangeUpdatesRequestSchema = z.object({
+  pushUpdates: z.array(pushUpdateSchema),
+  pullRequests: z.array(pullRequestSchema),
+});
+
+export const exchangeUpdatesResponseSchema = z.object({
+  pullUpdates: z.array(
+    z.object({
+      documentId: z.string(),
+      update: z.string(),
+      newVector: z.string(),
+    })
+  ),
+});
+
+export const createDocumentRequestSchema = z.object({
+  documentId: z.string().nonempty("Document ID is required"),
+  initialState: z.string().nonempty("Initial state is required"),
+  stateVector: z.string().nonempty("State vector is required"),
+  metadata: z.object({
+    name: z.string(),
+    snippet: z.string(),
+    createdAt: z.number(),
+    updatedAt: z.number(),
+  }),
 });
 
 export type Poem = z.infer<typeof poemSchema>;
@@ -54,5 +128,13 @@ export type PoemListItem = Pick<
   | "updatedAt"
   | "remoteId"
   | "syncStateHash"
+  | "stateVector"
 >;
 export type RemoteFileListItem = z.infer<typeof remoteFileListItemSchema>;
+export type ClientDocumentMetadata = z.infer<typeof clientDocumentMetadataSchema>;
+export type SyncPlanResponse = z.infer<typeof syncPlanResponseSchema>;
+export type PushUpdate = z.infer<typeof pushUpdateSchema>;
+export type PullRequest = z.infer<typeof pullRequestSchema>;
+export type ExchangeUpdatesRequest = z.infer<typeof exchangeUpdatesRequestSchema>;
+export type ExchangeUpdatesResponse = z.infer<typeof exchangeUpdatesResponseSchema>;
+export type CreateDocumentRequest = z.infer<typeof createDocumentRequestSchema>;

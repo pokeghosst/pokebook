@@ -16,12 +16,26 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemRecord, RemoteFileListItem } from '@pokebook/shared';
+import type {
+	PoemRecord,
+	RemoteFileListItem,
+	ClientDocumentMetadata,
+	SyncPlanResponse,
+	ExchangeUpdatesRequest,
+	ExchangeUpdatesResponse,
+	CreateDocumentRequest
+} from '@pokebook/shared';
 
 export interface CloudStoragePlugin {
+	// Old methods (deprecated, keep for backward compatibility)
 	download(ids: string[]): Promise<PoemRecord[]>;
 	list(): Promise<RemoteFileListItem[]>;
 	upload(records: PoemRecord[]): Promise<void>;
 	update(poem: PoemRecord[]): Promise<void>;
 	delete(id: string): Promise<void>;
+
+	// New vector-based methods
+	computeSyncPlan(clientDocs: ClientDocumentMetadata[]): Promise<SyncPlanResponse>;
+	exchangeUpdates(request: ExchangeUpdatesRequest): Promise<ExchangeUpdatesResponse>;
+	createDocument(request: CreateDocumentRequest): Promise<{ fileId: string }>;
 }

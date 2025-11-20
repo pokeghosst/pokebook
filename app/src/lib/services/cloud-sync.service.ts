@@ -20,35 +20,49 @@ import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
 import { CloudStorage } from '../plugins/CloudStorage';
 
-import type { PoemListItem, PoemRecord, RemoteFileListItem } from '@pokebook/shared';
+import type { SyncPlanResponse } from '@pokebook/shared';
 import { putPartialUpdate, sliceSnippet } from './poems.service';
+
+// Batch size for processing documents
+const BATCH_SIZE = 10;
+
+// Retry configuration
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 1000;
 
 export async function sync() {
 	try {
-		const remoteFiles = await CloudStorage.list();
 		const localFiles = await Database.list();
 
-		const filesToDownload = getFilesToDownload(remoteFiles, localFiles);
-		const filesToUpload = getFilesToUpload(localFiles, remoteFiles);
-		const filesToMerge = getFilesToMerge(localFiles, remoteFiles);
+		console.log('[Sync] Starting sync with', localFiles.length, 'local documents');
 
-		console.log('remoteFiles', remoteFiles);
-		console.log('localFiles', localFiles);
-		console.log('filesToDownload', filesToDownload);
-		console.log('filesToUpload', filesToUpload);
-		console.log('filesToMerge', filesToMerge);
+		console.log(localFiles);
 
-		// Download remote
-		const downloadedFiles = await CloudStorage.download(filesToDownload.map((file) => file.fileId));
-		console.log('downloadedFiles', downloadedFiles);
-		saveFiles(downloadedFiles);
+		// Step 1: Get sync plan from server
+		const syncPlan = await CloudStorage.computeSyncPlan(
+			localFiles.map((file) => ({
+				documentId: file.id,
+				stateVector: file.stateVector
+			}))
+		);
 
-		// Upload local
-		await uploadFiles(filesToUpload);
+		console.log('[Sync] Sync plan:', {
+			newRemote: syncPlan.newRemoteDocuments.length,
+			newLocal: syncPlan.newLocalDocuments.length,
+			toSync: syncPlan.documentsToSync.length
+		});
 
-		// Merge into local
-		await reconcileFiles(filesToMerge, remoteFiles);
+		// Step 2: Process all sync operations in parallel
+		await Promise.all([
+			processNewRemoteDocuments(syncPlan.newRemoteDocuments),
+			processNewLocalDocuments(syncPlan.newLocalDocuments),
+			processBidirectionalSync(syncPlan.documentsToSync)
+		]);
+
+		console.log('[Sync] Sync completed successfully');
 	} catch (e: unknown) {
+		console.error('[Sync] Sync failed:', e);
+
 		if (e instanceof Error) {
 			const message = e.message;
 
@@ -62,88 +76,157 @@ export async function sync() {
 	}
 }
 
-function getFilesToUpload(localFiles: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
-	return localFiles.filter(
-		(localFile) => !remoteFiles.find((remoteFile) => remoteFile.fileName === localFile.id)
-	);
-}
+async function processNewRemoteDocuments(
+	newRemoteDocuments: SyncPlanResponse['newRemoteDocuments']
+) {
+	if (newRemoteDocuments.length === 0) return;
 
-function getFilesToDownload(remoteFiles: RemoteFileListItem[], localFiles: PoemListItem[]) {
-	return remoteFiles.filter(
-		(remoteFile) => !localFiles.find((localFile) => localFile.id === remoteFile.fileName)
-	);
-}
+	console.log('[Sync] Downloading', newRemoteDocuments.length, 'new remote documents');
 
-function getFilesToMerge(localFiles: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
-	return localFiles.filter(
-		(localFile) =>
-			!remoteFiles.find((remoteFile) => remoteFile.syncStateHash === localFile.syncStateHash)
-	);
-}
+	// Download all new remote documents with retry
+	for (const doc of newRemoteDocuments) {
+		await retryWithBackoff(async () => {
+			// Download the document's full state
+			const downloaded = await CloudStorage.download([doc.fileId]);
 
-async function uploadFiles(filesToUpload: PoemListItem[]) {
-	const localRecords = (
-		await Promise.all(
-			filesToUpload.map(async (fileMeta) => {
-				const fileContents = await Database.get(fileMeta.id);
-				if (!fileContents) return [];
-
-				return [{ ...fileContents }];
-			})
-		)
-	).flat();
-
-	await CloudStorage.upload(localRecords);
-}
-
-async function saveFiles(files: PoemRecord[]) {
-	for (const file of files) {
-		await Database.save(file);
+			if (downloaded.length > 0) {
+				const record = downloaded[0];
+				await Database.save({
+					...record,
+					remoteId: doc.fileId
+				});
+				console.log('[Sync] Downloaded document:', doc.documentId);
+			}
+		});
 	}
 }
 
-async function reconcileFiles(filesToMerge: PoemListItem[], remoteFiles: RemoteFileListItem[]) {
-	for (const localFileMeta of filesToMerge) {
-		const remoteFileMeta = remoteFiles.find(
-			(remoteFile) => remoteFile.fileName === localFileMeta.id
-		);
+async function processNewLocalDocuments(newLocalDocuments: SyncPlanResponse['newLocalDocuments']) {
+	if (newLocalDocuments.length === 0) return;
 
-		if (!remoteFileMeta) continue;
+	console.log('[Sync] Uploading', newLocalDocuments.length, 'new local documents');
 
-		const localFile = await Database.get(localFileMeta.id);
-		const remoteFile = (await CloudStorage.download([remoteFileMeta.fileId]))[0];
+	// Upload all new local documents with retry
+	for (const doc of newLocalDocuments) {
+		await retryWithBackoff(async () => {
+			const localRecord = await Database.get(doc.documentId);
+			if (!localRecord) {
+				console.warn('[Sync] Local document not found:', doc.documentId);
+				return;
+			}
 
-		if (!localFile || !remoteFile) continue;
+			const result = await CloudStorage.createDocument({
+				documentId: doc.documentId,
+				initialState: localRecord.syncState,
+				stateVector: localRecord.stateVector,
+				metadata: {
+					name: localRecord.name,
+					snippet: localRecord.snippet,
+					createdAt: localRecord.createdAt,
+					updatedAt: localRecord.updatedAt
+				}
+			});
 
-		console.log('localFile', localFile);
-		console.log('remoteFile', remoteFile);
+			// Update local record with remote ID
+			await putPartialUpdate(doc.documentId, { remoteId: result.fileId });
+			console.log('[Sync] Uploaded document:', doc.documentId);
+		});
+	}
+}
 
-		const localDoc = PoemDoc.fromEncodedState(localFile.syncState);
-		const remoteDoc = PoemDoc.fromEncodedState(remoteFile.syncState);
+async function processBidirectionalSync(documentsToSync: SyncPlanResponse['documentsToSync']) {
+	if (documentsToSync.length === 0) return;
 
-		console.log('localDoc', localDoc);
-		console.log('remoteDoc', remoteDoc);
+	console.log('[Sync] Syncing', documentsToSync.length, 'documents bidirectionally');
 
-		localDoc.applyUpdate(remoteDoc.getState());
-		remoteDoc.applyUpdate(localDoc.getState());
+	// Process in batches
+	const batches = chunkArray(documentsToSync, BATCH_SIZE);
 
-		console.log('//-------------//');
-		console.log('localDoc', localDoc.getText().toString());
-		console.log('remoteDoc', remoteDoc.getText().toString());
+	for (const batch of batches) {
+		await retryWithBackoff(async () => {
+			// Compute local diffs for all documents in batch
+			const pushUpdates = await Promise.all(
+				batch.map(async (doc) => {
+					const localRecord = await Database.get(doc.documentId);
+					if (!localRecord) return null;
 
-		const mergedFile = {
-			...localFile,
-			name: localDoc.getTitle().toString(),
-			text: localDoc.getText().toString(),
-			note: localDoc.getNote().toString(),
-			snippet: sliceSnippet(localDoc.getText().toString()),
-			syncState: localDoc.getEncodedState(),
-			syncStateHash: await localDoc.getEncodedStateHash(),
-			remoteId: remoteFileMeta.fileId
-		};
+					const poemDoc = PoemDoc.fromEncodedState(localRecord.syncState);
 
-		await putPartialUpdate(mergedFile.id, mergedFile);
-		console.log('starting to update poem...', mergedFile);
-		await CloudStorage.update([mergedFile]);
+					// Compute what server is missing
+					const update = poemDoc.getEncodedDiffUpdate(doc.serverVector);
+
+					return {
+						documentId: doc.documentId,
+						update,
+						newVector: poemDoc.getEncodedStateVector()
+					};
+				})
+			);
+
+			const pullRequests = batch.map((doc) => ({
+				documentId: doc.documentId,
+				clientVector: doc.localVector
+			}));
+
+			// Single API call: push our diffs and pull server diffs
+			const result = await CloudStorage.exchangeUpdates({
+				pushUpdates: pushUpdates.filter((u) => u !== null),
+				pullRequests
+			});
+
+			// Apply all server diffs to local documents
+			await Promise.all(
+				result.pullUpdates.map(async (update) => {
+					const localRecord = await Database.get(update.documentId);
+					if (!localRecord) return;
+
+					const poemDoc = PoemDoc.fromEncodedState(localRecord.syncState);
+
+					// Apply server's updates
+					poemDoc.applyEncodedUpdate(update.update);
+
+					// Save merged state
+					await putPartialUpdate(update.documentId, {
+						name: poemDoc.getTitle().toString(),
+						text: poemDoc.getText().toString(),
+						note: poemDoc.getNote().toString(),
+						snippet: sliceSnippet(poemDoc.getText().toString()),
+						syncState: poemDoc.getEncodedState(),
+						stateVector: poemDoc.getEncodedStateVector(),
+						syncStateHash: await poemDoc.getEncodedStateHash(),
+						updatedAt: Date.now()
+					});
+
+					console.log('[Sync] Merged document:', update.documentId);
+				})
+			);
+		});
+	}
+}
+
+// Helper functions
+
+function chunkArray<T>(array: T[], size: number): T[][] {
+	const chunks: T[][] = [];
+	for (let i = 0; i < array.length; i += size) {
+		chunks.push(array.slice(i, i + size));
+	}
+	return chunks;
+}
+
+async function retryWithBackoff<T>(
+	fn: () => Promise<T>,
+	retries = MAX_RETRIES,
+	delay = RETRY_DELAY_MS
+): Promise<T> {
+	try {
+		return await fn();
+	} catch (error) {
+		if (retries === 0) throw error;
+
+		console.warn(`[Sync] Retrying after error (${retries} retries left):`, error);
+		await new Promise((resolve) => setTimeout(resolve, delay));
+
+		return retryWithBackoff(fn, retries - 1, delay * 2);
 	}
 }

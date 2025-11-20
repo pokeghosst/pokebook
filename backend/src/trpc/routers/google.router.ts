@@ -19,7 +19,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
-import { poemRecordSchema } from '@pokebook/shared';
+import {
+	poemRecordSchema,
+	clientDocumentMetadataSchema,
+	exchangeUpdatesRequestSchema,
+	createDocumentRequestSchema
+} from '@pokebook/shared';
 import { createOAuth2ClientFromAccessToken } from '../../services/google-auth.service';
 import * as googleDrive from '../services/google-drive.service';
 import { FILE_NAME_TIMESTAMP_DIVIDER } from '../services/google-drive.service';
@@ -92,10 +97,136 @@ const download = protectedProcedure.input(z.string().array()).query(async ({ ctx
 	return files.map((file) => file.contents as PoemRecord);
 });
 
+const computeSyncPlan = protectedProcedure
+	.input(clientDocumentMetadataSchema.array())
+	.query(async ({ ctx, input }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+		const serverFiles = await googleDrive.listWithVectors(client);
+
+		const clientDocIds = new Set(input.map((d) => d.documentId));
+		const serverDocMap = new Map(serverFiles.map((f) => [f.documentId, f]));
+
+		const newRemoteDocuments = serverFiles
+			.filter((f) => !clientDocIds.has(f.documentId))
+			.map((f) => ({
+				documentId: f.documentId,
+				fileId: f.fileId,
+				metadata: f.metadata
+			}));
+
+		const newClientDocuments = input
+			.filter((d) => !serverDocMap.has(d.documentId))
+			.map((d) => ({ documentId: d.documentId }));
+
+		const documentsToSync = input
+			.filter((d) => serverDocMap.has(d.documentId))
+			.map((d) => {
+				const serverFile = serverDocMap.get(d.documentId)!;
+				return {
+					documentId: d.documentId,
+					localVector: d.stateVector,
+					serverVector: serverFile.stateVector,
+					fileId: serverFile.fileId
+				};
+			});
+
+		return {
+			newRemoteDocuments,
+			newClientDocuments,
+			documentsToSync
+		};
+	});
+
+const exchangeUpdates = protectedProcedure
+	.input(exchangeUpdatesRequestSchema)
+	.mutation(async ({ ctx, input }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+		// Apply all incoming updates from client
+		await Promise.all(
+			input.pushUpdates.map(async (push) => {
+				// Find file ID for this document
+				const serverFiles = await googleDrive.listWithVectors(client);
+				const serverFile = serverFiles.find((f) => f.documentId === push.documentId);
+
+				if (!serverFile) {
+					throw new TRPCError({
+						code: 'NOT_FOUND',
+						message: `Document ${push.documentId} not found on server`
+					});
+				}
+
+				// Apply update
+				await googleDrive.applyUpdateToDocument(
+					client,
+					serverFile.fileId,
+					push.documentId,
+					push.update,
+					push.newVector,
+					serverFile.syncStateHash // Will be updated in applyUpdateToDocument
+				);
+			})
+		);
+
+		// Compute diffs for client
+		const pullUpdates = await Promise.all(
+			input.pullRequests.map(async (pull) => {
+				// Find file ID for this document
+				const serverFiles = await googleDrive.listWithVectors(client);
+				const serverFile = serverFiles.find((f) => f.documentId === pull.documentId);
+
+				if (!serverFile) {
+					throw new TRPCError({
+						code: 'NOT_FOUND',
+						message: `Document ${pull.documentId} not found on server`
+					});
+				}
+
+				// Compute what client is missing
+				const diff = await googleDrive.computeDiffForClient(
+					client,
+					serverFile.fileId,
+					pull.clientVector
+				);
+
+				return {
+					documentId: pull.documentId,
+					update: diff.update,
+					newVector: diff.newVector
+				};
+			})
+		);
+
+		return { pullUpdates };
+	});
+
+const createNewDocument = protectedProcedure
+	.input(createDocumentRequestSchema)
+	.mutation(async ({ ctx, input }) => {
+		const client = await createOAuth2ClientFromAccessToken(ctx.accessToken);
+
+		const fileId = await googleDrive.createDocument(
+			client,
+			input.documentId,
+			input.initialState,
+			input.stateVector,
+			'', // syncStateHash will be computed from state
+			input.metadata
+		);
+
+		return { fileId };
+	});
+
 export const googleRouter = router({
+	// Old endpoints (deprecated, keep for backward compatibility)
 	getPokeBookFolderId,
 	list,
 	upload,
 	update,
-	download
+	download,
+
+	// New vector-based endpoints
+	computeSyncPlan,
+	exchangeUpdates,
+	createDocument: createNewDocument
 });
