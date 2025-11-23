@@ -47,14 +47,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		appState.value = { poem: { ...appState.value.poem, text: value } };
 	}
 
-	function updatePoemNote(value: string) {
+	function updateNote(value: string) {
 		note.note = value;
 		appState.value = { poem: { ...appState.value.poem, note: value } };
 	}
-
-	setContext('poemNameHandler', updatePoemName);
-	setContext('poemTextHandler', updatePoemText);
-	setContext('poemNoteHandler', updatePoemNote);
 
 	const toolbarActions: ToolbarItem[] = [
 		{ icon: Save, action: stashAction, label: $t('workspace.savePoem') },
@@ -126,4 +122,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<Workspace bind:poem bind:note {toolbarActions} />
+<Workspace {poem} {note} {updatePoemName} {updatePoemText} {updateNote} {toolbarActions} />

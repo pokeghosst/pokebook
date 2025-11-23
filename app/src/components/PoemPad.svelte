@@ -17,23 +17,28 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { getContext, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import appState from '$lib/AppState.svelte';
 	import { t } from '$lib/translations';
 	import { count } from 'letter-count';
 	import { syllable } from 'syllable';
 
-	let { poemProp = $bindable() }: { poemProp: { name: string; text: string } } = $props();
+	let {
+		poem,
+		updatePoemName,
+		updatePoemText
+	}: {
+		poem: { name: string; text: string };
+		updatePoemName: (value: string) => void;
+		updatePoemText: (value: string) => void;
+	} = $props();
 
-	let lines: string[] = $derived(poemProp.text.split('\n'));
+	let lines: string[] = $derived(poem.text.split('\n'));
 	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
-	let stats: Record<string, string | number> = $derived(count(poemProp.text));
+	let stats: Record<string, string | number> = $derived(count(poem.text));
 
 	let poemTextarea: HTMLTextAreaElement;
-
-	const updatePoemName: () => void = getContext('poemNameHandler');
-	const updatePoemText: () => void = getContext('poemTextHandler');
 
 	// $: $poemBodyStoreProp, autoResizeNotebook();
 
@@ -82,7 +87,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={() => poemProp.name, updatePoemName}
+		bind:value={() => poem.name, updatePoemName}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -99,7 +104,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={() => poemProp.text, updatePoemText}
+			bind:value={() => poem.text, updatePoemText}
 			class="paper {appState.value.poemPadJustification} {appState.value.pokeHelpEnabled
 				? 'l-padded-for-pokehelp'
 				: ''}"

@@ -17,18 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { getContext } from 'svelte';
-
-	import { t } from '$lib/translations';
 	import appState from '$lib/AppState.svelte';
+	import { t } from '$lib/translations';
 
-	let { noteProp = $bindable() }: { noteProp: { note: string } } = $props();
+	let { note, updateNote }: { note: { note: string }; updateNote: (value: string) => void } =
+		$props();
 
 	// let lines: string[] = $derived(note.split('\n'));
 
 	let noteTextarea: HTMLTextAreaElement;
-
-	const updatePoemNote: () => void = getContext('poemNoteHandler');
 
 	// onMount(() => {
 	// 	// Resize the notebook when switching between single/dual panes
@@ -63,7 +60,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={() => noteProp.note, updatePoemNote}
+			bind:value={() => note.note, updateNote}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${appState.value.writingPadFontSize}px`}

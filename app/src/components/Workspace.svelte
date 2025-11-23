@@ -30,15 +30,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Toolbar from './Toolbar.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import type { Poem } from '@pokebook/shared';
 
 	let {
-		poem = $bindable(),
-		note = $bindable(),
+		poem,
+		note,
+		updatePoemName,
+		updatePoemText,
+		updateNote,
 		toolbarActions
 	}: {
-		poem: Omit<Poem, 'note'>;
-		note: Pick<Poem, 'note'>;
+		poem: { name: string; text: string };
+		note: { note: string };
+		updatePoemName: (value: string) => void;
+		updatePoemText: (value: string) => void;
+		updateNote: (value: string) => void;
 		toolbarActions: ToolbarItem[];
 	} = $props();
 
@@ -67,9 +72,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 {#snippet pad(state: string)}
 	{#if state === 'poem'}
-		<PoemPad bind:poemProp={poem} />
+		<PoemPad {poem} {updatePoemName} {updatePoemText} />
 	{:else if state === 'note'}
-		<NotePad bind:noteProp={note} />
+		<NotePad {note} {updateNote} />
 	{:else}
 		D'oh!
 	{/if}
