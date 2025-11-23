@@ -32,7 +32,7 @@ class PokeBookDB extends Dexie {
 	constructor() {
 		super('PokeBook4');
 		this.version(1).stores({
-			poemDocs: '&id, name',
+			poemDocs: '&id',
 			poemMeta: 'id'
 		});
 	}

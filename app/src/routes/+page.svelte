@@ -17,11 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount, setContext } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
-	import { deletePoem, putPartialUpdate, savePoem } from '$lib/services/poems.service';
+	import appState from '$lib/AppState.svelte';
+	import { savePoem } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
-	import { DRAFT_POEM_ID, GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
 	import toast from 'svelte-french-toast';
 
@@ -32,7 +33,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import appState from '$lib/AppState.svelte';
 
 	let poem = $state({ name: appState.value.poem.name, text: appState.value.poem.text });
 	let note = $state({ note: appState.value.poem.note });
@@ -118,7 +118,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		poem = { name: '', text: '' };
 		note = { note: '' };
 
-		appState.value.poem = { name: '', text: '', note: '' };
+		appState.value = { poem: { name: '', text: '', note: '' } };
 	}
 </script>
 
