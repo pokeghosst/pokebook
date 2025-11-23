@@ -72,12 +72,12 @@ export class DatabaseWeb implements DatabasePlugin {
 			throw new DexieError().withCause(e);
 		}
 	}
+	async list(): Promise<PoemMeta[]> {
+		return await this.#db.poemMeta.toArray();
+	}
 
 	async get(id: string): Promise<PoemRecord | undefined> {
 		return await this.#db.poemDocs.get(id);
-	}
-	async getAll(): Promise<PoemRecord[]> {
-		return await this.#db.poemDocs.toArray();
 	}
 }
 

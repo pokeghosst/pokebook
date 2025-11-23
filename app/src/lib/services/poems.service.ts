@@ -16,12 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemDoc } from '@pokebook/shared';
 import { Database } from '$lib/plugins/Database';
 import { PoemNotFoundError } from '$lib/util/errors';
+import { PoemDoc } from '@pokebook/shared';
 import { diffChars } from 'diff';
 
-import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
+import type { Poem, PoemMeta, PoemRecord } from '@pokebook/shared';
 import type { Text as YText } from 'yjs';
 
 export async function savePoem(poem: Poem): Promise<string> {
@@ -71,16 +71,8 @@ export async function putPartialUpdate(id: string, update: Partial<PoemRecord>) 
 	await Database.putPartialUpdate(id, update);
 }
 
-export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boolean })[]> {
-	const allPoems = await Database.list();
-	return allPoems.flatMap((poem) => {
-		if (poem.id.includes('.tmp') || poem.id === 'draft') return [];
-
-		return {
-			...poem,
-			unsavedChanges: !!allPoems.find((p) => p.id === `${poem.id}.tmp`)
-		};
-	});
+export async function listPoems(): Promise<PoemMeta[]> {
+	return await Database.list();
 }
 
 function applyDiffToYText(oldString: string, newString: string, yText: YText) {

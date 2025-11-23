@@ -19,27 +19,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { onMount } from 'svelte';
 
+	import { sync } from '$lib/services/cloud-sync.service';
 	import { listPoems } from '$lib/services/poems.service';
 	import { t } from '$lib/translations';
-	import { sync } from '$lib/services/cloud-sync.service';
+	import toast from 'svelte-french-toast';
 
 	import { RefreshCcw } from 'lucide-svelte';
 
-	import type { PoemListItem } from '@pokebook/shared';
-	import toast from 'svelte-french-toast';
+	import type { PoemMeta } from '@pokebook/shared';
 
 	const FALLBACK_DELAY_MS = 150;
 
-	let poemListPromise: Promise<(PoemListItem & { unsavedChanges: boolean })[]>;
-	let showFallback = false;
+	let poemListPromise: Promise<PoemMeta[]> = listPoems();
+	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
-
-		poemListPromise = listPoems();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
@@ -72,9 +70,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{poem.name}
-								{#if poem.unsavedChanges}
-									({$t('workspace.unsavedChanges')})
-								{/if}
 							</p>
 							<p class="list-poem-snippet">{poem.snippet}</p>
 						</div>

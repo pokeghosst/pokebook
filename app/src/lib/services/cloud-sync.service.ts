@@ -16,12 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemDoc } from '$lib/models/PoemDoc';
 import { Database } from '$lib/plugins/Database';
 import { CloudStorage } from '../plugins/CloudStorage';
 
-import type { SyncPlanResponse } from '@pokebook/shared';
-import { putPartialUpdate, sliceSnippet } from './poems.service';
+import { PoemDoc, type SyncPlanResponse } from '@pokebook/shared';
+import { putPartialUpdate } from './poems.service';
 
 // Batch size for processing documents
 const BATCH_SIZE = 10;
