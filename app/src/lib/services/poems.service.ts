@@ -24,21 +24,8 @@ import { diffChars } from 'diff';
 import type { Poem, PoemListItem, PoemRecord } from '@pokebook/shared';
 import type { Text as YText } from 'yjs';
 
-const POEM_SNIPPET_LENGTH = 256;
-
 export async function savePoem(poem: Poem): Promise<string> {
-	const snippet = sliceSnippet(poem.text);
-	const doc = PoemDoc.fromPoem(poem);
-	const syncStateHash = await doc.getEncodedStateHash();
-	const stateVector = doc.getEncodedStateVector();
-
-	return await Database.save({
-		...poem,
-		snippet,
-		syncState: doc.getEncodedState(),
-		syncStateHash,
-		stateVector
-	});
+	return await Database.create(new PoemDoc(poem));
 }
 
 export async function getPoem(id: string): Promise<Poem | undefined> {
@@ -94,10 +81,6 @@ export async function listPoems(): Promise<(PoemListItem & { unsavedChanges: boo
 			unsavedChanges: !!allPoems.find((p) => p.id === `${poem.id}.tmp`)
 		};
 	});
-}
-
-export function sliceSnippet(text: string): string {
-	return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
 }
 
 function applyDiffToYText(oldString: string, newString: string, yText: YText) {

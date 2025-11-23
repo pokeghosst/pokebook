@@ -18,6 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { z } from "zod";
 
+import { PoemDoc } from "./models/PoemDoc";
+
 export const poemSchema = z.object({
   name: z.string().nonempty("Name is required"),
   text: z.string().nonempty("Text is required"),
@@ -26,16 +28,16 @@ export const poemSchema = z.object({
 
 export const poemRecordSchema = z.object({
   id: z.string().nonempty("ID is required"),
+  doc: z.instanceof(PoemDoc),
+});
+
+export const poemMetaSchema = z.object({
+  id: z.string().nonempty("ID is required"),
   name: z.string().nonempty("Name is required"),
-  text: z.string().nonempty("Text is required"),
-  note: z.string().nonempty("Note is required"),
   snippet: z.string().nonempty("Snippet is required"),
   createdAt: z.number(),
   updatedAt: z.number(),
   remoteId: z.string().optional(),
-  syncState: z.string().nonempty("Sync state is required"),
-  syncStateHash: z.string().nonempty("Sync state hash is required"),
-  stateVector: z.string().nonempty("State vector is required"),
 });
 
 export const remoteFileListItemSchema = z.object({
@@ -119,17 +121,7 @@ export const createDocumentRequestSchema = z.object({
 
 export type Poem = z.infer<typeof poemSchema>;
 export type PoemRecord = z.infer<typeof poemRecordSchema>;
-export type PoemListItem = Pick<
-  PoemRecord,
-  | "id"
-  | "name"
-  | "snippet"
-  | "createdAt"
-  | "updatedAt"
-  | "remoteId"
-  | "syncStateHash"
-  | "stateVector"
->;
+export type PoemMeta = z.infer<typeof poemMetaSchema>;
 export type RemoteFileListItem = z.infer<typeof remoteFileListItemSchema>;
 export type ClientDocumentMetadata = z.infer<
   typeof clientDocumentMetadataSchema

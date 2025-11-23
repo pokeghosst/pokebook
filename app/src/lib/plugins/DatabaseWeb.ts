@@ -19,16 +19,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import Dexie, { type EntityTable } from 'dexie';
 
 import { DexieError } from '$lib/util/errors';
-import type { PoemListItem, PoemRecord } from '@pokebook/shared';
+
+import type { PoemDoc, PoemMeta, PoemRecord } from '@pokebook/shared';
 import type { DatabasePlugin } from './DatabasePlugin';
 
+const POEM_SNIPPET_LENGTH = 256;
+
 class PokeBookDB extends Dexie {
-	poems!: EntityTable<PoemRecord, 'id'>;
+	poemDocs!: EntityTable<PoemRecord, 'id'>;
+	poemMeta!: EntityTable<PoemMeta, 'id'>;
 
 	constructor() {
-		super('pokebook4');
+		super('PokeBook4');
 		this.version(1).stores({
-			poems: '&id, name, text, note, snippet, remoteId, syncState'
+			poemDocs: '&id, name',
+			poemMeta: 'id'
 		});
 	}
 }
@@ -40,74 +45,42 @@ export class DatabaseWeb implements DatabasePlugin {
 		this.#db = new PokeBookDB();
 	}
 
-	async save(
-		record: Omit<PoemRecord, 'id' | 'createdAt' | 'updatedAt'> &
-			Partial<Pick<PoemRecord, 'id' | 'createdAt' | 'updatedAt'>>
-	): Promise<string> {
-		const uuid = record.id ?? crypto.randomUUID();
-		const timestamp = Date.now();
-
-		await this.#db.poems.add({
-			id: uuid,
-			createdAt: record.createdAt ?? timestamp,
-			updatedAt: record.updatedAt ?? timestamp,
-			...record
-		});
-
-		return uuid;
-	}
-	async putPartialUpdate(id: string, update: Partial<PoemRecord>): Promise<void> {
-		const timestamp = Date.now();
+	async create(doc: PoemDoc): Promise<string> {
 		try {
-			const savedPoem = await this.#db.poems.get(id);
+			const uuid = crypto.randomUUID();
 
-			if (savedPoem) {
-				await this.#db.poems.update(id, {
-					...update,
+			await this.#db.transaction('rw', this.#db.poemDocs, this.#db.poemMeta, async () => {
+				await this.#db.poemDocs.add({
+					id: uuid,
+					doc
+				});
+
+				const timestamp = Date.now();
+
+				this.#db.poemMeta.add({
+					id: uuid,
+					name: doc.name.toString(),
+					snippet: sliceSnippet(doc.text.toString()),
+					createdAt: timestamp,
 					updatedAt: timestamp
 				});
-			} else {
-				await this.#db.poems.add({
-					id,
-					createdAt: update.createdAt ?? timestamp,
-					updatedAt: update.updatedAt ?? timestamp,
-					name: update.name ?? '',
-					text: update.text ?? '',
-					note: update.note ?? '',
-					snippet: update.snippet ?? '',
-					syncState: update.syncState ?? '',
-					syncStateHash: update.syncStateHash ?? ''
-				});
-			}
+			});
+
+			return uuid;
 		} catch (e: unknown) {
 			console.error(e);
 			throw new DexieError().withCause(e);
 		}
 	}
+
 	async get(id: string): Promise<PoemRecord | undefined> {
-		return await this.#db.poems.get(id);
+		return await this.#db.poemDocs.get(id);
 	}
 	async getAll(): Promise<PoemRecord[]> {
-		return await this.#db.poems.toArray();
+		return await this.#db.poemDocs.toArray();
 	}
-	async list(): Promise<PoemListItem[]> {
-		// TODO: Isn't there a way that doesn't require reading a full database?
-		const poems = await this.#db.poems.toArray();
+}
 
-		return poems.map((poem) => ({
-			id: poem.id,
-			name: poem.name,
-			snippet: poem.snippet,
-			createdAt: poem.createdAt,
-			updatedAt: poem.updatedAt,
-			remoteId: poem.remoteId,
-			syncStateHash: poem.syncStateHash
-		}));
-	}
-	async update(record: Omit<PoemRecord, 'createdAt' | 'updatedAt'>): Promise<void> {
-		await this.#db.poems.update(record.id, { ...record, updatedAt: Date.now() });
-	}
-	async delete(id: string): Promise<void> {
-		await this.#db.poems.delete(id);
-	}
+function sliceSnippet(text: string): string {
+	return text.slice(0, POEM_SNIPPET_LENGTH) + (text.length > POEM_SNIPPET_LENGTH ? '...' : '');
 }
