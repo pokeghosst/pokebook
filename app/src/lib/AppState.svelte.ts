@@ -18,7 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Preferences } from './plugins/Preferences';
 
+import type { Poem } from '@pokebook/shared';
+
 interface State {
+	poem: Poem;
 	darkModeEnabled: boolean;
 	pokeHelpEnabled: boolean;
 	sidebarOpen: boolean;
@@ -34,6 +37,7 @@ interface State {
 }
 
 const defaultState: State = {
+	poem: { name: '', text: '', note: '' },
 	darkModeEnabled: false,
 	pokeHelpEnabled: false,
 	sidebarOpen: true,

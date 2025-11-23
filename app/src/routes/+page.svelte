@@ -32,28 +32,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Workspace from '../components/Workspace.svelte';
 
 	import type { ToolbarItem } from '$lib/types';
-	import type { Poem } from '@pokebook/shared';
-	import type { PageProps } from './$types';
+	import appState from '$lib/AppState.svelte';
 
-	let { data }: PageProps = $props();
-
-	const poemData: Poem = data;
-	let poem = $state({ name: poemData.name, text: poemData.text });
-	let note = $state({ note: poemData.note });
+	let poem = $state({ name: appState.value.poem.name, text: appState.value.poem.text });
+	let note = $state({ note: appState.value.poem.note });
 
 	function updatePoemName(value: string) {
 		poem.name = value;
-		putPartialUpdate(DRAFT_POEM_ID, { name: value });
+		appState.value = { poem: { ...appState.value.poem, name: value } };
 	}
 
 	function updatePoemText(value: string) {
 		poem.text = value;
-		putPartialUpdate(DRAFT_POEM_ID, { text: value });
+		appState.value = { poem: { ...appState.value.poem, text: value } };
 	}
 
 	function updatePoemNote(value: string) {
 		note.note = value;
-		putPartialUpdate(DRAFT_POEM_ID, { note: value });
+		appState.value = { poem: { ...appState.value.poem, note: value } };
 	}
 
 	setContext('poemNameHandler', updatePoemName);
@@ -125,7 +121,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function clearDraft() {
 		poem = { name: '', text: '' };
 		note = { note: '' };
-		await deletePoem(DRAFT_POEM_ID);
+
+		appState.value.poem = { name: '', text: '', note: '' };
 	}
 </script>
 
