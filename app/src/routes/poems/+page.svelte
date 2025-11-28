@@ -28,6 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { PoemMeta } from '@pokebook/shared';
 
+	// TODO: Deduplicate
 	const FALLBACK_DELAY_MS = 150;
 
 	let poemListPromise: Promise<PoemMeta[]> = listPoems();

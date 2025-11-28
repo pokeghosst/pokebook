@@ -18,8 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { z } from "zod";
 
-import { PoemDoc } from "./models/PoemDoc";
-
 export const poemSchema = z.object({
   name: z.string().nonempty("Name is required"),
   text: z.string().nonempty("Text is required"),
@@ -28,7 +26,7 @@ export const poemSchema = z.object({
 
 export const poemRecordSchema = z.object({
   id: z.string().nonempty("ID is required"),
-  doc: z.instanceof(PoemDoc),
+  doc: z.instanceof(Uint8Array<ArrayBufferLike>),
 });
 
 export const poemMetaSchema = z.object({

@@ -58,7 +58,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{ icon: Share2, action: shareAction, label: $t('workspace.sharePoem') }
 	];
 
-	onMount(async () => {
+	onMount(() => {
 		hotkeys.filter = function () {
 			return true;
 		};

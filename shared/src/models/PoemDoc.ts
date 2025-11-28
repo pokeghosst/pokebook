@@ -45,16 +45,16 @@ export class PoemDoc {
     return this.#yDoc.getText("note");
   }
 
-  public getState() {
+  public encodeStateAsUpdate(): Uint8Array {
     return Y.encodeStateAsUpdate(this.#yDoc);
   }
 
-  public getEncodedState() {
+  public serialize() {
     return encodeToBase64(Y.encodeStateAsUpdate(this.#yDoc));
   }
 
   public getEncodedStateHash() {
-    return digestMessage(this.getEncodedState());
+    return digestMessage(this.serialize());
   }
 
   public getStateVector() {

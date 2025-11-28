@@ -28,10 +28,8 @@ export async function savePoem(poem: Poem): Promise<string> {
 	return await Database.create(new PoemDoc(poem));
 }
 
-export async function getPoem(id: string): Promise<Poem | undefined> {
-	const poem = await Database.get(id);
-
-	return poem;
+export async function getPoem(id: string): Promise<PoemRecord | undefined> {
+	return await Database.get(id);
 }
 
 export async function deletePoem(id: string) {

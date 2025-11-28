@@ -52,7 +52,7 @@ export class DatabaseWeb implements DatabasePlugin {
 			await this.#db.transaction('rw', this.#db.poemDocs, this.#db.poemMeta, async () => {
 				await this.#db.poemDocs.add({
 					id: uuid,
-					doc
+					doc: doc.encodeStateAsUpdate()
 				});
 
 				const timestamp = Date.now();

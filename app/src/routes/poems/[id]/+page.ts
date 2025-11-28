@@ -17,9 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { browser } from '$app/environment';
-import { PoemNotFoundError } from '$lib/util/errors';
-
-import { getPoem } from '$lib/services/poems.service';
 
 import type { PageLoad } from './$types';
 
@@ -27,13 +24,7 @@ export const load: PageLoad = async ({ params }) => {
 	if (browser) {
 		const poemId = params.id;
 
-		const poem = await getPoem(poemId);
-
-		if (!poem) throw new PoemNotFoundError();
-
-		const tmpPoem = await getPoem(`${poemId}.tmp`);
-
-		return { poemId, poem, tmpPoem };
+		return { poemId };
 	}
 
 	// TODO: Come up with proper name
