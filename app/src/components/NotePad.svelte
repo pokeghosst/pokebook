@@ -20,7 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import appState from '$lib/AppState.svelte';
 	import { t } from '$lib/translations';
 
-	let { note, updateNote }: { note: { note: string }; updateNote: (value: string) => void } =
+	let { note, updateNote }: { note: { note: string }; updateNote: (e: EventElements) => void } =
 		$props();
 
 	// let lines: string[] = $derived(note.split('\n'));
@@ -60,7 +60,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={() => note.note, updateNote}
+			value={note.note}
+			oninput={updateNote}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${appState.value.writingPadFontSize}px`}

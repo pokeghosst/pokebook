@@ -41,9 +41,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}: {
 		poem: { name: string; text: string };
 		note: { note: string };
-		updatePoemName: (value: string) => void;
-		updatePoemText: (value: string) => void;
-		updateNote: (value: string) => void;
+		updatePoemName: (e: EventElements) => void;
+		updatePoemText: (e: EventElements) => void;
+		updateNote: (e: EventElements) => void;
 		toolbarActions: ToolbarItem[];
 	} = $props();
 

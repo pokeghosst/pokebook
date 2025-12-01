@@ -37,19 +37,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let poem = $state({ name: appState.value.poem.name, text: appState.value.poem.text });
 	let note = $state({ note: appState.value.poem.note });
 
-	function updatePoemName(value: string) {
-		poem.name = value;
-		appState.value = { poem: { ...appState.value.poem, name: value } };
+	function updatePoemName(e: EventElements) {
+		appState.value = { poem: { ...appState.value.poem, name: e.currentTarget.value } };
 	}
 
-	function updatePoemText(value: string) {
-		poem.text = value;
-		appState.value = { poem: { ...appState.value.poem, text: value } };
+	function updatePoemText(e: EventElements) {
+		appState.value = { poem: { ...appState.value.poem, text: e.currentTarget.value } };
 	}
 
-	function updateNote(value: string) {
-		note.note = value;
-		appState.value = { poem: { ...appState.value.poem, note: value } };
+	function updateNote(e: EventElements) {
+		appState.value = { poem: { ...appState.value.poem, note: e.currentTarget.value } };
 	}
 
 	const toolbarActions: ToolbarItem[] = [

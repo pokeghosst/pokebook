@@ -25,12 +25,16 @@ import type { Poem } from "..";
 export class PoemDoc {
   #yDoc: Y.Doc;
 
-  constructor({ name, text, note }: Poem) {
+  constructor(poem?: Poem) {
     this.#yDoc = new Y.Doc();
 
-    this.name.insert(0, name);
-    this.text.insert(0, text);
-    this.note.insert(0, note);
+    if (poem) {
+      const { name, text, note } = poem;
+
+      this.name.insert(0, name);
+      this.text.insert(0, text);
+      this.note.insert(0, note);
+    }
   }
 
   get name() {
@@ -43,6 +47,10 @@ export class PoemDoc {
 
   get note() {
     return this.#yDoc.getText("note");
+  }
+
+  public static fromEncodedState(state: Uint8Array): PoemDoc {
+    return new PoemDoc().applyUpdate(state);
   }
 
   public encodeStateAsUpdate(): Uint8Array {
@@ -76,6 +84,8 @@ export class PoemDoc {
 
   public applyUpdate(update: Uint8Array) {
     Y.applyUpdate(this.#yDoc, update);
+
+    return this;
   }
 
   public applyEncodedUpdate(encodedUpdate: string) {

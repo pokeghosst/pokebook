@@ -30,6 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { ToolbarItem } from '$lib/types';
 	import type { PageProps } from './$types';
+	import { PoemDoc } from '@pokebook/shared';
 
 	let { data }: PageProps = $props();
 
@@ -41,22 +42,38 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
-	let poem = $state({ name: 'foo', text: 'bar' });
-	let note = $state();
+	let poem: { name: string; text: string } | null = $state(null);
+	let note: { note: string } | null = $state(null);
 
 	onMount(() => {
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
+		(async () => {
+			const resolvedPoem = await poemPromise;
+
+			if (!resolvedPoem) {
+				alert('TODO: We messed up!');
+				return;
+			}
+
+			const poemDoc = PoemDoc.fromEncodedState(resolvedPoem.doc);
+
+			poem = { name: poemDoc.name.toString(), text: poemDoc.text.toString() };
+			note = { note: poemDoc.note.toString() };
+		})();
+
 		return () => clearTimeout(fallbackTimeout);
 	});
 
-	// TODO: Proper debouncing for all update handlers + preventing tab closing until all changes are written
+	function updatePoemName(value: string) {}
 
-	function saveAction() {
-		// updatePoem(poemId, { ...poem, ...note });
-	}
+	function updatePoemText(value: string) {}
+
+	function updateNote(value: string) {}
+
+	// TODO: Proper debouncing for all update handlers + preventing tab closing until all changes are written
 
 	const deleteAction = async () => {
 		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
@@ -74,21 +91,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			// sharePoem
 			label: $t('workspace.sharePoem')
 		},
-		{ icon: Save, action: saveAction, label: $t('workspace.savePoem') },
 		{ icon: Trash2, action: deleteAction, label: $t('workspace.forgetPoem') }
 	];
 </script>
 
 {#await poemPromise}
 	<!-- Show fallback -->
-{:then resolvedPoem}
-	{#if resolvedPoem}
-		{JSON.stringify(resolvedPoem.doc.text)}
-		<!-- <Workspace
-			poem={{ name: resolvedPoem.name, text: resolvedPoem.text }}
-			note={{ note: resolvedPoem.note }}
-			{toolbarActions}
-		/> -->
+{:then}
+	{#if poem && note}
+		<Workspace {poem} {note} {toolbarActions} />
 	{:else}
 		<!-- Handle -->
 	{/if}

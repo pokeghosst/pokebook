@@ -30,8 +30,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		updatePoemText
 	}: {
 		poem: { name: string; text: string };
-		updatePoemName: (value: string) => void;
-		updatePoemText: (value: string) => void;
+		updatePoemName: (e: EventElements) => void;
+		updatePoemText: (e: EventElements) => void;
 	} = $props();
 
 	let lines: string[] = $derived(poem.text.split('\n'));
@@ -87,7 +87,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={() => poem.name, updatePoemName}
+		value={poem.name}
+		oninput={updatePoemName}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -104,7 +105,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			</div>
 		{/if}
 		<textarea
-			bind:value={() => poem.text, updatePoemText}
+			value={poem.text}
+			oninput={updatePoemText}
 			class="paper {appState.value.poemPadJustification} {appState.value.pokeHelpEnabled
 				? 'l-padded-for-pokehelp'
 				: ''}"
