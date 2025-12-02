@@ -37,16 +37,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let poem = $state({ name: appState.value.poem.name, text: appState.value.poem.text });
 	let note = $state({ note: appState.value.poem.note });
 
-	function updatePoemName(e: EventElements) {
-		appState.value = { poem: { ...appState.value.poem, name: e.currentTarget.value } };
+	function predictNextValue(
+		e: InputEvent & { currentTarget: HTMLInputElement | HTMLTextAreaElement }
+	) {
+		const { currentTarget, data } = e;
+		const { selectionStart, selectionEnd } = currentTarget;
+
+		const caretStart = selectionStart ?? 0;
+		const caretEnd = selectionEnd ?? caretStart;
+
+		return (
+			currentTarget.value.slice(0, caretStart) + (data ?? '') + currentTarget.value.slice(caretEnd)
+		);
 	}
 
-	function updatePoemText(e: EventElements) {
-		appState.value = { poem: { ...appState.value.poem, text: e.currentTarget.value } };
+	function updatePoemName(e: InputEvent & { currentTarget: HTMLInputElement }) {
+		appState.value = { poem: { ...appState.value.poem, name: predictNextValue(e) } };
 	}
 
-	function updateNote(e: EventElements) {
-		appState.value = { poem: { ...appState.value.poem, note: e.currentTarget.value } };
+	function updatePoemText(e: InputEvent & { currentTarget: HTMLTextAreaElement }) {
+		appState.value = { poem: { ...appState.value.poem, text: predictNextValue(e) } };
+	}
+
+	function updateNote(e: InputEvent & { currentTarget: HTMLTextAreaElement }) {
+		appState.value = { poem: { ...appState.value.poem, note: predictNextValue(e) } };
 	}
 
 	const toolbarActions: ToolbarItem[] = [

@@ -20,8 +20,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import appState from '$lib/AppState.svelte';
 	import { t } from '$lib/translations';
 
-	let { note, updateNote }: { note: { note: string }; updateNote: (e: EventElements) => void } =
-		$props();
+	let {
+		note,
+		updateNote
+	}: {
+		note: { note: string };
+		updateNote: (e: InputEvent & { currentTarget: HTMLTextAreaElement }) => void;
+	} = $props();
 
 	// let lines: string[] = $derived(note.split('\n'));
 
@@ -61,7 +66,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div>
 		<textarea
 			value={note.note}
-			oninput={updateNote}
+			onbeforeinput={updateNote}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${appState.value.writingPadFontSize}px`}

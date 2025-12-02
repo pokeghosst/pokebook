@@ -67,11 +67,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		return () => clearTimeout(fallbackTimeout);
 	});
 
-	function updatePoemName(value: string) {}
+	function updatePoemName(e: InputEvent) {
+		console.log(e);
 
-	function updatePoemText(value: string) {}
+		const { inputType } = e;
+		console.log(inputType);
+		console.log((e.currentTarget as HTMLInputElement).selectionStart);
+		console.log((e.currentTarget as HTMLInputElement).selectionEnd);
 
-	function updateNote(value: string) {}
+		switch (inputType) {
+			case 'insertText':
+		}
+	}
+
+	function updatePoemText(e: EventElements) {}
+
+	function updateNote(e: EventElements) {}
 
 	// TODO: Proper debouncing for all update handlers + preventing tab closing until all changes are written
 
@@ -99,7 +110,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<!-- Show fallback -->
 {:then}
 	{#if poem && note}
-		<Workspace {poem} {note} {toolbarActions} />
+		<Workspace {poem} {note} {updatePoemName} {updatePoemText} {updateNote} {toolbarActions} />
 	{:else}
 		<!-- Handle -->
 	{/if}

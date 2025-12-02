@@ -30,8 +30,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		updatePoemText
 	}: {
 		poem: { name: string; text: string };
-		updatePoemName: (e: EventElements) => void;
-		updatePoemText: (e: EventElements) => void;
+		updatePoemName: (e: InputEvent & { currentTarget: HTMLInputElement }) => void;
+		updatePoemText: (e: InputEvent & { currentTarget: HTMLTextAreaElement }) => void;
 	} = $props();
 
 	let lines: string[] = $derived(poem.text.split('\n'));
@@ -88,7 +88,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<input
 		class="notebook-header"
 		value={poem.name}
-		oninput={updatePoemName}
+		onbeforeinput={updatePoemName}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -106,7 +106,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{/if}
 		<textarea
 			value={poem.text}
-			oninput={updatePoemText}
+			onbeforeinput={updatePoemText}
 			class="paper {appState.value.poemPadJustification} {appState.value.pokeHelpEnabled
 				? 'l-padded-for-pokehelp'
 				: ''}"
