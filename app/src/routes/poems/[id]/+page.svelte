@@ -36,33 +36,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const FALLBACK_DELAY_MS = 150;
 
-	const poemId: string = data.poemId;
+	let poemId: string = data.poemId;
 
 	let poemPromise = getPoem(poemId);
 	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
-	let poem: { name: string; text: string } | null = $state(null);
-	let note: { note: string } | null = $state(null);
+	let resolvedPoem = $state(await getPoem(poemId))
+	let poemDoc = $derived(PoemDoc.fromEncodedState(resolvedPoem.doc))
+
+	let poem: { name: string; text: string } | null = $derived({ name: poemDoc.name.toString(), text: poemDoc.text.toString() });
+	let note: { note: string } | null = $derived({note: poemDoc.note.toString()});
 
 	onMount(() => {
+
+		// TODO: Wrap template in <svelte:boundary> but still use fallback timeout
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
-
-		(async () => {
-			const resolvedPoem = await poemPromise;
-
-			if (!resolvedPoem) {
-				alert('TODO: We messed up!');
-				return;
-			}
-
-			const poemDoc = PoemDoc.fromEncodedState(resolvedPoem.doc);
-
-			poem = { name: poemDoc.name.toString(), text: poemDoc.text.toString() };
-			note = { note: poemDoc.note.toString() };
-		})();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
@@ -80,9 +71,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 
-	function updatePoemText(e: EventElements) {}
+	function updatePoemText(e: InputEvent) {}
 
-	function updateNote(e: EventElements) {}
+	function updateNote(e: InputEvent) {}
 
 	// TODO: Proper debouncing for all update handlers + preventing tab closing until all changes are written
 
