@@ -31,6 +31,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { ToolbarItem } from '$lib/types';
 	import type { PageProps } from './$types';
 	import { PoemDoc } from '@pokebook/shared';
+	import { applyEvent } from '$lib/util/yjsBindings';
 
 	let { data }: PageProps = $props();
 
@@ -42,14 +43,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
-	let resolvedPoem = $state(await getPoem(poemId))
-	let poemDoc = $derived(PoemDoc.fromEncodedState(resolvedPoem.doc))
+	let resolvedPoem = $state(await getPoem(poemId));
+	let poemDoc = $derived(PoemDoc.fromEncodedState(resolvedPoem.doc));
 
-	let poem: { name: string; text: string } | null = $derived({ name: poemDoc.name.toString(), text: poemDoc.text.toString() });
-	let note: { note: string } | null = $derived({note: poemDoc.note.toString()});
+	let poem: { name: string; text: string } | null = $derived({
+		name: poemDoc.name.toString(),
+		text: poemDoc.text.toString()
+	});
+	let note: { note: string } | null = $derived({ note: poemDoc.note.toString() });
 
 	onMount(() => {
-
 		// TODO: Wrap template in <svelte:boundary> but still use fallback timeout
 		fallbackTimeout = setTimeout(() => {
 			showFallback = true;
@@ -66,9 +69,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		console.log((e.currentTarget as HTMLInputElement).selectionStart);
 		console.log((e.currentTarget as HTMLInputElement).selectionEnd);
 
-		switch (inputType) {
-			case 'insertText':
-		}
+		const op = applyEvent(e, poemDoc, 'name');
+
+		console.log(op);
 	}
 
 	function updatePoemText(e: InputEvent) {}

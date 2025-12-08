@@ -43,6 +43,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		const { currentTarget, data } = e;
 		const { selectionStart, selectionEnd } = currentTarget;
 
+		// TODO: Use `getSelectionOffsets`
 		const caretStart = selectionStart ?? 0;
 		const caretEnd = selectionEnd ?? caretStart;
 

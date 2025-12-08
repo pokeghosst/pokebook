@@ -22,6 +22,7 @@ import { digestMessage } from "../util/digest";
 
 import type { Poem } from "..";
 
+// TODO: Remove redundant instance functions
 export class PoemDoc {
   #yDoc: Y.Doc;
 
@@ -47,6 +48,10 @@ export class PoemDoc {
 
   get note() {
     return this.#yDoc.getText("note");
+  }
+
+  public transact(fn: () => void) {
+    this.#yDoc.transact(fn);
   }
 
   public static fromEncodedState(state: Uint8Array): PoemDoc {
