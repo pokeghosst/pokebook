@@ -8,6 +8,7 @@
     "lucide",
     "macaron",
     "nitropack",
+    "omnisync",
     "pokebook",
     "pokehelp",
     "pokemanifest",
@@ -15,5 +16,11 @@
   ],
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
-  }
+  },
+  // allow autocomplete for ArkType expressions like "string | num"
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  // prioritize ArkType's "type" for autoimports
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"]
 }
