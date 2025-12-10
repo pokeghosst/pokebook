@@ -16,15 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import authRouter from "./routers/auth.router";
+export default class CloudToken {
+  #provider: string;
+  #refreshToken: string;
+  #expiresAt: number;
 
-const server = Bun.serve({
-  routes: {
-    ...authRouter,
-  },
-  development: true,
-});
-
-console.log(`Server running at ${server.url}`);
-
-export const serverUrl = server.url;
+  constructor(provider: string, refreshToken: string, expiresAt: number) {
+    this.#provider = provider;
+    this.#refreshToken = refreshToken;
+    this.#expiresAt = expiresAt;
+  }
+}

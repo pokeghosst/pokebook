@@ -16,15 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import authRouter from "./routers/auth.router";
+import { getGAuthUrl } from "../services/auth/google.service";
 
-const server = Bun.serve({
-  routes: {
-    ...authRouter,
-  },
-  development: true,
-});
+export function handleAuthRequest(
+  req: Bun.BunRequest<"/:provider/auth">
+): Response {
+  const { provider } = req.params;
 
-console.log(`Server running at ${server.url}`);
+  switch (provider) {
+    case "google":
+      const url = getGAuthUrl();
+      return Response.redirect(url);
 
-export const serverUrl = server.url;
+    default:
+      return Response.json("Not Found", { status: 404 });
+  }
+}

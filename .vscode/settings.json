@@ -3,6 +3,7 @@
   "git.enableCommitSigning": true,
   "editor.formatOnSave": true,
   "cSpell.words": [
+    "arkenv",
     "Dexie",
     "localforage",
     "lucide",

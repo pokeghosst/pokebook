@@ -16,15 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import authRouter from "./routers/auth.router";
+import arkenv from "arkenv";
 
-const server = Bun.serve({
-  routes: {
-    ...authRouter,
-  },
-  development: true,
+export const env = arkenv({
+  GOOGLE_CLIENT_ID: "string",
+  GOOGLE_CLIENT_SECRET: "string",
 });
-
-console.log(`Server running at ${server.url}`);
-
-export const serverUrl = server.url;

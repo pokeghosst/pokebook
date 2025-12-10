@@ -16,15 +16,23 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import authRouter from "./routers/auth.router";
+import { google } from "googleapis";
+import { env } from "../../config/env";
+import { serverUrl } from "../..";
 
-const server = Bun.serve({
-  routes: {
-    ...authRouter,
-  },
-  development: true,
-});
+export function getGAuthUrl() {
+  return getOAuth2Client().generateAuthUrl({
+    access_type: "offline",
+    scope: "https://www.googleapis.com/auth/drive.file",
+    include_granted_scopes: true,
+    prompt: "consent",
+  });
+}
 
-console.log(`Server running at ${server.url}`);
-
-export const serverUrl = server.url;
+function getOAuth2Client() {
+  return new google.auth.OAuth2(
+    env.GOOGLE_CLIENT_ID,
+    env.GOOGLE_CLIENT_SECRET,
+    serverUrl + "google/callback"
+  );
+}

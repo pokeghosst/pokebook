@@ -10,9 +10,12 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "bun run index.ts"
+    "dev": "bun --hot index.ts"
   },
   "dependencies": {
+    "arkenv": "^0.7.7",
+    "arktype": "^2.1.28",
+    "googleapis": "^168.0.0",
     "yjs": "^13.6.27"
   }
 }

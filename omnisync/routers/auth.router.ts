@@ -16,15 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import authRouter from "./routers/auth.router";
+import { handleAuthRequest } from "../controllers/auth.controller";
 
-const server = Bun.serve({
-  routes: {
-    ...authRouter,
-  },
-  development: true,
-});
-
-console.log(`Server running at ${server.url}`);
-
-export const serverUrl = server.url;
+export default {
+  "/:provider/auth": (req: Bun.BunRequest<"/:provider/auth">) =>
+    handleAuthRequest(req),
+  "/:provider/callback": () => new Response("OK"),
+};
