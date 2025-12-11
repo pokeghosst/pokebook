@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 export class ErrorBase<T extends string> extends Error {
   override name: T;
   override message: string;
-  override cause: any;
+  override cause: unknown;
 
   constructor({
     name,
@@ -28,7 +28,7 @@ export class ErrorBase<T extends string> extends Error {
   }: {
     name: T;
     message: string;
-    cause?: any;
+    cause?: unknown;
   }) {
     super();
     this.name = name;
