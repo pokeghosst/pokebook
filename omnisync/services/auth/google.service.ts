@@ -17,8 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { google } from "googleapis";
-import { env } from "../../config/env";
 import { serverUrl } from "../..";
+import { env } from "../../config/env";
+import { GoogleError } from "../../errors/GoogleError";
+import CloudToken from "../../models/CloudToken";
+import { isNonEmptyString, isNumber } from "../../util";
 
 export function getGAuthUrl() {
   return getOAuth2Client().generateAuthUrl({
@@ -27,6 +30,24 @@ export function getGAuthUrl() {
     include_granted_scopes: true,
     prompt: "consent",
   });
+}
+
+export async function processCallback(code: string): Promise<CloudToken> {
+  const { tokens } = await getOAuth2Client().getToken(code);
+  const { refresh_token, access_token, expiry_date } = tokens;
+
+  if (
+    !isNonEmptyString(refresh_token) ||
+    !isNonEmptyString(access_token) ||
+    !isNumber(expiry_date)
+  ) {
+    throw new GoogleError({
+      name: "GOOGLE_CALLBACK_MISSING_TOKEN",
+      message: "Could not construct tokens from callback code",
+    });
+  }
+
+  return new CloudToken(refresh_token, access_token, expiry_date);
 }
 
 function getOAuth2Client() {
