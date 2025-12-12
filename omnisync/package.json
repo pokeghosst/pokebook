@@ -10,7 +10,7 @@
     "typescript": "^5"
   },
   "scripts": {
-    "dev": "bun --hot index.ts"
+    "dev": "NODE_ENV=development bun --hot index.ts"
   },
   "dependencies": {
     "arkenv": "^0.7.7",

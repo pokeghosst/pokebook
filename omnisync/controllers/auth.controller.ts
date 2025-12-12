@@ -16,7 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { getGAuthUrl } from "../services/auth/google.service";
+import { POKEBOOK_SESSION_MAX_AGE } from "../config/constants";
+import { env } from "../config/env";
+import { ErrorBase } from "../errors/ErrorBase";
+import { GoogleError } from "../errors/GoogleError";
+import { getGAuthUrl, processCallback } from "../services/auth/google.service";
+import { isNonEmptyString } from "../util";
 
 export function handleAuthRequest(
   req: Bun.BunRequest<"/:provider/auth">
@@ -27,6 +32,46 @@ export function handleAuthRequest(
     case "google":
       const url = getGAuthUrl();
       return Response.redirect(url);
+
+    default:
+      return Response.json("Not Found", { status: 404 });
+  }
+}
+
+export async function handleCallbackRequest(
+  req: Bun.BunRequest<"/:provider/callback">
+) {
+  const { provider } = req.params;
+  const cookies = req.cookies;
+
+  switch (provider) {
+    case "google":
+      const searchParams = new URLSearchParams(req.url.split("/callback?")[1]);
+      const code = searchParams.get("code");
+
+      if (!isNonEmptyString(code)) {
+        return Response.redirect(`${env.CLIENT_URL}/?auth=missingCode`);
+      }
+
+      try {
+        const sessionId = await processCallback(code);
+
+        cookies.set("pokebook-session", `google.${sessionId}`, {
+          httpOnly: true,
+          secure: env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: POKEBOOK_SESSION_MAX_AGE,
+          path: "/",
+        });
+
+        return Response.redirect(`${env.CLIENT_URL}/?auth=success`);
+      } catch (e) {
+        if (e instanceof ErrorBase) {
+          return Response.redirect(`${env.CLIENT_URL}/?auth=${e.name}`);
+        }
+
+        return Response.redirect(`${env.CLIENT_URL}/?auth=unknown`);
+      }
 
     default:
       return Response.json("Not Found", { status: 404 });

@@ -16,14 +16,30 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export default class CloudToken {
-  #provider: string;
+export default class CloudTokens {
   #refreshToken: string;
+  #accessToken: string;
   #expiresAt: number;
 
-  constructor(provider: string, refreshToken: string, expiresAt: number) {
-    this.#provider = provider;
+  constructor({
+    refreshToken,
+    accessToken,
+    expiresAt,
+  }: {
+    refreshToken: string;
+    accessToken: string;
+    expiresAt: number;
+  }) {
     this.#refreshToken = refreshToken;
+    this.#accessToken = accessToken;
     this.#expiresAt = expiresAt;
+  }
+
+  public stringify() {
+    return JSON.stringify({
+      refreshToken: this.#refreshToken,
+      accessToken: this.#accessToken,
+      expiresAt: this.#expiresAt,
+    });
   }
 }

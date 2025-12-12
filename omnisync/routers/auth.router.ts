@@ -16,10 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { handleAuthRequest } from "../controllers/auth.controller";
+import {
+  handleAuthRequest,
+  handleCallbackRequest,
+} from "../controllers/auth.controller";
 
 export default {
   "/:provider/auth": (req: Bun.BunRequest<"/:provider/auth">) =>
     handleAuthRequest(req),
-  "/:provider/callback": () => new Response("OK"),
+  "/:provider/callback": (req: Bun.BunRequest<"/:provider/callback">) =>
+    handleCallbackRequest(req),
 };

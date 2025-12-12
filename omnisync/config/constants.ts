@@ -16,12 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import arkenv from "arkenv";
-
-export const env = arkenv({
-  GOOGLE_CLIENT_ID: "string",
-  GOOGLE_CLIENT_SECRET: "string",
-  CLIENT_URL: "string",
-  NODE_ENV: "'development' | 'production' | 'test'",
-  REDIS_URL: "string",
-});
+export const POKEBOOK_SESSION_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
