@@ -59,12 +59,7 @@ export async function processCallback(code: string): Promise<string> {
 
     return sessionId;
   } catch (e: unknown) {
-    // Test and handle Redis errors
-    throw new RedisError({
-      name: "REDIS_UNKNOWN_ERROR",
-      message: "Unknown Redis error occurred",
-      cause: e,
-    });
+    mapRedisError(e);
   }
 }
 
@@ -121,6 +116,14 @@ function mapCallbackError(e: unknown): never {
   throw new GoogleError({
     name: "GOOGLE_CALLBACK_UNKNOWN_ERROR",
     message: "Unknown error when processing Google callback token",
+    cause: e,
+  });
+}
+
+function mapRedisError(e: unknown): never {
+  throw new RedisError({
+    name: "REDIS_UNKNOWN_ERROR",
+    message: "Unknown Redis error occurred",
     cause: e,
   });
 }
