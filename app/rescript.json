@@ -1,14 +1,14 @@
 {
-  "name": "@pokebook/app",
-  "sources": {
-    "dir": "src",
-    "subdirs": true
-  },
-  "package-specs": {
-    "module": "esmodule",
-    "in-source": true
-  },
-  "suffix": ".res.mjs",
-  "bs-dependencies": [],
-  "bsc-flags": []
+	"name": "@pokebook/app",
+	"sources": {
+		"dir": "src",
+		"subdirs": true
+	},
+	"package-specs": {
+		"module": "esmodule",
+		"in-source": true
+	},
+	"suffix": ".res.mjs",
+	"dependencies": ["@rescript/webapi"],
+	"compiler-flags": ["-open WebAPI.Global"]
 }

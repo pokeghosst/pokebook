@@ -14,6 +14,7 @@
       "version": "4.0.0",
       "dependencies": {
         "@pokebook/core": "workspace:*",
+        "@rescript/webapi": "^0.1.0-experimental-6de28ff",
         "@trpc/client": "^11.0.0",
         "@zip.js/zip.js": "^2.7.62",
         "dexie": "^4.0.11",
@@ -224,6 +225,8 @@
     "@rescript/linux-x64": ["@rescript/linux-x64@12.0.1", "", { "os": "linux", "cpu": "x64" }, "sha512-WpVBjAvLsKATOJTckI6PDf4IFnHHxwsSVtklC+XAXbwqHLP1gqDDuVcykOOIWexxepod+QvBvEZGjzNPJ5L8gA=="],
 
     "@rescript/runtime": ["@rescript/runtime@12.0.1", "", {}, "sha512-pMoWvllPFK0cl87vMYBVvll+DaAdPAsRuLIIJa+Q8LMhcS7cqpaZVflU3LbH+U/kv3vWaUYIfLBObwGnXw/CDg=="],
+
+    "@rescript/webapi": ["@rescript/webapi@0.1.0-experimental-6de28ff", "", { "peerDependencies": { "rescript": ">=12.0.0 <13" } }, "sha512-2/sbXP9fEAKw/77z4EJSaUIhwVzP6/Qs7HJeC7UZBpcyxRUNcADI3PGlkMUsf6OmE3kp37LnfyxmBgdZnrw4qA=="],
 
     "@rescript/win32-x64": ["@rescript/win32-x64@12.0.1", "", { "os": "win32", "cpu": "x64" }, "sha512-Hv6nwb6A94qtj6b4PcIsmoWhLIcLt6wLuHpD9YNxj4/d9FkrHM/yj9ZKhKan/9rfg4wkHl1cZE898AZe/nWq9g=="],
 

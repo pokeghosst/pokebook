@@ -21,7 +21,7 @@ import Dexie, { type EntityTable } from 'dexie';
 import { DexieError } from '$lib/util/errors';
 
 import type { PoemDoc, PoemMeta, PoemRecord } from '@pokebook/core';
-import type { DatabasePlugin } from '../ports/DatabasePlugin';
+import type { DatabasePlugin } from './DatabasePlugin';
 
 const POEM_SNIPPET_LENGTH = 256;
 

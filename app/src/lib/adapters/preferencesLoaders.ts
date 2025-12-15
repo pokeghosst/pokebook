@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024-2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -15,16 +15,3 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-
-type getOptions = {key: string}
-type setOptions = {key: string, value: string}
-type removeOptions = {key: string}
-type getResult = {value: Null.t<string>}
-
-@genType
-type t = {
-  get: getOptions => promise<getResult>,
-  set: setOptions => promise<unit>,
-  remove: removeOptions => promise<unit>,
-  clear: unit => promise<unit>,
-}

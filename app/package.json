@@ -42,6 +42,7 @@
 	},
 	"dependencies": {
 		"@pokebook/core": "workspace:*",
+		"@rescript/webapi": "^0.1.0-experimental-6de28ff",
 		"@trpc/client": "^11.0.0",
 		"@zip.js/zip.js": "^2.7.62",
 		"dexie": "^4.0.11",
