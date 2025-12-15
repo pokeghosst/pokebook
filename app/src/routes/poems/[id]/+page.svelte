@@ -30,7 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import type { ToolbarItem } from '$lib/types';
 	import type { PageProps } from './$types';
-	import { PoemDoc } from '@pokebook/shared';
+	import { PoemDoc } from '@pokebook/core';
 	import { applyEvent } from '$lib/util/yjsBindings';
 
 	let { data }: PageProps = $props();

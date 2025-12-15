@@ -16,17 +16,38 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import type { RemoteFileListItem } from '@pokebook/core';
+import * as Y from "yjs";
 
-export interface StorageDriver {
-	uploadPoems(
-		poems: { name: string; contents: string }[]
-	): Promise<{ fileName: string; fileId: string }[]>;
-	downloadPoems(ids: string[]): Promise<{ fileId: string; contents: string }[]>;
-	listPoems(): Promise<RemoteFileListItem[]>;
-	loadPoem(poemUri: string): Promise<PoemEntity>;
-	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;
-	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
-	deletePoem(poemUri: string): Promise<void>;
+// import type { Poem } from "./src";
+
+export class PoemDoc {
+  #yDoc: Y.Doc;
+
+  constructor(poem?: any) {
+    this.#yDoc = new Y.Doc();
+
+    if (poem) {
+      const { name, text, note } = poem;
+
+      this.name.insert(0, name);
+      this.text.insert(0, text);
+      this.note.insert(0, note);
+    }
+  }
+
+  get name() {
+    return this.#yDoc.getText("title");
+  }
+
+  get text() {
+    return this.#yDoc.getText("poem");
+  }
+
+  get note() {
+    return this.#yDoc.getText("note");
+  }
+
+  public transact(fn: () => void) {
+    this.#yDoc.transact(fn);
+  }
 }

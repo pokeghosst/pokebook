@@ -18,10 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Database } from '$lib/plugins/Database';
 import { PoemNotFoundError } from '$lib/util/errors';
-import { PoemDoc } from '@pokebook/shared';
+import { PoemDoc } from '@pokebook/core';
 import { diffChars } from 'diff';
 
-import type { Poem, PoemMeta, PoemRecord } from '@pokebook/shared';
+import type { Poem, PoemMeta, PoemRecord } from '@pokebook/core';
 import type { Text as YText } from 'yjs';
 
 export async function savePoem(poem: Poem): Promise<string> {

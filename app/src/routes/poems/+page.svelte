@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { RefreshCcw } from 'lucide-svelte';
 
-	import type { PoemMeta } from '@pokebook/shared';
+	import type { PoemMeta } from '@pokebook/core';
 
 	// TODO: Deduplicate
 	const FALLBACK_DELAY_MS = 150;

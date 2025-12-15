@@ -20,8 +20,8 @@ import Dexie, { type EntityTable } from 'dexie';
 
 import { DexieError } from '$lib/util/errors';
 
-import type { PoemDoc, PoemMeta, PoemRecord } from '@pokebook/shared';
-import type { DatabasePlugin } from './DatabasePlugin';
+import type { PoemDoc, PoemMeta, PoemRecord } from '@pokebook/core';
+import type { DatabasePlugin } from '../ports/DatabasePlugin';
 
 const POEM_SNIPPET_LENGTH = 256;
 

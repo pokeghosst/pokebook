@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { Database } from '$lib/plugins/Database';
 import { CloudStorage } from '../plugins/CloudStorage';
 
-import { PoemDoc, type SyncPlanResponse } from '@pokebook/shared';
+import { PoemDoc, type SyncPlanResponse } from '@pokebook/core';
 import { putPartialUpdate } from './poems.service';
 
 // Batch size for processing documents

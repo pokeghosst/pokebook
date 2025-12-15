@@ -25,7 +25,7 @@ import type {
 	ExchangeUpdatesRequest,
 	ExchangeUpdatesResponse,
 	CreateDocumentRequest
-} from '@pokebook/shared';
+} from '@pokebook/core';
 import type { TRPCClient } from '@trpc/client';
 import type { CloudStoragePlugin } from './CloudStoragePlugin';
 

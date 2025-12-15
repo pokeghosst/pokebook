@@ -24,7 +24,7 @@ import type {
 	ExchangeUpdatesRequest,
 	ExchangeUpdatesResponse,
 	CreateDocumentRequest
-} from '@pokebook/shared';
+} from '@pokebook/core';
 
 export interface CloudStoragePlugin {
 	// Old methods (deprecated, keep for backward compatibility)

@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { makeProxy } from '$lib/util';
 
-import type { DatabasePlugin } from './DatabasePlugin';
+import type { DatabasePlugin } from '../ports/DatabasePlugin';
 
 let pluginInstance: DatabasePlugin | null = null;
 let pluginPromise: Promise<DatabasePlugin> | null = null;

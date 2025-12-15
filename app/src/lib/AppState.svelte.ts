@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Preferences } from './plugins/Preferences';
 
-import type { Poem } from '@pokebook/shared';
+import type { Poem } from '@pokebook/core';
 
 interface State {
 	poem: Poem;

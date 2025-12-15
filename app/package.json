@@ -37,8 +37,6 @@
 		"@sveltejs/vite-plugin-svelte": "6.2.1"
 	},
 	"dependencies": {
-		"@pokebook/backend": "workspace:^",
-		"@pokebook/shared": "workspace:^",
 		"@trpc/client": "^11.0.0",
 		"@zip.js/zip.js": "^2.7.62",
 		"dexie": "^4.0.11",
@@ -50,6 +48,7 @@
 		"svelte-modals": "^2.0.1",
 		"sveltekit-i18n": "^2.4.2",
 		"syllable": "^5.0.1",
-		"yjs": "^13.6.23"
+		"yjs": "^13.6.23",
+		"@pokebook/core": "workspace:*"
 	}
 }

@@ -1,0 +1,24 @@
+{
+  "name": "@pokebook/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PokeBook core types and logic",
+  "author": "Pokeghost <pokeghost@disroot.org>",
+  "license": "AGPL-3.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "ts:build": "tsc -p ./",
+    "ts:dev": "tsc -p ./ --watch",
+    "res:build": "rescript",
+    "res:clean": "rescript clean",
+    "res:dev": "rescript watch",
+    "dev": "bun ./runners/dev.ts"
+  },
+  "dependencies": {
+    "rescript": "12.0.1",
+    "yjs": "^13.6.27",
+    "zod": "^3.24.2"
+  }
+}

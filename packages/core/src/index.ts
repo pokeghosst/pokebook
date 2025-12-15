@@ -135,4 +135,4 @@ export type ExchangeUpdatesResponse = z.infer<
 >;
 export type CreateDocumentRequest = z.infer<typeof createDocumentRequestSchema>;
 
-export { PoemDoc } from "./models/PoemDoc";
+export { PoemDoc } from "./adapters/PoemDoc";

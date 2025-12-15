@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import * as Y from 'yjs';
 
-import type { PoemDoc } from '@pokebook/shared';
+import type { PoemDoc } from '@pokebook/core';
 
 interface TextChange {
 	deleteStart: number;

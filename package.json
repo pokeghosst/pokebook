@@ -15,11 +15,16 @@
     "url": "https://github.com/pokeghosst/pokebook"
   },
   "scripts": {
-    "dev": "pnpm --filter=\"./{app,backend,shared}\" --parallel run dev",
-    "build": "pnpm -r run build"
+    "dev": "bun --filter '*' dev"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/bun": "latest"
   },
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@10.25.0",
+  "workspaces": [
+    "packages/*",
+    "app",
+    "omnisync"
+  ]
 }
