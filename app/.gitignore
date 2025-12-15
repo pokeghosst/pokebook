@@ -12,3 +12,6 @@ vite.config.ts.timestamp-*requirepass REDIS_PASSWORD
 redis.conf
 .dccache
 coverage
+
+/lib/
+.bsb.lock
