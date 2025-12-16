@@ -10,5 +10,10 @@
 	},
 	"suffix": ".res.mjs",
 	"dependencies": ["@rescript/webapi"],
-	"compiler-flags": ["-open WebAPI.Global"]
+	"compiler-flags": ["-open WebAPI.Global"],
+	"gentypeconfig": {
+		"module": "esmodule",
+		"moduleResolution": "node",
+		"generatedFileExtension": ".gen.ts"
+	}
 }

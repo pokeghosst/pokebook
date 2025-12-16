@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,25 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-open WebAPI.Storage
-
-let make = (): PreferencesPlugin.t => {
-  get: ({key}) => {
-    let result: PreferencesPlugin.getResult = {
-      value: localStorage->getItem(key),
-    }
-    Promise.resolve(result)
-  },
-  set: ({key, value}) => {
-    localStorage->setItem(~key, ~value)
-    Promise.resolve()
-  },
-  remove: ({key}) => {
-    localStorage->removeItem(key)
-    Promise.resolve()
-  },
-  clear: () => {
-    localStorage->clear
-    Promise.resolve()
-  },
+@genType
+let run = async (preferences: PreferencesPlugin.t): promise<string> => {
+  let res = await preferences.get({key: "pokebook_state"})
+  switch res.value->Null.toOption {
+  | Some(json) => Promise.resolve(json)
+  | None => Promise.resolve("{}")
+  }
 }

@@ -17,8 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Preferences } from './plugins/Preferences';
-
 import type { Poem } from '@pokebook/core';
+import { deps } from './deps';
+import { run as loadPokeBookState } from './usecases/LoadPokeBookState.gen';
 
 interface State {
 	poem: Poem;
@@ -52,9 +53,8 @@ const defaultState: State = {
 	syncProvider: 'local'
 };
 
-const stateFromPreferences: Partial<State> = JSON.parse(
-	(await Preferences.get({ key: 'pokebook_state' })).value ?? '{}'
-);
+const stateFromPreferences: Partial<State> = JSON.parse(await loadPokeBookState(deps.preferences));
+console.log(stateFromPreferences);
 
 function createState(stateToSet: State) {
 	let value: State = $state(stateToSet);
