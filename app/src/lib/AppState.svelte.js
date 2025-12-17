@@ -16,8 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { loadState } from './usecases/PokeBookState.res.mjs';
-import { Preferences } from './plugins/Preferences';
+import { loadState, saveState } from './usecases/PokeBookState.res.mjs';
 
 const defaultState = {
 	poem: { name: '', text: '', note: '' },
@@ -48,7 +47,7 @@ function createState(stateToSet) {
 		set value(stateToSet) {
 			value = { ...value, ...stateToSet };
 			(async () => {
-				Preferences.set({ key: 'pokebook_state', value: JSON.stringify(value) });
+				saveState(JSON.stringify(value));
 			})();
 		}
 	};

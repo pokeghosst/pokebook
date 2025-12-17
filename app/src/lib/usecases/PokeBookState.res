@@ -24,3 +24,9 @@ let loadState = async (): promise<string> => {
   | None => Promise.resolve("{}")
   }
 }
+
+let saveState = async (value: string): promise<unit> => {
+  await Preferences.set({key: "pokebook_state", value})
+
+  Promise.resolve()
+}

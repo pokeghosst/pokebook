@@ -14,7 +14,16 @@ async function loadState() {
   }
 }
 
+async function saveState(value) {
+  await Preferences.set({
+    key: "pokebook_state",
+    value: value
+  });
+  return Promise.resolve();
+}
+
 export {
   loadState,
+  saveState,
 }
 /* No side effect */

@@ -18,6 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 open WebAPI.Storage
 
+/*
+Even though localStorage is synchronous, we "pretend" that
+it's async to be compatible with async providers like Tauri
+ */
 let plugin: PreferencesPlugin.t = {
   get: ({key}) => {
     let result: PreferencesPlugin.getResult = {
