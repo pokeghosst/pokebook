@@ -16,28 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { loadState } from './usecases/PokeBookState.res.mjs';
 import { Preferences } from './plugins/Preferences';
-import type { Poem } from '@pokebook/core';
-import { deps } from './deps';
-import { run as loadPokeBookState } from './usecases/LoadPokeBookState.gen';
 
-interface State {
-	poem: Poem;
-	darkModeEnabled: boolean;
-	pokeHelpEnabled: boolean;
-	sidebarOpen: boolean;
-	padFullWidth: boolean;
-	dayTheme: string;
-	nightTheme: string;
-	activeLanguage: string;
-	poemPadJustification: string;
-	padPositions: ('poem' | 'note')[];
-	writingPadFont: string;
-	writingPadFontSize: number;
-	syncProvider: string;
-}
-
-const defaultState: State = {
+const defaultState = {
 	poem: { name: '', text: '', note: '' },
 	darkModeEnabled: false,
 	pokeHelpEnabled: false,
@@ -53,17 +35,17 @@ const defaultState: State = {
 	syncProvider: 'local'
 };
 
-const stateFromPreferences: Partial<State> = JSON.parse(await loadPokeBookState(deps.preferences));
+const stateFromPreferences = JSON.parse(await loadState());
 console.log(stateFromPreferences);
 
-function createState(stateToSet: State) {
-	let value: State = $state(stateToSet);
+function createState(stateToSet) {
+	let value = $state(stateToSet);
 
 	return {
-		get value(): State {
+		get value() {
 			return value;
 		},
-		set value(stateToSet: Partial<State>) {
+		set value(stateToSet) {
 			value = { ...value, ...stateToSet };
 			(async () => {
 				Preferences.set({ key: 'pokebook_state', value: JSON.stringify(value) });
@@ -73,4 +55,5 @@ function createState(stateToSet: State) {
 }
 
 const appState = createState({ ...defaultState, ...stateFromPreferences });
+
 export default appState;

@@ -21,7 +21,6 @@ type setOptions = {key: string, value: string}
 type removeOptions = {key: string}
 type getResult = {value: Null.t<string>}
 
-@genType
 type t = {
   get: getOptions => promise<getResult>,
   set: setOptions => promise<unit>,

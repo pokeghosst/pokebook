@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export interface PreferencesPlugin {
+export interface IPreferencesPlugin {
 	get(options: GetOptions): Promise<GetResult>;
 	set(options: SetOptions): Promise<void>;
 	remove(options: RemoveOptions): Promise<void>;

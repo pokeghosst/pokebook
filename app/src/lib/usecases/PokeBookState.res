@@ -16,9 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-@genType
-let run = async (preferences: PreferencesPlugin.t): promise<string> => {
-  let res = await preferences.get({key: "pokebook_state"})
+let loadState = async (): promise<string> => {
+  let res = await Preferences.get({key: "pokebook_state"})
+
   switch res.value->Null.toOption {
   | Some(json) => Promise.resolve(json)
   | None => Promise.resolve("{}")

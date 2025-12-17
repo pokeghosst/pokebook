@@ -51,10 +51,7 @@ let loadImpl = (): promise<PreferencesPlugin.t> =>
 
 let withImpl = f => loadImpl()->Promise.then(f)
 
-@genType
-let api: PreferencesPlugin.t = {
-  get: opts => withImpl(impl => impl.get(opts)),
-  set: opts => withImpl(impl => impl.set(opts)),
-  remove: opts => withImpl(impl => impl.remove(opts)),
-  clear: () => withImpl(impl => impl.clear()),
-}
+let get = opts => withImpl(impl => impl.get(opts))
+let set = opts => withImpl(impl => impl.set(opts))
+let remove = opts => withImpl(impl => impl.remove(opts))
+let clear = () => withImpl(impl => impl.clear())

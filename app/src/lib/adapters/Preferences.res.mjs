@@ -3,14 +3,6 @@
 import * as Stdlib_Option from "@rescript/runtime/lib/es6/Stdlib_Option.js";
 import * as Primitive_option from "@rescript/runtime/lib/es6/Primitive_option.js";
 
-function getWindow() {
-  return Primitive_option.fromNullable(globalThis.window);
-}
-
-function hasWindow() {
-  return Stdlib_Option.isSome(Primitive_option.fromNullable(globalThis.window));
-}
-
 function isTauri() {
   let win = Primitive_option.fromNullable(globalThis.window);
   if (win !== undefined) {
@@ -46,41 +38,26 @@ function loadImpl() {
   return p$1;
 }
 
-function withImpl(f) {
-  return loadImpl().then(f);
-}
-
-function api_get(opts) {
+function get(opts) {
   return loadImpl().then(impl => impl.get(opts));
 }
 
-function api_set(opts) {
+function set(opts) {
   return loadImpl().then(impl => impl.set(opts));
 }
 
-function api_remove(opts) {
+function remove(opts) {
   return loadImpl().then(impl => impl.remove(opts));
 }
 
-function api_clear() {
+function clear() {
   return loadImpl().then(impl => impl.clear());
 }
 
-let api = {
-  get: api_get,
-  set: api_set,
-  remove: api_remove,
-  clear: api_clear
-};
-
 export {
-  getWindow,
-  hasWindow,
-  isTauri,
-  loadPreferencesWeb,
-  implPromise,
-  loadImpl,
-  withImpl,
-  api,
+  get,
+  set,
+  remove,
+  clear,
 }
 /* No side effect */
