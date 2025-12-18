@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 let loadState = async (): promise<string> => {
   let res = await Preferences.get({key: "pokebook_state"})
 
-  switch res.value->Null.toOption {
-  | Some(json) => Promise.resolve(json)
-  | None => Promise.resolve("{}")
+  switch res.value {
+  | Value(json) => Promise.resolve(json)
+  | Null => Promise.resolve("{}")
   }
 }
 
