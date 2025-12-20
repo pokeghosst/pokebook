@@ -23,8 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import hotkeys from 'hotkeys-js';
 
 	import Eclipse from 'lucide-svelte/icons/eclipse';
-	import Menu from 'lucide-svelte/icons/menu';
 	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
+	import { ArrowLeftFromLine, ArrowRightFromLine } from 'lucide-svelte';
 
 	onMount(() => {
 		// TODO: Extract hotkey-related logic into separate function possibly
@@ -60,7 +60,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <div class="header-nav-wrapper">
 	<button on:click={toggleSidebar}>
-		<Menu />
+		{#if appState.value.sidebarOpen}
+			<ArrowLeftFromLine />
+		{:else}
+			<ArrowRightFromLine />
+		{/if}
 	</button>
 	<div class="header-icons">
 		<button on:click={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>

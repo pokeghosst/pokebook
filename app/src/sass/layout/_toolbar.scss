@@ -4,9 +4,9 @@
 	margin: 0 auto;
 	position: fixed;
 	z-index: 20;
-	background-color: var(--base-background);
+	background-color: var(--base-background-darker);
 	bottom: 0;
-	padding: 14px 4%;
+	padding: 1.15em;
 	overflow-x: scroll;
 	border-top: 1px solid var(--border-color);
 }

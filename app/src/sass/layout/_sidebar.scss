@@ -27,7 +27,7 @@
 	width: 250px;
 	border-right: 1px solid var(--border-color);
 	z-index: inherit;
-	background-color: var(--base-background);
+	background-color: var(--base-background-darker);
 }
 
 .sidebar-nav--open {
@@ -50,6 +50,14 @@
 
 	ul {
 		display: flex;
+
+		li {
+			color: var(--border-color);
+		}
+
+		li:hover {
+			color: var(--base-color);
+		}
 
 		li:first-of-type {
 			margin-right: 10px;
