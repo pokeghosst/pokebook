@@ -16,29 +16,31 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-type yDoc
-type yText
+type state = {doc: Yjs.doc, nameText: Yjs.text, poemText: Yjs.text, noteText: Yjs.text}
 
-@module("yjs") @new external makeYDoc: unit => yDoc = "Doc"
-@send external getText: (yDoc, string) => yText = "getText"
-@send external transactY: (yDoc, unit => unit) => unit = "transact"
-@send external insert: (yText, int, string) => unit = "insert"
-
-type poem = {
-  name: string,
-  text: string,
-  note: string,
+let makeYLikeText = (t: Yjs.text): YLikeText.t => {
+  insert: (i, s) => t->Yjs.insert(i, s),
+  delete: (i, len) => t->Yjs.delete(i, len),
+  length: () => t->Yjs.length,
+  toString: () => t->Yjs.toString,
 }
 
-type t = {
-  doc: yDoc,
-  nameText: yText,
-  poemText: yText,
-  noteText: yText,
-}
+let make = (): PoemDoc.t => {
+  let doc = Yjs.makeDoc()
 
-let make: unit => t
-let name: t => yText
-let text: t => yText
-let note: t => yText
-let transact: (t, unit => unit) => unit
+  let s = {
+    doc,
+    nameText: doc->Yjs.getText("title"),
+    poemText: doc->Yjs.getText("poem"),
+    noteText: doc->Yjs.getText("note"),
+  }
+
+  let transact = fn => s.doc->Yjs.transact(_tx => fn())
+
+  {
+    name: () => makeYLikeText(s.nameText),
+    text: () => makeYLikeText(s.poemText),
+    note: () => makeYLikeText(s.noteText),
+    transact,
+  }
+}

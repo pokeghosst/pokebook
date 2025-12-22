@@ -16,38 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import * as Y from "yjs";
+type doc
+type text
+type transaction
 
-// import type { Poem } from "./src";
+@module("yjs") @new external makeDoc: unit => doc = "Doc"
 
-export class PoemDoc {
-  #yDoc: Y.Doc;
-
-  constructor(poem?: any) {
-    this.#yDoc = new Y.Doc();
-
-    if (poem) {
-      const { name, text, note } = poem;
-
-      this.name.insert(0, name);
-      this.text.insert(0, text);
-      this.note.insert(0, note);
-    }
-  }
-
-  get name() {
-    return this.#yDoc.getText("title");
-  }
-
-  get text() {
-    return this.#yDoc.getText("poem");
-  }
-
-  get note() {
-    return this.#yDoc.getText("note");
-  }
-
-  public transact(fn: () => void) {
-    this.#yDoc.transact(fn);
-  }
-}
+@send external getText: (doc, string) => text = "getText"
+@send external transact: (doc, transaction => unit) => unit = "transact"
+@send external insert: (text, int, string) => unit = "insert"
+@send external delete: (text, int, int) => unit = "delete"
+@send external toString: text => string = "toString"
+@get external length: text => int = "length"

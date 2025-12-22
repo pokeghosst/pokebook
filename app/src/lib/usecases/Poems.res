@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024-2025 Pokeghost.
+Copyright (C) 2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,27 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type {
-	GetOptions,
-	GetResult,
-	IPreferencesPlugin,
-	RemoveOptions,
-	SetOptions
-} from './IPreferencesPlugin';
+// let stashPoem:
+// let forgetPoem: string => unit
+// let clearDraft: unit => unit
 
-export class PreferencesWeb implements IPreferencesPlugin {
-	async get(options: GetOptions): Promise<GetResult> {
-		return {
-			value: localStorage.getItem(options.key)
-		};
-	}
-	async set(options: SetOptions): Promise<void> {
-		return localStorage.setItem(options.key, options.value);
-	}
-	async remove(options: RemoveOptions): Promise<void> {
-		return localStorage.removeItem(options.key);
-	}
-	async clear(): Promise<void> {
-		return localStorage.clear();
-	}
-}

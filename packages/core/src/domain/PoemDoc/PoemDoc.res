@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2025 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,26 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-export interface IPreferencesPlugin {
-	get(options: GetOptions): Promise<GetResult>;
-	set(options: SetOptions): Promise<void>;
-	remove(options: RemoveOptions): Promise<void>;
-	clear(): Promise<void>;
-}
-
-export interface GetOptions {
-	key: string;
-}
-
-export interface SetOptions {
-	key: string;
-	value: string;
-}
-
-export interface GetResult {
-	value: string | null;
-}
-
-export interface RemoveOptions {
-	key: string;
+type t = {
+  name: unit => YLikeText.t,
+  text: unit => YLikeText.t,
+  note: unit => YLikeText.t,
+  transact: (unit => unit) => unit,
 }

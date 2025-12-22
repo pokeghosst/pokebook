@@ -7,10 +7,10 @@ async function loadState() {
     key: "pokebook_state"
   });
   let json = res.value;
-  if (json !== null) {
-    return Promise.resolve(json);
-  } else {
+  if (json === null) {
     return Promise.resolve("{}");
+  } else {
+    return Promise.resolve(json);
   }
 }
 
