@@ -46,7 +46,7 @@
 		"@trpc/client": "^11.0.0",
 		"@zip.js/zip.js": "^2.7.62",
 		"dexie": "^4.0.11",
-		"diff": "^7.0.0",
+		"diff": "^8.0.3",
 		"hotkeys-js": "^3.13.7",
 		"letter-count": "^5.2.1",
 		"lucide-svelte": "^0.474.0",
