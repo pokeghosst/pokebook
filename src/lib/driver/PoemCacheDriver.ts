@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Directory, Encoding } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
+import { Preferences } from '$lib/plugins/Preferences';
 
 import Poem from '../models/Poem';
 

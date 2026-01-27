@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	import { Browser } from '@capacitor/browser';
 	import { Capacitor } from '@capacitor/core';
-	import { Preferences } from '@capacitor/preferences';
+	import { Preferences } from '$lib/plugins/Preferences';
 	import { StatusBar, Style } from '@capacitor/status-bar';
 	import toast from 'svelte-french-toast';
 
