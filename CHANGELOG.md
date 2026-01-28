@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.1.1] - Unreleased
+
+### Changed
+
+- Remove Capacitor dependencies
+
 ## [v3.1.0] - 2024-08-17
 
 ### Added
