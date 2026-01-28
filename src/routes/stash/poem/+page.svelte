@@ -36,8 +36,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
-	import { Encoding } from '@capacitor/filesystem';
+	import { Filesystem } from '$lib/plugins/Filesystem';
+	import { Encoding } from '$lib/plugins/Filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
 
 	import Save from 'lucide-svelte/icons/save';
@@ -57,7 +57,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	$: {
 		if (!thinking)
-			FilesystemWithPermissions.writeFile({
+			Filesystem.writeFile({
 				path: `${$currentPoemUri}.tmp`,
 				data: new XMLBuilder({ format: true }).build({
 					name: $currentPoemName,
@@ -189,7 +189,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function deleteTmpFile(fileUri: string) {
 		try {
 			await Poem.delete(`${fileUri}.tmp`, 'local');
-		} catch (_) {}
+		} catch (_) {
+			// Do nothing
+		}
 	}
 </script>
 

@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -20,10 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	import { Browser } from '@capacitor/browser';
-	import { Capacitor } from '@capacitor/core';
-	import { Preferences } from '@capacitor/preferences';
-	import { StatusBar, Style } from '@capacitor/status-bar';
+	import { Preferences } from '$lib/plugins/Preferences';
 	import toast from 'svelte-french-toast';
 
 	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
@@ -53,9 +50,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($darkMode === '') {
 			document.documentElement.className = '';
 			document.documentElement.classList.add($dayTheme || 'vanilla');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Light });
-			}
 		}
 	}
 
@@ -64,9 +58,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			document.documentElement.className = '';
 			document.documentElement.classList.add($darkMode || '');
 			document.documentElement.classList.add($nightTheme || 'chocolate');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Dark });
-			}
 		}
 	}
 
@@ -131,20 +122,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:bindParameter={$nightTheme}
 		options={nightThemes}
 	/>
-	{#if !Capacitor.isNativePlatform()}
-		<SettingsSelect
-			parameterName="storageMode"
-			labelName={$t('settings.storage')}
-			bind:bindParameter={$storageMode}
-			options={storageOptions}
-		/>
-	{/if}
+	<SettingsSelect
+		parameterName="storageMode"
+		labelName={$t('settings.storage')}
+		bind:bindParameter={$storageMode}
+		options={storageOptions}
+	/>
 	{#if $storageMode !== 'local'}
 		<button
 			on:click={async () =>
 				await toast.promise(
 					getCloudAuthUrlPromise($storageMode).then((url) => {
-						Browser.open({ url: url, windowName: '_self' });
+						// Browser.open({ url: url, windowName: '_self' });
 					}),
 					{
 						loading: `${$t('toasts.thingsAreHappening')}`,

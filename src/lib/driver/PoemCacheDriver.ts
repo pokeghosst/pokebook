@@ -16,13 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Directory, Encoding } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
+import { Directory, Encoding, Filesystem } from '$lib/plugins/Filesystem';
+import { Preferences } from '$lib/plugins/Preferences';
 
 import Poem from '../models/Poem';
 
 import type { PoemCacheRecord, PoemEntity } from '$lib/types';
-import FilesystemWithPermissions from '../util/FilesystemWithPermissions';
 
 const SNIPPET_LENGTH = 128;
 
@@ -35,7 +34,7 @@ export default class PoemCacheDriver {
 	}
 
 	public static async getCachedPoems(storage: string): Promise<PoemCacheRecord[]> {
-		const poemCacheFile = await FilesystemWithPermissions.readFile({
+		const poemCacheFile = await Filesystem.readFile({
 			directory: Directory.Documents,
 			path: `poems/poems_${storage}.json`,
 			encoding: Encoding.UTF8
@@ -46,7 +45,7 @@ export default class PoemCacheDriver {
 
 	public static async isCachePresent(storage: string) {
 		try {
-			await FilesystemWithPermissions.stat({
+			await Filesystem.stat({
 				directory: Directory.Documents,
 				path: `poems/poems_${storage}.json`
 			});
@@ -54,7 +53,7 @@ export default class PoemCacheDriver {
 		} catch (_) {
 			// TODO: I reckon this is not too good
 			try {
-				await FilesystemWithPermissions.mkdir({
+				await Filesystem.mkdir({
 					path: 'poems',
 					directory: Directory.Documents,
 					recursive: true
@@ -158,7 +157,7 @@ export default class PoemCacheDriver {
 	}
 
 	static async writeToCache(storage: string, data: PoemCacheRecord[]) {
-		await FilesystemWithPermissions.writeFile({
+		await Filesystem.writeFile({
 			directory: Directory.Documents,
 			path: `poems/poems_${storage}.json`,
 			encoding: Encoding.UTF8,
