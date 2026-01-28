@@ -27,7 +27,7 @@ import type {
 /*
 Even though localStorage is synchronous, we "pretend" that
 it's async to be compatible with async providers like Tauri
- */
+*/
 
 export class PreferencesWeb implements PreferencesPlugin {
 	async get(options: GetOptions): Promise<GetResult> {

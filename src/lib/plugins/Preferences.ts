@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,15 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { makeProxy } from '../util/makeProxy';
 import type { PreferencesPlugin } from './PreferencesPlugin';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pluginPromise: any;
 
 async function getImplementation() {
 	if (!pluginPromise) {
-		if (window.__TAURI_INTERNALS__) {
-			return null;
+		// TODO: Import proper type after setting up Tauri
+		if ((window as any).__TAURI_INTERNALS__) {
+			throw new Error('Tauri not implemented');
 			// pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
 		} else {
 			pluginPromise = import('./PreferencesWeb').then((m) => new m.PreferencesWeb());
@@ -33,19 +36,4 @@ async function getImplementation() {
 	return pluginPromise;
 }
 
-export const Preferences = new Proxy(
-	{},
-	{
-		get(_, prop) {
-			return async (...args: unknown[]) => {
-				const impl = await getImplementation();
-				const method = impl[prop];
-				if (typeof method === 'function') {
-					return method.apply(impl, args);
-				} else {
-					throw new Error(`Method ${String(prop)} does not exist on implementation`);
-				}
-			};
-		}
-	}
-) as PreferencesPlugin;
+export const Preferences = makeProxy(getImplementation) as PreferencesPlugin;

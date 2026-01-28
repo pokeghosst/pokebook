@@ -36,6 +36,6 @@ async function getImplementation() {
 	return pluginPromise;
 }
 
-export const Filesystem = makeProxy(await getImplementation()) as FilesystemPlugin;
+export const Filesystem = makeProxy(getImplementation) as FilesystemPlugin;
 
 export * from './FilesystemPlugin';

@@ -18,12 +18,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export function makeProxy(impl: any) {
+export function makeProxy(implResolver: () => Promise<any>) {
 	return new Proxy(
 		{},
 		{
 			get(_, prop) {
 				return async (...args: unknown[]) => {
+					const impl = await implResolver();
 					const method = impl[prop];
 					if (typeof method === 'function') {
 						return method.apply(impl, args);
