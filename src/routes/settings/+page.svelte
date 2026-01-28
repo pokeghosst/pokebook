@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -23,7 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Browser } from '@capacitor/browser';
 	import { Capacitor } from '@capacitor/core';
 	import { Preferences } from '$lib/plugins/Preferences';
-	import { StatusBar, Style } from '@capacitor/status-bar';
 	import toast from 'svelte-french-toast';
 
 	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
@@ -53,9 +52,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($darkMode === '') {
 			document.documentElement.className = '';
 			document.documentElement.classList.add($dayTheme || 'vanilla');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Light });
-			}
 		}
 	}
 
@@ -64,9 +60,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			document.documentElement.className = '';
 			document.documentElement.classList.add($darkMode || '');
 			document.documentElement.classList.add($nightTheme || 'chocolate');
-			if (Capacitor.isNativePlatform()) {
-				StatusBar.setStyle({ style: Style.Dark });
-			}
 		}
 	}
 
