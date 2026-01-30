@@ -18,29 +18,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-
-	import { Preferences } from '$lib/plugins/Preferences';
-	import toast from 'svelte-french-toast';
-
-	import { dropboxLogout, getDropboxAuthUrl } from '$lib/driver/PoemDropboxStorageDriver';
+	import { dayThemes } from '$lib/constants/DayThemes';
+	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
+	import { nightThemes } from '$lib/constants/NightThemes';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
-	import { storageMode } from '$lib/stores/storageMode';
-
-	import { dayThemes } from '$lib/constants/DayThemes';
-	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
-	import { nightThemes } from '$lib/constants/NightThemes';
-	import { storageOptions } from '$lib/constants/StorageOptions';
-	import {
-		getGoogleDriveAuthUrl,
-		googleDriveLogout
-	} from '$lib/driver/PoemGoogleDriveStorageDriver';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-
+	import { onMount } from 'svelte';
+	import toast from 'svelte-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	$: $dayTheme, setDayTheme();
@@ -58,29 +46,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			document.documentElement.className = '';
 			document.documentElement.classList.add($darkMode || '');
 			document.documentElement.classList.add($nightTheme || 'chocolate');
-		}
-	}
-
-	function getCloudAuthUrlPromise(storage: string) {
-		Preferences.set({ key: 'poem_list_request_timestamp', value: Date.now().toString() });
-		switch (storage) {
-			case 'dropbox':
-				return getDropboxAuthUrl();
-			case 'google':
-				return getGoogleDriveAuthUrl();
-			default:
-				throw new Error();
-		}
-	}
-
-	async function getCloudLogoutPromise(storage: string) {
-		switch (storage) {
-			case 'dropbox':
-				return await dropboxLogout();
-			case 'google':
-				return await googleDriveLogout();
-			default:
-				throw new Error();
 		}
 	}
 
@@ -122,46 +87,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:bindParameter={$nightTheme}
 		options={nightThemes}
 	/>
-	<SettingsSelect
-		parameterName="storageMode"
-		labelName={$t('settings.storage')}
-		bind:bindParameter={$storageMode}
-		options={storageOptions}
-	/>
-	{#if $storageMode !== 'local'}
-		<button
-			on:click={async () =>
-				await toast.promise(
-					getCloudAuthUrlPromise($storageMode).then((url) => {
-						// Browser.open({ url: url, windowName: '_self' });
-					}),
-					{
-						loading: `${$t('toasts.thingsAreHappening')}`,
-						success: `${$t('toasts.redirecting')}`,
-						error: `${$t('errors.unknown')}`
-					},
-					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
-				)}
-			class="action-button action-button--secondary"
-			>{$t('settings.login')} {$t(`settings.${$storageMode}`)}</button
-		>
-		<button
-			on:click={async () => {
-				await toast.promise(
-					getCloudLogoutPromise($storageMode),
-					{
-						loading: `${$t('toasts.signingOut')}`,
-						success: `${$t('toasts.signedOutOk')}`,
-						error: `${$t('errors.signOutError')}`
-					},
-					{ position: GLOBAL_TOAST_POSITION, style: GLOBAL_TOAST_STYLE }
-				);
-				$storageMode = 'local';
-			}}
-			class="action-button action-button--secondary"
-			>{$t('settings.logout')} {$t(`settings.${$storageMode}`)}</button
-		>
-	{/if}
 	<SettingsSelect
 		parameterName="language"
 		labelName={$t('settings.language')}
