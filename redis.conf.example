@@ -1,3 +1,0 @@
-requirepass REDIS_PASSWORD
-loglevel notice
-save 3600 1 300 100 60 10000
