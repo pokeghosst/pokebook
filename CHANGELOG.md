@@ -5,6 +5,7 @@
 ### Changed
 
 - Remove Capacitor dependencies
+- Remove Google Drive and Dropbox storage drivers, use local driver
 
 ## [v3.1.0] - 2024-08-17
 
