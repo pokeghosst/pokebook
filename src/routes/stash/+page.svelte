@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,21 +18,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-
 	import { t } from '$lib/translations';
-
 	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
-
-	import { storageMode } from '$lib/stores/storageMode';
+	import { onMount } from 'svelte';
+	import Poem from '$lib/models/Poem';
 	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
 	import { currentPoemUri } from '$lib/stores/currentPoem';
-
-	import Poem from '$lib/models/Poem';
-
-	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
-
 	import type { PoemCacheRecord } from '$lib/types';
+	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
 
 	const FALLBACK_DELAY_MS = 100;
 
@@ -45,7 +38,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		cachedPoems = Poem.listFromCache($storageMode);
+		cachedPoems = Poem.listFromCache();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
@@ -56,7 +49,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function handleCacheRefresh() {
-		cachedPoems = PoemCacheDriver.refreshCache($storageMode);
+		cachedPoems = PoemCacheDriver.refreshCache();
 	}
 </script>
 

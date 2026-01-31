@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,48 +16,36 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PoemDropboxStorageDriver } from '$lib/driver/PoemDropboxStorageDriver';
-import { PoemGoogleDriveStorageDriver } from '$lib/driver/PoemGoogleDriveStorageDriver';
 import { PoemLocalStorageDriver } from '$lib/driver/PoemLocalStorageDriver';
+import type { PoemCacheRecord, PoemEntity, PoemFileEntity } from '$lib/types';
 import PoemCacheDriver from '../driver/PoemCacheDriver';
 
-import type { PoemEntity, PoemFileEntity, PoemCacheRecord } from '$lib/types';
-
 export default class Poem {
-	private static pickStorageDriver(storage: string) {
-		switch (storage) {
-			case 'dropbox':
-				return PoemDropboxStorageDriver;
-			case 'google':
-				return PoemGoogleDriveStorageDriver;
-			case 'local':
-				return PoemLocalStorageDriver;
-			default:
-				throw new Error();
-		}
+	private static pickStorageDriver() {
+		return PoemLocalStorageDriver;
 	}
-	public static async listFromCache(storage: string): Promise<PoemCacheRecord[]> {
-		await this.initPoemCacheIfNotExists(storage);
+	public static async listFromCache(): Promise<PoemCacheRecord[]> {
+		await this.initPoemCacheIfNotExists();
 
-		return await PoemCacheDriver.getCachedPoems(storage);
+		return await PoemCacheDriver.getCachedPoems();
 	}
-	public static async findAll(storage: string): Promise<PoemFileEntity[]> {
-		return (await this.pickStorageDriver(storage).listPoems()).filter(
+	public static async findAll(): Promise<PoemFileEntity[]> {
+		return (await this.pickStorageDriver().listPoems()).filter(
 			(poem) => !(poem.poemUri.includes('.json') || poem.poemUri.includes('.tmp'))
 		);
 	}
-	public static async load(id: string, storage: string): Promise<PoemEntity> {
-		return this.pickStorageDriver(storage).loadPoem(id);
+	public static async load(id: string): Promise<PoemEntity> {
+		return this.pickStorageDriver().loadPoem(id);
 	}
-	public static async save(poem: PoemEntity, storage: string) {
-		await this.initPoemCacheIfNotExists(storage);
+	public static async save(poem: PoemEntity) {
+		await this.initPoemCacheIfNotExists();
 
-		const { id, timestamp } = (await this.pickStorageDriver(storage).savePoem(poem)) as {
+		const { id, timestamp } = (await this.pickStorageDriver().savePoem(poem)) as {
 			id: string;
 			timestamp: number;
 		};
 
-		await PoemCacheDriver.addPoemRecord(storage, {
+		await PoemCacheDriver.addPoemRecord({
 			id,
 			name: poem.name,
 			timestamp,
@@ -65,25 +53,24 @@ export default class Poem {
 			poemSnippet: PoemCacheDriver.sliceSnippet(poem.text)
 		});
 	}
-	public static async delete(id: string, storage: string) {
-		return this.pickStorageDriver(storage).deletePoem(id);
+	public static async delete(id: string) {
+		return this.pickStorageDriver().deletePoem(id);
 	}
 	public static async update(
 		poem: PoemEntity,
 		// TODO: Refactor variable name to poemUri or similar
-		id: string,
-		storage: string
+		id: string
 	): Promise<void | string> {
-		const newPoemUri = await this.pickStorageDriver(storage).updatePoem(poem, id);
+		const newPoemUri = await this.pickStorageDriver().updatePoem(poem, id);
 
-		await PoemCacheDriver.updateCachedPoem(storage, id, newPoemUri, poem);
+		await PoemCacheDriver.updateCachedPoem(id, newPoemUri, poem);
 
 		return newPoemUri;
 	}
 
-	static async initPoemCacheIfNotExists(storage: string) {
-		const isCachePresent = await PoemCacheDriver.isCachePresent(storage);
+	static async initPoemCacheIfNotExists() {
+		const isCachePresent = await PoemCacheDriver.isCachePresent();
 
-		if (!isCachePresent) await PoemCacheDriver.initCache(storage);
+		if (!isCachePresent) await PoemCacheDriver.initCache();
 	}
 }
