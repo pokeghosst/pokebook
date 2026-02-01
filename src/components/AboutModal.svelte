@@ -23,9 +23,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const socialPlatforms = [
 		{
-			url: 'mailto:support@pokeghost.org',
+			url: 'mailto:pokeghost@disroot.org',
 			title: 'about.mail',
-			handle: 'support@pokeghost.org'
+			handle: 'pokeghost@disroot.org'
 		},
 		{
 			url: 'https://pokeghost.substack.com/subscribe',
@@ -33,12 +33,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'Substack'
 		},
 		{
-			url: 'https://github.com/pokeghosst/pokebook',
+			url: 'https://codeberg.org/pokesuite/pokebook',
 			title: 'about.contribute',
-			handle: 'GitHub'
+			handle: 'Codeberg'
 		},
 		{
-			url: 'https://discord.gg/XfwmEHwa2k',
+			url: 'https://discord.gg/wQwVUUfxya',
 			title: 'about.discord',
 			handle: 'Poke!Suite'
 		},
@@ -53,7 +53,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="modal-about">
 	<div class="about-top">
 		<h1>Poke!Book</h1>
-		<small>{$t('about.version')} 3.1 - "Carrot Cake"</small>
+		<small>"Mille-feuille"</small><br />
+		<small>{$t('about.version')} 3.1.1</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}

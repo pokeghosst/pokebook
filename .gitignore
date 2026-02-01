@@ -12,3 +12,5 @@ vite.config.ts.timestamp-*requirepass REDIS_PASSWORD
 redis.conf
 .dccache
 coverage
+deployment-url.txt
+error.txt

@@ -1,6 +1,6 @@
 {
 	"name": "pokebook",
-	"version": "3.1.0",
+	"version": "3.1.1",
 	"description": "Best digital notebook for writing poetry",
 	"keywords": [
 		"Poetry",
@@ -27,7 +27,6 @@
 		"tauri": "tauri"
 	},
 	"devDependencies": {
-		"@capacitor/assets": "^3.0.5",
 		"@sveltejs/adapter-auto": "^3.2.3",
 		"@sveltejs/adapter-static": "^3.0.3",
 		"@sveltejs/adapter-vercel": "5.10.3",
@@ -47,19 +46,10 @@
 		"typescript": "^4.9.5",
 		"typescript-eslint": "^8.1.0",
 		"vite": "^5.4.0",
+		"vite-plugin-devtools-json": "^1.0.0",
 		"vite-plugin-top-level-await": "^1.4.4"
 	},
 	"dependencies": {
-		"@capacitor/android": "^6.1.2",
-		"@capacitor/app": "^6.0.1",
-		"@capacitor/browser": "^6.0.2",
-		"@capacitor/cli": "^6.1.2",
-		"@capacitor/core": "^6.1.2",
-		"@capacitor/filesystem": "^6.0.1",
-		"@capacitor/local-notifications": "^6.1.0",
-		"@capacitor/preferences": "^6.0.2",
-		"@capacitor/share": "^6.0.2",
-		"@capacitor/status-bar": "^6.0.1",
 		"fast-xml-parser": "^4.4.1",
 		"hotkeys-js": "^3.13.7",
 		"letter-count": "^5.2.1",

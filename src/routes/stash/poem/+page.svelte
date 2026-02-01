@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -18,10 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onDestroy, onMount } from 'svelte';
-
-	import toast from 'svelte-french-toast';
-
+	import { sharePoem } from '$lib/actions/sharePoem';
+	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
+	import Poem from '$lib/models/Poem';
+	import { Encoding, Filesystem } from '$lib/plugins/Filesystem';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -29,21 +29,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		currentPoemUri
 	} from '$lib/stores/currentPoem';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
-	import { storageMode } from '$lib/stores/storageMode';
-
-	import { sharePoem } from '$lib/actions/sharePoem';
-	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
-	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import FilesystemWithPermissions from '$lib/util/FilesystemWithPermissions';
-	import { Encoding } from '@capacitor/filesystem';
 	import { XMLBuilder } from 'fast-xml-parser';
-
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-
+	import { onDestroy, onMount } from 'svelte';
+	import toast from 'svelte-french-toast';
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 
@@ -57,7 +50,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
 	$: {
 		if (!thinking)
-			FilesystemWithPermissions.writeFile({
+			Filesystem.writeFile({
 				path: `${$currentPoemUri}.tmp`,
 				data: new XMLBuilder({ format: true }).build({
 					name: $currentPoemName,
@@ -85,8 +78,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 	};
 	$discardFunction = async () => {
-		await PoemCacheDriver.unsetUnsavedStatus($storageMode, $currentPoemUri);
-		await Poem.delete(`${$currentPoemUri}.tmp`, 'local');
+		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
+		await Poem.delete(`${$currentPoemUri}.tmp`);
 		goto('/stash', { replaceState: false });
 	};
 
@@ -110,8 +103,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function save() {
 		const newPoemUri = await Poem.update(
 			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri,
-			$storageMode
+			$currentPoemUri
 		);
 
 		if (newPoemUri) $currentPoemUri = newPoemUri;
@@ -120,9 +112,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	async function deletePoem() {
-		await Poem.delete($currentPoemUri, $storageMode);
+		await Poem.delete($currentPoemUri);
 		await deleteTmpFile($currentPoemUri);
-		await PoemCacheDriver.popCacheRecord($storageMode, $currentPoemUri);
+		await PoemCacheDriver.popCacheRecord($currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
@@ -140,15 +132,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
-		if (
-			(await PoemCacheDriver.getCacheRecord($storageMode, $currentPoemUri))?.unsavedChanges === true
-		) {
+		if ((await PoemCacheDriver.getCacheRecord($currentPoemUri))?.unsavedChanges === true) {
 			unsavedChangesToastId = toast(UnsavedChangesToast, {
 				duration: Infinity,
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
-			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`, 'local');
+			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`);
 			$currentPoemName = name;
 			$currentPoemBody = text;
 			$currentPoemNote = note;
@@ -156,7 +146,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			thinking = false;
 		} else {
 			try {
-				const poem = await Poem.load($currentPoemUri, $storageMode);
+				const poem = await Poem.load($currentPoemUri);
 				if (poem) {
 					$currentPoemName = poem.name;
 					$currentPoemBody = poem.text;
@@ -179,7 +169,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function unsavedChangesHandler() {
-		PoemCacheDriver.setUnsavedStatus($storageMode, $currentPoemUri);
+		PoemCacheDriver.setUnsavedStatus($currentPoemUri);
 	}
 
 	function clearCurrentPoemStorage() {
@@ -188,8 +178,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function deleteTmpFile(fileUri: string) {
 		try {
-			await Poem.delete(`${fileUri}.tmp`, 'local');
-		} catch (_) {}
+			await Poem.delete(`${fileUri}.tmp`);
+		} catch (_) {
+			// Do nothing
+		}
 	}
 </script>
 

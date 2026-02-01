@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,31 +17,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-
-	import hotkeys from 'hotkeys-js';
-	import toast from 'svelte-french-toast';
-
+	import { sharePoem } from '$lib/actions/sharePoem';
+	import Poem from '$lib/models/Poem';
 	import {
 		draftPoemBodyStore,
 		draftPoemNameStore,
 		draftPoemNoteStore
 	} from '$lib/stores/poemDraft';
-	import { storageMode } from '$lib/stores/storageMode';
-
-	import { sharePoem } from '$lib/actions/sharePoem';
-	import Poem from '$lib/models/Poem';
 	import { t } from '$lib/translations';
+	import type { ToolbarItem } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-
+	import hotkeys from 'hotkeys-js';
 	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-
+	import { onDestroy, onMount } from 'svelte';
+	import toast from 'svelte-french-toast';
 	import Workspace from '../components/Workspace.svelte';
-
-	import type { ToolbarItem } from '$lib/types';
 
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
@@ -84,10 +77,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
 				await toast.promise(
-					Poem.save(
-						{ name: $draftPoemNameStore, text: $draftPoemBodyStore, note: $draftPoemNoteStore },
-						$storageMode
-					),
+					Poem.save({
+						name: $draftPoemNameStore,
+						text: $draftPoemBodyStore,
+						note: $draftPoemNoteStore
+					}),
 					{
 						loading: `${$t('toasts.savingPoem')}`,
 						success: `${$t('toasts.poemSaved')}`,
