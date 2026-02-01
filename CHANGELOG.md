@@ -6,10 +6,12 @@
 
 - Remove Capacitor dependencies
 - Remove Google Drive and Dropbox storage drivers, use local driver
+- Use Lato as default UI font
 
 ### Fixed
 
 - Added vite-plugin-top-level-await to silence Chrome/Chromium DevTools errors
+- Slightly lighter text color for neo-day theme
 
 ## [v3.1.0] - 2024-08-17
 
