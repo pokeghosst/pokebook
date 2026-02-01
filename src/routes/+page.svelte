@@ -40,7 +40,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	const noteProps = draftPoemNoteStore;
 
 	const actions: ToolbarItem[] = [
-		{ icon: FilePlus2, action: newPoem, label: $t('workspace.newPoem') },
 		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
 		{
 			icon: Share2,
@@ -64,14 +63,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	onDestroy(() => {
 		hotkeys.unbind('ctrl+shift+n, command+shift+n');
 	});
-
-	async function newPoem() {
-		if (confirm($t('workspace.isSavePoem'))) {
-			stashPoem();
-		} else {
-			clearDraftPoem();
-		}
-	}
 
 	async function stashPoem() {
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {

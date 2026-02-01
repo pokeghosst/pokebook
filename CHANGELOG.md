@@ -1,5 +1,11 @@
 # Changelog
 
+## [v3.2] - UNRELEASED
+
+### Changed
+
+- Remove confusing "New" button from toolbar
+
 ## [v3.1.1] - 2026-02-01
 
 ### Changed

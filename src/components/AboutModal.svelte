@@ -54,7 +54,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="about-top">
 		<h1>Poke!Book</h1>
 		<small>"Mille-feuille"</small><br />
-		<small>{$t('about.version')} 3.1.1</small>
+		<small>{$t('about.version')} 3.2</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}
