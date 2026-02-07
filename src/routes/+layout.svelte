@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Sidebar from '../components/Sidebar.svelte';
 	import { themeMode } from 'lib//stores/themeMode';
 
-	$: $themeMode, updateTheme();
+	$: $themeMode, $dayTheme, $nightTheme, updateTheme();
 
 	function updateTheme() {
 		document.documentElement.className = '';
