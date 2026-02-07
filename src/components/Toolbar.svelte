@@ -1,15 +1,30 @@
+<!--
+PokeBook -- Pokeghost's poetry noteBook
+Copyright (C) 2024, 2026 Pokeghost.
+
+PokeBook is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+PokeBook is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <script lang="ts">
+	import { padFonts } from '$lib/constants/PadFonts';
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
-
+	import type { ToolbarItem } from '$lib/types';
+	import { ChevronDown } from 'lucide-svelte';
 	import AlignCenter from 'lucide-svelte/icons/align-center';
 	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignRight from 'lucide-svelte/icons/align-right';
-
-	import { padFonts } from '$lib/constants/PadFonts';
-
-	import type { ToolbarItem } from '$lib/types';
-	import { ChevronDown } from 'lucide-svelte';
 	import FontSize from './FontSize.svelte';
 
 	export let actions: ToolbarItem[];
@@ -50,7 +65,7 @@
 	</div>
 	<FontSize />
 	{#each actions as action}
-		<button on:click={() => action.action()} class="button">
+		<button on:click={() => action.action()} class="button" disabled={action.disabled}>
 			<svelte:component this={action.icon} />
 			{action.label}
 		</button>

@@ -38,16 +38,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
 	const noteProps = draftPoemNoteStore;
 
-	const actions: ToolbarItem[] = [
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem') },
+	$: isPoemNotEmpty = !!$draftPoemNameStore && !!$draftPoemBodyStore;
+
+	$: actions = [
+		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
 		{
 			icon: Share2,
 			action: () =>
 				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem')
+			label: $t('workspace.sharePoem'),
+			disabled: !isPoemNotEmpty
 		},
 		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
-	];
+	] satisfies ToolbarItem[];
 
 	onMount(async () => {
 		hotkeys.filter = function () {
@@ -64,38 +67,31 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	async function stashPoem() {
-		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
-			try {
-				await toast.promise(
-					savePoem({
-						name: $draftPoemNameStore,
-						text: $draftPoemBodyStore,
-						note: $draftPoemNoteStore
-					}),
-					{
-						loading: `${$t('toasts.savingPoem')}`,
-						success: `${$t('toasts.poemSaved')}`,
-						error: `${$t('errors.poemSaveError')}`
-					},
-					{
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					}
-				);
-				clearDraftPoem();
-			} catch (e) {
-				console.log(e);
-				if (e instanceof Error)
-					toast.error($t(e.message), {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					});
-			}
-		} else {
-			toast(`☝️🤓 ${$t('toasts.cannotSaveEmptyPoem')}`, {
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
+		try {
+			await toast.promise(
+				savePoem({
+					name: $draftPoemNameStore,
+					text: $draftPoemBodyStore,
+					note: $draftPoemNoteStore
+				}),
+				{
+					loading: `${$t('toasts.savingPoem')}`,
+					success: `${$t('toasts.poemSaved')}`,
+					error: `${$t('errors.poemSaveError')}`
+				},
+				{
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				}
+			);
+			clearDraftPoem();
+		} catch (e) {
+			console.log(e);
+			if (e instanceof Error)
+				toast.error($t(e.message), {
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				});
 		}
 	}
 
