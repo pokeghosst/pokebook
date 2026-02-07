@@ -12,5 +12,6 @@
 	"local": "Local storage",
 	"language": "Language",
 	"login": "Log in to",
-	"logout": "Log out of"
+	"logout": "Log out of",
+	"themeMode": "Theme mode"
 }

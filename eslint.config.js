@@ -38,7 +38,8 @@ export default [
 					varsIgnorePattern: '^_',
 					caughtErrorsIgnorePattern: '^_'
 				}
-			]
+			],
+			'@typescript-eslint/no-unused-expressions': ['off']
 		}
 	}
 ];

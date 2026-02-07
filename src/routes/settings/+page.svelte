@@ -22,32 +22,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
-	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
+	import { themeMode } from '$lib/stores/themeMode';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
+	import { themeModes } from 'lib//constants/themeModes';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
-
-	$: $dayTheme, setDayTheme();
-	$: $nightTheme, setNightTheme();
-
-	function setDayTheme() {
-		if ($darkMode === '') {
-			document.documentElement.className = '';
-			document.documentElement.classList.add($dayTheme || 'vanilla');
-		}
-	}
-
-	function setNightTheme() {
-		if ($darkMode === 'dark') {
-			document.documentElement.className = '';
-			document.documentElement.classList.add($darkMode || '');
-			document.documentElement.classList.add($nightTheme || 'chocolate');
-		}
-	}
 
 	onMount(() => {
 		const authStatus = $page.url.searchParams.get('status');
@@ -75,6 +58,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="settings-container">
+	<SettingsSelect
+		parameterName="themeMode"
+		labelName={$t('settings.themeMode')}
+		bind:bindParameter={$themeMode}
+		options={themeModes}
+	/>
 	<SettingsSelect
 		parameterName="dayTheme"
 		labelName={$t('settings.dayTheme')}

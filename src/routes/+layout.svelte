@@ -19,24 +19,45 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
-
-	import { darkMode } from '$lib/stores/darkMode';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import { nightTheme } from '$lib/stores/nightTheme';
-
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
+	import { themeMode } from 'lib//stores/themeMode';
 
-	$: $darkMode, updateTheme();
+	$: $themeMode, updateTheme();
 
 	function updateTheme() {
 		document.documentElement.className = '';
-		if ($darkMode !== '') {
-			document.documentElement.classList.add($darkMode || '');
-			document.documentElement.classList.add($nightTheme || 'chocolate');
-		} else {
-			document.documentElement.classList.add($dayTheme || 'vanilla');
+
+		switch ($themeMode) {
+			case 'day': {
+				document.documentElement.classList.add($dayTheme || 'vanilla');
+				break;
+			}
+			case 'night': {
+				document.documentElement.classList.add('dark');
+				document.documentElement.classList.add($nightTheme || 'chocolate');
+				break;
+			}
+			case 'auto': {
+				const prefersDark = window.matchMedia('(prefers-color-scheme:dark)');
+
+				const applyAutoTheme = () => {
+					document.documentElement.className = '';
+
+					if (prefersDark.matches) {
+						document.documentElement.classList.add($nightTheme || 'chocolate');
+					} else {
+						document.documentElement.classList.add($dayTheme || 'vanilla');
+					}
+				};
+
+				applyAutoTheme();
+				prefersDark.addEventListener('change', applyAutoTheme);
+				break;
+			}
 		}
 	}
 </script>
