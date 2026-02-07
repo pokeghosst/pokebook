@@ -19,8 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
-	import Poem from '$lib/models/Poem';
+	import PoemCacheDriver from 'lib//services/PoemCacheDriver';
 	import { Encoding, Filesystem } from '$lib/plugins/Filesystem';
 	import {
 		currentPoemBody,
@@ -39,6 +38,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import toast from 'svelte-french-toast';
 	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
+	import { deletePoem, getPoem, updatePoem } from 'lib//services/poem.service';
 
 	let unsavedChangesToastId: string;
 
@@ -79,14 +79,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 	$discardFunction = async () => {
 		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
-		await Poem.delete(`${$currentPoemUri}.tmp`);
+		await deletePoem(`${$currentPoemUri}.tmp`);
 		goto('/stash', { replaceState: false });
 	};
 
 	const deletePoemAction = async () => {
 		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
 			await toast.promise(
-				deletePoem(),
+				deletePoemHandler(),
 				{
 					loading: `${$t('toasts.deletingPoem')}`,
 					success: `${$t('toasts.deletedPoem')}`,
@@ -101,20 +101,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newPoemUri = await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri
-		);
+		const newPoemUri = await updatePoem($currentPoemUri, {
+			name: $currentPoemName,
+			text: $currentPoemBody,
+			note: $currentPoemNote
+		});
 
 		if (newPoemUri) $currentPoemUri = newPoemUri;
 
 		await deleteTmpFile($currentPoemUri);
 	}
 
-	async function deletePoem() {
-		await Poem.delete($currentPoemUri);
+	async function deletePoemHandler() {
+		await deletePoem($currentPoemUri);
 		await deleteTmpFile($currentPoemUri);
-		await PoemCacheDriver.popCacheRecord($currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
@@ -138,7 +138,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				position: GLOBAL_TOAST_POSITION,
 				style: GLOBAL_TOAST_STYLE
 			});
-			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`);
+			const { name, text, note } = await getPoem(`${$currentPoemUri}.tmp`);
 			$currentPoemName = name;
 			$currentPoemBody = text;
 			$currentPoemNote = note;
@@ -146,7 +146,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			thinking = false;
 		} else {
 			try {
-				const poem = await Poem.load($currentPoemUri);
+				const poem = await getPoem($currentPoemUri);
+
 				if (poem) {
 					$currentPoemName = poem.name;
 					$currentPoemBody = poem.text;
@@ -178,7 +179,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function deleteTmpFile(fileUri: string) {
 		try {
-			await Poem.delete(`${fileUri}.tmp`);
+			await deletePoem(`${fileUri}.tmp`);
 		} catch (_) {
 			// Do nothing
 		}

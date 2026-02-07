@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { Directory, Encoding, Filesystem } from '$lib/plugins/Filesystem';
 import type { PoemCacheRecord, PoemEntity } from '$lib/types';
-import Poem from '../models/Poem';
 
 const SNIPPET_LENGTH = 128;
 
@@ -60,41 +59,6 @@ export default class PoemCacheDriver {
 			}
 			return false;
 		}
-	}
-
-	public static async initCache() {
-		const poemFiles = await Poem.findAll();
-		const cachedPoems: PoemCacheRecord[] = poemFiles.map((file) => {
-			return {
-				id: file.poemUri,
-				name: file.name,
-				timestamp: file.timestamp,
-				unsavedChanges: false,
-				// Empty snippet is a tradeoff for the sake of backwards compatibility with existing poem lists.
-				// Otherwise it would require loading every single poem file and snipping a bit of its contents.
-				// With a big number of files on a cloud provider (+ no pagination as of now), this can take a long time.
-				poemSnippet: ''
-			};
-		});
-		await this.writeToCache(cachedPoems);
-	}
-
-	public static async refreshCache() {
-		const poemFiles = await Poem.findAll();
-		const cachedPoems = await this.getCachedPoems();
-		const newCache = poemFiles.map((file) => {
-			const cachedPoem = cachedPoems.find((p) => p.id === file.poemUri);
-			return {
-				id: file.poemUri,
-				name: file.name,
-				timestamp: file.timestamp,
-				unsavedChanges: cachedPoem ? cachedPoem.unsavedChanges : false,
-				poemSnippet: cachedPoem ? cachedPoem.poemSnippet : ''
-			};
-		});
-		await this.writeToCache(newCache);
-
-		return newCache;
 	}
 
 	public static async getCacheRecord(uri: string) {

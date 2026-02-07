@@ -18,7 +18,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import Poem from '$lib/models/Poem';
 	import {
 		draftPoemBodyStore,
 		draftPoemNameStore,
@@ -28,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { ToolbarItem } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
-	import FilePlus2 from 'lucide-svelte/icons/file-plus-2';
+	import { savePoem } from 'lib//services/poem.service';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
@@ -68,7 +67,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if ($draftPoemNameStore !== '' && $draftPoemBodyStore !== '') {
 			try {
 				await toast.promise(
-					Poem.save({
+					savePoem({
 						name: $draftPoemNameStore,
 						text: $draftPoemBodyStore,
 						note: $draftPoemNoteStore
