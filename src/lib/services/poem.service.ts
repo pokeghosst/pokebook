@@ -41,7 +41,8 @@ export async function listPoems(): Promise<PoemMeta[]> {
 	const manifestEntries: PoemMeta[] = await getManifestEntries();
 
 	return storedFiles
-		.filter((file) => !(file.name.includes('.json') || file.name.includes('.tmp')))
+		.filter((file) => !file.name.includes('.json'))
+		.map((file) => (file.name.includes('.tmp') ? { ...file, name: `(tmp) ${file.name}` } : file))
 		.map((file) => {
 			const fileMeta = manifestEntries.find((p) => p.id === file.uri);
 

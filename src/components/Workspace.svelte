@@ -37,9 +37,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	export let poemProps: { name: Writable<string>; body: Writable<string> };
 	export let noteProps: Writable<string>;
 
-	// Assigning empty function by default because on draft page we don't pass a function here
-	export let unsavedChangesHandler = () => {};
-
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,18 +87,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					</button>
 				</div>
 			</div>
-			<svelte:component
-				this={views[state[0]]}
-				{unsavedChangesHandler}
-				bind:props={props[state[0]]}
-			/>
+			<svelte:component this={views[state[0]]} bind:props={props[state[0]]} />
 		</div>
 		<div class="notebook-container">
-			<svelte:component
-				this={views[state[1]]}
-				{unsavedChangesHandler}
-				bind:props={props[state[1]]}
-			/>
+			<svelte:component this={views[state[1]]} bind:props={props[state[1]]} />
 		</div>
 	</div>
 {/if}

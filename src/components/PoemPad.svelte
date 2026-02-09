@@ -30,7 +30,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { putSyllables } from '$lib/util/PokeHelp';
 
 	export let props: { name: Writable<string>; body: Writable<string> };
-	export let unsavedChangesHandler;
 
 	let poemNameStoreProp = props.name;
 	let poemBodyStoreProp = props.body;
@@ -94,7 +93,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		bind:value={$poemNameStoreProp}
 		on:input={sanitizePoemTitle}
 		placeholder={$t('workspace.unnamed')}
-		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -115,7 +113,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			id="poem-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
-			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>

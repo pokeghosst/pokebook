@@ -19,8 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import PoemCacheDriver from 'lib//services/PoemCacheDriver';
-	import { Encoding, Filesystem } from '$lib/plugins/Filesystem';
+	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -30,37 +29,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { XMLBuilder } from 'fast-xml-parser';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
-	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
-	import { deletePoem, getPoem, updatePoem } from 'lib//services/poem.service';
-
-	let unsavedChangesToastId: string;
 
 	let thinking = true;
 
 	let poemProps = { name: currentPoemName, body: currentPoemBody };
 	let noteProps = currentPoemNote;
-
-	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	$: {
-		if (!thinking)
-			Filesystem.writeFile({
-				path: `${$currentPoemUri}.tmp`,
-				data: new XMLBuilder({ format: true }).build({
-					name: $currentPoemName,
-					text: $currentPoemBody,
-					note: $currentPoemNote
-				}),
-
-				encoding: Encoding.UTF8
-			});
-	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
@@ -78,7 +57,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 	};
 	$discardFunction = async () => {
-		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
 		await deletePoem(`${$currentPoemUri}.tmp`);
 		goto('/stash', { replaceState: false });
 	};
@@ -132,46 +110,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	];
 
 	onMount(async () => {
-		if ((await PoemCacheDriver.getCacheRecord($currentPoemUri))?.unsavedChanges === true) {
-			unsavedChangesToastId = toast(UnsavedChangesToast, {
-				duration: Infinity,
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-			const { name, text, note } = await getPoem(`${$currentPoemUri}.tmp`);
-			$currentPoemName = name;
-			$currentPoemBody = text;
-			$currentPoemNote = note;
+		try {
+			const poem = await getPoem($currentPoemUri);
 
-			thinking = false;
-		} else {
-			try {
-				const poem = await getPoem($currentPoemUri);
-
-				if (poem) {
-					$currentPoemName = poem.name;
-					$currentPoemBody = poem.text;
-					$currentPoemNote = poem.note;
-				}
-			} catch (e) {
-				if (e instanceof Error) {
-					toast.error($t(e.message), {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					});
-				}
+			if (poem) {
+				$currentPoemName = poem.name;
+				$currentPoemBody = poem.text;
+				$currentPoemNote = poem.note;
 			}
-			thinking = false;
+		} catch (e) {
+			if (e instanceof Error) {
+				toast.error($t(e.message), {
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				});
+			}
 		}
+		thinking = false;
 	});
-
-	onDestroy(() => {
-		toast.dismiss(unsavedChangesToastId);
-	});
-
-	function unsavedChangesHandler() {
-		PoemCacheDriver.setUnsavedStatus($currentPoemUri);
-	}
 
 	function clearCurrentPoemStorage() {
 		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
@@ -191,5 +147,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
+	<Workspace {poemProps} {noteProps} {actions} />
 {/if}

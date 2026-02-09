@@ -25,7 +25,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 
 	export let props: Writable<string>;
-	export let unsavedChangesHandler;
 
 	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
@@ -69,7 +68,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-			on:change|once={unsavedChangesHandler}
 		/>
 	</div>
 </div>
