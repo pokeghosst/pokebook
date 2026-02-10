@@ -32,14 +32,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import Workspace from '../../../components/Workspace.svelte';
 
 	let thinking = true;
 
-	let poemProps = { name: currentPoemName, body: currentPoemBody };
-	let noteProps = currentPoemNote;
+	setContext('poem', { name: currentPoemName, text: currentPoemBody });
+	setContext('note', { note: currentPoemNote });
+
+	onMount(async () => {
+		try {
+			const poem = await getPoem($currentPoemUri);
+
+			if (poem) {
+				$currentPoemName = poem.name;
+				$currentPoemBody = poem.text;
+				$currentPoemNote = poem.note;
+			}
+		} catch (e) {
+			if (e instanceof Error) {
+				toast.error($t(e.message), {
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				});
+			}
+		}
+		thinking = false;
+	});
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {
@@ -109,26 +129,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
 
-	onMount(async () => {
-		try {
-			const poem = await getPoem($currentPoemUri);
-
-			if (poem) {
-				$currentPoemName = poem.name;
-				$currentPoemBody = poem.text;
-				$currentPoemNote = poem.note;
-			}
-		} catch (e) {
-			if (e instanceof Error) {
-				toast.error($t(e.message), {
-					position: GLOBAL_TOAST_POSITION,
-					style: GLOBAL_TOAST_STYLE
-				});
-			}
-		}
-		thinking = false;
-	});
-
 	function clearCurrentPoemStorage() {
 		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
 	}
@@ -147,5 +147,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {poemProps} {noteProps} {actions} />
+	<Workspace {actions} />
 {/if}

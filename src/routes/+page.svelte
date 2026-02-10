@@ -31,12 +31,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
+	import type { Writable } from 'svelte/store';
 	import Workspace from '../components/Workspace.svelte';
 
-	const poemProps = { name: draftPoemNameStore, body: draftPoemBodyStore };
-	const noteProps = draftPoemNoteStore;
+	setContext<{ name: Writable<string>; text: Writable<string> }>('poem', {
+		name: draftPoemNameStore,
+		text: draftPoemBodyStore
+	});
+	setContext<{ note: Writable<string> }>('note', { note: draftPoemNoteStore });
 
 	$: isPoemNotEmpty = !!$draftPoemNameStore && !!$draftPoemBodyStore;
 
@@ -108,4 +112,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<Workspace {poemProps} {noteProps} {actions} />
+<Workspace {actions} />

@@ -17,30 +17,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onDestroy, onMount, type ComponentType } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
-	import hotkeys from 'hotkeys-js';
-
 	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
-
-	import NotePad from './NotePad.svelte';
-	import PoemPad from './PoemPad.svelte';
-
+	import hotkeys from 'hotkeys-js';
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
+	import { onDestroy, onMount, type ComponentType } from 'svelte';
+	import NotePad from './NotePad.svelte';
+	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
 	export let actions: { icon: ComponentType; action: () => void; label: string }[];
-	export let poemProps: { name: Writable<string>; body: Writable<string> };
-	export let noteProps: Writable<string>;
 
 	let state: number[] = JSON.parse($viewsState);
 	let views = [PoemPad, NotePad];
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let props: [any, any] = [poemProps, noteProps];
 
 	let currentState = '';
 
@@ -87,10 +78,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					</button>
 				</div>
 			</div>
-			<svelte:component this={views[state[0]]} bind:props={props[state[0]]} />
+			<svelte:component this={views[state[0]]} />
 		</div>
 		<div class="notebook-container">
-			<svelte:component this={views[state[1]]} bind:props={props[state[1]]} />
+			<svelte:component this={views[state[1]]} />
 		</div>
 	</div>
 {/if}

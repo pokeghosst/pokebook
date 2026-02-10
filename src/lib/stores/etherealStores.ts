@@ -16,14 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Infer } from './validation';
+import { writable } from 'svelte/store';
+import type { OnlyPoem } from '../schema/poem.schema';
 
-export const poemSchema = {
-	name: 'string',
-	text: 'string',
-	note: 'string'
-} as const;
+const currentPoem = async (poem: OnlyPoem, handler: (e: OnlyPoem) => void) => {
+	const store = writable({ ...poem });
 
-export type Poem = Infer<typeof poemSchema>;
-export type OnlyPoem = Omit<Poem, 'note'>;
-export type OnlyNote = Pick<Poem, 'note'>;
+	store.subscribe((value) => {
+		handler(value);
+	});
+
+	return store;
+};
+
+export { currentPoem };

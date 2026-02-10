@@ -17,38 +17,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
-	import { count } from 'letter-count';
-
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
-
 	import { t } from '$lib/translations';
 	import { putSyllables } from '$lib/util/PokeHelp';
+	import { count } from 'letter-count';
+	import { getContext, onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
-	export let props: { name: Writable<string>; body: Writable<string> };
-
-	let poemNameStoreProp = props.name;
-	let poemBodyStoreProp = props.body;
+	const { name, text } = getContext<{ name: Writable<string>; text: Writable<string> }>('poem');
 
 	// Overlays
 	let syllableRows: string;
 	let stats: Record<string, string | number>;
 
-	let lines: string[] = $poemBodyStoreProp.split('\n');
-
 	let poemTextarea: HTMLTextAreaElement;
 
-	$: lines = $poemBodyStoreProp.split('\n');
-	$: $poemBodyStoreProp, autoResizeNotebook();
+	$: lines = $text.split('\n');
+	$: $text, autoResizeNotebook();
 
 	// To avoid text going beyond the notepad when the poem is padded/un-padded
 	$: $isPokehelpActive, autoResizeNotebook();
 
-	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
+	$: if ($isPokehelpActive == 'true') $text, updatePokeHelpOverlays();
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -62,13 +54,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function updatePokeHelpOverlays() {
-		stats = count($poemBodyStoreProp);
+		stats = count($text);
 		syllableRows = putSyllables(lines);
 	}
 
 	function sanitizePoemTitle() {
 		const forbiddenChars = /[./_]/g;
-		$poemNameStoreProp = $poemNameStoreProp.replace(forbiddenChars, '');
+		$name = $name.replace(forbiddenChars, '');
 	}
 
 	async function autoResizeNotebook() {
@@ -90,7 +82,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={$poemNameStoreProp}
+		bind:value={$name}
 		on:input={sanitizePoemTitle}
 		placeholder={$t('workspace.unnamed')}
 	/>
@@ -102,11 +94,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				)}: {stats.lines}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html syllableRows}
 			</div>
 		{/if}
 		<textarea
-			bind:value={$poemBodyStoreProp}
+			bind:value={$text}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"

@@ -17,16 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+	import { t } from '$lib/translations';
+	import { getContext, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+	const { note } = getContext<{ note: Writable<string> }>('note');
 
-	import { t } from '$lib/translations';
-
-	export let props: Writable<string>;
-
-	let lines = $props.split('\n');
+	let lines = $note.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
 
 	onMount(() => {
@@ -40,12 +38,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	$: lines = $props.split('\n');
+	$: lines = $note.split('\n');
 	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
-		// Requesting the animation frame twice is the most reliable way to
-		// have correct auto resizing even on long text in MOST cases
+		/*
+			Requesting the animation frame twice is the most reliable way to
+			have correct auto resizing even on long text in MOST cases
+		*/
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				if (noteTextarea) {
@@ -63,7 +63,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={$props}
+			bind:value={$note}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
