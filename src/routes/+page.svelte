@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { ToolbarItem } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
-	import { savePoem } from 'lib//services/poem.service';
+	import { savePoem } from '$lib/services/poem.service';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';

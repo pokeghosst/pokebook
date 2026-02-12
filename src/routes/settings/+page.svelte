@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { themeMode } from '$lib/stores/themeMode';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { themeModes } from 'lib//constants/themeModes';
+	import { themeModes } from '$lib/constants/themeModes';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';

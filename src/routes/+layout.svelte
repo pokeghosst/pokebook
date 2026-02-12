@@ -24,7 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { nightTheme } from '$lib/stores/nightTheme';
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
-	import { themeMode } from 'lib//stores/themeMode';
+	import { themeMode } from '$lib/stores/themeMode';
 
 	$: $themeMode, $dayTheme, $nightTheme, updateTheme();
 

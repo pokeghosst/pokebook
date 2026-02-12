@@ -20,8 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { goto } from '$app/navigation';
 	import { currentPoemUri } from '$lib/stores/currentPoem';
 	import { t } from '$lib/translations';
-	import type { PoemMeta } from 'lib//schema/manifest.schema';
-	import { listPoems } from 'lib//services/poem.service';
+	import type { PoemMeta } from '$lib/schema/manifest.schema';
+	import { listPoems } from '$lib/services/poem.service';
 	import { onMount } from 'svelte';
 
 	const FALLBACK_DELAY_MS = 100;

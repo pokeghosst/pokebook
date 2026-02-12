@@ -45,11 +45,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		try {
 			const poem = await getPoem($currentPoemUri);
 
-			if (poem) {
-				$currentPoemName = poem.name;
-				$currentPoemBody = poem.text;
-				$currentPoemNote = poem.note;
-			}
+			currentPoemName.set(poem.name);
+			currentPoemBody.set(poem.text);
+			currentPoemNote.set(poem.note);
 		} catch (e) {
 			if (e instanceof Error) {
 				toast.error($t(e.message), {
