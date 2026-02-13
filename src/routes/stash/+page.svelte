@@ -26,8 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let cachedPoems: Promise<PoemMeta[]>;
-	let showFallback = false;
+	let cachedPoems: Promise<PoemMeta[]> = $state();
+	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
@@ -57,7 +57,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<div class="poem-list">
 			{#each cacheRecords as record}
 				<div class="list-item">
-					<button on:click={() => goToPoem(record.id)}>
+					<button onclick={() => goToPoem(record.id)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}

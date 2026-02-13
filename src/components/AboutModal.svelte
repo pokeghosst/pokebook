@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2024 Pokeghost.
+Copyright (C) 2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -68,8 +68,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</ul>
 	<div class="about-bottom">
 		<p>
-			<a href="/privacy" on:click={closeModal}>{$t('about.privacy')}</a>
-			| <a href="/terms" on:click={closeModal}>{$t('about.terms')}</a>
+			<a href="/privacy" onclick={closeModal}>{$t('about.privacy')}</a>
+			| <a href="/terms" onclick={closeModal}>{$t('about.terms')}</a>
 		</p>
 		<p>© {new Date().getFullYear()} Pokeghost</p>
 	</div>

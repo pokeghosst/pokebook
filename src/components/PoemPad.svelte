@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
@@ -34,18 +36,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 
 	// Overlays
-	let syllableRows: string;
-	let stats: Record<string, string | number>;
+	let syllableRows: string = $state();
+	let stats: Record<string, string | number> = $state();
 
-	let poemTextarea: HTMLTextAreaElement;
-
-	$: lines = $text.split('\n');
-	$: $text, autoResizeNotebook();
-
-	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	$: $isPokehelpActive, autoResizeNotebook();
-
-	$: if ($isPokehelpActive == 'true') $text, updatePokeHelpOverlays();
+	let poemTextarea: HTMLTextAreaElement = $state();
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -77,13 +71,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		});
 	}
+	let lines = $derived($text.split('\n'));
+	run(() => {
+		($text, autoResizeNotebook());
+	});
+	// To avoid text going beyond the notepad when the poem is padded/un-padded
+	run(() => {
+		($isPokehelpActive, autoResizeNotebook());
+	});
+	run(() => {
+		if ($isPokehelpActive == 'true') ($text, updatePokeHelpOverlays());
+	});
 </script>
 
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
 		bind:value={$name}
-		on:input={poemNameHandler}
+		oninput={poemNameHandler}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -100,13 +105,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{/if}
 		<textarea
 			bind:value={$text}
-			on:input={poemTextHandler}
+			oninput={poemTextHandler}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
-		/>
+		></textarea>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
 	import { getContext, onMount } from 'svelte';
@@ -24,8 +26,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	const { note } = getContext<{ note: Writable<string> }>('note');
 
-	let lines = $note.split('\n');
-	let noteTextarea: HTMLTextAreaElement;
+	let lines = $state($note.split('\n'));
+	let noteTextarea: HTMLTextAreaElement = $state();
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -37,9 +39,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			resizeObserver.disconnect();
 		};
 	});
-
-	$: lines = $note.split('\n');
-	$: lines, autoResizeNotebook();
 
 	async function autoResizeNotebook() {
 		/*
@@ -57,6 +56,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		});
 	}
+	run(() => {
+		lines = $note.split('\n');
+	});
+	run(() => {
+		(lines, autoResizeNotebook());
+	});
 </script>
 
 <div class="notebook">
@@ -68,6 +73,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-		/>
+		></textarea>
 	</div>
 </div>

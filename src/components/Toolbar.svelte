@@ -27,25 +27,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import AlignRight from 'lucide-svelte/icons/align-right';
 	import FontSize from './FontSize.svelte';
 
-	export let actions: ToolbarItem[];
+	interface Props {
+		actions: ToolbarItem[];
+	}
+
+	let { actions }: Props = $props();
 </script>
 
 <div class="toolbar-menu">
 	<div class="button-group">
 		<button
-			on:click={() => ($poemPadJustification = 'left')}
+			onclick={() => ($poemPadJustification = 'left')}
 			class={`button ${$poemPadJustification === 'left' ? 'active' : ''}`}
 		>
 			<AlignLeft />
 		</button>
 		<button
-			on:click={() => ($poemPadJustification = 'center')}
+			onclick={() => ($poemPadJustification = 'center')}
 			class={`button ${$poemPadJustification === 'center' ? 'active' : ''}`}
 		>
 			<AlignCenter />
 		</button>
 		<button
-			on:click={() => ($poemPadJustification = 'right')}
+			onclick={() => ($poemPadJustification = 'right')}
 			class={`button ${$poemPadJustification === 'right' ? 'active' : ''}`}
 		>
 			<AlignRight />
@@ -65,8 +69,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</div>
 	<FontSize />
 	{#each actions as action}
-		<button on:click={() => action.action()} class="button" disabled={action.disabled}>
-			<svelte:component this={action.icon} />
+		<button onclick={() => action.action()} class="button" disabled={action.disabled}>
+			<action.icon />
 			{action.label}
 		</button>
 	{/each}

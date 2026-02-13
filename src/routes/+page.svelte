@@ -42,19 +42,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 	setContext<{ note: Writable<string> }>('note', { note: draftPoemNoteStore });
 
-	$: isPoemNotEmpty = !!$draftPoemNameStore && !!$draftPoemBodyStore;
 
-	$: actions = [
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
-		{
-			icon: Share2,
-			action: () =>
-				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem'),
-			disabled: !isPoemNotEmpty
-		},
-		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
-	] satisfies ToolbarItem[];
 
 	onMount(async () => {
 		hotkeys.filter = function () {
@@ -110,6 +98,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		draftPoemBodyStore.set('');
 		draftPoemNoteStore.set('');
 	}
+	let isPoemNotEmpty = $derived(!!$draftPoemNameStore && !!$draftPoemBodyStore);
+	let actions = $derived([
+		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
+		{
+			icon: Share2,
+			action: () =>
+				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
+			label: $t('workspace.sharePoem'),
+			disabled: !isPoemNotEmpty
+		},
+		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
+	] satisfies ToolbarItem[]);
 </script>
 
 <Workspace {actions} />

@@ -22,6 +22,12 @@ const config = {
 				  })
 				: adapterAuto(),
 		alias: { $lib: './src/lib/' }
+	},
+
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
 	}
 };
 

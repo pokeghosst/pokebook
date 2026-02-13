@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -53,10 +53,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="header-nav-wrapper">
-	<button on:click={toggleSidebar}>
+	<button onclick={toggleSidebar}>
 		<Menu />
 	</button>
 	<div class="header-icons">
-		<button on:click={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
+		<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
 	</div>
 </div>

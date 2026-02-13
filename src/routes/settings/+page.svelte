@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { dayThemes } from '$lib/constants/DayThemes';
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
@@ -33,7 +33,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	onMount(() => {
-		const authStatus = $page.url.searchParams.get('status');
+		const authStatus = page.url.searchParams.get('status');
 		if (authStatus)
 			switch (authStatus) {
 				case 'ok':

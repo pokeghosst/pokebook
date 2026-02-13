@@ -37,7 +37,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import toast from 'svelte-french-toast';
 	import Workspace from '../../../components/Workspace.svelte';
 
-	let thinking = true;
+	let thinking = $state(true);
+
+	let poem = $state({});
+	let note = $state({});
 
 	setContext('poem', { name: currentPoemName, text: currentPoemBody });
 	setContext('note', { note: currentPoemNote });

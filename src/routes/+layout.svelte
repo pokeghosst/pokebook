@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { run, createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { Toaster } from 'svelte-french-toast';
 	import { Modals, closeModal } from 'svelte-modals';
 	import { dayTheme } from '$lib/stores/dayTheme';
@@ -25,8 +28,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 	import { themeMode } from '$lib/stores/themeMode';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
 
-	$: $themeMode, $dayTheme, $nightTheme, updateTheme();
+	let { children }: Props = $props();
+
 
 	function updateTheme() {
 		document.documentElement.className = '';
@@ -60,17 +67,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 		}
 	}
+	run(() => {
+		$themeMode, $dayTheme, $nightTheme, updateTheme();
+	});
 </script>
 
 <Modals>
-	<div
-		slot="backdrop"
-		class="backdrop"
-		on:click={closeModal}
-		on:keydown
-		role="button"
-		tabindex="0"
-	/>
+	{#snippet backdrop()}
+		<div
+			
+			class="backdrop"
+			onclick={closeModal}
+			onkeydown={bubble('keydown')}
+			role="button"
+			tabindex="0"
+		></div>
+	{/snippet}
 </Modals>
 
 <Toaster />
@@ -79,7 +91,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<main>
 		<div>
 			<Header />
-			<slot />
+			{@render children?.()}
 		</div>
 	</main>
 </div>
