@@ -28,3 +28,6 @@ export type ToolbarItem = {
 	label: string;
 	disabled?: boolean;
 };
+
+export type InputChangeEvent<T extends HTMLElement> = Event & { currentTarget: EventTarget & T };
+export type InputChangeHandler<T extends HTMLElement> = (e: InputChangeEvent<T>) => void;

@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
+	import { deletePoem, getPoem, renamePoem, updatePoem } from '$lib/services/poem.service';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -28,6 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/currentPoem';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
+	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
@@ -40,6 +41,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	setContext('poem', { name: currentPoemName, text: currentPoemBody });
 	setContext('note', { note: currentPoemNote });
+	setContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
+		'poemHandlers',
+		[poemNameHandler, poemTextHandler]
+	);
 
 	onMount(async () => {
 		try {
@@ -58,6 +63,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 		thinking = false;
 	});
+
+	function poemNameHandler(e: InputChangeEvent<HTMLInputElement>) {
+		const oldName = $currentPoemName;
+		currentPoemName.set(e.currentTarget.value.replace(/[./_]/g, ''));
+
+		if ($currentPoemName.trim().length === 0) currentPoemName.set('Unnamed');
+
+		console.log('renaming from ', oldName, ' to ', $currentPoemName);
+
+		renamePoem($currentPoemUri, oldName, $currentPoemName);
+	}
+
+	function poemTextHandler(e: InputChangeEvent<HTMLTextAreaElement>) {
+		currentPoemBody.set(e.currentTarget.value);
+
+		updatePoem($currentPoemUri, {
+			name: $currentPoemName,
+			text: $currentPoemBody,
+			note: $currentPoemNote
+		});
+	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
 	$saveFunction = async () => {

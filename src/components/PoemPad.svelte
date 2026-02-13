@@ -21,12 +21,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
+	import type { InputChangeHandler } from '$lib/types';
 	import { putSyllables } from '$lib/util/PokeHelp';
 	import { count } from 'letter-count';
 	import { getContext, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
 	const { name, text } = getContext<{ name: Writable<string>; text: Writable<string> }>('poem');
+	const [poemNameHandler, poemTextHandler] =
+		getContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
+			'poemHandlers'
+		);
 
 	// Overlays
 	let syllableRows: string;
@@ -58,11 +63,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		syllableRows = putSyllables(lines);
 	}
 
-	function sanitizePoemTitle() {
-		const forbiddenChars = /[./_]/g;
-		$name = $name.replace(forbiddenChars, '');
-	}
-
 	async function autoResizeNotebook() {
 		// Requesting the animation frame twice is the most reliable way to
 		// have correct auto resizing even on long text in MOST cases
@@ -83,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<input
 		class="notebook-header"
 		bind:value={$name}
-		on:input={sanitizePoemTitle}
+		on:input={poemNameHandler}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -100,6 +100,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{/if}
 		<textarea
 			bind:value={$text}
+			on:input={poemTextHandler}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
