@@ -17,29 +17,36 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
+	import type { OnlyPoem } from '$lib/schema/poem.schema';
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
-	import type { InputChangeHandler } from '$lib/types';
-	import { putSyllables } from '$lib/util/PokeHelp';
+	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { count } from 'letter-count';
 	import { getContext, onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
+	import { syllable } from 'syllable';
 
-	const { name, text } = getContext<{ name: Writable<string>; text: Writable<string> }>('poem');
-	const [poemNameHandler, poemTextHandler] =
+	let poem = getContext<OnlyPoem>('poem');
+	const [handleNameChange, handleTextChange] =
 		getContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
 			'poemHandlers'
 		);
 
+	let lines = $derived(poem.text.split('\n'));
 	// Overlays
-	let syllableRows: string = $state();
-	let stats: Record<string, string | number> = $state();
+	let stats: Record<string, string | number> = $derived(count(poem.text));
+	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
 
-	let poemTextarea: HTMLTextAreaElement = $state();
+	let poemTextarea: HTMLTextAreaElement;
+
+	$effect(() => {
+		(poem.name, autoResizeNotebook());
+	});
+
+	$effect(() => {
+		(poem.text, autoResizeNotebook());
+	});
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -52,14 +59,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	function updatePokeHelpOverlays() {
-		stats = count($text);
-		syllableRows = putSyllables(lines);
-	}
-
 	async function autoResizeNotebook() {
-		// Requesting the animation frame twice is the most reliable way to
-		// have correct auto resizing even on long text in MOST cases
+		/*
+			Requesting the animation frame twice is the most reliable way to
+			have correct auto resizing even on long text in MOST cases
+		*/
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				if (poemTextarea) {
@@ -71,24 +75,30 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		});
 	}
-	let lines = $derived($text.split('\n'));
-	run(() => {
-		($text, autoResizeNotebook());
-	});
-	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	run(() => {
-		($isPokehelpActive, autoResizeNotebook());
-	});
-	run(() => {
-		if ($isPokehelpActive == 'true') ($text, updatePokeHelpOverlays());
-	});
+
+	function sanitizeTitle(e: InputChangeEvent<HTMLInputElement>) {
+		e.currentTarget.value = e.currentTarget.value.replace(/[./_]/g, '');
+
+		console.log('sanitized value ', e.currentTarget.value);
+
+		return e;
+	}
 </script>
+
+{#snippet syllableLine(syllableCount: number, line: string)}
+	<span class="poem-syllable-count">{syllableCount}</span>
+	<span style="color: transparent; margin-left: 5px">${line}</span>
+	<br />
+{/snippet}
 
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={$name}
-		oninput={poemNameHandler}
+		value={poem.name}
+		onbeforeinput={sanitizeTitle}
+		oninput={(e) => {
+			handleNameChange(sanitizeTitle(e));
+		}}
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
@@ -99,13 +109,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				)}: {stats.lines}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html syllableRows}
+				{#each lines as line, i (`syllable-line-${i}`)}
+					{@render syllableLine(syllableCounts[i], line)}
+				{/each}
 			</div>
 		{/if}
 		<textarea
-			bind:value={$text}
-			oninput={poemTextHandler}
+			value={poem.text}
+			oninput={handleTextChange}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"

@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type { Mutable } from '$lib/types';
 import type { Infer } from './validation';
 
 export const poemSchema = {
@@ -24,6 +25,6 @@ export const poemSchema = {
 	note: 'string'
 } as const;
 
-export type Poem = Infer<typeof poemSchema>;
+export type Poem = Mutable<Infer<typeof poemSchema>>;
 export type OnlyPoem = Omit<Poem, 'note'>;
 export type OnlyNote = Pick<Poem, 'note'>;

@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let state: number[] = JSON.parse($viewsState);` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <!--
 PokeBook -- Pokeghost's poetry noteBook
 Copyright (C) 2023-2024, 2026 Pokeghost.
@@ -19,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import type { Poem } from '$lib/schema/poem.schema';
 	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
@@ -30,10 +29,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	export let actions: { icon: ComponentType; action: () => void; label: string }[];
+	let {
+		actions
+	}: {
+		actions: { icon: ComponentType; action: () => void; label: string }[];
+	} = $props();
 
-	let state: number[] = JSON.parse($viewsState);
-	let views = [PoemPad, NotePad];
+	let padState: number[] = JSON.parse($viewsState);
+	let views = ['poem', 'note'];
 
 	let currentState = '';
 
@@ -51,8 +54,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function swapViews() {
 		currentState = 'transitioning';
 		setTimeout(function () {
-			[state[0], state[1]] = [state[1], state[0]];
-			$viewsState = JSON.stringify(state);
+			[padState[0], padState[1]] = [padState[1], padState[0]];
+			$viewsState = JSON.stringify(padState);
 			currentState = '';
 		}, 600);
 	}
@@ -62,28 +65,36 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-{#if state}
-	<div class="toolbar"><Toolbar {actions} /></div>
-	<div
-		class="workspace {$isFullWidthPad === 'true'
-			? 'l-full-width'
-			: ''} {currentState} {$writingPadFont}"
-	>
-		<div class="notebook-container">
-			<div class="notebook-container-toolbar">
-				<div>
-					<button on:click={expandPoemPad}>
-						<ChevronsLeftRight class="round-button" />
-					</button>
-					<button on:click={swapViews}>
-						<ArrowRightLeft class="round-button" />
-					</button>
-				</div>
+{#snippet pad(state: string)}
+	{#if state === 'poem'}
+		<PoemPad />
+	{:else if state === 'note'}
+		<NotePad />
+	{:else}
+		D'oh!
+	{/if}
+{/snippet}
+
+<div class="toolbar"><Toolbar {actions} /></div>
+<div
+	class="workspace {$isFullWidthPad === 'true'
+		? 'l-full-width'
+		: ''} {currentState} {$writingPadFont}"
+>
+	<div class="notebook-container">
+		<div class="notebook-container-toolbar">
+			<div>
+				<button onclick={expandPoemPad}>
+					<ChevronsLeftRight class="round-button" />
+				</button>
+				<button onclick={swapViews}>
+					<ArrowRightLeft class="round-button" />
+				</button>
 			</div>
-			<svelte:component this={views[state[0]]} />
 		</div>
-		<div class="notebook-container">
-			<svelte:component this={views[state[1]]} />
-		</div>
+		{@render pad(views[padState[0]])}
 	</div>
-{/if}
+	<div class="notebook-container">
+		{@render pad(views[padState[1]])}
+	</div>
+</div>

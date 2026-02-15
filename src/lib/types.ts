@@ -1,6 +1,9 @@
 import type { Icon } from 'lucide-svelte';
 import type { ComponentType } from 'svelte';
 
+export type Mutable<T> = {
+	-readonly [K in keyof T]: T[K];
+};
 export interface PoemFileEntity {
 	name: string;
 	poemUri: string;

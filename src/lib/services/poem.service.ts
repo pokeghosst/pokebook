@@ -119,16 +119,6 @@ export async function updatePoem(uri: string, poem: Poem): Promise<string> {
 	return newUri;
 }
 
-export async function renamePoem(uri: string, oldName: string, newName: string): Promise<void> {
-	const newUri = uri.replace(oldName, newName);
-
-	// debugger;
-
-	console.log(newUri);
-
-	await Filesystem.rename({ from: uri, to: newUri });
-}
-
 export async function deletePoem(uri: string): Promise<void> {
 	await Filesystem.deleteFile({ path: uri });
 	await deleteManifestEntry(uri);

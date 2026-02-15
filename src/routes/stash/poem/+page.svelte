@@ -19,7 +19,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import { deletePoem, getPoem, renamePoem, updatePoem } from '$lib/services/poem.service';
+	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
+	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -39,23 +40,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let thinking = $state(true);
 
-	let poem = $state({});
-	let note = $state({});
+	let poem = $state<OnlyPoem>({ name: '', text: '' });
+	let note = $state<OnlyNote>({ note: '' });
 
-	setContext('poem', { name: currentPoemName, text: currentPoemBody });
+	setContext('poem', poem);
+
 	setContext('note', { note: currentPoemNote });
 	setContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
 		'poemHandlers',
-		[poemNameHandler, poemTextHandler]
+		[handleNameChange, handleTextChange]
 	);
 
 	onMount(async () => {
 		try {
-			const poem = await getPoem($currentPoemUri);
+			const { name: name_, text: text_, note: note_ } = await getPoem($currentPoemUri);
 
-			currentPoemName.set(poem.name);
-			currentPoemBody.set(poem.text);
-			currentPoemNote.set(poem.note);
+			poem.name = name_;
+			poem.text = text_;
+			note.note = note_;
 		} catch (e) {
 			if (e instanceof Error) {
 				toast.error($t(e.message), {
@@ -67,25 +69,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		thinking = false;
 	});
 
-	function poemNameHandler(e: InputChangeEvent<HTMLInputElement>) {
-		const oldName = $currentPoemName;
-		currentPoemName.set(e.currentTarget.value.replace(/[./_]/g, ''));
+	async function handleNameChange(e: InputChangeEvent<HTMLInputElement>) {
+		poem.name = e.currentTarget.value;
 
-		if ($currentPoemName.trim().length === 0) currentPoemName.set('Unnamed');
+		$currentPoemUri = await updatePoem($currentPoemUri, {
+			name: poem.name.trim().length === 0 ? 'Unnamed' : poem.name,
+			text: poem.text,
+			...note
+		});
 
-		console.log('renaming from ', oldName, ' to ', $currentPoemName);
-
-		renamePoem($currentPoemUri, oldName, $currentPoemName);
+		console.log($currentPoemUri);
 	}
 
-	function poemTextHandler(e: InputChangeEvent<HTMLTextAreaElement>) {
-		currentPoemBody.set(e.currentTarget.value);
+	async function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
+		poem.text = e.currentTarget.value;
 
-		updatePoem($currentPoemUri, {
-			name: $currentPoemName,
-			text: $currentPoemBody,
-			note: $currentPoemNote
-		});
+		await updatePoem($currentPoemUri, { ...poem, ...note });
 	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
@@ -126,13 +125,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newPoemUri = await updatePoem($currentPoemUri, {
+		$currentPoemUri = await updatePoem($currentPoemUri, {
 			name: $currentPoemName,
 			text: $currentPoemBody,
 			note: $currentPoemNote
 		});
-
-		if (newPoemUri) $currentPoemUri = newPoemUri;
 
 		await deleteTmpFile($currentPoemUri);
 	}
