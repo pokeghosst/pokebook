@@ -44,12 +44,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let note = $state<OnlyNote>({ note: '' });
 
 	setContext('poem', poem);
-
-	setContext('note', { note: currentPoemNote });
+	setContext('note', note);
 	setContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
 		'poemHandlers',
 		[handleNameChange, handleTextChange]
 	);
+	setContext('noteHandler', handleNoteChange);
 
 	onMount(async () => {
 		try {
@@ -77,12 +77,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			text: poem.text,
 			...note
 		});
-
-		console.log($currentPoemUri);
 	}
 
 	async function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
 		poem.text = e.currentTarget.value;
+
+		await updatePoem($currentPoemUri, { ...poem, ...note });
+	}
+
+	async function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
+		note.note = e.currentTarget.value;
 
 		await updatePoem($currentPoemUri, { ...poem, ...note });
 	}

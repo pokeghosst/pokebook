@@ -17,17 +17,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
+	import type { OnlyNote } from '$lib/schema/poem.schema';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
+	import type { InputChangeHandler } from '$lib/types';
 	import { getContext, onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
 
-	const { note } = getContext<{ note: Writable<string> }>('note');
+	let note = getContext<OnlyNote>('note');
+	const handleNoteChange = getContext<InputChangeHandler<HTMLTextAreaElement>>('noteHandler');
 
-	let lines = $state($note.split('\n'));
-	let noteTextarea: HTMLTextAreaElement = $state();
+	let noteTextarea: HTMLTextAreaElement;
+
+	$effect(() => {
+		note.note;
+		autoResizeNotebook();
+	});
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -56,19 +60,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		});
 	}
-	run(() => {
-		lines = $note.split('\n');
-	});
-	run(() => {
-		(lines, autoResizeNotebook());
-	});
 </script>
 
 <div class="notebook">
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={$note}
+			value={note.note}
+			oninput={handleNoteChange}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
