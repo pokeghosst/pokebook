@@ -52,7 +52,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	);
 	setContext('noteHandler', handleNoteChange);
 
-	const updatePoemDebounce = debounceWithState(updatePoem, 5000);
+	const updatePoemDebounce = debounceWithState(updatePoem, 300);
 
 	onMount(async () => {
 		try {
