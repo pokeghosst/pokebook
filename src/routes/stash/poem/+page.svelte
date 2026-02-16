@@ -37,6 +37,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import Workspace from '../../../components/Workspace.svelte';
+	import { debounceWithState } from '$lib/util';
 
 	let thinking = $state(true);
 
@@ -50,6 +51,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		[handleNameChange, handleTextChange]
 	);
 	setContext('noteHandler', handleNoteChange);
+
+	const updatePoemDebounce = debounceWithState(updatePoem, 5000);
 
 	onMount(async () => {
 		try {
@@ -79,16 +82,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		});
 	}
 
-	async function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
+	function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
 		poem.text = e.currentTarget.value;
+		console.log('going to update the poem');
 
-		await updatePoem($currentPoemUri, { ...poem, ...note });
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note }).catch((error) =>
+			console.error('Save failed:', error)
+		);
 	}
 
-	async function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
+	function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
 		note.note = e.currentTarget.value;
 
-		await updatePoem($currentPoemUri, { ...poem, ...note });
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note }).catch((error) =>
+			console.error('Save failed:', error)
+		);
 	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
@@ -169,6 +177,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 </script>
+
+<svelte:window
+	on:beforeunload={(e) => {
+		if (updatePoemDebounce.isBusy()) e.preventDefault();
+	}}
+/>
 
 {#if thinking}
 	<div class="placeholder-text-wrapper">
