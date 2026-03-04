@@ -52,7 +52,7 @@ For bugs and feature requests, don't hesitate to open issues!
 ## Branch structure
 
 - `main` - current production branch, deployed to https://book.pokeghost.org/
-- `stage` - current nightly branch, deployed to https://staging.book.pokeghost.org/
+- `stage` - current nightly branch, deployed to https://stage.book.pokeghost.org/
 
 # License
 
