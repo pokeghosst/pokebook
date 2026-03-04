@@ -95,8 +95,6 @@ export async function savePoem(poem: Poem): Promise<void> {
 }
 
 export async function updatePoem(uri: string, poem: Poem): Promise<string> {
-	console.log('updating poem');
-
 	await Filesystem.writeFile({
 		path: uri,
 		data: new XMLBuilder({ format: true }).build(poem),

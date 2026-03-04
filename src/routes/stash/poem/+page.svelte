@@ -86,7 +86,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
 		poem.text = e.currentTarget.value;
 		appState.value = { safeToClose: false };
-		console.log('going to update the poem');
 
 		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
 			.catch((error) => console.error('Save failed:', error))
