@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
+	import appState from '$lib/AppState.svelte';
 	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
 	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
 	import {
@@ -30,6 +31,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
+	import { debounceWithState } from '$lib/util';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
@@ -37,7 +39,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import Workspace from '../../../components/Workspace.svelte';
-	import { debounceWithState } from '$lib/util';
 
 	let thinking = $state(true);
 
@@ -52,7 +53,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	);
 	setContext('noteHandler', handleNoteChange);
 
-	const updatePoemDebounce = debounceWithState(updatePoem, 300);
+	const updatePoemDebounce = debounceWithState(updatePoem, 400);
 
 	onMount(async () => {
 		try {
@@ -84,19 +85,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
 		poem.text = e.currentTarget.value;
+		appState.value = { safeToClose: false };
 		console.log('going to update the poem');
 
-		updatePoemDebounce($currentPoemUri, { ...poem, ...note }).catch((error) =>
-			console.error('Save failed:', error)
-		);
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+			.catch((error) => console.error('Save failed:', error))
+			.finally(() => {
+				appState.value = { safeToClose: true };
+			});
 	}
 
 	function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
 		note.note = e.currentTarget.value;
 
-		updatePoemDebounce($currentPoemUri, { ...poem, ...note }).catch((error) =>
-			console.error('Save failed:', error)
-		);
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+			.catch((error) => console.error('Save failed:', error))
+			.finally(() => {
+				appState.value = { safeToClose: true };
+			});
 	}
 
 	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
@@ -177,12 +183,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 </script>
-
-<svelte:window
-	on:beforeunload={(e) => {
-		if (updatePoemDebounce.isBusy()) e.preventDefault();
-	}}
-/>
 
 {#if thinking}
 	<div class="placeholder-text-wrapper">

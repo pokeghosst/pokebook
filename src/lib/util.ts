@@ -21,31 +21,21 @@ export function debounceWithState<T extends unknown[], R>(
 	delay: number
 ) {
 	let timeoutTimer: ReturnType<typeof setTimeout>;
-	let isPending = false;
-	let isExecuting = false;
 
 	const debouncedFn = (...args: T): Promise<R> => {
 		clearTimeout(timeoutTimer);
-		isPending = true;
 
 		return new Promise((resolve, reject) => {
 			timeoutTimer = setTimeout(async () => {
-				isPending = false;
-				isExecuting = true;
-
 				try {
 					const result = await callback(...args);
-					isExecuting = false;
 					resolve(result);
 				} catch (error) {
-					isExecuting = false;
 					reject(error);
 				}
 			}, delay);
 		});
 	};
-
-	debouncedFn.isBusy = () => isPending || isExecuting;
 
 	return debouncedFn;
 }

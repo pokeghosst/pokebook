@@ -17,23 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run, createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
-	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal } from 'svelte-modals';
+	import appState from '$lib/AppState.svelte';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import { nightTheme } from '$lib/stores/nightTheme';
+	import { themeMode } from '$lib/stores/themeMode';
+	import { Toaster } from 'svelte-french-toast';
+	import { Modals, closeModal } from 'svelte-modals';
+	import { createBubbler, run } from 'svelte/legacy';
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
-	import { themeMode } from '$lib/stores/themeMode';
+
 	interface Props {
 		children?: import('svelte').Snippet;
 	}
 
+	const bubble = createBubbler();
 	let { children }: Props = $props();
-
 
 	function updateTheme() {
 		document.documentElement.className = '';
@@ -68,14 +68,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 	run(() => {
-		$themeMode, $dayTheme, $nightTheme, updateTheme();
+		($themeMode, $dayTheme, $nightTheme, updateTheme());
 	});
 </script>
+
+<svelte:window
+	onbeforeunload={(e) => {
+		if (!appState.value.safeToClose) e.preventDefault();
+	}}
+/>
 
 <Modals>
 	{#snippet backdrop()}
 		<div
-			
 			class="backdrop"
 			onclick={closeModal}
 			onkeydown={bubble('keydown')}
