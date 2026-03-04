@@ -13,5 +13,7 @@
 	"language": "Language",
 	"login": "Log in to",
 	"logout": "Log out of",
-	"themeMode": "Theme mode"
+	"themeMode": "Theme mode",
+	"import": "Import poems",
+	"export": "Export poems"
 }

@@ -72,11 +72,9 @@ export async function getPoem(uri: string): Promise<Poem> {
 	}
 }
 
-export async function savePoem(poem: Poem): Promise<void> {
-	const timestamp = Date.now();
-
+export async function savePoem(poem: Poem, timestamp?: number): Promise<void> {
 	const { uri } = await Filesystem.writeFile({
-		path: `poems/${poem.name}_${timestamp}.xml`,
+		path: `poems/${poem.name}_${timestamp ?? Date.now()}.xml`,
 		data: new XMLBuilder({ format: true }).build(poem),
 		directory: Directory.Documents,
 		encoding: Encoding.UTF8,

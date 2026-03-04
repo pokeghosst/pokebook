@@ -21,13 +21,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { dayThemes } from '$lib/constants/DayThemes';
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
+	import { themeModes } from '$lib/constants/themeModes';
+	import { exportPoems, importPoems } from '$lib/services/migration.service';
 	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { nightTheme } from '$lib/stores/nightTheme';
 	import { themeMode } from '$lib/stores/themeMode';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { themeModes } from '$lib/constants/themeModes';
 	import { onMount } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
@@ -83,4 +84,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
+	<div class="settings-export">
+		<button class="action-button action-button--secondary" onclick={exportPoems}
+			>{$t('settings.export')}</button
+		>
+		<h4>
+			{$t('settings.import')}
+		</h4>
+		<form onsubmit={importPoems}>
+			<input type="file" name="poemArchive" required />
+			<button class="action-button action-button--secondary">{$t('settings.import')}</button>
+		</form>
+	</div>
 </div>
