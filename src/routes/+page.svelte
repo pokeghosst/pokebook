@@ -18,13 +18,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { sharePoem } from '$lib/actions/sharePoem';
+	import { Preferences } from '$lib/plugins/Preferences';
 	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
 	import { savePoem } from '$lib/services/poem.service';
-	import {
-		draftPoemBodyStore,
-		draftPoemNameStore,
-		draftPoemNoteStore
-	} from '$lib/stores/poemDraft';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler, ToolbarItem } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
@@ -35,7 +31,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
 	import Workspace from '../components/Workspace.svelte';
-	import { Preferences } from '$lib/plugins/Preferences';
 
 	let thinking = $state(true);
 
@@ -94,11 +89,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function stashPoem() {
 		try {
 			await toast.promise(
-				savePoem({
-					name: $draftPoemNameStore,
-					text: $draftPoemBodyStore,
-					note: $draftPoemNoteStore
-				}),
+				savePoem({ ...poem, ...note }),
 				{
 					loading: `${$t('toasts.savingPoem')}`,
 					success: `${$t('toasts.poemSaved')}`,
@@ -127,17 +118,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function clearDraftPoem() {
-		draftPoemNameStore.set('');
-		draftPoemBodyStore.set('');
-		draftPoemNoteStore.set('');
+		Preferences.set({ key: 'draft_poem_name', value: '' });
+		Preferences.set({ key: 'draft_poem_text', value: '' });
+		Preferences.set({ key: 'draft_poem_note', value: '' });
+
+		poem.name = '';
+		poem.text = '';
+		note.note = '';
 	}
-	let isPoemNotEmpty = $derived(!!$draftPoemNameStore && !!$draftPoemBodyStore);
+
+	let isPoemNotEmpty = $derived(poem.name && poem.text);
 	let actions = $derived([
 		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
 		{
 			icon: Share2,
-			action: () =>
-				sharePoem($draftPoemNameStore, $draftPoemBodyStore, $t('toasts.poemCopiedToClipboard')),
+			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
 			label: $t('workspace.sharePoem'),
 			disabled: !isPoemNotEmpty
 		},
