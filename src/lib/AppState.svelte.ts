@@ -50,7 +50,7 @@ const defaultState = {
 	writingPadFont: 'halogen',
 	writingPadFontSize: 16,
 	syncProvider: 'local',
-	safeToClose: false
+	safeToClose: true
 } satisfies State;
 
 const stateFromPreferences: Partial<State> = JSON.parse(
