@@ -96,6 +96,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
 		note.note = e.currentTarget.value;
+		appState.value = { safeToClose: false };
 
 		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
 			.catch((error) => console.error('Save failed:', error))
