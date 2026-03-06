@@ -1,5 +1,25 @@
 # Changelog
 
+## [v3.2] - UNRELEASED
+
+### Added
+
+- Auto theme mode option in settings
+- Auto saving for stashed poems
+
+### Changed
+
+- Migrated to Svelte 5
+- Removed temporary poem files
+- Improved manifest file handling
+
+### Fixed
+
+- Disable save and share buttons if poem is empty
+- Removed confusing "New" button from toolbar
+- Rename poem file only if the name is different
+- Some refactoring and cleanup
+
 ## [v3.1.1] - 2026-02-01
 
 ### Changed

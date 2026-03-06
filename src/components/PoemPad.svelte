@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023 Pokeghost.
+Copyright (C) 2023, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,39 +17,36 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
-	import { count } from 'letter-count';
-
+	import type { OnlyPoem } from '$lib/schema/poem.schema';
 	import { poemPadJustification } from '$lib/stores/poemPadJustification';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
-
 	import { t } from '$lib/translations';
-	import { putSyllables } from '$lib/util/PokeHelp';
+	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
+	import { count } from 'letter-count';
+	import { getContext, onMount } from 'svelte';
+	import { syllable } from 'syllable';
 
-	export let props: { name: Writable<string>; body: Writable<string> };
-	export let unsavedChangesHandler;
+	let poem = getContext<OnlyPoem>('poem');
+	const [handleNameChange, handleTextChange] =
+		getContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
+			'poemHandlers'
+		);
 
-	let poemNameStoreProp = props.name;
-	let poemBodyStoreProp = props.body;
-
+	let lines = $derived(poem.text.split('\n'));
 	// Overlays
-	let syllableRows: string;
-	let stats: Record<string, string | number>;
-
-	let lines: string[] = $poemBodyStoreProp.split('\n');
+	let stats: Record<string, string | number> = $derived(count(poem.text));
+	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
 
 	let poemTextarea: HTMLTextAreaElement;
 
-	$: lines = $poemBodyStoreProp.split('\n');
-	$: $poemBodyStoreProp, autoResizeNotebook();
+	$effect(() => {
+		(poem.name, autoResizeNotebook());
+	});
 
-	// To avoid text going beyond the notepad when the poem is padded/un-padded
-	$: $isPokehelpActive, autoResizeNotebook();
-
-	$: if ($isPokehelpActive == 'true') $poemBodyStoreProp, updatePokeHelpOverlays();
+	$effect(() => {
+		(poem.text, autoResizeNotebook());
+	});
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -62,19 +59,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	function updatePokeHelpOverlays() {
-		stats = count($poemBodyStoreProp);
-		syllableRows = putSyllables(lines);
-	}
-
-	function sanitizePoemTitle() {
-		const forbiddenChars = /[./_]/g;
-		$poemNameStoreProp = $poemNameStoreProp.replace(forbiddenChars, '');
-	}
-
 	async function autoResizeNotebook() {
-		// Requesting the animation frame twice is the most reliable way to
-		// have correct auto resizing even on long text in MOST cases
+		/*
+			Requesting the animation frame twice is the most reliable way to
+			have correct auto resizing even on long text in MOST cases
+		*/
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				if (poemTextarea) {
@@ -86,15 +75,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			});
 		});
 	}
+
+	function sanitizeTitle(e: InputChangeEvent<HTMLInputElement>) {
+		e.currentTarget.value = e.currentTarget.value.replace(/[./_]/g, '');
+
+		return e;
+	}
 </script>
+
+{#snippet syllableLine(syllableCount: number, line: string)}
+	<span class="poem-syllable-count">{syllableCount}</span>
+	<span style="color: transparent; margin-left: 5px">${line}</span>
+	<br />
+{/snippet}
 
 <div class="notebook" id="poem-notebook">
 	<input
 		class="notebook-header"
-		bind:value={$poemNameStoreProp}
-		on:input={sanitizePoemTitle}
+		value={poem.name}
+		onbeforeinput={sanitizeTitle}
+		oninput={(e) => {
+			handleNameChange(sanitizeTitle(e));
+		}}
 		placeholder={$t('workspace.unnamed')}
-		on:change|once={unsavedChangesHandler}
 	/>
 	<div class="notebook-inner-wrapper">
 		{#if $isPokehelpActive === 'true'}
@@ -104,18 +107,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				)}: {stats.lines}
 			</div>
 			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-				{@html syllableRows}
+				{#each lines as line, i (`syllable-line-${i}`)}
+					{@render syllableLine(syllableCounts[i], line)}
+				{/each}
 			</div>
 		{/if}
 		<textarea
-			bind:value={$poemBodyStoreProp}
+			value={poem.text}
+			oninput={handleTextChange}
 			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
 				? 'l-padded-for-pokehelp'
 				: ''}"
 			id="poem-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={poemTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+		></textarea>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023, 2026 Pokeghost.
+Copyright (C) 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,9 +17,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { writable } from 'svelte/store';
-import { createStore } from './storeFactory';
+import type { OnlyPoem } from '../schema/poem.schema';
 
-export const currentPoemName = writable('Unnamed');
-export const currentPoemBody = writable('');
-export const currentPoemNote = writable('');
-export const currentPoemUri = await createStore('current_poem_uri', '');
+const currentPoem = async (poem: OnlyPoem, handler: (e: OnlyPoem) => void) => {
+	const store = writable({ ...poem });
+
+	store.subscribe((value) => {
+		handler(value);
+	});
+
+	return store;
+};
+
+export { currentPoem };

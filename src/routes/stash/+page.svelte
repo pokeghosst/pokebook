@@ -18,19 +18,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { t } from '$lib/translations';
-	import PoemCacheDriver from 'lib//driver/PoemCacheDriver';
-	import { onMount } from 'svelte';
-	import Poem from '$lib/models/Poem';
-	// TODO: With the addition of .tmp files, these stores (aside from uri?) don't have to be in the Preferences. Revise
 	import { currentPoemUri } from '$lib/stores/currentPoem';
-	import type { PoemCacheRecord } from '$lib/types';
-	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
+	import { t } from '$lib/translations';
+	import type { PoemMeta } from '$lib/schema/manifest.schema';
+	import { listPoems } from '$lib/services/poem.service';
+	import { onMount } from 'svelte';
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let cachedPoems: Promise<PoemCacheRecord[]>;
-	let showFallback = false;
+	let cachedPoems: Promise<PoemMeta[]> = $state();
+	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
@@ -38,7 +35,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			showFallback = true;
 		}, FALLBACK_DELAY_MS);
 
-		cachedPoems = Poem.listFromCache();
+		cachedPoems = listPoems();
 
 		return () => clearTimeout(fallbackTimeout);
 	});
@@ -46,10 +43,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function goToPoem(poemUri: string) {
 		$currentPoemUri = poemUri;
 		await goto('/stash/poem');
-	}
-
-	async function handleCacheRefresh() {
-		cachedPoems = PoemCacheDriver.refreshCache();
 	}
 </script>
 
@@ -61,18 +54,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
-		<div class="refresh-wrapper">
-			<button class="button" on:click={handleCacheRefresh}>Refresh <RotateCcw /></button>
-		</div>
 		<div class="poem-list">
 			{#each cacheRecords as record}
 				<div class="list-item">
-					<button on:click={() => goToPoem(record.id)}>
+					<button onclick={() => goToPoem(record.id)}>
 						<div class="list-poem">
 							<p class="list-poem-name">
 								{record.name}{record.unsavedChanges ? ` (${$t('workspace.unsaved')})` : ''}
 							</p>
-							<p class="list-poem-snippet">{record.poemSnippet}...</p>
+							<p class="list-poem-snippet">{record.poemSnippet}</p>
 						</div>
 						<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
 					</button>

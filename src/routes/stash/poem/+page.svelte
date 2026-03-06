@@ -19,9 +19,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import PoemCacheDriver from '$lib/driver/PoemCacheDriver';
-	import Poem from '$lib/models/Poem';
-	import { Encoding, Filesystem } from '$lib/plugins/Filesystem';
+	import appState from '$lib/AppState.svelte';
+	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
+	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
 	import {
 		currentPoemBody,
 		currentPoemName,
@@ -30,35 +30,78 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	} from '$lib/stores/currentPoem';
 	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
 	import { t } from '$lib/translations';
+	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
+	import { debounceWithState } from '$lib/util';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import { XMLBuilder } from 'fast-xml-parser';
 	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import toast from 'svelte-french-toast';
-	import UnsavedChangesToast from '../../../components/UnsavedChangesToast.svelte';
 	import Workspace from '../../../components/Workspace.svelte';
 
-	let unsavedChangesToastId: string;
+	let thinking = $state(true);
 
-	let thinking = true;
+	let poem = $state<OnlyPoem>({ name: '', text: '' });
+	let note = $state<OnlyNote>({ note: '' });
 
-	let poemProps = { name: currentPoemName, body: currentPoemBody };
-	let noteProps = currentPoemNote;
+	setContext('poem', poem);
+	setContext('note', note);
+	setContext<[InputChangeHandler<HTMLInputElement>, InputChangeHandler<HTMLTextAreaElement>]>(
+		'poemHandlers',
+		[handleNameChange, handleTextChange]
+	);
+	setContext('noteHandler', handleNoteChange);
 
-	// TODO: Maybe using stores here is not the best choice but I don't want to wreck everything now
-	$: {
-		if (!thinking)
-			Filesystem.writeFile({
-				path: `${$currentPoemUri}.tmp`,
-				data: new XMLBuilder({ format: true }).build({
-					name: $currentPoemName,
-					text: $currentPoemBody,
-					note: $currentPoemNote
-				}),
+	const updatePoemDebounce = debounceWithState(updatePoem, 400);
 
-				encoding: Encoding.UTF8
+	onMount(async () => {
+		try {
+			const { name: name_, text: text_, note: note_ } = await getPoem($currentPoemUri);
+
+			poem.name = name_;
+			poem.text = text_;
+			note.note = note_;
+		} catch (e) {
+			if (e instanceof Error) {
+				toast.error($t(e.message), {
+					position: GLOBAL_TOAST_POSITION,
+					style: GLOBAL_TOAST_STYLE
+				});
+			}
+		}
+		thinking = false;
+	});
+
+	async function handleNameChange(e: InputChangeEvent<HTMLInputElement>) {
+		poem.name = e.currentTarget.value;
+
+		$currentPoemUri = await updatePoem($currentPoemUri, {
+			name: poem.name.trim().length === 0 ? 'Unnamed' : poem.name,
+			text: poem.text,
+			...note
+		});
+	}
+
+	function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
+		poem.text = e.currentTarget.value;
+		appState.value = { safeToClose: false };
+
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+			.catch((error) => console.error('Save failed:', error))
+			.finally(() => {
+				appState.value = { safeToClose: true };
+			});
+	}
+
+	function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
+		note.note = e.currentTarget.value;
+		appState.value = { safeToClose: false };
+
+		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+			.catch((error) => console.error('Save failed:', error))
+			.finally(() => {
+				appState.value = { safeToClose: true };
 			});
 	}
 
@@ -78,15 +121,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		);
 	};
 	$discardFunction = async () => {
-		await PoemCacheDriver.unsetUnsavedStatus($currentPoemUri);
-		await Poem.delete(`${$currentPoemUri}.tmp`);
+		await deletePoem(`${$currentPoemUri}.tmp`);
 		goto('/stash', { replaceState: false });
 	};
 
 	const deletePoemAction = async () => {
 		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
 			await toast.promise(
-				deletePoem(),
+				deletePoemHandler(),
 				{
 					loading: `${$t('toasts.deletingPoem')}`,
 					success: `${$t('toasts.deletedPoem')}`,
@@ -101,20 +143,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	};
 
 	async function save() {
-		const newPoemUri = await Poem.update(
-			{ name: $currentPoemName, text: $currentPoemBody, note: $currentPoemNote },
-			$currentPoemUri
-		);
-
-		if (newPoemUri) $currentPoemUri = newPoemUri;
+		$currentPoemUri = await updatePoem($currentPoemUri, {
+			name: $currentPoemName,
+			text: $currentPoemBody,
+			note: $currentPoemNote
+		});
 
 		await deleteTmpFile($currentPoemUri);
 	}
 
-	async function deletePoem() {
-		await Poem.delete($currentPoemUri);
+	async function deletePoemHandler() {
+		await deletePoem($currentPoemUri);
 		await deleteTmpFile($currentPoemUri);
-		await PoemCacheDriver.popCacheRecord($currentPoemUri);
 		clearCurrentPoemStorage();
 		await goto('/stash', { invalidateAll: true });
 	}
@@ -131,54 +171,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
 
-	onMount(async () => {
-		if ((await PoemCacheDriver.getCacheRecord($currentPoemUri))?.unsavedChanges === true) {
-			unsavedChangesToastId = toast(UnsavedChangesToast, {
-				duration: Infinity,
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			});
-			const { name, text, note } = await Poem.load(`${$currentPoemUri}.tmp`);
-			$currentPoemName = name;
-			$currentPoemBody = text;
-			$currentPoemNote = note;
-
-			thinking = false;
-		} else {
-			try {
-				const poem = await Poem.load($currentPoemUri);
-				if (poem) {
-					$currentPoemName = poem.name;
-					$currentPoemBody = poem.text;
-					$currentPoemNote = poem.note;
-				}
-			} catch (e) {
-				if (e instanceof Error) {
-					toast.error($t(e.message), {
-						position: GLOBAL_TOAST_POSITION,
-						style: GLOBAL_TOAST_STYLE
-					});
-				}
-			}
-			thinking = false;
-		}
-	});
-
-	onDestroy(() => {
-		toast.dismiss(unsavedChangesToastId);
-	});
-
-	function unsavedChangesHandler() {
-		PoemCacheDriver.setUnsavedStatus($currentPoemUri);
-	}
-
 	function clearCurrentPoemStorage() {
 		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
 	}
 
 	async function deleteTmpFile(fileUri: string) {
 		try {
-			await Poem.delete(`${fileUri}.tmp`);
+			await deletePoem(`${fileUri}.tmp`);
 		} catch (_) {
 			// Do nothing
 		}
@@ -190,5 +189,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {poemProps} {noteProps} {actions} {unsavedChangesHandler} />
+	<Workspace {actions} />
 {/if}

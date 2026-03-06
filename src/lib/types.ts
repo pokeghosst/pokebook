@@ -1,6 +1,9 @@
 import type { Icon } from 'lucide-svelte';
 import type { ComponentType } from 'svelte';
 
+export type Mutable<T> = {
+	-readonly [K in keyof T]: T[K];
+};
 export interface PoemFileEntity {
 	name: string;
 	poemUri: string;
@@ -22,4 +25,12 @@ export interface PoemCacheRecord {
 
 export type MenuItem = { icon: ComponentType<Icon>; label: string; url: string };
 
-export type ToolbarItem = { icon: ComponentType<Icon>; action: () => void; label: string };
+export type ToolbarItem = {
+	icon: ComponentType<Icon>;
+	action: () => void;
+	label: string;
+	disabled?: boolean;
+};
+
+export type InputChangeEvent<T extends HTMLElement> = Event & { currentTarget: EventTarget & T };
+export type InputChangeHandler<T extends HTMLElement> = (e: InputChangeEvent<T>) => void;

@@ -14,7 +14,12 @@
 		height: 16px;
 	}
 
-	&:hover,
+	&:disabled {
+		opacity: 0.7;
+		cursor: default;
+	}
+
+	&:hover and &:not(:disabled),
 	&.active {
 		background-color: var(--list-item-hover-color);
 		outline: none;

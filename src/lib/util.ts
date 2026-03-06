@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023, 2026 Pokeghost.
+Copyright (C) 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,10 +16,26 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { writable } from 'svelte/store';
-import { createStore } from './storeFactory';
+export function debounceWithState<T extends unknown[], R>(
+	callback: (...args: T) => Promise<R>,
+	delay: number
+) {
+	let timeoutTimer: ReturnType<typeof setTimeout>;
 
-export const currentPoemName = writable('Unnamed');
-export const currentPoemBody = writable('');
-export const currentPoemNote = writable('');
-export const currentPoemUri = await createStore('current_poem_uri', '');
+	const debouncedFn = (...args: T): Promise<R> => {
+		clearTimeout(timeoutTimer);
+
+		return new Promise((resolve, reject) => {
+			timeoutTimer = setTimeout(async () => {
+				try {
+					const result = await callback(...args);
+					resolve(result);
+				} catch (error) {
+					reject(error);
+				}
+			}, delay);
+		});
+	};
+
+	return debouncedFn;
+}

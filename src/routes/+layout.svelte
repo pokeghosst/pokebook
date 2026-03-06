@@ -17,39 +17,77 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal } from 'svelte-modals';
-
-	import { darkMode } from '$lib/stores/darkMode';
+	import appState from '$lib/AppState.svelte';
 	import { dayTheme } from '$lib/stores/dayTheme';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import { nightTheme } from '$lib/stores/nightTheme';
-
+	import { themeMode } from '$lib/stores/themeMode';
+	import { Toaster } from 'svelte-french-toast';
+	import { Modals, closeModal } from 'svelte-modals';
+	import { createBubbler, run } from 'svelte/legacy';
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 
-	$: $darkMode, updateTheme();
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	const bubble = createBubbler();
+	let { children }: Props = $props();
 
 	function updateTheme() {
 		document.documentElement.className = '';
-		if ($darkMode !== '') {
-			document.documentElement.classList.add($darkMode || '');
-			document.documentElement.classList.add($nightTheme || 'chocolate');
-		} else {
-			document.documentElement.classList.add($dayTheme || 'vanilla');
+
+		switch ($themeMode) {
+			case 'day': {
+				document.documentElement.classList.add($dayTheme || 'vanilla');
+				break;
+			}
+			case 'night': {
+				document.documentElement.classList.add('dark');
+				document.documentElement.classList.add($nightTheme || 'chocolate');
+				break;
+			}
+			case 'auto': {
+				const prefersDark = window.matchMedia('(prefers-color-scheme:dark)');
+
+				const applyAutoTheme = () => {
+					document.documentElement.className = '';
+
+					if (prefersDark.matches) {
+						document.documentElement.classList.add($nightTheme || 'chocolate');
+					} else {
+						document.documentElement.classList.add($dayTheme || 'vanilla');
+					}
+				};
+
+				applyAutoTheme();
+				prefersDark.addEventListener('change', applyAutoTheme);
+				break;
+			}
 		}
 	}
+	run(() => {
+		($themeMode, $dayTheme, $nightTheme, updateTheme());
+	});
 </script>
 
+<svelte:window
+	onbeforeunload={(e) => {
+		if (!appState.value.safeToClose) e.preventDefault();
+	}}
+/>
+
 <Modals>
-	<div
-		slot="backdrop"
-		class="backdrop"
-		on:click={closeModal}
-		on:keydown
-		role="button"
-		tabindex="0"
-	/>
+	{#snippet backdrop()}
+		<div
+			class="backdrop"
+			onclick={closeModal}
+			onkeydown={bubble('keydown')}
+			role="button"
+			tabindex="0"
+		></div>
+	{/snippet}
 </Modals>
 
 <Toaster />
@@ -58,7 +96,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<main>
 		<div>
 			<Header />
-			<slot />
+			{@render children?.()}
 		</div>
 	</main>
 </div>

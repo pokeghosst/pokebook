@@ -10,5 +10,8 @@
 	"coral": "Coral Pink (Twilights)",
 	"terminal": "Terminal (J33)",
 	"neo-day": "Neo (día)",
-	"neo-night": "Neo (noche)"
+	"neo-night": "Neo (noche)",
+	"day": "Día",
+	"night": "Noche",
+	"auto": "Automático"
 }

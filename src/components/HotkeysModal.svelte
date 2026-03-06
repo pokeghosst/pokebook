@@ -31,10 +31,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		{
 			keys: 'ctrl+e',
 			description: 'hotkeys.fullWidthPad'
-		},
-		{
-			keys: 'ctrl+shift+n',
-			description: 'hotkeys.newPoem'
 		}
 	];
 </script>

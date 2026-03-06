@@ -1,6 +1,6 @@
 <!--
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2023-2024, 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -17,18 +17,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Writable } from 'svelte/store';
-
+	import type { OnlyNote } from '$lib/schema/poem.schema';
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
-
 	import { t } from '$lib/translations';
+	import type { InputChangeHandler } from '$lib/types';
+	import { getContext, onMount } from 'svelte';
 
-	export let props: Writable<string>;
-	export let unsavedChangesHandler;
+	let note = getContext<OnlyNote>('note');
+	const handleNoteChange = getContext<InputChangeHandler<HTMLTextAreaElement>>('noteHandler');
 
-	let lines = $props.split('\n');
 	let noteTextarea: HTMLTextAreaElement;
+
+	$effect(() => {
+		note.note;
+		autoResizeNotebook();
+	});
 
 	onMount(() => {
 		// Resize the notebook when switching between single/dual panes
@@ -41,12 +44,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		};
 	});
 
-	$: lines = $props.split('\n');
-	$: lines, autoResizeNotebook();
-
 	async function autoResizeNotebook() {
-		// Requesting the animation frame twice is the most reliable way to
-		// have correct auto resizing even on long text in MOST cases
+		/*
+			Requesting the animation frame twice is the most reliable way to
+			have correct auto resizing even on long text in MOST cases
+		*/
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				if (noteTextarea) {
@@ -64,12 +66,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="notebook-header">{$t('workspace.note')}</div>
 	<div>
 		<textarea
-			bind:value={$props}
+			value={note.note}
+			oninput={handleNoteChange}
 			class="paper"
 			id="note-textarea"
 			style={`font-size: ${$writingPadFontSize}px`}
 			bind:this={noteTextarea}
-			on:change|once={unsavedChangesHandler}
-		/>
+		></textarea>
 	</div>
 </div>

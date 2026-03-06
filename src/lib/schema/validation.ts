@@ -1,6 +1,6 @@
 /*
 PokeBook -- Pokeghost's poetry noteBook
-Copyright (C) 2023-2024 Pokeghost.
+Copyright (C) 2026 Pokeghost.
 
 PokeBook is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published
@@ -16,14 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { PoemEntity } from '$lib/types';
-import type { PoemFileEntity } from '$lib/types';
+export type Infer<S> = {
+	[K in keyof S]: S[K] extends 'string'
+		? string
+		: S[K] extends 'number'
+		? number
+		: S[K] extends 'boolean'
+		? boolean
+		: never;
+};
 
-export interface IPoemStorageDriver {
-	listPoems(): Promise<PoemFileEntity[]>;
-	loadPoem(poemUri: string): Promise<PoemEntity>;
-	// TODO: ALL DRIVERS WILL HAVE TO RETURN ID AND TIMESTAMP
-	savePoem(poem: PoemEntity): Promise<{ id: string; timestamp: number } | void>;
-	updatePoem(poem: PoemEntity, poemUri: string): Promise<string | void>;
-	deletePoem(poemUri: string): Promise<void>;
+export function validate<S extends object>(obj: unknown, schema: S): obj is Infer<S> {
+	if (typeof obj !== 'object' || obj === null) return false;
+
+	return Object.entries(schema).every(([key, type]) => typeof Reflect.get(obj, key) === type);
 }
