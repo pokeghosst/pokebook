@@ -28,7 +28,7 @@ You can use PokeBook at no cost by visiting https://book.pokeghost.org.
 
 PokeBook can be built with static adapter and deployed on a generic hosting provider (like Netlify Drop) by doing the following:
 
-```
+```sh
 bun run static
 ```
 
@@ -38,9 +38,19 @@ PokeBook is configured with `@sveltejs/adapter-auto` so it should be easily depl
 
 Environment for local development can be quickly spun up by doing the following:
 
-```
+```sh
 bun i
 bun dev
+```
+
+# Developing desktop/mobile app
+
+> Prerequisites: [Tauri CLI](https://tauri.app/reference/cli/), Rust
+
+Run development server:
+
+```sh
+cargo tauri dev
 ```
 
 # Contributing

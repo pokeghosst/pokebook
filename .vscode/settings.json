@@ -3,6 +3,7 @@
     "git.enableCommitSigning": true,
     "cSpell.words": [
         "pokebook",
-        "Pokehelp"
+        "Pokehelp",
+        "Tauri"
     ]
 }
