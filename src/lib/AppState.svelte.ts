@@ -53,10 +53,6 @@ const defaultState = {
 	safeToClose: true
 } satisfies State;
 
-const stateFromPreferences: Partial<State> = JSON.parse(
-	(await Preferences.get({ key: 'pokebook_state' })).value ?? '{}'
-);
-
 function createState(stateToSet: State) {
 	let value: State = $state(stateToSet);
 
@@ -66,13 +62,15 @@ function createState(stateToSet: State) {
 		},
 		set value(stateToSet: Partial<State>) {
 			value = { ...value, ...stateToSet };
-			(async () => {
-				Preferences.set({ key: 'pokebook_state', value: JSON.stringify(value) });
-			})();
+			Preferences.set({ key: 'pokebook_state', value: JSON.stringify(value) });
 		}
 	};
 }
 
-const appState = createState({ ...defaultState, ...stateFromPreferences });
+const appState = createState(defaultState);
+
+Preferences.get({ key: 'pokebook_state' }).then(({ value }) => {
+	if (value) appState.value = JSON.parse(value);
+});
 
 export default appState;

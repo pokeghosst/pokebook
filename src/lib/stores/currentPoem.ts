@@ -22,4 +22,4 @@ import { createStore } from './storeFactory';
 export const currentPoemName = writable('Unnamed');
 export const currentPoemBody = writable('');
 export const currentPoemNote = writable('');
-export const currentPoemUri = await createStore('current_poem_uri', '');
+export const currentPoemUri = createStore('current_poem_uri', '');
