@@ -16,23 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { makeProxy } from '../util/makeProxy';
 import type { PreferencesPlugin } from './PreferencesPlugin';
 
-let pluginPromise: any;
-
-async function getImplementation() {
-	if (!pluginPromise) {
-		if (window.__TAURI_INTERNALS__) {
-			// throw new Error('Tauri not implemented');
-			pluginPromise = import('./PreferencesTauri').then((m) => new m.PreferencesTauri());
-		} else {
-			pluginPromise = import('./PreferencesWeb').then((m) => new m.PreferencesWeb());
-		}
+export const Preferences = makeProxy<PreferencesPlugin>(async () => {
+	if (window.__TAURI_INTERNALS__) {
+		return new (await import('./PreferencesTauri')).PreferencesTauri();
+	} else {
+		return new (await import('./PreferencesWeb')).PreferencesWeb();
 	}
-	return pluginPromise;
-}
-
-export const Preferences = makeProxy(getImplementation) as PreferencesPlugin;
+});

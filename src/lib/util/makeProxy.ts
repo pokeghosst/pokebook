@@ -16,23 +16,36 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+export function makeProxy<T extends object>(implResolver: () => Promise<T>): T {
+	let implCache: T | null = null;
+	let resolvePromise: Promise<T> | null = null;
 
-export function makeProxy(implResolver: () => Promise<any>) {
-	return new Proxy(
-		{},
-		{
-			get(_, prop) {
-				return async (...args: unknown[]) => {
-					const impl = await implResolver();
-					const method = impl[prop];
+	return new Proxy({} as T, {
+		get(_, prop) {
+			return async (...args: unknown[]) => {
+				if (implCache) {
+					const method = implCache[prop as keyof T];
 					if (typeof method === 'function') {
-						return method.apply(impl, args);
+						return method.apply(implCache, args);
 					} else {
 						throw new Error(`Method ${String(prop)} does not exist on implementation`);
 					}
-				};
-			}
+				}
+
+				if (resolvePromise) {
+					implCache = await resolvePromise;
+				} else {
+					resolvePromise = implResolver();
+					implCache = await resolvePromise;
+				}
+
+				const method = implCache[prop as keyof T];
+				if (typeof method === 'function') {
+					return method.apply(implCache, args);
+				} else {
+					throw new Error(`Method ${String(prop)} does not exist on implementation`);
+				}
+			};
 		}
-	);
+	});
 }
