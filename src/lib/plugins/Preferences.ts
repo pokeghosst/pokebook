@@ -25,10 +25,9 @@ let pluginPromise: any;
 
 async function getImplementation() {
 	if (!pluginPromise) {
-		// TODO: Import proper type after setting up Tauri
-		if ((window as any).__TAURI_INTERNALS__) {
-			throw new Error('Tauri not implemented');
-			// pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
+		if (window.__TAURI_INTERNALS__) {
+			// throw new Error('Tauri not implemented');
+			pluginPromise = import('./PreferencesTauri').then((m) => new m.PreferencesTauri());
 		} else {
 			pluginPromise = import('./PreferencesWeb').then((m) => new m.PreferencesWeb());
 		}

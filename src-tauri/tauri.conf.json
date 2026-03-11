@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "PokeBook",
-  "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "version": "3.3.0-rc+w.1",
+  "identifier": "org.pokeghost.book",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:5173",
