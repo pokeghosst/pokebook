@@ -49,6 +49,7 @@
 		"@sveltejs/vite-plugin-svelte": "6.2.1"
 	},
 	"dependencies": {
+		"@tauri-apps/plugin-fs": "~2",
 		"@zip.js/zip.js": "^2.8.22",
 		"fast-xml-parser": "^4.4.1",
 		"hotkeys-js": "^3.13.7",

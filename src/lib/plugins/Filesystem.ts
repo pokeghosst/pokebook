@@ -19,23 +19,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { makeProxy } from '../util/makeProxy';
 import type { FilesystemPlugin } from './FilesystemPlugin';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-let pluginPromise: any;
-
-async function getImplementation() {
-	if (!pluginPromise) {
-		// TODO: Import proper type after setting up Tauri
-		if ((window as any).__TAURI_INTERNALS__) {
-			throw new Error('Tauri not implemented');
-			// pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
-		} else {
-			pluginPromise = import('./FilesystemWeb').then((m) => new m.FilesystemWeb());
-		}
+export const Filesystem = makeProxy<FilesystemPlugin>(async () => {
+	if (window.__TAURI_INTERNALS__) {
+		return new (await import('./FilesystemTauri')).FilesystemTauri();
+	} else {
+		return new (await import('./FilesystemWeb')).FilesystemWeb();
 	}
-	return pluginPromise;
-}
-
-export const Filesystem = makeProxy(getImplementation) as FilesystemPlugin;
+});
 
 export * from './FilesystemPlugin';

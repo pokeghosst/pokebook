@@ -16,16 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+mod filesystem;
 mod preferences;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             preferences::get_from_store,
             preferences::set_to_store,
             preferences::delete_key_in_store,
-            preferences::clear_store
+            preferences::clear_store,
+            // filesystem::read_file,
+            filesystem::write_file
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
