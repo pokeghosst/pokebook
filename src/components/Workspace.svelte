@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type { Poem } from '$lib/schema/poem.schema';
 	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
 	import { viewsState } from '$lib/stores/views';
 	import { writingPadFont } from '$lib/stores/writingPadFont';
@@ -35,10 +34,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		actions: { icon: ComponentType; action: () => void; label: string }[];
 	} = $props();
 
-	let padState: number[] = JSON.parse($viewsState);
+	let padState: number[] = $state(JSON.parse($viewsState));
 	let views = ['poem', 'note'];
 
-	let currentState = '';
+	let currentState = $state('');
 
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
@@ -57,7 +56,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			[padState[0], padState[1]] = [padState[1], padState[0]];
 			$viewsState = JSON.stringify(padState);
 			currentState = '';
-		}, 600);
+		}, 300);
 	}
 
 	function expandPoemPad() {

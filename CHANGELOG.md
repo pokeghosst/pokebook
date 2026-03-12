@@ -1,11 +1,12 @@
 # Changelog
 
-## [v3.2] - UNRELEASED
+## [v3.2] - 2026-03-07
 
 ### Added
 
 - Auto theme mode option in settings
 - Auto saving for stashed poems
+- Import and export for stashed poems
 
 ### Changed
 
