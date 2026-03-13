@@ -28,8 +28,10 @@ pub fn run() {
             preferences::set_to_store,
             preferences::delete_key_in_store,
             preferences::clear_store,
-            // filesystem::read_file,
-            filesystem::write_file
+            filesystem::is_file_exists,
+            filesystem::read_file,
+            filesystem::write_file,
+            filesystem::mkdir
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {

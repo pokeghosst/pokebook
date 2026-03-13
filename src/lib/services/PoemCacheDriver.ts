@@ -47,7 +47,6 @@ export default class PoemCacheDriver {
 			});
 			return true;
 		} catch (_) {
-			// TODO: I reckon this is not too good
 			try {
 				await Filesystem.mkdir({
 					path: 'poems',
@@ -91,7 +90,7 @@ export default class PoemCacheDriver {
 						name: newPoem.name,
 						poemSnippet: this.sliceSnippet(newPoem.text),
 						unsavedChanges: false
-				  }
+					}
 				: poem
 		);
 		await this.writeToCache(updatedPoems);

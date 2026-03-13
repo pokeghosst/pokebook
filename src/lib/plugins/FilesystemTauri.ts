@@ -39,46 +39,62 @@ import type {
 	WriteFileResult
 } from './FilesystemPlugin';
 
+/*
+	Unimplemented functions are not necessary for PokeBook and come from
+	Capacitor API since we rely on their implementation for web filesystem.
+	They will eventually be removed and the interface will be simplified
+*/
 export class FilesystemTauri implements FilesystemPlugin {
 	checkPermissions(): Promise<PermissionStatus> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method checkPermissions not implemented.');
 	}
 	requestPermissions(): Promise<PermissionStatus> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method requestPermissions not implemented.');
 	}
-	readFile(options: ReadFileOptions): Promise<ReadFileResult> {
-		throw new Error('Method not implemented.');
+	async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
+		const buffer = await invoke<ArrayBuffer>('read_file', { path: options.path });
+		const decoded = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+
+		console.log('read file... ', decoded);
+
+		return { data: decoded };
 	}
 	async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
 		console.log('writing file Tauri...');
 
-		return await invoke('write_file', { path: options.path, data: options.data });
+		const uri = await invoke<string>('write_file', { path: options.path, data: options.data });
+
+		console.log('writeFile uri... ', uri);
+
+		return { uri };
 	}
-	appendFile(options: AppendFileOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	appendFile(_options: AppendFileOptions): Promise<void> {
+		throw new Error('Method appendFile not implemented.');
 	}
 	deleteFile(options: DeleteFileOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method deleteFile not implemented.');
 	}
-	mkdir(options: MkdirOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	async mkdir(options: MkdirOptions): Promise<void> {
+		await invoke('mkdir', { path: options.path });
 	}
-	rmdir(options: RmdirOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+	rmdir(_options: RmdirOptions): Promise<void> {
+		throw new Error('Method rmdir not implemented.');
 	}
 	readdir(options: ReaddirOptions): Promise<ReaddirResult> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method readdir not implemented.');
 	}
 	getUri(options: GetUriOptions): Promise<GetUriResult> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method getUri not implemented.');
 	}
-	stat(options: StatOptions): Promise<StatResult> {
-		throw new Error('Method not implemented.');
+	async stat(options: StatOptions): Promise<StatResult> {
+		const result = await invoke('is_file_exists', { path: options.path });
+
+		console.log('file stat... ', result);
 	}
 	rename(options: RenameOptions): Promise<void> {
-		throw new Error('Method not implemented.');
+		throw new Error('Method rename not implemented.');
 	}
-	copy(options: CopyOptions): Promise<CopyResult> {
-		throw new Error('Method not implemented.');
+	copy(_options: CopyOptions): Promise<CopyResult> {
+		throw new Error('Method copy not implemented.');
 	}
 }

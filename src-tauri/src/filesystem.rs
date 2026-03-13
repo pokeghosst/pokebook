@@ -16,44 +16,56 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::prelude::*;
+use std::path::Path;
+use std::path::PathBuf;
+use tauri::ipc::Response;
 use tauri::AppHandle;
-
-#[derive(serde::Deserialize)]
-pub enum Encoding {
-    #[serde(rename = "utf8")]
-    Utf8,
-    #[serde(rename = "ascii")]
-    Ascii,
-    #[serde(rename = "utf16")]
-    Utf16,
-}
-
-// #[tauri::command]
-// pub fn read_file(
-//     app: AppHandle,
-//     path: String,
-//     encoding: Option<Encoding>,
-//     offset: Option<u64>,
-//     length: Option<usize>,
-// ) -> Result<String, String> {
-//     Ok()
-// }
+use tauri::Manager;
 
 #[tauri::command]
-pub fn write_file(
-    app: AppHandle,
-    path: String,
-    data: String,
-    encoding: Option<Encoding>,
-    recursive: Option<bool>,
-) -> Result<String, String> {
-    let mut file = File::create("foo.txt").map_err(|e| e.to_string())?;
-    file.write_all(b"Hello, world!")
-        .map_err(|e| e.to_string())?;
+pub fn read_file(path: String) -> Response {
+    let data = match std::fs::read(path) {
+        Ok(file) => file,
+        _ => return Response::new(vec![]),
+    };
 
-    print!("Wrote file...");
+    tauri::ipc::Response::new(data)
+}
 
-    Ok(String::from("foo.txt"))
+fn get_file_path(app: AppHandle, path: String) -> Result<PathBuf, String> {
+    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+
+    Ok(app_dir.join(path))
+}
+
+#[tauri::command]
+pub fn write_file(app: AppHandle, path: String, data: String) -> Result<String, String> {
+    let file_path = get_file_path(app, path)?;
+    fs::create_dir_all(file_path.parent().unwrap_or(Path::new("."))).map_err(|e| e.to_string())?;
+
+    let mut file = File::create(&file_path).map_err(|e| e.to_string())?;
+    file.write_all(data.as_bytes()).map_err(|e| e.to_string())?;
+
+    Ok(file_path.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+pub fn is_file_exists(app: AppHandle, path: String) -> Result<bool, String> {
+    let file_path = get_file_path(app, path)?;
+    let p = Path::new(&file_path);
+
+    println!(
+        "Incoming path... {} exists? {}",
+        file_path.display(),
+        p.exists()
+    );
+
+    Ok(p.exists())
+}
+
+#[tauri::command]
+pub fn mkdir(path: String) -> Result<(), String> {
+    fs::create_dir(path).map_err(|e| e.to_string())
 }
