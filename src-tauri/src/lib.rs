@@ -22,7 +22,6 @@ mod preferences;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        // .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             preferences::get_from_store,
             preferences::set_to_store,
@@ -32,6 +31,7 @@ pub fn run() {
             filesystem::read_file,
             filesystem::write_file,
             filesystem::rename_file,
+            filesystem::delete_file,
             filesystem::mkdir,
             filesystem::readdir
         ])

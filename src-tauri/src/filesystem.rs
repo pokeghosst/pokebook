@@ -53,6 +53,14 @@ pub fn write_file(app: AppHandle, path: String, data: String) -> Result<String, 
 }
 
 #[tauri::command]
+pub fn delete_file(app: AppHandle, path: String) -> Result<(), String> {
+    let file_path = get_file_path(&app, path)?;
+    fs::remove_file(file_path).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub fn is_file_exists(app: AppHandle, path: String) -> Result<bool, String> {
     let file_path = get_file_path(&app, path)?;
     let p = Path::new(&file_path);

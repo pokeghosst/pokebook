@@ -71,8 +71,8 @@ export class FilesystemTauri implements FilesystemPlugin {
 	appendFile(_options: AppendFileOptions): Promise<void> {
 		throw new Error('Method appendFile not implemented.');
 	}
-	deleteFile(options: DeleteFileOptions): Promise<void> {
-		throw new Error('Method deleteFile not implemented.');
+	async deleteFile(options: DeleteFileOptions): Promise<void> {
+		await invoke<void>('delete_file', { path: options.path });
 	}
 	async mkdir(options: MkdirOptions): Promise<void> {
 		await invoke('mkdir', { path: options.path });

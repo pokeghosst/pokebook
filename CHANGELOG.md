@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.3] - UNRELEASED
+
+### Fixed
+
+- Broken panel swapping
+- Remove redundant Save button for stashed poem
+
 ## [v3.2] - 2026-03-07
 
 ### Added
