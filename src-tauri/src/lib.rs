@@ -31,7 +31,8 @@ pub fn run() {
             filesystem::is_file_exists,
             filesystem::read_file,
             filesystem::write_file,
-            filesystem::mkdir
+            filesystem::mkdir,
+            filesystem::readdir
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {

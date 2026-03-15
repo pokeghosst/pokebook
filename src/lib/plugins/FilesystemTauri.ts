@@ -80,10 +80,16 @@ export class FilesystemTauri implements FilesystemPlugin {
 	rmdir(_options: RmdirOptions): Promise<void> {
 		throw new Error('Method rmdir not implemented.');
 	}
-	readdir(options: ReaddirOptions): Promise<ReaddirResult> {
-		throw new Error('Method readdir not implemented.');
+	async readdir(options: ReaddirOptions): Promise<ReaddirResult> {
+		const filesInDir = await invoke<{ name: string; ctime: number; uri: string }[]>('readdir', {
+			path: options.path
+		});
+
+		console.log('filesInDir', filesInDir);
+
+		return { files: filesInDir };
 	}
-	getUri(options: GetUriOptions): Promise<GetUriResult> {
+	getUri(_options: GetUriOptions): Promise<GetUriResult> {
 		throw new Error('Method getUri not implemented.');
 	}
 	async stat(options: StatOptions): Promise<StatResult> {

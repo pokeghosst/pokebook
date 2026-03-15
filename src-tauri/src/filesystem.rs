@@ -16,13 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+use serde::Serialize;
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::UNIX_EPOCH;
 use tauri::ipc::Response;
 use tauri::AppHandle;
 use tauri::Manager;
+
+#[derive(Serialize)]
+pub struct FileEntry {
+    pub name: String,
+    pub ctime: u64,
+    pub uri: String,
+}
 
 #[tauri::command]
 pub fn read_file(app: AppHandle, path: String) -> Result<Response, String> {
@@ -30,12 +39,6 @@ pub fn read_file(app: AppHandle, path: String) -> Result<Response, String> {
     let data = std::fs::read(&file_path).map_err(|e| e.to_string())?;
 
     Ok(tauri::ipc::Response::new(data))
-}
-
-fn get_file_path(app: AppHandle, path: String) -> Result<PathBuf, String> {
-    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-
-    Ok(app_dir.join(path))
 }
 
 #[tauri::command]
@@ -66,4 +69,41 @@ pub fn is_file_exists(app: AppHandle, path: String) -> Result<bool, String> {
 #[tauri::command]
 pub fn mkdir(path: String) -> Result<(), String> {
     fs::create_dir(path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileEntry>, String> {
+    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    let dir_path = app_dir.join(&path);
+
+    let entries = fs::read_dir(&dir_path).map_err(|e| e.to_string())?;
+    let mut files = Vec::new();
+
+    for entry in entries {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let metadata = entry.metadata().map_err(|e| e.to_string())?;
+
+        let name = entry.file_name().to_string_lossy().into_owned();
+        let full_path = entry.path().to_string_lossy().into_owned();
+        let ctime = metadata
+            .created()
+            .map_err(|e| e.to_string())?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|e| e.to_string())?
+            .as_secs();
+
+        files.push(FileEntry {
+            name,
+            ctime,
+            uri: full_path,
+        });
+    }
+
+    Ok(files)
+}
+
+fn get_file_path(app: AppHandle, path: String) -> Result<PathBuf, String> {
+    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+
+    Ok(app_dir.join(path))
 }
