@@ -97,8 +97,8 @@ export class FilesystemTauri implements FilesystemPlugin {
 
 		console.log('file stat... ', result);
 	}
-	rename(options: RenameOptions): Promise<void> {
-		throw new Error('Method rename not implemented.');
+	async rename(options: RenameOptions): Promise<void> {
+		await invoke<void>('rename_file', { from: options.from, to: options.to });
 	}
 	copy(_options: CopyOptions): Promise<CopyResult> {
 		throw new Error('Method copy not implemented.');

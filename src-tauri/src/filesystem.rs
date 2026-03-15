@@ -35,7 +35,7 @@ pub struct FileEntry {
 
 #[tauri::command]
 pub fn read_file(app: AppHandle, path: String) -> Result<Response, String> {
-    let file_path = get_file_path(app, path)?;
+    let file_path = get_file_path(&app, path)?;
     let data = std::fs::read(&file_path).map_err(|e| e.to_string())?;
 
     Ok(tauri::ipc::Response::new(data))
@@ -43,7 +43,7 @@ pub fn read_file(app: AppHandle, path: String) -> Result<Response, String> {
 
 #[tauri::command]
 pub fn write_file(app: AppHandle, path: String, data: String) -> Result<String, String> {
-    let file_path = get_file_path(app, path)?;
+    let file_path = get_file_path(&app, path)?;
     fs::create_dir_all(file_path.parent().unwrap_or(Path::new("."))).map_err(|e| e.to_string())?;
 
     let mut file = File::create(&file_path).map_err(|e| e.to_string())?;
@@ -54,7 +54,7 @@ pub fn write_file(app: AppHandle, path: String, data: String) -> Result<String, 
 
 #[tauri::command]
 pub fn is_file_exists(app: AppHandle, path: String) -> Result<bool, String> {
-    let file_path = get_file_path(app, path)?;
+    let file_path = get_file_path(&app, path)?;
     let p = Path::new(&file_path);
 
     println!(
@@ -102,7 +102,14 @@ pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileEntry>, String> {
     Ok(files)
 }
 
-fn get_file_path(app: AppHandle, path: String) -> Result<PathBuf, String> {
+#[tauri::command]
+pub fn rename_file(app: AppHandle, from: String, to: String) -> Result<(), String> {
+    let old = get_file_path(&app, from)?;
+    let new = get_file_path(&app, to)?;
+    fs::rename(old, new).map_err(|e| e.to_string())
+}
+
+fn get_file_path(app: &AppHandle, path: String) -> Result<PathBuf, String> {
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
 
     Ok(app_dir.join(path))
