@@ -160,8 +160,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	let actions = [
-		// TODO: Bad, bad, bad, bad!!!
-		{ icon: Save, action: $saveFunction, label: $t('workspace.savePoem') },
 		{
 			icon: Share2,
 			action: () =>
