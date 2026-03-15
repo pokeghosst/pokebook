@@ -25,13 +25,11 @@ use tauri::AppHandle;
 use tauri::Manager;
 
 #[tauri::command]
-pub fn read_file(path: String) -> Response {
-    let data = match std::fs::read(path) {
-        Ok(file) => file,
-        _ => return Response::new(vec![]),
-    };
+pub fn read_file(app: AppHandle, path: String) -> Result<Response, String> {
+    let file_path = get_file_path(app, path)?;
+    let data = std::fs::read(&file_path).map_err(|e| e.to_string())?;
 
-    tauri::ipc::Response::new(data)
+    Ok(tauri::ipc::Response::new(data))
 }
 
 fn get_file_path(app: AppHandle, path: String) -> Result<PathBuf, String> {

@@ -100,7 +100,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					style: GLOBAL_TOAST_STYLE
 				}
 			);
-			// clearDraftPoem();
+			clearDraftPoem();
 		} catch (e) {
 			console.log(e);
 			if (e instanceof Error)
