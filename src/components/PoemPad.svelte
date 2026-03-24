@@ -24,7 +24,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { getContext, onMount } from 'svelte';
-	import { syllable } from 'syllable';
 
 	let poem = getContext<OnlyPoem>('poem');
 	const [handleNameChange, handleTextChange] =
@@ -32,10 +31,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			'poemHandlers'
 		);
 
+	let syllableFn = $state<((value: string) => number) | null>(null);
+
 	let lines = $derived(poem.text.split('\n'));
 	// Overlays
 	let stats: Record<string, string | number> = $derived(countStats(poem.text));
-	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
+	let syllableCounts: number[] = $derived(
+		lines.map((line) => {
+			if (!$isPokehelpActive) return 0;
+
+			if (!syllableFn)
+				import('syllable').then(({ syllable }) => {
+					syllableFn = syllable;
+				});
+
+			return syllableFn ? syllableFn(line) : 0;
+		})
+	);
 
 	let poemTextarea: HTMLTextAreaElement;
 

@@ -6,7 +6,8 @@
 
 - Broken panel swapping
 - Remove redundant Save button for stashed poem
-- Swap letter-count dependency for custom function
+- Drop letter-count dependency, use custom function instead
+- Lazy load syllable package
 
 ## [v3.2] - 2026-03-07
 
