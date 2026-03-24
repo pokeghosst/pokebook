@@ -6,6 +6,7 @@
 
 - Broken panel swapping
 - Remove redundant Save button for stashed poem
+- Swap letter-count dependency for custom function
 
 ## [v3.2] - 2026-03-07
 

@@ -23,7 +23,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
-	import { count } from 'letter-count';
 	import { getContext, onMount } from 'svelte';
 	import { syllable } from 'syllable';
 
@@ -35,7 +34,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let lines = $derived(poem.text.split('\n'));
 	// Overlays
-	let stats: Record<string, string | number> = $derived(count(poem.text));
+	let stats: Record<string, string | number> = $derived(countStats(poem.text));
 	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
 
 	let poemTextarea: HTMLTextAreaElement;
@@ -80,6 +79,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		e.currentTarget.value = e.currentTarget.value.replace(/[./_]/g, '');
 
 		return e;
+	}
+
+	function countStats(input: string) {
+		const chars = input.length;
+		const lines = input.split('\n').length;
+		const words = input.trim() ? input.trim().split(/\s+/).length : 0;
+
+		return { chars, lines, words };
 	}
 </script>
 
