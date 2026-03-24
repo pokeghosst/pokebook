@@ -31,23 +31,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			'poemHandlers'
 		);
 
-	let syllableFn = $state<((value: string) => number) | null>(null);
+	let syllable = $state<((value: string) => number) | null>(null);
 
 	let lines = $derived(poem.text.split('\n'));
 	// Overlays
 	let stats: Record<string, string | number> = $derived(countStats(poem.text));
 	let syllableCounts: number[] = $derived(
-		lines.map((line) => {
-			if (!$isPokehelpActive) return 0;
-
-			if (!syllableFn)
-				import('syllable').then(({ syllable }) => {
-					syllableFn = syllable;
-				});
-
-			return syllableFn ? syllableFn(line) : 0;
-		})
+		syllable && $isPokehelpActive === 'true' ? lines.map((line) => syllable!(line)) : []
 	);
+
+	$effect(() => {
+		if ($isPokehelpActive === 'true' && !syllable) {
+			import('syllable').then(({ syllable: _syllable }) => {
+				syllable = _syllable;
+			});
+		}
+	});
 
 	let poemTextarea: HTMLTextAreaElement;
 
