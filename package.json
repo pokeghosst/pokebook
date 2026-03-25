@@ -1,7 +1,7 @@
 {
 	"name": "pokebook",
-	"version": "3.1.1",
-	"description": "Best digital notebook for writing poetry",
+	"version": "3.3.0",
+	"description": "The ultimate digital notebook for writing poetry.",
 	"keywords": [
 		"Poetry",
 		"Writing",
@@ -12,7 +12,7 @@
 	"license": "AGPL-3.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/pokegh0st/pokebook"
+		"url": "https://codeberg.org/pokesuite/pokebook"
 	},
 	"type": "module",
 	"scripts": {
