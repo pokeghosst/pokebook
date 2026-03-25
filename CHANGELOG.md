@@ -8,6 +8,8 @@
 - Remove redundant Save button for stashed poem
 - Drop letter-count dependency, use custom function instead
 - Lazy load syllable package
+- Migrate to loaders method for sveltekit-i18n
+- Language selection not persisted
 
 ## [v3.2] - 2026-03-07
 
