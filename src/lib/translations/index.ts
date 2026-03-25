@@ -40,7 +40,8 @@ const config = {
 		{ locale: 'ru', key: 'menu', loader: async () => (await import('./ru/menu.json')).default },
 		{ locale: 'ru',	key: 'settings', loader: async () => (await import('./ru/settings.json')).default },
 		{ locale: 'ru', key: 'themes', loader: async () => (await import('./ru/themes.json')).default },
-		{ locale: 'ru', key: 'toasts', loader: async () => (await import('./ru/toasts.json')).default }
+		{ locale: 'ru', key: 'toasts', loader: async () => (await import('./ru/toasts.json')).default },
+		{ locale: 'ru', key: 'workspace', loader: async () => (await import('./ru/workspace.json')).default },
 	]
 } satisfies Config;
 

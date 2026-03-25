@@ -10,6 +10,7 @@
 - Lazy load syllable package
 - Migrate to loaders method for sveltekit-i18n
 - Language selection not persisted
+- Hide PokeHelp toggle when language other than English is selected
 
 ## [v3.2] - 2026-03-07
 

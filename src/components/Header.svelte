@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { activeLanguage } from '$lib/stores/activeLanguage';
 	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
 	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
 	import hotkeys from 'hotkeys-js';
@@ -56,7 +57,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<button onclick={toggleSidebar}>
 		<Menu />
 	</button>
-	<div class="header-icons">
-		<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
-	</div>
+	{#if $activeLanguage === 'en'}
+		<div class="header-icons">
+			<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
+		</div>
+	{/if}
 </div>
