@@ -19,21 +19,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { makeProxy } from '../util/makeProxy';
 import type { SharePlugin } from './SharePlugin';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-let pluginPromise: any;
-
-async function getImplementation() {
-	if (!pluginPromise) {
-		// TODO: Import proper type after setting up Tauri
-		if ((window as any).__TAURI_INTERNALS__) {
-			throw new Error('Tauri not implemented');
-			// pluginPromise = import('./FilesystemTauri').then((m) => new m.FilesystemTauri());
-		} else {
-			pluginPromise = import('./ShareWeb').then((m) => new m.ShareWeb());
-		}
+export const Filesystem = makeProxy<SharePlugin>(async () => {
+	if (window.__TAURI_INTERNALS__) {
+		/*
+			TODO: This needs testing, maybe there's no need for a plugin.
+			Using web plugin as the fallback for now.
+		*/
+		return new (await import('./ShareWeb')).ShareWeb();
+	} else {
+		return new (await import('./ShareWeb')).ShareWeb();
 	}
-	return pluginPromise;
-}
+});
 
-export const Share = makeProxy(getImplementation) as SharePlugin;
+export * from './SharePlugin';
