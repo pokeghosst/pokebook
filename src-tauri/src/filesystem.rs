@@ -29,7 +29,7 @@ use tauri::Manager;
 #[derive(Serialize)]
 pub struct FileEntry {
     pub name: String,
-    pub ctime: u64,
+    pub ctime: u128,
     pub uri: String,
 }
 
@@ -98,7 +98,7 @@ pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileEntry>, String> {
             .map_err(|e| e.to_string())?
             .duration_since(UNIX_EPOCH)
             .map_err(|e| e.to_string())?
-            .as_secs();
+            .as_millis();
 
         files.push(FileEntry {
             name,
