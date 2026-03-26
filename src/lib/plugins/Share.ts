@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { makeProxy } from '../util/makeProxy';
 import type { SharePlugin } from './SharePlugin';
 
-export const Filesystem = makeProxy<SharePlugin>(async () => {
+export const Share = makeProxy<SharePlugin>(async () => {
 	if (window.__TAURI_INTERNALS__) {
 		/*
 			TODO: This needs testing, maybe there's no need for a plugin.
