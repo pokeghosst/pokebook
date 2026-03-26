@@ -18,15 +18,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { currentPoemUri } from '$lib/stores/currentPoem';
-	import { t } from '$lib/translations';
+	import { resolve } from '$app/paths';
 	import type { PoemMeta } from '$lib/schema/manifest.schema';
 	import { listPoems } from '$lib/services/poem.service';
+	import { currentPoemUri } from '$lib/stores/currentPoem';
+	import { t } from '$lib/translations';
 	import { onMount } from 'svelte';
 
 	const FALLBACK_DELAY_MS = 100;
 
-	let cachedPoems: Promise<PoemMeta[]> = $state();
+	let cachedPoems: Promise<PoemMeta[]> | null = $state(null);
 	let showFallback = $state(false);
 	let fallbackTimeout: ReturnType<typeof setTimeout>;
 
@@ -42,7 +43,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	async function goToPoem(poemUri: string) {
 		$currentPoemUri = poemUri;
-		await goto('/stash/poem');
+		await goto(resolve('/stash/poem'));
 	}
 </script>
 
@@ -55,7 +56,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {:then cacheRecords}
 	{#if cacheRecords && cacheRecords.length > 0}
 		<div class="poem-list">
-			{#each cacheRecords as record}
+			{#each cacheRecords as record (record.id)}
 				<div class="list-item">
 					<button onclick={() => goToPoem(record.id)}>
 						<div class="list-poem">
@@ -64,7 +65,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 							</p>
 							<p class="list-poem-snippet">{record.poemSnippet}</p>
 						</div>
-						<div>{new Intl.DateTimeFormat('en-US').format(new Date(record.timestamp))}</div>
+						<div>{new Date(record.timestamp).toLocaleDateString()}</div>
 					</button>
 				</div>
 			{/each}
