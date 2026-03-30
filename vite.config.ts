@@ -1,7 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import topLevelAwait from 'vite-plugin-top-level-await';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
@@ -11,13 +11,5 @@ export default defineConfig({
 			promiseImportName: (i) => `__tla_${i}`
 		}),
 		devtoolsJson()
-	],
-	resolve: process.env.VITEST
-		? {
-				conditions: ['browser']
-			}
-		: undefined,
-	test: {
-		environment: 'jsdom'
-	}
+	]
 });
