@@ -24,14 +24,15 @@ describe('preferences', () => {
 	beforeEach(() => {
 		localStorage.clear();
 	});
-	it('sets and gets from storage', async () => {
+
+	it('should set and get from storage', async () => {
 		await Preferences.set({ key: 'foo', value: 'bar' });
 
 		const { value } = await Preferences.get({ key: 'foo' });
 
 		expect(value).toBe('bar');
 	});
-	it('overrides value for same key', async () => {
+	it('should override value for same key', async () => {
 		await Preferences.set({ key: 'foo', value: 'bar' });
 		await Preferences.set({ key: 'foo', value: 'baz' });
 
@@ -39,14 +40,14 @@ describe('preferences', () => {
 
 		expect(value).toBe('baz');
 	});
-	it('sets and gets empty value', async () => {
+	it('should set and get empty value', async () => {
 		await Preferences.set({ key: 'foo', value: '' });
 
 		const { value } = await Preferences.get({ key: 'foo' });
 
 		expect(value).toBe('');
 	});
-	it('handles unicode', async () => {
+	it('should handle unicode', async () => {
 		const pairs = [
 			{ key: 'foo', value: '世界' },
 			{ key: 'bar', value: '🌍' },
@@ -60,7 +61,7 @@ describe('preferences', () => {
 			expect(actual).toBe(value);
 		}
 	});
-	it('returns null after removing key', async () => {
+	it('should return null after removing key', async () => {
 		await Preferences.set({ key: 'foo', value: 'bar' });
 		await Preferences.remove({ key: 'foo' });
 
@@ -68,14 +69,14 @@ describe('preferences', () => {
 
 		expect(value).toBeNull();
 	});
-	it('returns null for non-existing key', async () => {
+	it('should return null for non-existing key', async () => {
 		const { value } = await Preferences.get({ key: 'foo' });
 		expect(value).toBeNull();
 	});
-	it('does not throw when removing a key that does not exist', async () => {
+	it('should not throw when removing a key that does not exist', async () => {
 		await expect(Preferences.remove({ key: 'foo' })).resolves.not.toThrow();
 	});
-	it('returns null for all keys after clear', async () => {
+	it('should return null for all keys after clear', async () => {
 		const dummies = [
 			{ key: 'foo', value: 'bar' },
 			{ key: 'baz', value: 'xyf' }
@@ -92,10 +93,10 @@ describe('preferences', () => {
 			expect(v).toBeNull();
 		}
 	});
-	it('does not throw when clearing an empty store', async () => {
+	it('should not throw when clearing an empty store', async () => {
 		await expect(Preferences.clear()).resolves.not.toThrow();
 	});
-	it('sets and gets arbitrary values correctly', async () => {
+	it('should set and get arbitrary values correctly', async () => {
 		await fc.assert(
 			fc.asyncProperty(fc.string(), fc.string(), async (key, value) => {
 				localStorage.clear();
