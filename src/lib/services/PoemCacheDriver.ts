@@ -39,27 +39,6 @@ export default class PoemCacheDriver {
 		return JSON.parse(poemCacheFile.data.toString());
 	}
 
-	public static async isCachePresent() {
-		try {
-			await Filesystem.stat({
-				directory: Directory.Documents,
-				path: `poems/poems_local.json`
-			});
-			return true;
-		} catch (_) {
-			try {
-				await Filesystem.mkdir({
-					path: 'poems',
-					directory: Directory.Documents,
-					recursive: true
-				});
-			} catch (_) {
-				/* do nothing */
-			}
-			return false;
-		}
-	}
-
 	public static async getCacheRecord(uri: string) {
 		return (await this.getCachedPoems()).find((p) => p.id === uri);
 	}

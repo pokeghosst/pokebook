@@ -28,23 +28,12 @@ either version 3 of the License, or (at your option) any later version.
 */
 
 export interface FilesystemPlugin {
-	checkPermissions(): Promise<PermissionStatus>;
-	requestPermissions(): Promise<PermissionStatus>;
 	readFile(options: ReadFileOptions): Promise<ReadFileResult>;
 	writeFile(options: WriteFileOptions): Promise<WriteFileResult>;
-	appendFile(options: AppendFileOptions): Promise<void>;
 	deleteFile(options: DeleteFileOptions): Promise<void>;
-	mkdir(options: MkdirOptions): Promise<void>;
-	rmdir(options: RmdirOptions): Promise<void>;
 	readdir(options: ReaddirOptions): Promise<ReaddirResult>;
-	getUri(options: GetUriOptions): Promise<GetUriResult>;
 	stat(options: StatOptions): Promise<StatResult>;
 	rename(options: RenameOptions): Promise<void>;
-	copy(options: CopyOptions): Promise<CopyResult>;
-}
-
-export interface PermissionStatus {
-	publicStorage: PermissionState;
 }
 
 export enum Directory {
@@ -129,15 +118,6 @@ export interface ReaddirOptions {
 
 export interface ReaddirResult {
 	files: FileInfo[];
-}
-
-export interface GetUriOptions {
-	path: string;
-	directory: Directory;
-}
-
-export interface GetUriResult {
-	uri: string;
 }
 
 export interface StatOptions {

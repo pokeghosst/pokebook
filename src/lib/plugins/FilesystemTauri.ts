@@ -18,39 +18,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { invoke } from '$lib/util/tauri';
 import type {
-	AppendFileOptions,
-	CopyOptions,
-	CopyResult,
 	DeleteFileOptions,
 	FilesystemPlugin,
-	GetUriOptions,
-	GetUriResult,
-	MkdirOptions,
-	PermissionStatus,
 	ReaddirOptions,
 	ReaddirResult,
 	ReadFileOptions,
 	ReadFileResult,
 	RenameOptions,
-	RmdirOptions,
 	StatOptions,
 	StatResult,
 	WriteFileOptions,
 	WriteFileResult
 } from './FilesystemPlugin';
 
-/*
-	Unimplemented functions are not necessary for PokeBook and come from
-	Capacitor API since we rely on their implementation for web filesystem.
-	They will eventually be removed and the interface will be simplified
-*/
 export class FilesystemTauri implements FilesystemPlugin {
-	checkPermissions(): Promise<PermissionStatus> {
-		throw new Error('Method checkPermissions not implemented.');
-	}
-	requestPermissions(): Promise<PermissionStatus> {
-		throw new Error('Method requestPermissions not implemented.');
-	}
 	async readFile(options: ReadFileOptions): Promise<ReadFileResult> {
 		const buffer = await invoke<ArrayBuffer>('read_file', { path: options.path });
 		const decoded = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
@@ -68,17 +49,8 @@ export class FilesystemTauri implements FilesystemPlugin {
 
 		return { uri };
 	}
-	appendFile(_options: AppendFileOptions): Promise<void> {
-		throw new Error('Method appendFile not implemented.');
-	}
 	async deleteFile(options: DeleteFileOptions): Promise<void> {
 		await invoke<void>('delete_file', { path: options.path });
-	}
-	async mkdir(options: MkdirOptions): Promise<void> {
-		await invoke('mkdir', { path: options.path });
-	}
-	rmdir(_options: RmdirOptions): Promise<void> {
-		throw new Error('Method rmdir not implemented.');
 	}
 	async readdir(options: ReaddirOptions): Promise<ReaddirResult> {
 		const filesInDir = await invoke<{ name: string; ctime: number; uri: string }[]>('readdir', {
@@ -89,9 +61,6 @@ export class FilesystemTauri implements FilesystemPlugin {
 
 		return { files: filesInDir };
 	}
-	getUri(_options: GetUriOptions): Promise<GetUriResult> {
-		throw new Error('Method getUri not implemented.');
-	}
 	async stat(options: StatOptions): Promise<StatResult> {
 		const result = await invoke('is_file_exists', { path: options.path });
 
@@ -99,8 +68,5 @@ export class FilesystemTauri implements FilesystemPlugin {
 	}
 	async rename(options: RenameOptions): Promise<void> {
 		await invoke<void>('rename_file', { from: options.from, to: options.to });
-	}
-	copy(_options: CopyOptions): Promise<CopyResult> {
-		throw new Error('Method copy not implemented.');
 	}
 }
