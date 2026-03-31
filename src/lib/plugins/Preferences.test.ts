@@ -16,30 +16,69 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { describe, expect, it } from 'vitest';
+import fc from 'fast-check';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Preferences } from './Preferences';
 
 describe('preferences', () => {
-	it('sets to and gets from local storage', async () => {
-		const expected = 'bar';
-		await Preferences.set({ key: 'foo', value: expected });
+	beforeEach(() => {
+		localStorage.clear();
+	});
+	it('sets and gets from storage', async () => {
+		await Preferences.set({ key: 'foo', value: 'bar' });
 
 		const { value } = await Preferences.get({ key: 'foo' });
 
-		expect(value).toBe(expected);
+		expect(value).toBe('bar');
 	});
-	it('removes from local storage', async () => {
+	it('overrides value for same key', async () => {
+		await Preferences.set({ key: 'foo', value: 'bar' });
+		await Preferences.set({ key: 'foo', value: 'baz' });
+
+		const { value } = await Preferences.get({ key: 'foo' });
+
+		expect(value).toBe('baz');
+	});
+	it('sets and gets empty value', async () => {
+		await Preferences.set({ key: 'foo', value: '' });
+
+		const { value } = await Preferences.get({ key: 'foo' });
+
+		expect(value).toBe('');
+	});
+	it('handles unicode', async () => {
+		const pairs = [
+			{ key: 'foo', value: '世界' },
+			{ key: 'bar', value: '🌍' },
+			{ key: 'baz', value: 'émoji' }
+		];
+
+		for (const { key, value } of pairs) {
+			await Preferences.set({ key, value });
+
+			const { value: actual } = await Preferences.get({ key });
+			expect(actual).toBe(value);
+		}
+	});
+	it('returns null after removing key', async () => {
 		await Preferences.set({ key: 'foo', value: 'bar' });
 		await Preferences.remove({ key: 'foo' });
 
 		const { value } = await Preferences.get({ key: 'foo' });
 
-		expect(value).toBe(null);
+		expect(value).toBeNull();
 	});
-	it('clears local storage', async () => {
+	it('returns null for non-existing key', async () => {
+		const { value } = await Preferences.get({ key: 'foo' });
+		expect(value).toBeNull();
+	});
+	it('does not throw when removing a key that does not exist', async () => {
+		await expect(Preferences.remove({ key: 'foo' })).resolves.not.toThrow();
+	});
+	it('returns null for all keys after clear', async () => {
 		const dummies = [
 			{ key: 'foo', value: 'bar' },
-			{ key: 'baz', value: 'var' }
+			{ key: 'baz', value: 'xyf' }
 		];
 
 		for (const { key, value } of dummies) {
@@ -50,7 +89,22 @@ describe('preferences', () => {
 
 		for (const { key } of dummies) {
 			const { value: v } = await Preferences.get({ key });
-			expect(v).toBe(null);
+			expect(v).toBeNull();
 		}
+	});
+	it('does not throw when clearing an empty store', async () => {
+		await expect(Preferences.clear()).resolves.not.toThrow();
+	});
+	it('sets and gets arbitrary values correctly', async () => {
+		await fc.assert(
+			fc.asyncProperty(fc.string(), fc.string(), async (key, value) => {
+				localStorage.clear();
+
+				await Preferences.set({ key, value });
+				const { value: actual } = await Preferences.get({ key });
+
+				expect(actual).toBe(value);
+			})
+		);
 	});
 });
