@@ -16,24 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Infer } from './validation';
+import { vi } from 'vitest';
 
-export const manifestRecordSchema = {
-	id: 'string',
-	unsavedChanges: 'boolean',
-	poemSnippet: 'string'
-} as const;
+export const Directory = { Documents: 'DOCUMENTS' };
+export const Encoding = { UTF8: 'utf8' };
 
-export const poemMetaSchema = {
-	...manifestRecordSchema,
-	name: 'string',
-	timestamp: 'number'
-} as const;
-
-/*
-	This provides backwards compatibility for pre-autosave version.
-	Eventually unsavedChanges can be dropped completely.
-*/
-export type ManifestRecord = Omit<Infer<typeof manifestRecordSchema>, 'unsavedChanges'> &
-	Partial<Pick<Infer<typeof manifestRecordSchema>, 'unsavedChanges'>>;
-export type PoemMeta = Infer<typeof poemMetaSchema>;
+export const Filesystem = {
+	readFile: vi.fn(),
+	writeFile: vi.fn(),
+	deleteFile: vi.fn(),
+	readdir: vi.fn(),
+	rename: vi.fn()
+};
