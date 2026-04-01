@@ -24,15 +24,20 @@ vi.mock('../util/filesystem');
 import { Filesystem, Directory, Encoding } from '../plugins/Filesystem';
 import { isPathExists } from '../util/filesystem';
 import type { ManifestRecord } from '$lib/schema/manifest.schema';
-import { getManifestEntries, updateManifestEntry, writeToManifest } from './manifest.service';
+import {
+	deleteManifestEntry,
+	getManifestEntries,
+	updateManifestEntry,
+	writeToManifest
+} from './manifest.service';
 
 const MANIFEST_PATH = 'poems/poems_local.json';
 
-const manifestRecord1: ManifestRecord = {
+const entry1: ManifestRecord = {
 	id: '/DOCUMENTS/poems/Unnamed1_100.xml',
 	poemSnippet: 'Lorem ipsum dolor...'
 };
-const manifestRecord2: ManifestRecord = {
+const entry2: ManifestRecord = {
 	id: '/DOCUMENTS/poems/Unnamed2_100.xml',
 	poemSnippet: 'Gorpcore pabst cray, hammock...'
 };
@@ -45,12 +50,12 @@ describe('writeToManifest', () => {
 	it('should serialize the manifest and write it to file', async () => {
 		vi.mocked(Filesystem.writeFile).mockResolvedValue({ uri: MANIFEST_PATH });
 
-		await writeToManifest([manifestRecord1, manifestRecord2]);
+		await writeToManifest([entry1, entry2]);
 
 		expect(Filesystem.writeFile).toHaveBeenCalledWith(
 			expect.objectContaining({
 				path: MANIFEST_PATH,
-				data: JSON.stringify([manifestRecord1, manifestRecord2]),
+				data: JSON.stringify([entry1, entry2]),
 				directory: Directory.Documents,
 				encoding: Encoding.UTF8,
 				recursive: true
@@ -85,10 +90,10 @@ describe('getManifestEntries', () => {
 	it('should return parsed entries from well-formed manifest', async () => {
 		vi.mocked(isPathExists).mockResolvedValue(true);
 		vi.mocked(Filesystem.readFile).mockResolvedValue({
-			data: JSON.stringify([manifestRecord1, manifestRecord2])
+			data: JSON.stringify([entry1, entry2])
 		});
 
-		expect(await getManifestEntries()).toEqual([manifestRecord1, manifestRecord2]);
+		expect(await getManifestEntries()).toEqual([entry1, entry2]);
 	});
 });
 
@@ -100,14 +105,50 @@ describe('updateManifestEntry', () => {
 
 	it('should merge changes into existing record', async () => {
 		vi.mocked(Filesystem.readFile).mockResolvedValue({
-			data: JSON.stringify([manifestRecord1, manifestRecord2])
+			data: JSON.stringify([entry1, entry2])
 		});
 
-		await updateManifestEntry(manifestRecord1.id, { ...manifestRecord1, poemSnippet: 'foobar...' });
+		await updateManifestEntry(entry1.id, { ...entry1, poemSnippet: 'foobar...' });
 
 		expect(Filesystem.writeFile).toHaveBeenCalledWith(
 			expect.objectContaining({
-				data: JSON.stringify([{ ...manifestRecord1, poemSnippet: 'foobar...' }, manifestRecord2])
+				data: JSON.stringify([{ ...entry1, poemSnippet: 'foobar...' }, entry2])
+			})
+		);
+	});
+
+	it('should append new entry to manifest', async () => {
+		vi.mocked(Filesystem.readFile).mockResolvedValue({
+			data: JSON.stringify([entry1])
+		});
+
+		await updateManifestEntry(entry2.id, entry2);
+
+		expect(Filesystem.writeFile).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: JSON.stringify([entry1, entry2])
+			})
+		);
+	});
+});
+
+describe('deleteManifestEntry', () => {
+	it('should write manifest without deleted entry', async () => {
+		vi.mocked(isPathExists).mockResolvedValue(true);
+		vi.mocked(Filesystem.writeFile).mockResolvedValue({ uri: `/DOCUMENTS/${MANIFEST_PATH}` });
+		vi.mocked(Filesystem.readFile).mockResolvedValue({
+			data: JSON.stringify([entry1, entry2])
+		});
+
+		await deleteManifestEntry(entry1.id);
+
+		expect(Filesystem.writeFile).toHaveBeenCalledWith(
+			expect.objectContaining({
+				path: MANIFEST_PATH,
+				data: JSON.stringify([entry2]),
+				directory: Directory.Documents,
+				encoding: Encoding.UTF8,
+				recursive: true
 			})
 		);
 	});
