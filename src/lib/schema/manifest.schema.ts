@@ -36,4 +36,5 @@ export const poemMetaSchema = {
 */
 export type ManifestRecord = Omit<Infer<typeof manifestRecordSchema>, 'unsavedChanges'> &
 	Partial<Pick<Infer<typeof manifestRecordSchema>, 'unsavedChanges'>>;
-export type PoemMeta = Infer<typeof poemMetaSchema>;
+export type PoemMeta = Omit<Infer<typeof poemMetaSchema>, 'unsavedChanges'> &
+	Partial<Pick<Infer<typeof poemMetaSchema>, 'unsavedChanges'>>;
