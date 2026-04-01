@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { Filesystem } from '../plugins/Filesystem';
 import { Directory, Encoding } from '../plugins/FilesystemPlugin';
-import type { PoemMeta } from '../schema/manifest.schema';
+import type { ManifestRecord, PoemMeta } from '../schema/manifest.schema';
 import type { Poem } from '../schema/poem.schema';
 import { poemSchema } from '../schema/poem.schema';
 import { validate } from '../schema/validation';
@@ -38,7 +38,7 @@ export async function listPoems(): Promise<PoemMeta[]> {
 
 	const storedFiles = (await Filesystem.readdir({ path: 'poems', directory: Directory.Documents }))
 		.files;
-	const manifestEntries: PoemMeta[] = await getManifestEntries();
+	const manifestEntries: ManifestRecord[] = await getManifestEntries();
 
 	return storedFiles
 		.filter((file) => !file.name.includes('.json'))
