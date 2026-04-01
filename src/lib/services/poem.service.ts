@@ -83,7 +83,6 @@ export async function savePoem(poem: Poem, timestamp?: number): Promise<void> {
 
 	const savedPoemManifest = {
 		id: uri,
-		unsavedChanges: false,
 		poemSnippet: sliceSnippet(poem.text, SNIPPET_LENGTH)
 	};
 
@@ -108,7 +107,6 @@ export async function updatePoem(uri: string, poem: Poem): Promise<string> {
 
 	const newManifest = {
 		id: newUri,
-		unsavedChanges: false,
 		poemSnippet: sliceSnippet(poem.text, SNIPPET_LENGTH)
 	};
 
