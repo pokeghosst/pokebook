@@ -88,7 +88,7 @@ export async function savePoem(poem: Poem, timestamp?: number): Promise<void> {
 
 	const manifestEntries = await getManifestEntries();
 
-	writeToManifest([...manifestEntries, savedPoemManifest]);
+	await writeToManifest([...manifestEntries, savedPoemManifest]);
 }
 
 export async function updatePoem(uri: string, poem: Poem): Promise<string> {
