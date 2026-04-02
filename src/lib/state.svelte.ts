@@ -34,6 +34,7 @@ interface State {
 	notebook_font_size: number;
 	safe_to_close: boolean;
 	current_poem_uri: string;
+	latest_seen_version: string | null;
 
 	poem: Poem;
 }
@@ -77,3 +78,4 @@ export const font = usePreferences('notebook_font', 'halogen');
 export const fontSize = usePreferences('notebook_font_size', 16);
 export const safeToClose = usePreferences('safe_to_close', true);
 export const currentPoemUri = usePreferences('current_poem_uri', '');
+export const latestSeenVersion = usePreferences('latest_seen_version', null);

@@ -20,6 +20,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { closeModal } from 'svelte-modals';
 
 	import { t } from '$lib/translations';
+	import { CURRENT_VERSION } from '$lib/constants/version';
 
 	const socialPlatforms = [
 		{
@@ -54,7 +55,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="about-top">
 		<h1>Poke!Book</h1>
 		<small>"Mille-feuille"</small><br />
-		<small>{$t('about.version')} 3.2</small>
+		<small>{$t('about.version')} {CURRENT_VERSION}</small>
 	</div>
 	<ul class="about-links">
 		{#each socialPlatforms as platform}

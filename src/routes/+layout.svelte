@@ -23,14 +23,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		nightTheme,
 		sidebarOpen,
 		themeMode,
-		safeToClose
+		safeToClose,
+		latestSeenVersion
 	} from '$lib/state.svelte';
 	import { loadTranslations } from '$lib/translations';
 	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal } from 'svelte-modals';
+	import { Modals, closeModal, openModal } from 'svelte-modals';
 	import { createBubbler } from 'svelte/legacy';
 	import Header from '../components/Header.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
+	import { onMount } from 'svelte';
+	import Modal from '../components/Modal.svelte';
+	import NewVersionModal from '../components/NewVersionModal.svelte';
+	import { CURRENT_VERSION } from '$lib/constants/version';
 
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -45,6 +50,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	$effect(() => {
 		(themeMode.value, dayTheme.value, nightTheme.value, updateTheme());
+	});
+
+	onMount(() => {
+		if (latestSeenVersion.value !== CURRENT_VERSION) {
+			if (latestSeenVersion.value) {
+				openModal(Modal, { content: NewVersionModal });
+			}
+			latestSeenVersion.value = CURRENT_VERSION;
+		}
 	});
 
 	function updateTheme() {
