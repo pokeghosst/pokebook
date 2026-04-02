@@ -18,9 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import type { OnlyPoem } from '$lib/schema/poem.schema';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+	import { fontSize, justification, pokehelp } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { getContext, onMount } from 'svelte';
@@ -37,16 +35,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	// Overlays
 	let stats: Record<string, string | number> = $derived(countStats(poem.text));
 	let syllableCounts: number[] = $derived(
-		syllable && $isPokehelpActive === 'true' ? lines.map((line) => syllable!(line)) : []
+		syllable && pokehelp.value ? lines.map((line) => syllable!(line)) : []
 	);
 
 	$effect(() => {
-		if ($isPokehelpActive === 'true' && !syllable) {
+		if (pokehelp.value && !syllable) {
 			import('syllable').then(({ syllable: _syllable }) => {
 				syllable = _syllable;
 			});
-		} else {
-			syllable = null;
 		}
 	});
 
@@ -120,7 +116,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
-		{#if $isPokehelpActive === 'true'}
+		{#if pokehelp.value}
 			<div class="poem-stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
@@ -135,11 +131,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<textarea
 			value={poem.text}
 			oninput={handleTextChange}
-			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
-				? 'l-padded-for-pokehelp'
-				: ''}"
+			class="paper {justification.value} {pokehelp.value ? 'l-padded-for-pokehelp' : ''}"
 			id="poem-textarea"
-			style={`font-size: ${$writingPadFontSize}px`}
+			style={`font-size: ${fontSize.value}px`}
 			bind:this={poemTextarea}
 		></textarea>
 	</div>

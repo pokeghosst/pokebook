@@ -19,21 +19,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { sharePoem } from '$lib/actions/sharePoem';
-	import appState from '$lib/AppState.svelte';
 	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
 	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
-	import {
-		currentPoemBody,
-		currentPoemName,
-		currentPoemNote,
-		currentPoemUri
-	} from '$lib/stores/currentPoem';
-	import { discardFunction, saveFunction } from '$lib/stores/poemFunctionsStore';
+	import { safeToClose, currentPoemUri } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { debounceWithState } from '$lib/util';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-	import Save from 'lucide-svelte/icons/save';
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import { onMount, setContext } from 'svelte';
@@ -57,7 +49,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	onMount(async () => {
 		try {
-			const { name: name_, text: text_, note: note_ } = await getPoem($currentPoemUri);
+			const { name: name_, text: text_, note: note_ } = await getPoem(currentPoemUri.value);
 
 			poem.name = name_;
 			poem.text = text_;
@@ -76,7 +68,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	async function handleNameChange(e: InputChangeEvent<HTMLInputElement>) {
 		poem.name = e.currentTarget.value;
 
-		$currentPoemUri = await updatePoem($currentPoemUri, {
+		currentPoemUri.value = await updatePoem(currentPoemUri.value, {
 			name: poem.name.trim().length === 0 ? 'Unnamed' : poem.name,
 			text: poem.text,
 			...note
@@ -85,45 +77,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	function handleTextChange(e: InputChangeEvent<HTMLTextAreaElement>) {
 		poem.text = e.currentTarget.value;
-		appState.value = { safeToClose: false };
+		safeToClose.value = false;
 
-		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+		updatePoemDebounce(currentPoemUri.value, { ...poem, ...note })
 			.catch((error) => console.error('Save failed:', error))
 			.finally(() => {
-				appState.value = { safeToClose: true };
+				safeToClose.value = true;
 			});
 	}
 
 	function handleNoteChange(e: InputChangeEvent<HTMLInputElement>) {
 		note.note = e.currentTarget.value;
-		appState.value = { safeToClose: false };
+		safeToClose.value = false;
 
-		updatePoemDebounce($currentPoemUri, { ...poem, ...note })
+		updatePoemDebounce(currentPoemUri.value, { ...poem, ...note })
 			.catch((error) => console.error('Save failed:', error))
 			.finally(() => {
-				appState.value = { safeToClose: true };
+				safeToClose.value = true;
 			});
 	}
-
-	// TODO: Temporary solution until the new version of `svelte-french-toast` with props is published
-	$saveFunction = async () => {
-		await toast.promise(
-			save(),
-			{
-				loading: `${$t('toasts.savingPoem')}`,
-				success: `${$t('toasts.poemSaved')}`,
-				error: `${$t('errors.poemSaveError')}`
-			},
-			{
-				position: GLOBAL_TOAST_POSITION,
-				style: GLOBAL_TOAST_STYLE
-			}
-		);
-	};
-	$discardFunction = async () => {
-		await deletePoem(`${$currentPoemUri}.tmp`);
-		goto('/stash', { replaceState: false });
-	};
 
 	const deletePoemAction = async () => {
 		if (confirm(`${$t('toasts.forgetConfirm')}`)) {
@@ -142,36 +114,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	};
 
-	async function save() {
-		$currentPoemUri = await updatePoem($currentPoemUri, {
-			name: $currentPoemName,
-			text: $currentPoemBody,
-			note: $currentPoemNote
-		});
-
-		await deleteTmpFile($currentPoemUri);
-	}
-
 	async function deletePoemHandler() {
-		await deletePoem($currentPoemUri);
-		await deleteTmpFile($currentPoemUri);
-		clearCurrentPoemStorage();
+		await deletePoem(currentPoemUri.value);
+		await deleteTmpFile(currentPoemUri.value);
+		currentPoemUri.value = '';
+
 		await goto('/stash', { invalidateAll: true });
 	}
 
 	let actions = [
 		{
 			icon: Share2,
-			action: () =>
-				sharePoem($currentPoemName, $currentPoemBody, $t('toasts.poemCopiedToClipboard')),
+			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
 			label: $t('workspace.sharePoem')
 		},
 		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
 	];
-
-	function clearCurrentPoemStorage() {
-		$currentPoemBody = $currentPoemName = $currentPoemNote = $currentPoemUri = '';
-	}
 
 	async function deleteTmpFile(fileUri: string) {
 		try {

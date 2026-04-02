@@ -18,8 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { padFonts } from '$lib/constants/PadFonts';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { justification, font } from '$lib/state.svelte';
 	import type { ToolbarItem } from '$lib/types';
 	import { ChevronDown } from 'lucide-svelte';
 	import AlignCenter from 'lucide-svelte/icons/align-center';
@@ -37,26 +36,26 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="toolbar-menu">
 	<div class="button-group">
 		<button
-			onclick={() => ($poemPadJustification = 'left')}
-			class={`button ${$poemPadJustification === 'left' ? 'active' : ''}`}
+			onclick={() => (justification.value = 'left')}
+			class={`button ${justification.value === 'left' ? 'active' : ''}`}
 		>
 			<AlignLeft />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'center')}
-			class={`button ${$poemPadJustification === 'center' ? 'active' : ''}`}
+			onclick={() => (justification.value = 'center')}
+			class={`button ${justification.value === 'center' ? 'active' : ''}`}
 		>
 			<AlignCenter />
 		</button>
 		<button
-			onclick={() => ($poemPadJustification = 'right')}
-			class={`button ${$poemPadJustification === 'right' ? 'active' : ''}`}
+			onclick={() => (justification.value = 'right')}
+			class={`button ${justification.value === 'right' ? 'active' : ''}`}
 		>
 			<AlignRight />
 		</button>
 	</div>
 	<div class="settings-select">
-		<select bind:value={$writingPadFont} style="margin: 0; min-width: 130px;">
+		<select bind:value={font.value} style="margin: 0; min-width: 130px;">
 			{#each padFonts as option}
 				<option value={option.value}>
 					{option.label}

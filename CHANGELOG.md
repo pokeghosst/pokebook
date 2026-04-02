@@ -12,6 +12,7 @@
 - Language selection not persisted
 - Hide PokeHelp toggle when language other than English is selected
 - Show date format according to locale
+- Incorrect contents when sharing
 
 ## [v3.2] - 2026-03-07
 

@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { resolve } from '$app/paths';
 	import type { PoemMeta } from '$lib/schema/manifest.schema';
 	import { listPoems } from '$lib/services/poem.service';
-	import { currentPoemUri } from '$lib/stores/currentPoem';
+	import { currentPoemUri } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import { onMount } from 'svelte';
 
@@ -42,7 +42,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	async function goToPoem(poemUri: string) {
-		$currentPoemUri = poemUri;
+		currentPoemUri.value = poemUri;
 		await goto(resolve('/stash/poem'));
 	}
 </script>

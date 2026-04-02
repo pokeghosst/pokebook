@@ -17,9 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { activeLanguage } from '$lib/stores/activeLanguage';
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
+	import { activeLanguage, sidebarOpen, pokehelp } from '$lib/state.svelte';
 	import hotkeys from 'hotkeys-js';
 	import Menu from 'lucide-svelte/icons/menu';
 	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
@@ -45,11 +43,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	});
 
 	function togglePokeHelp() {
-		$isPokehelpActive === 'true' ? ($isPokehelpActive = 'false') : ($isPokehelpActive = 'true');
+		pokehelp.value = !pokehelp.value;
 	}
 
 	function toggleSidebar() {
-		$isSidebarOpen === 'true' ? ($isSidebarOpen = 'false') : ($isSidebarOpen = 'true');
+		sidebarOpen.value = !sidebarOpen.value;
 	}
 </script>
 
@@ -57,7 +55,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<button onclick={toggleSidebar}>
 		<Menu />
 	</button>
-	{#if $activeLanguage === 'en'}
+	{#if activeLanguage.value === 'en'}
 		<div class="header-icons">
 			<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
 		</div>
