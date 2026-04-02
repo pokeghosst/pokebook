@@ -17,10 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { closeModal } from 'svelte-modals';
-
-	import { t } from '$lib/translations';
 	import { CURRENT_VERSION } from '$lib/constants/version';
+	import { t } from '$lib/translations';
 
 	const socialPlatforms = [
 		{
@@ -49,6 +47,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			handle: 'Buy Me a Coffee'
 		}
 	];
+
+	const { close } = $props();
 </script>
 
 <div class="modal-about">
@@ -69,8 +69,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</ul>
 	<div class="about-bottom">
 		<p>
-			<a href="/privacy" onclick={closeModal}>{$t('about.privacy')}</a>
-			| <a href="/terms" onclick={closeModal}>{$t('about.terms')}</a>
+			<a href="/privacy" onclick={close}>{$t('about.privacy')}</a>
+			| <a href="/terms" onclick={close}>{$t('about.terms')}</a>
 		</p>
 		<p>© {new Date().getFullYear()} Pokeghost</p>
 	</div>

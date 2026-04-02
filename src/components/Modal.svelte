@@ -17,19 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type { ComponentType } from 'svelte';
-
-	import { closeModal } from 'svelte-modals';
-
 	import X from 'lucide-svelte/icons/x';
 
-	interface Props {
-		isOpen?: boolean;
-		title?: string | null;
-		content: ComponentType;
-	}
-
-	let { isOpen = false, title = null, content }: Props = $props();
+	const { isOpen, close, title, content } = $props();
 </script>
 
 {#if isOpen}
@@ -40,7 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				<div class="modal-title">{title}</div>
 			{/if}
 			<div class="modal-title-side">
-				<button onclick={closeModal}><X /></button>
+				<button onclick={close}><X /></button>
 			</div>
 		</div>
 		<div class="modal-content">

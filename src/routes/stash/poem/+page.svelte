@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { sharePoem } from '$lib/actions/sharePoem';
 	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
 	import { deletePoem, getPoem, updatePoem } from '$lib/services/poem.service';
-	import { safeToClose, currentPoemUri } from '$lib/state.svelte';
+	import { currentPoemUri, safeToClose } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { debounceWithState } from '$lib/util';
@@ -29,7 +29,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Share2 from 'lucide-svelte/icons/share-2';
 	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import { onMount, setContext } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import toast from 'svelte-5-french-toast';
 	import Workspace from '../../../components/Workspace.svelte';
 
 	let thinking = $state(true);

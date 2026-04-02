@@ -17,25 +17,25 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
+	import { CURRENT_VERSION } from '$lib/constants/version';
 	import {
 		activeLanguage,
 		dayTheme,
+		latestSeenVersion,
 		nightTheme,
-		sidebarOpen,
-		themeMode,
 		safeToClose,
-		latestSeenVersion
+		sidebarOpen,
+		themeMode
 	} from '$lib/state.svelte';
 	import { loadTranslations } from '$lib/translations';
-	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal, openModal } from 'svelte-modals';
+	import { onMount } from 'svelte';
+	import { Toaster } from 'svelte-5-french-toast';
+	import { modals, Modals } from 'svelte-modals';
 	import { createBubbler } from 'svelte/legacy';
 	import Header from '../components/Header.svelte';
-	import Sidebar from '../components/Sidebar.svelte';
-	import { onMount } from 'svelte';
 	import Modal from '../components/Modal.svelte';
 	import NewVersionModal from '../components/NewVersionModal.svelte';
-	import { CURRENT_VERSION } from '$lib/constants/version';
+	import Sidebar from '../components/Sidebar.svelte';
 
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -55,7 +55,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	onMount(() => {
 		if (latestSeenVersion.value !== CURRENT_VERSION) {
 			if (latestSeenVersion.value) {
-				openModal(Modal, { content: NewVersionModal });
+				modals.open(Modal, { content: NewVersionModal });
 			}
 			latestSeenVersion.value = CURRENT_VERSION;
 		}
@@ -102,10 +102,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 />
 
 <Modals>
-	{#snippet backdrop()}
+	{#snippet backdrop({ close })}
 		<div
 			class="backdrop"
-			onclick={closeModal}
+			onclick={() => close()}
 			onkeydown={bubble('keydown')}
 			role="button"
 			tabindex="0"

@@ -1,5 +1,5 @@
 import { Share } from '$lib/plugins/Share';
-import toast from 'svelte-french-toast';
+import toast from 'svelte-5-french-toast';
 
 import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 

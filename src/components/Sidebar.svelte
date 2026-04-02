@@ -17,15 +17,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run, createBubbler } from 'svelte/legacy';
-	const bubble = createBubbler();
-	import { openModal } from 'svelte-modals';
+	import { navMenuItems } from '$lib/constants/NavMenuItems';
 	import { sidebarOpen } from '$lib/state.svelte';
+	import { t } from '$lib/translations';
+	import { modals } from 'svelte-modals';
+	import { createBubbler, run } from 'svelte/legacy';
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
-	import { navMenuItems } from '$lib/constants/NavMenuItems';
-	import { t } from '$lib/translations';
+
+	const bubble = createBubbler();
 
 	function handleSidebarItemClick() {
 		if (window.innerWidth < 1024) {
@@ -61,12 +62,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 		<div class="sidebar-footer">
 			<button
-				onclick={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				onclick={() =>
+					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
 				<li>
-					<button onclick={() => openModal(Modal, { content: AboutModal })}
+					<button onclick={() => modals.open(Modal, { content: AboutModal })}
 						>{$t('menu.about')}</button
 					>
 				</li>
