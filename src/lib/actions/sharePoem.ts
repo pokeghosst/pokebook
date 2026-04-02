@@ -10,7 +10,7 @@ export async function sharePoem(poemName: string, poemBody: string, toastMessage
 			title: `PokeBook | ${poemName}`,
 			dialogTitle: `PokeBook | ${poemName}`,
 			text: poemTextToShare,
-			url: 'https://book3.pokeghost.org'
+			url: 'https://book.pokeghost.org'
 		});
 	else {
 		navigator.clipboard.writeText(poemTextToShare);
