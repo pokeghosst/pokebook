@@ -39,8 +39,8 @@ PokeBook is configured with `@sveltejs/adapter-auto` so it should be easily depl
 Environment for local development can be quickly spun up by doing the following:
 
 ```sh
-bun i
-bun dev
+npm i
+npm run dev
 ```
 
 # Developing desktop/mobile app

@@ -36,16 +36,10 @@ export class FilesystemTauri implements FilesystemPlugin {
 		const buffer = await invoke<ArrayBuffer>('read_file', { path: options.path });
 		const decoded = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
 
-		console.log('read file... ', decoded);
-
 		return { data: decoded };
 	}
 	async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
-		console.log('writing file Tauri...');
-
 		const uri = await invoke<string>('write_file', { path: options.path, data: options.data });
-
-		console.log('writeFile uri... ', uri);
 
 		return { uri };
 	}
@@ -56,8 +50,6 @@ export class FilesystemTauri implements FilesystemPlugin {
 		const filesInDir = await invoke<{ name: string; ctime: number; uri: string }[]>('readdir', {
 			path: options.path
 		});
-
-		console.log('filesInDir', filesInDir);
 
 		return { files: filesInDir };
 	}

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 use serde::Serialize;
-use std::fs::{self, File};
+use std::fs::{self, File, Metadata};
 use std::io::prelude::*;
 use std::path::Path;
 use std::path::PathBuf;
@@ -27,9 +27,19 @@ use tauri::AppHandle;
 use tauri::Manager;
 
 #[derive(Serialize)]
-pub struct FileEntry {
+enum EntryType {
+    #[serde(rename = "directory")]
+    Directory,
+    #[serde(rename = "file")]
+    File,
+}
+
+#[derive(Serialize)]
+pub struct FileInfo {
     pub name: String,
+    pub ftype: EntryType,
     pub ctime: u128,
+    pub mtime: u128,
     pub uri: String,
 }
 
@@ -75,12 +85,37 @@ pub fn is_file_exists(app: AppHandle, path: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
+pub fn stat(app: AppHandle, path: String) -> Result<FileInfo, String> {
+    let file_path = get_file_path(&app, path)?;
+    let p = Path::new(&file_path);
+
+    let meta = fs::metadata(p).map_err(|e| e.to_string())?;
+
+    Ok(FileInfo {
+        name: p
+            .file_name()
+            .ok_or_else(|| "Invalid file name".to_string())?
+            .to_string_lossy()
+            .into_owned(),
+        ftype: if meta.is_dir() {
+            EntryType::Directory
+        } else {
+            EntryType::File
+        },
+        ctime: get_ctime_ms(&meta)?,
+        mtime: get_mtime_ms(&meta)?,
+        // Can be a problem with uri being different, check what Capacitor actually returns
+        uri: p.to_string_lossy().into_owned(),
+    })
+}
+
+#[tauri::command]
 pub fn mkdir(path: String) -> Result<(), String> {
     fs::create_dir(path).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileEntry>, String> {
+pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileInfo>, String> {
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     let dir_path = app_dir.join(&path);
 
@@ -89,20 +124,20 @@ pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileEntry>, String> {
 
     for entry in entries {
         let entry = entry.map_err(|e| e.to_string())?;
-        let metadata = entry.metadata().map_err(|e| e.to_string())?;
+        let meta = entry.metadata().map_err(|e| e.to_string())?;
 
         let name = entry.file_name().to_string_lossy().into_owned();
         let full_path = entry.path().to_string_lossy().into_owned();
-        let ctime = metadata
-            .created()
-            .map_err(|e| e.to_string())?
-            .duration_since(UNIX_EPOCH)
-            .map_err(|e| e.to_string())?
-            .as_millis();
 
-        files.push(FileEntry {
+        files.push(FileInfo {
             name,
-            ctime,
+            ftype: if meta.is_dir() {
+                EntryType::Directory
+            } else {
+                EntryType::File
+            },
+            ctime: get_ctime_ms(&meta)?,
+            mtime: get_mtime_ms(&meta)?,
             uri: full_path,
         });
     }
@@ -121,4 +156,22 @@ fn get_file_path(app: &AppHandle, path: String) -> Result<PathBuf, String> {
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
 
     Ok(app_dir.join(path))
+}
+
+fn get_ctime_ms(meta: &Metadata) -> Result<u128, String> {
+    Ok(meta
+        .created()
+        .map_err(|e| e.to_string())?
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| e.to_string())?
+        .as_millis())
+}
+
+fn get_mtime_ms(meta: &Metadata) -> Result<u128, String> {
+    Ok(meta
+        .modified()
+        .map_err(|e| e.to_string())?
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| e.to_string())?
+        .as_millis())
 }

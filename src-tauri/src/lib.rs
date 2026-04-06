@@ -33,7 +33,8 @@ pub fn run() {
             filesystem::rename_file,
             filesystem::delete_file,
             filesystem::mkdir,
-            filesystem::readdir
+            filesystem::readdir,
+            filesystem::stat
         ])
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
