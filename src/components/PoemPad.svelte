@@ -100,8 +100,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 {#snippet syllableLine(syllableCount: number, line: string)}
-	<span class="poem-syllable-count">{syllableCount}</span>
-	<span style="color: transparent; margin-left: 5px">${line}</span>
+	<span class="poem-syllable-count">{syllableCount || ''}</span>
+	<span style="color: transparent; font-size: {fontSize.value}px; margin-left: 24px;">{line}</span>
 	<br />
 {/snippet}
 
@@ -133,7 +133,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			oninput={handleTextChange}
 			class="paper {justification.value} {pokehelp.value ? 'l-padded-for-pokehelp' : ''}"
 			id="poem-textarea"
-			style={`font-size: ${fontSize.value}px`}
+			style="font-size: {fontSize.value}px"
 			bind:this={poemTextarea}
 		></textarea>
 	</div>
