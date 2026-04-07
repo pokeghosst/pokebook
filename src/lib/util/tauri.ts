@@ -29,3 +29,21 @@ export async function invoke<T = unknown>(
 ): Promise<T> {
 	return window.__TAURI_INTERNALS__.invoke<T>(cmd, args, options);
 }
+
+/*
+	On Tauri side, we return Result<T, E> where E is always String.
+	This function turns error strings into proper Error objects to
+	stay Capacitor-compatible and allow consumers to predictably
+	handle these errors.
+*/
+export async function invokeWithThrow<T>(
+	cmd: string,
+	args: Record<string, unknown> = {},
+	options?: InvokeOptions
+): Promise<T> {
+	try {
+		return await invoke<T>(cmd, args, options);
+	} catch (e: unknown) {
+		throw new Error(String(e));
+	}
+}

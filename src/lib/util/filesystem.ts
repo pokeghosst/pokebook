@@ -33,6 +33,7 @@ export async function isPathExists(path: string): Promise<boolean> {
 			throw e;
 		}
 
+		console.error(e);
 		throw new Error('errors.unknown');
 	}
 }
