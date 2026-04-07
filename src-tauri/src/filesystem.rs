@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 use serde::Serialize;
 use std::fs::{self, File, Metadata};
 use std::io::prelude::*;
+use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::UNIX_EPOCH;
@@ -27,7 +28,7 @@ use tauri::AppHandle;
 use tauri::Manager;
 
 #[derive(Serialize)]
-enum EntryType {
+pub enum EntryType {
     #[serde(rename = "directory")]
     Directory,
     #[serde(rename = "file")]
@@ -37,7 +38,9 @@ enum EntryType {
 #[derive(Serialize)]
 pub struct FileInfo {
     pub name: String,
+    #[serde(rename = "type")]
     pub ftype: EntryType,
+    pub size: u64,
     pub ctime: u128,
     pub mtime: u128,
     pub uri: String,
@@ -89,6 +92,10 @@ pub fn stat(app: AppHandle, path: String) -> Result<FileInfo, String> {
     let file_path = get_file_path(&app, path)?;
     let p = Path::new(&file_path);
 
+    if !p.exists() {
+        return Err("Entry does not exist.".to_string());
+    }
+
     let meta = fs::metadata(p).map_err(|e| e.to_string())?;
 
     Ok(FileInfo {
@@ -102,6 +109,7 @@ pub fn stat(app: AppHandle, path: String) -> Result<FileInfo, String> {
         } else {
             EntryType::File
         },
+        size: meta.size(),
         ctime: get_ctime_ms(&meta)?,
         mtime: get_mtime_ms(&meta)?,
         // Can be a problem with uri being different, check what Capacitor actually returns
@@ -136,6 +144,7 @@ pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileInfo>, String> {
             } else {
                 EntryType::File
             },
+            size: meta.size(),
             ctime: get_ctime_ms(&meta)?,
             mtime: get_mtime_ms(&meta)?,
             uri: full_path,
