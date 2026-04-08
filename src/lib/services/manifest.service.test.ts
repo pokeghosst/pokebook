@@ -16,20 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-
-vi.mock('../plugins/Filesystem');
-vi.mock('../util/filesystem');
-
-import { Filesystem, Directory, Encoding } from '../plugins/Filesystem';
-import { isPathExists } from '../util/filesystem';
 import type { ManifestRecord } from '$lib/schema/manifest.schema';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Directory, Encoding, Filesystem } from '../plugins/Filesystem';
+import { isPathExists } from '../util/filesystem';
 import {
 	deleteManifestEntry,
 	getManifestEntries,
 	updateManifestEntry,
 	writeToManifest
 } from './manifest.service';
+
+vi.mock('../plugins/Filesystem');
+vi.mock('../util/filesystem');
 
 const MANIFEST_PATH = 'poems/poems_local.json';
 
