@@ -1,16 +1,14 @@
 import { Share } from '$lib/plugins/Share';
+import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 import toast from 'svelte-5-french-toast';
 
-import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
-
 export async function sharePoem(poemName: string, poemBody: string, toastMessage: string) {
-	const poemTextToShare = `${poemName}\n\n${poemBody}\n`;
+	const poemTextToShare = poemName + '\n\n' + poemBody;
+
 	if ((await Share.canShare()).value)
 		await Share.share({
 			title: `PokeBook | ${poemName}`,
-			dialogTitle: `PokeBook | ${poemName}`,
-			text: poemTextToShare,
-			url: 'https://book.pokeghost.org'
+			text: poemTextToShare
 		});
 	else {
 		navigator.clipboard.writeText(poemTextToShare);
