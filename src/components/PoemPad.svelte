@@ -99,10 +99,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
+<!-- TODO: https://codeberg.org/psuite/pokebook/issues/81 -->
 {#snippet syllableLine(syllableCount: number, line: string)}
-	<span class="poem-syllable-count">{syllableCount || ''}</span>
-	<span style="color: transparent; font-size: {fontSize.value}px; margin-left: 24px;">{line}</span>
-	<br />
+	<div style="font-size: {fontSize.value}px; padding: 0; margin-top: 0; margin-bottom: 0">
+		<span class="poem-syllable-count" style="margin-left: 12px">{syllableCount || ''}</span
+		>{#if line}<span style="color: transparent">{line}</span>{:else}<br />{/if}
+	</div>
 {/snippet}
 
 <div class="notebook" id="poem-notebook">
@@ -126,6 +128,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				{#each lines as line, i (`syllable-line-${i}`)}
 					{@render syllableLine(syllableCounts[i], line)}
 				{/each}
+				<!-- <div style="color: red; font-size: {fontSize.value}px;">{@html poem.text.split("\n").map((line, i) => `<span style="position: absolute; left: 0;">${syllableCounts[i]}</span>` + line).join("\n")}</div> -->
+				<!-- <div style="color: red; font-size: {fontSize.value}px;">{poem.text}</div> -->
 			</div>
 		{/if}
 		<textarea
