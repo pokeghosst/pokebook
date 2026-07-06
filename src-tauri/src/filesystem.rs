@@ -19,7 +19,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 use serde::Serialize;
 use std::fs::{self, File, Metadata};
 use std::io::prelude::*;
-use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::UNIX_EPOCH;
@@ -109,7 +108,7 @@ pub fn stat(app: AppHandle, path: String) -> Result<FileInfo, String> {
         } else {
             EntryType::File
         },
-        size: meta.size(),
+        size: meta.len(),
         ctime: get_ctime_ms(&meta)?,
         mtime: get_mtime_ms(&meta)?,
         // Can be a problem with uri being different, check what Capacitor actually returns
@@ -144,7 +143,7 @@ pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileInfo>, String> {
             } else {
                 EntryType::File
             },
-            size: meta.size(),
+            size: meta.len(),
             ctime: get_ctime_ms(&meta)?,
             mtime: get_mtime_ms(&meta)?,
             uri: full_path,
