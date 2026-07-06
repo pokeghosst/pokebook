@@ -11,5 +11,10 @@ export default defineConfig({
 			promiseImportName: (i) => `__tla_${i}`
 		}),
 		devtoolsJson()
-	]
+	],
+	server: {
+		watch: {
+			ignored: ['**/src-tauri/**']
+		}
+	}
 });
