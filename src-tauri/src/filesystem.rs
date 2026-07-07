@@ -26,6 +26,8 @@ use tauri::ipc::Response;
 use tauri::AppHandle;
 use tauri::Manager;
 
+const FOLDER_NAME: &str = "PokeBook";
+
 #[derive(Serialize)]
 pub enum EntryType {
     #[serde(rename = "directory")]
@@ -123,7 +125,7 @@ pub fn mkdir(path: String) -> Result<(), String> {
 
 #[tauri::command]
 pub fn readdir(app: AppHandle, path: String) -> Result<Vec<FileInfo>, String> {
-    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    let app_dir = app.path().document_dir().map_err(|e| e.to_string())?.join(FOLDER_NAME);
     let dir_path = app_dir.join(&path);
 
     let entries = fs::read_dir(&dir_path).map_err(|e| e.to_string())?;
@@ -161,7 +163,7 @@ pub fn rename_file(app: AppHandle, from: String, to: String) -> Result<(), Strin
 }
 
 fn get_file_path(app: &AppHandle, path: String) -> Result<PathBuf, String> {
-    let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
+    let app_dir = app.path().document_dir().map_err(|e| e.to_string())?.join(FOLDER_NAME);
 
     Ok(app_dir.join(path))
 }
