@@ -63,11 +63,14 @@ export async function listPoems(): Promise<PoemMeta[]> {
 
 export async function getPoem(uri: string): Promise<Poem> {
 	const file = await Filesystem.readFile({ path: uri, encoding: Encoding.UTF8 });
-	const parsedFile = new XMLParser().parse(file.data.toString());
+	const parsedFile = new XMLParser(
+		{ parseTagValue: false } /* Leave number-only tag values as strings */
+	).parse(file.data.toString());
 
 	if (validate(parsedFile, poemSchema)) {
 		return parsedFile;
 	} else {
+		// TODO: Localization
 		throw new Error('The file is not a poem.');
 	}
 }

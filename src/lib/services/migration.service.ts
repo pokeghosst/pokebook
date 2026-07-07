@@ -86,7 +86,9 @@ export async function importPoems(event: SubmitEvent) {
 		const contents = await entry.getData(textWriter);
 		try {
 			return {
-				contents: new XMLParser().parse(contents) as Poem,
+				contents: new XMLParser(
+					{ parseTagValue: false } /* Leave number-only tag values as strings */
+				).parse(contents) as Poem,
 				timestamp: Number.isNaN(timestamp) ? Date.now() : timestamp
 			};
 		} catch (e) {
