@@ -55,14 +55,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			poem.text = text_;
 			note.note = note_;
 		} catch (e) {
-			if (e instanceof Error) {
-				toast.error($t(e.message), {
-					position: GLOBAL_TOAST_POSITION,
-					style: GLOBAL_TOAST_STYLE
-				});
-			}
+			toast.error($t(e instanceof Error ? e.message : 'errors.unknown'), {
+				position: GLOBAL_TOAST_POSITION,
+				style: GLOBAL_TOAST_STYLE
+			});
+			goto('/stash');
+		} finally {
+			thinking = false;
 		}
-		thinking = false;
 	});
 
 	async function handleNameChange(e: InputChangeEvent<HTMLInputElement>) {
