@@ -2,6 +2,11 @@
 
 ## [v3.3] - UNRELEASED
 
+### Added
+
+- Desktop version
+- Modal dialog with changelog
+
 ### Fixed
 
 - Broken panel swapping
