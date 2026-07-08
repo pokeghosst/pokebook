@@ -26,10 +26,13 @@
 	"bundle": {
 		"active": true,
 		"targets": "all",
+		"licenseFile": "../COPYING",
 		"windows": {
 			"nsis": {
 				"installerIcon": "icons/icon.ico",
-        "sidebarImage": "icons/banner.bmp"
+				"sidebarImage": "icons/banner.bmp",
+				"languages": ["English", "Spanish", "Russian"],
+				"displayLanguageSelector": true
 			}
 		},
 		"icon": [
@@ -39,8 +42,8 @@
 			"icons/icon.icns",
 			"icons/icon.ico"
 		],
-    "resources": [
-      "../COPYING"
-    ]
+		"resources": {
+			"../COPYING": "COPYING.txt"
+		}
 	}
 }
