@@ -65,8 +65,8 @@ export async function importPoems(event: SubmitEvent) {
 	const fileInput = target.poemArchive as HTMLInputElement;
 	const file: File | undefined = fileInput.files?.[0];
 
-	if (!file || !file.type.startsWith('application/zip')) {
-		// TODO: Toast here
+	if (!file || !['application/zip', 'application/x-zip-compressed'].includes(file.type)) {
+		// TODO: Toast here, localization
 		alert('Please select a zip file');
 		return;
 	}
