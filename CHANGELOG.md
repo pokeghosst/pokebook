@@ -18,6 +18,8 @@
 - Hide PokeHelp toggle when language other than English is selected
 - Show date format according to locale
 - Incorrect contents when sharing
+- Auto hide scroll in toolbar
+- Disable parsing tag value with strnum package when constructing XMLParser
 
 ## [v3.2] - 2026-03-07
 
