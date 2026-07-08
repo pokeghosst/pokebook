@@ -48,6 +48,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	const updatePoemDebounce = debounceWithState(updatePoem, 400);
 
 	onMount(async () => {
+		await currentPoemUri.ready;
 		try {
 			const { name: name_, text: text_, note: note_ } = await getPoem(currentPoemUri.value);
 

@@ -50,7 +50,7 @@ function safeParse<T>(value: string) {
 function usePreferences<K extends keyof State>(key: K, defaultValue: State[K]) {
 	let value = $state<State[K]>(defaultValue);
 
-	Preferences.get({ key }).then(({ value: stored }) => {
+	const ready = Preferences.get({ key }).then(({ value: stored }) => {
 		if (stored !== null) value = safeParse(stored);
 	});
 
@@ -61,7 +61,8 @@ function usePreferences<K extends keyof State>(key: K, defaultValue: State[K]) {
 		set value(v: State[K]) {
 			value = v;
 			Preferences.set({ key, value: JSON.stringify(v) });
-		}
+		},
+		ready
 	};
 }
 
