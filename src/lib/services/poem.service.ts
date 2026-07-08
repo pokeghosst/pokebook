@@ -49,11 +49,7 @@ export async function listPoems(): Promise<PoemMeta[]> {
 			return {
 				id: file.uri,
 				name: file.name.split('_')[0].replace(/%20/g, ' '),
-				/*
-                    ctime is not available on Android 7 and older devices.
-                    The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
-                */
-				timestamp: file.ctime ?? file.mtime,
+				timestamp: file.mtime,
 				unsavedChanges: fileMeta?.unsavedChanges ?? false,
 				poemSnippet: fileMeta?.poemSnippet ?? ''
 			};
