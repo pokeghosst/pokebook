@@ -1,10 +1,10 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+name = "pokebook"
+version = "3.3.0+2"
+description = "The ultimate digital notebook for writing poetry"
+authors = ["pokeghost"]
+license = "AGPL-3.0"
+repository = "https://codeberg.org/pokesuite/pokebook"
 edition = "2021"
 rust-version = "1.77.2"
 
