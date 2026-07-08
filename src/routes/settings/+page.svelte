@@ -82,9 +82,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		localizeLabel={false}
 	/>
 	<div class="settings-export">
-		<button class="action-button action-button--secondary" onclick={exportPoems}
-			>{$t('settings.export')}</button
-		>
+		{#if !window.__TAURI_INTERNALS__}
+			<button class="action-button action-button--secondary" onclick={exportPoems}
+				>{$t('settings.export')}</button
+			>
+		{/if}
 		<h4>
 			{$t('settings.import')}
 		</h4>
