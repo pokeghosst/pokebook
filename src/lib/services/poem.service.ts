@@ -101,10 +101,11 @@ export async function updatePoem(uri: string, poem: Poem): Promise<string> {
 		encoding: Encoding.UTF8
 	});
 
-	const [directory, rest] = uri.split('poems/');
-	const timestamp = rest.split(/_|\.xml/)[1];
+	const [directory, rest] = uri.split(/poems(?=[\/\\])/);
+	const [poemWithSlash, timestamp] = rest.split(/_|\.xml/);
+	const slash = poemWithSlash.slice(0, 1);
 
-	const newUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
+	const newUri = `${directory}poems${slash}${poem.name}_${timestamp}.xml`;
 
 	if (uri !== newUri) await Filesystem.rename({ from: uri, to: newUri });
 
