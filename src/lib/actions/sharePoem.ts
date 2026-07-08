@@ -5,12 +5,12 @@ import toast from 'svelte-5-french-toast';
 export async function sharePoem(poemName: string, poemBody: string, toastMessage: string) {
 	const poemTextToShare = poemName + '\n\n' + poemBody;
 
-	if ((await Share.canShare()).value)
+	try {
 		await Share.share({
 			title: `PokeBook | ${poemName}`,
 			text: poemTextToShare
 		});
-	else {
+	} catch (_) {
 		navigator.clipboard.writeText(poemTextToShare);
 		toast.success(toastMessage, {
 			position: GLOBAL_TOAST_POSITION,
