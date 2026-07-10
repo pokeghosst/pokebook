@@ -20,10 +20,10 @@ export type Infer<S> = {
 	[K in keyof S]: S[K] extends 'string'
 		? string
 		: S[K] extends 'number'
-		? number
-		: S[K] extends 'boolean'
-		? boolean
-		: never;
+			? number
+			: S[K] extends 'boolean'
+				? boolean
+				: never;
 };
 
 export function validate<S extends object>(obj: unknown, schema: S): obj is Infer<S> {

@@ -28,14 +28,11 @@ either version 3 of the License, or (at your option) any later version.
 */
 
 import type {
-	AppendFileOptions,
 	CopyOptions,
 	CopyResult,
 	DeleteFileOptions,
 	Directory,
 	FilesystemPlugin,
-	GetUriOptions,
-	GetUriResult,
 	MkdirOptions,
 	ReaddirOptions,
 	ReaddirResult,
@@ -46,8 +43,7 @@ import type {
 	StatOptions,
 	StatResult,
 	WriteFileOptions,
-	WriteFileResult,
-	PermissionStatus
+	WriteFileResult
 } from './FilesystemPlugin';
 
 import { Encoding } from './FilesystemPlugin';
@@ -197,59 +193,6 @@ export class FilesystemWeb implements FilesystemPlugin {
 		};
 	}
 
-	async appendFile(options: AppendFileOptions): Promise<void> {
-		const path: string = this.getPath(options.directory, options.path);
-		let data = options.data;
-		const encoding = options.encoding;
-		const parentPath = path.substr(0, path.lastIndexOf('/'));
-
-		const now = Date.now();
-		let ctime = now;
-
-		const occupiedEntry = (await this.dbRequest('get', [path])) as EntryObj;
-		if (occupiedEntry && occupiedEntry.type === 'directory')
-			throw Error('The supplied path is a directory.');
-
-		const parentEntry = (await this.dbRequest('get', [parentPath])) as EntryObj;
-		if (parentEntry === undefined) {
-			const subDirIndex = parentPath.indexOf('/', 1);
-			if (subDirIndex !== -1) {
-				const parentArgPath = parentPath.substr(subDirIndex);
-				await this.mkdir({
-					path: parentArgPath,
-					directory: options.directory,
-					recursive: true
-				});
-			}
-		}
-
-		if (!encoding && !this.isBase64String(data))
-			throw Error('The supplied data is not valid base64 content.');
-
-		if (occupiedEntry !== undefined) {
-			if (occupiedEntry.content instanceof Blob) {
-				throw Error('The occupied entry contains a Blob object which cannot be appended to.');
-			}
-
-			if (occupiedEntry.content !== undefined && !encoding) {
-				data = btoa(atob(occupiedEntry.content) + atob(data));
-			} else {
-				data = occupiedEntry.content + data;
-			}
-			ctime = occupiedEntry.ctime;
-		}
-		const pathObj: EntryObj = {
-			path: path,
-			folder: parentPath,
-			type: 'file',
-			size: data.length,
-			ctime: ctime,
-			mtime: now,
-			content: data
-		};
-		await this.dbRequest('put', [pathObj]);
-	}
-
 	async deleteFile(options: DeleteFileOptions): Promise<void> {
 		const path: string = this.getPath(options.directory, options.path);
 
@@ -349,18 +292,6 @@ export class FilesystemWeb implements FilesystemPlugin {
 		return { files: files };
 	}
 
-	async getUri(options: GetUriOptions): Promise<GetUriResult> {
-		const path: string = this.getPath(options.directory, options.path);
-
-		let entry = (await this.dbRequest('get', [path])) as EntryObj;
-		if (entry === undefined) {
-			entry = (await this.dbRequest('get', [path + '/'])) as EntryObj;
-		}
-		return {
-			uri: entry?.path || path
-		};
-	}
-
 	async stat(options: StatOptions): Promise<StatResult> {
 		const path: string = this.getPath(options.directory, options.path);
 
@@ -383,18 +314,6 @@ export class FilesystemWeb implements FilesystemPlugin {
 	async rename(options: RenameOptions): Promise<void> {
 		await this._copy(options, true);
 		return;
-	}
-
-	async copy(options: CopyOptions): Promise<CopyResult> {
-		return this._copy(options, false);
-	}
-
-	async requestPermissions(): Promise<PermissionStatus> {
-		return { publicStorage: 'granted' };
-	}
-
-	async checkPermissions(): Promise<PermissionStatus> {
-		return { publicStorage: 'granted' };
 	}
 
 	private async _copy(options: CopyOptions, doRename = false): Promise<CopyResult> {

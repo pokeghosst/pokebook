@@ -23,14 +23,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { themeModes } from '$lib/constants/themeModes';
 	import { exportPoems, importPoems } from '$lib/services/migration.service';
-	import { activeLanguage } from '$lib/stores/activeLanguage';
-	import { dayTheme } from '$lib/stores/dayTheme';
-	import { nightTheme } from '$lib/stores/nightTheme';
-	import { themeMode } from '$lib/stores/themeMode';
+	import { activeLanguage, dayTheme, nightTheme, themeMode } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { onMount } from 'svelte';
-	import toast from 'svelte-french-toast';
+	import toast from 'svelte-5-french-toast';
 	import SettingsSelect from '../../components/SettingsSelect.svelte';
 
 	onMount(() => {
@@ -62,32 +59,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<SettingsSelect
 		parameterName="themeMode"
 		labelName={$t('settings.themeMode')}
-		bind:bindParameter={$themeMode}
+		bind:bindParameter={themeMode.value}
 		options={themeModes}
 	/>
 	<SettingsSelect
 		parameterName="dayTheme"
 		labelName={$t('settings.dayTheme')}
-		bind:bindParameter={$dayTheme}
+		bind:bindParameter={dayTheme.value}
 		options={dayThemes}
 	/>
 	<SettingsSelect
 		parameterName="nightTheme"
 		labelName={$t('settings.nightTheme')}
-		bind:bindParameter={$nightTheme}
+		bind:bindParameter={nightTheme.value}
 		options={nightThemes}
 	/>
 	<SettingsSelect
 		parameterName="language"
 		labelName={$t('settings.language')}
-		bind:bindParameter={$activeLanguage}
+		bind:bindParameter={activeLanguage.value}
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>
 	<div class="settings-export">
-		<button class="action-button action-button--secondary" onclick={exportPoems}
-			>{$t('settings.export')}</button
-		>
+		{#if !window.__TAURI_INTERNALS__}
+			<button class="action-button action-button--secondary" onclick={exportPoems}
+				>{$t('settings.export')}</button
+			>
+		{/if}
 		<h4>
 			{$t('settings.import')}
 		</h4>

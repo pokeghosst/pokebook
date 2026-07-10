@@ -17,9 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { isFullWidthPad } from '$lib/stores/isFullWidthPad';
-	import { viewsState } from '$lib/stores/views';
-	import { writingPadFont } from '$lib/stores/writingPadFont';
+	import { fullWidthPad, padPositions, font } from '$lib/state.svelte';
 	import hotkeys from 'hotkeys-js';
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
@@ -34,7 +32,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		actions: { icon: ComponentType; action: () => void; label: string }[];
 	} = $props();
 
-	let padState: number[] = $state(JSON.parse($viewsState));
 	let views = ['poem', 'note'];
 
 	let currentState = $state('');
@@ -53,14 +50,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	function swapViews() {
 		currentState = 'transitioning';
 		setTimeout(function () {
-			[padState[0], padState[1]] = [padState[1], padState[0]];
-			$viewsState = JSON.stringify(padState);
+			// Flip bits and convert them back to numbers with unary plus
+			padPositions.value = [+!padPositions.value[0], +!padPositions.value[1]];
 			currentState = '';
 		}, 300);
 	}
 
 	function expandPoemPad() {
-		$isFullWidthPad === 'true' ? ($isFullWidthPad = 'false') : ($isFullWidthPad = 'true');
+		fullWidthPad.value = !fullWidthPad.value;
 	}
 </script>
 
@@ -75,11 +72,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 {/snippet}
 
 <div class="toolbar"><Toolbar {actions} /></div>
-<div
-	class="workspace {$isFullWidthPad === 'true'
-		? 'l-full-width'
-		: ''} {currentState} {$writingPadFont}"
->
+<div class="workspace {fullWidthPad.value ? 'l-full-width' : ''} {currentState} {font.value}">
 	<div class="notebook-container">
 		<div class="notebook-container-toolbar">
 			<div>
@@ -91,9 +84,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</div>
-		{@render pad(views[padState[0]])}
+		{@render pad(views[padPositions.value[0]])}
 	</div>
 	<div class="notebook-container">
-		{@render pad(views[padState[1]])}
+		{@render pad(views[padPositions.value[1]])}
 	</div>
 </div>

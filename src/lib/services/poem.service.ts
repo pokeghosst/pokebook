@@ -19,7 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import { Filesystem } from '../plugins/Filesystem';
 import { Directory, Encoding } from '../plugins/FilesystemPlugin';
-import type { PoemMeta } from '../schema/manifest.schema';
+import type { ManifestRecord, PoemMeta } from '../schema/manifest.schema';
 import type { Poem } from '../schema/poem.schema';
 import { poemSchema } from '../schema/poem.schema';
 import { validate } from '../schema/validation';
@@ -38,7 +38,7 @@ export async function listPoems(): Promise<PoemMeta[]> {
 
 	const storedFiles = (await Filesystem.readdir({ path: 'poems', directory: Directory.Documents }))
 		.files;
-	const manifestEntries: PoemMeta[] = await getManifestEntries();
+	const manifestEntries: ManifestRecord[] = await getManifestEntries();
 
 	return storedFiles
 		.filter((file) => !file.name.includes('.json'))
@@ -49,11 +49,7 @@ export async function listPoems(): Promise<PoemMeta[]> {
 			return {
 				id: file.uri,
 				name: file.name.split('_')[0].replace(/%20/g, ' '),
-				/*
-                    ctime is not available on Android 7 and older devices.
-                    The app targets SDK 33 (Android 13) so this fallback is pretty much just to silence the error
-                */
-				timestamp: file.ctime ?? file.mtime,
+				timestamp: file.mtime,
 				unsavedChanges: fileMeta?.unsavedChanges ?? false,
 				poemSnippet: fileMeta?.poemSnippet ?? ''
 			};
@@ -63,11 +59,14 @@ export async function listPoems(): Promise<PoemMeta[]> {
 
 export async function getPoem(uri: string): Promise<Poem> {
 	const file = await Filesystem.readFile({ path: uri, encoding: Encoding.UTF8 });
-	const parsedFile = new XMLParser().parse(file.data.toString());
+	const parsedFile = new XMLParser(
+		{ parseTagValue: false } /* Leave number-only tag values as strings */
+	).parse(file.data.toString());
 
 	if (validate(parsedFile, poemSchema)) {
 		return parsedFile;
 	} else {
+		// TODO: Localization
 		throw new Error('The file is not a poem.');
 	}
 }
@@ -83,13 +82,12 @@ export async function savePoem(poem: Poem, timestamp?: number): Promise<void> {
 
 	const savedPoemManifest = {
 		id: uri,
-		unsavedChanges: false,
 		poemSnippet: sliceSnippet(poem.text, SNIPPET_LENGTH)
 	};
 
 	const manifestEntries = await getManifestEntries();
 
-	writeToManifest([...manifestEntries, savedPoemManifest]);
+	await writeToManifest([...manifestEntries, savedPoemManifest]);
 }
 
 export async function updatePoem(uri: string, poem: Poem): Promise<string> {
@@ -99,16 +97,16 @@ export async function updatePoem(uri: string, poem: Poem): Promise<string> {
 		encoding: Encoding.UTF8
 	});
 
-	const [directory, rest] = uri.split('poems/');
-	const timestamp = rest.split(/_|\.xml/)[1];
+	const [directory, rest] = uri.split(/poems(?=[\/\\])/);
+	const [poemWithSlash, timestamp] = rest.split(/_|\.xml/);
+	const slash = poemWithSlash.slice(0, 1);
 
-	const newUri = `${directory}poems/${poem.name}_${timestamp}.xml`;
+	const newUri = `${directory}poems${slash}${poem.name}_${timestamp}.xml`;
 
 	if (uri !== newUri) await Filesystem.rename({ from: uri, to: newUri });
 
 	const newManifest = {
 		id: newUri,
-		unsavedChanges: false,
 		poemSnippet: sliceSnippet(poem.text, SNIPPET_LENGTH)
 	};
 

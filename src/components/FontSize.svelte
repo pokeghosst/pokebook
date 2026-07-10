@@ -1,20 +1,19 @@
 <script lang="ts">
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
-
-	import Plus from 'lucide-svelte/icons/plus';
+	import { fontSize } from '$lib/state.svelte';
 	import Minus from 'lucide-svelte/icons/minus';
+	import Plus from 'lucide-svelte/icons/plus';
 
 	function incrementFont() {
-		$writingPadFontSize = (parseInt($writingPadFontSize) + 1).toString();
+		fontSize.value++;
 	}
 
 	function decrementFont() {
-		$writingPadFontSize = (parseInt($writingPadFontSize) - 1).toString();
+		fontSize.value--;
 	}
 </script>
 
 <div class="button-group">
 	<button class="button" onclick={decrementFont}><Minus /></button><span class="button"
-		>{$writingPadFontSize}px</span
+		>{fontSize.value}px</span
 	><button class="button" onclick={incrementFont}><Plus /></button>
 </div>

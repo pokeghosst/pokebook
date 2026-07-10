@@ -28,7 +28,6 @@ either version 3 of the License, or (at your option) any later version.
 */
 
 export interface SharePlugin {
-	canShare(): Promise<CanShareResult>;
 	share(options: ShareOptions): Promise<ShareResult>;
 }
 

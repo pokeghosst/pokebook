@@ -1,5 +1,26 @@
 # Changelog
 
+## [v3.3] - 2026-07-10
+
+### Added
+
+- Desktop version
+- Modal dialog with changelog
+
+### Fixed
+
+- Broken panel swapping
+- Remove redundant Save button for stashed poem
+- Drop letter-count dependency, use custom function instead
+- Lazy load syllable package
+- Migrate to loaders method for sveltekit-i18n
+- Language selection not persisted
+- Hide PokeHelp toggle when language other than English is selected
+- Show date format according to locale
+- Incorrect contents when sharing
+- Auto hide scroll in toolbar
+- Disable parsing tag value with strnum package when constructing XMLParser
+
 ## [v3.2] - 2026-03-07
 
 ### Added

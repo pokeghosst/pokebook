@@ -18,14 +18,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import type { OnlyPoem } from '$lib/schema/poem.schema';
-	import { poemPadJustification } from '$lib/stores/poemPadJustification';
-	import { isPokehelpActive } from '$lib/stores/pokehelpMode';
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+	import { fontSize, justification, pokehelp } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
-	import { count } from 'letter-count';
 	import { getContext, onMount } from 'svelte';
-	import { syllable } from 'syllable';
 
 	let poem = getContext<OnlyPoem>('poem');
 	const [handleNameChange, handleTextChange] =
@@ -33,10 +29,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			'poemHandlers'
 		);
 
+	let syllable = $state<((value: string) => number) | null>(null);
+
 	let lines = $derived(poem.text.split('\n'));
 	// Overlays
-	let stats: Record<string, string | number> = $derived(count(poem.text));
-	let syllableCounts: number[] = $derived(lines.map((line) => syllable(line)));
+	let stats: Record<string, string | number> = $derived(countStats(poem.text));
+	let syllableCounts: number[] = $derived(
+		syllable && pokehelp.value ? lines.map((line) => syllable!(line)) : []
+	);
+
+	$effect(() => {
+		if (pokehelp.value && !syllable) {
+			import('syllable').then(({ syllable: _syllable }) => {
+				syllable = _syllable;
+			});
+		}
+	});
 
 	let poemTextarea: HTMLTextAreaElement;
 
@@ -81,12 +89,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 		return e;
 	}
+
+	function countStats(input: string) {
+		const chars = input.length;
+		const lines = input.split('\n').length;
+		const words = input.trim() ? input.trim().split(/\s+/).length : 0;
+
+		return { chars, lines, words };
+	}
 </script>
 
+<!-- TODO: https://codeberg.org/psuite/pokebook/issues/81 -->
 {#snippet syllableLine(syllableCount: number, line: string)}
-	<span class="poem-syllable-count">{syllableCount}</span>
-	<span style="color: transparent; margin-left: 5px">${line}</span>
-	<br />
+	<div style="font-size: {fontSize.value}px; padding: 0; margin-top: 0; margin-bottom: 0">
+		<span class="poem-syllable-count" style="margin-left: 12px">{syllableCount || ''}</span
+		>{#if line}<span style="color: transparent">{line}</span>{:else}<br />{/if}
+	</div>
 {/snippet}
 
 <div class="notebook" id="poem-notebook">
@@ -100,7 +118,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		placeholder={$t('workspace.unnamed')}
 	/>
 	<div class="notebook-inner-wrapper">
-		{#if $isPokehelpActive === 'true'}
+		{#if pokehelp.value}
 			<div class="poem-stats">
 				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
 					'workspace.lines'
@@ -110,16 +128,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				{#each lines as line, i (`syllable-line-${i}`)}
 					{@render syllableLine(syllableCounts[i], line)}
 				{/each}
+				<!-- <div style="color: red; font-size: {fontSize.value}px;">{@html poem.text.split("\n").map((line, i) => `<span style="position: absolute; left: 0;">${syllableCounts[i]}</span>` + line).join("\n")}</div> -->
+				<!-- <div style="color: red; font-size: {fontSize.value}px;">{poem.text}</div> -->
 			</div>
 		{/if}
 		<textarea
 			value={poem.text}
 			oninput={handleTextChange}
-			class="paper {$poemPadJustification} {$isPokehelpActive === 'true'
-				? 'l-padded-for-pokehelp'
-				: ''}"
+			class="paper {justification.value} {pokehelp.value ? 'l-padded-for-pokehelp' : ''}"
 			id="poem-textarea"
-			style={`font-size: ${$writingPadFontSize}px`}
+			style="font-size: {fontSize.value}px"
 			bind:this={poemTextarea}
 		></textarea>
 	</div>

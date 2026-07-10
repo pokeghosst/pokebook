@@ -17,40 +17,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { run, createBubbler } from 'svelte/legacy';
-
-	const bubble = createBubbler();
-	import { openModal } from 'svelte-modals';
-
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-
+	import { navMenuItems } from '$lib/constants/NavMenuItems';
+	import { sidebarOpen } from '$lib/state.svelte';
+	import { t } from '$lib/translations';
+	import { modals } from 'svelte-modals';
+	import { createBubbler, run } from 'svelte/legacy';
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
 
-	import { navMenuItems } from '$lib/constants/NavMenuItems';
-
-	import { t } from '$lib/translations';
+	const bubble = createBubbler();
 
 	function handleSidebarItemClick() {
 		if (window.innerWidth < 1024) {
-			$isSidebarOpen = 'false';
+			sidebarOpen.value = false;
 		}
 	}
 
 	let sidebarNavOpenClass = $state('');
 
 	run(() => {
-		$isSidebarOpen === 'true'
-			? (sidebarNavOpenClass = 'sidebar-nav--open')
-			: (sidebarNavOpenClass = '');
+		sidebarOpen.value ? (sidebarNavOpenClass = 'sidebar-nav--open') : (sidebarNavOpenClass = '');
 	});
 </script>
 
 <div class="sidebar-nav-wrapper">
 	<div
 		class="sidebar-close-area {sidebarNavOpenClass}"
-		onclick={() => ($isSidebarOpen = 'false')}
+		onclick={() => (sidebarOpen.value = false)}
 		onkeydown={bubble('keydown')}
 		role="button"
 		tabindex="0"
@@ -68,12 +62,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		</div>
 		<div class="sidebar-footer">
 			<button
-				onclick={() => openModal(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				onclick={() =>
+					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 				>{$t('menu.shortcuts')}</button
 			>
 			<ul>
 				<li>
-					<button onclick={() => openModal(Modal, { content: AboutModal })}
+					<button onclick={() => modals.open(Modal, { content: AboutModal })}
 						>{$t('menu.about')}</button
 					>
 				</li>

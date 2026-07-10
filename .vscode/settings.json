@@ -2,7 +2,9 @@
     "eslint.validate": ["javascript", "typescript", "svelte"],
     "git.enableCommitSigning": true,
     "cSpell.words": [
+        "ftype",
         "pokebook",
-        "Pokehelp"
+        "Pokehelp",
+        "Tauri"
     ]
 }

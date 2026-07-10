@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import type { OnlyNote } from '$lib/schema/poem.schema';
-	import { writingPadFontSize } from '$lib/stores/writingPadFontSize';
+	import { fontSize } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeHandler } from '$lib/types';
 	import { getContext, onMount } from 'svelte';
@@ -70,7 +70,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			oninput={handleNoteChange}
 			class="paper"
 			id="note-textarea"
-			style={`font-size: ${$writingPadFontSize}px`}
+			style={`font-size: ${fontSize.value}px`}
 			bind:this={noteTextarea}
 		></textarea>
 	</div>

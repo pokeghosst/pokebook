@@ -1,66 +1,49 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "build": {
-    "beforeBuildCommand": "bun static",
-    "beforeDevCommand": "bun dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../build"
-  },
-  "package": {
-    "productName": "pokebook",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.tauri.dev",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "PokeBook",
-        "width": 800
-      }
-    ]
-  }
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "Poke!Book",
+	"version": "3.3.0+2",
+	"identifier": "org.pokeghost.book",
+	"build": {
+		"frontendDist": "../build",
+		"devUrl": "http://localhost:5173",
+		"beforeDevCommand": "npm run dev",
+		"beforeBuildCommand": "npm run static"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "Poke!Book",
+				"width": 800,
+				"height": 600,
+				"resizable": true,
+				"fullscreen": false
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"licenseFile": "../COPYING",
+		"windows": {
+			"nsis": {
+				"installerIcon": "icons/icon.ico",
+				"sidebarImage": "icons/banner.bmp",
+				"languages": ["English", "Spanish", "Russian"],
+				"displayLanguageSelector": true
+			}
+		},
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"resources": {
+			"../COPYING": "COPYING.txt"
+		}
+	}
 }

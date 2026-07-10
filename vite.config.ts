@@ -1,7 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import topLevelAwait from 'vite-plugin-top-level-await';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
@@ -11,5 +11,10 @@ export default defineConfig({
 			promiseImportName: (i) => `__tla_${i}`
 		}),
 		devtoolsJson()
-	]
+	],
+	server: {
+		watch: {
+			ignored: ['**/src-tauri/**']
+		}
+	}
 });

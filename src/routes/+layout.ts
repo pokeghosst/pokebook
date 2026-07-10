@@ -1,26 +1,19 @@
-import { browser } from '$app/environment';
-
 import { Preferences } from '$lib/plugins/Preferences';
-
+import { activeLanguage } from '$lib/state.svelte';
 import { loadTranslations } from '$lib/translations';
-
-import { activeLanguage } from '$lib/stores/activeLanguage';
-
 import '../sass/main.scss';
 
 export const prerender = true;
 export const ssr = false;
 
 export const load = async () => {
-	let currentLanguageValue = (await Preferences.get({ key: 'active_language' })).value;
+	let currentLanguageValue = activeLanguage.value;
 
 	if (!currentLanguageValue) {
 		const localeLanguage = navigator.language.split('-')[0];
-		activeLanguage.set(localeLanguage);
+		activeLanguage.value = localeLanguage;
 		currentLanguageValue = localeLanguage;
 	}
 
-	activeLanguage.subscribe((value) => {
-		loadTranslations(value);
-	});
+	await loadTranslations(currentLanguageValue);
 };

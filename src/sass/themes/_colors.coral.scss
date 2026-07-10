@@ -1,19 +1,19 @@
 @import '../variables/color-variables';
 
 $theme-light-coral: (
-        $--base-background: #fdedeb,
-        $--base-color: #9e4244,
-        $--notebook-header-bg: #ee8470,
-        $--notebook-header-color: #fff,
-        $--notebook-paper-background: #ffe9c7,
-        $--notebook-paper-line:#f06071,
-        $--notebook-text-color: #9e4244,
-        $--list-item-hover-color: #ffe9c7,
-        $--border-color: #ee8470,
-        $--border-color-darker: #ee8470,
-        $--notebook-box-shadow-bg: #ffe9c7,
-        $--notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
-        $--select-background: #ffe9c7,
-        $--select-text-color: #9e4244,
-        $--round-button-background: #fdedeb
+	$--base-background: #fdedeb,
+	$--base-color: #9e4244,
+	$--notebook-header-bg: #ee8470,
+	$--notebook-header-color: #fff,
+	$--notebook-paper-background: #ffe9c7,
+	$--notebook-paper-line: #f06071,
+	$--notebook-text-color: #9e4244,
+	$--list-item-hover-color: #ffe9c7,
+	$--border-color: #ee8470,
+	$--border-color-darker: #ee8470,
+	$--notebook-box-shadow-bg: #ffe9c7,
+	$--notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
+	$--select-background: #ffe9c7,
+	$--select-text-color: #9e4244,
+	$--round-button-background: #fdedeb
 );

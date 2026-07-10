@@ -17,15 +17,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import appState from '$lib/AppState.svelte';
-	import { dayTheme } from '$lib/stores/dayTheme';
-	import { isSidebarOpen } from '$lib/stores/isSidebarOpen';
-	import { nightTheme } from '$lib/stores/nightTheme';
-	import { themeMode } from '$lib/stores/themeMode';
-	import { Toaster } from 'svelte-french-toast';
-	import { Modals, closeModal } from 'svelte-modals';
-	import { createBubbler, run } from 'svelte/legacy';
+	import { CURRENT_VERSION } from '$lib/constants/version';
+	import {
+		activeLanguage,
+		dayTheme,
+		latestSeenVersion,
+		nightTheme,
+		safeToClose,
+		sidebarOpen,
+		themeMode
+	} from '$lib/state.svelte';
+	import { loadTranslations } from '$lib/translations';
+	import { onMount } from 'svelte';
+	import { Toaster } from 'svelte-5-french-toast';
+	import { modals, Modals } from 'svelte-modals';
+	import { createBubbler } from 'svelte/legacy';
 	import Header from '../components/Header.svelte';
+	import Modal from '../components/Modal.svelte';
+	import NewVersionModal from '../components/NewVersionModal.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
 
 	interface Props {
@@ -35,17 +44,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	const bubble = createBubbler();
 	let { children }: Props = $props();
 
+	$effect(() => {
+		loadTranslations(activeLanguage.value);
+	});
+
+	$effect(() => {
+		(themeMode.value, dayTheme.value, nightTheme.value, updateTheme());
+	});
+
+	onMount(() => {
+		if (latestSeenVersion.value !== CURRENT_VERSION) {
+			if (latestSeenVersion.value) {
+				modals.open(Modal, { content: NewVersionModal });
+			}
+			latestSeenVersion.value = CURRENT_VERSION;
+		}
+	});
+
 	function updateTheme() {
 		document.documentElement.className = '';
 
-		switch ($themeMode) {
+		switch (themeMode.value) {
 			case 'day': {
-				document.documentElement.classList.add($dayTheme || 'vanilla');
+				document.documentElement.classList.add(dayTheme.value || 'vanilla');
 				break;
 			}
 			case 'night': {
 				document.documentElement.classList.add('dark');
-				document.documentElement.classList.add($nightTheme || 'chocolate');
+				document.documentElement.classList.add(nightTheme.value || 'chocolate');
 				break;
 			}
 			case 'auto': {
@@ -55,9 +81,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					document.documentElement.className = '';
 
 					if (prefersDark.matches) {
-						document.documentElement.classList.add($nightTheme || 'chocolate');
+						document.documentElement.classList.add(nightTheme.value || 'chocolate');
 					} else {
-						document.documentElement.classList.add($dayTheme || 'vanilla');
+						document.documentElement.classList.add(dayTheme.value || 'vanilla');
 					}
 				};
 
@@ -67,22 +93,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 		}
 	}
-	run(() => {
-		($themeMode, $dayTheme, $nightTheme, updateTheme());
-	});
 </script>
 
 <svelte:window
 	onbeforeunload={(e) => {
-		if (!appState.value.safeToClose) e.preventDefault();
+		if (!safeToClose.value) e.preventDefault();
 	}}
 />
 
 <Modals>
-	{#snippet backdrop()}
+	{#snippet backdrop({ close })}
 		<div
 			class="backdrop"
-			onclick={closeModal}
+			onclick={() => close()}
 			onkeydown={bubble('keydown')}
 			role="button"
 			tabindex="0"
@@ -92,7 +115,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <Toaster />
 <Sidebar />
-<div class="main-wrapper {$isSidebarOpen === 'true' ? 'l-sidebar-open' : ''}">
+
+<div class="main-wrapper {sidebarOpen.value ? 'l-sidebar-open' : ''}">
 	<main>
 		<div>
 			<Header />

@@ -30,5 +30,11 @@ export const poemMetaSchema = {
 	timestamp: 'number'
 } as const;
 
-export type ManifestRecord = Infer<typeof manifestRecordSchema>;
-export type PoemMeta = Infer<typeof poemMetaSchema>;
+/*
+	This provides backwards compatibility for pre-autosave version.
+	Eventually unsavedChanges can be dropped completely.
+*/
+export type ManifestRecord = Omit<Infer<typeof manifestRecordSchema>, 'unsavedChanges'> &
+	Partial<Pick<Infer<typeof manifestRecordSchema>, 'unsavedChanges'>>;
+export type PoemMeta = Omit<Infer<typeof poemMetaSchema>, 'unsavedChanges'> &
+	Partial<Pick<Infer<typeof poemMetaSchema>, 'unsavedChanges'>>;

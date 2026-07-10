@@ -6,5 +6,5 @@ $breakpoints: (
 );
 
 @use '../vendors/mq' with (
-	$breakpoints: $breakpoints,
+	$breakpoints: $breakpoints
 );

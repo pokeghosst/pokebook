@@ -12,13 +12,11 @@
 - Workspace split into two independent notepads – jot down notes in one and write the poem in another!
 - Endless notebook that grows as you write!
 - Everything is stored locally – no need to trust anyone to keep your poems nice and safe! Reload the page, close the tab, even reboot your computer, everything will stay there!
-- Optional cloud integrations for storing poems in the cloud!
-- The draft is auto-saved with every single character written – don't worry about crashes or blackouts, so you can focus on the writing!
+- The poem is auto-saved with every single character written – don't worry about crashes or blackouts, so you can focus on the writing!
 - Click "New poem" and you immediately have a clean workspace – previous one is saved in the Poem Stash!
 - View, edit and delete previously written poems and store as many as your computer (or cloud provider) can handle!
 - Express yourself with a selection of themes and fonts!
-- Write your best with PokeHelp mode! PokeHelp provides highlighting rhymes, syllable counter, and text counters (words, characters, lines)
-- Want something more... unconventional? [PokeMarkov](https://github.com/pokeghosst/pokebook-markov) will help you generate prose, poems, and any other kind of text using Markov chains
+- Write your best with PokeHelp mode! PokeHelp provides syllable and text counters (words, characters, lines)
 
 # Installing / Getting started
 
@@ -28,7 +26,7 @@ You can use PokeBook at no cost by visiting https://book.pokeghost.org.
 
 PokeBook can be built with static adapter and deployed on a generic hosting provider (like Netlify Drop) by doing the following:
 
-```
+```sh
 bun run static
 ```
 
@@ -38,9 +36,19 @@ PokeBook is configured with `@sveltejs/adapter-auto` so it should be easily depl
 
 Environment for local development can be quickly spun up by doing the following:
 
+```sh
+npm i
+npm run dev
 ```
-bun i
-bun dev
+
+# Developing desktop/mobile app
+
+> Prerequisites: [Tauri CLI](https://tauri.app/reference/cli/), Rust
+
+Run development server:
+
+```sh
+cargo tauri dev
 ```
 
 # Contributing
@@ -48,11 +56,6 @@ bun dev
 If you'd like to contribute, please fork the repository and use a feature branch. Pull requests are warmly welcome.
 
 For bugs and feature requests, don't hesitate to open issues!
-
-## Branch structure
-
-- `main` - current production branch, deployed to https://book.pokeghost.org/
-- `stage` - current nightly branch, deployed to https://stage.book.pokeghost.org/
 
 # License
 

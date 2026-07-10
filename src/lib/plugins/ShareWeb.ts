@@ -30,15 +30,8 @@ either version 3 of the License, or (at your option) any later version.
 import type { CanShareResult, ShareOptions, SharePlugin, ShareResult } from './SharePlugin';
 
 export class ShareWeb implements SharePlugin {
-	async canShare(): Promise<CanShareResult> {
-		if (typeof navigator === 'undefined' || !navigator.share) {
-			return { value: false };
-		} else {
-			return { value: true };
-		}
-	}
 	async share(options: ShareOptions): Promise<ShareResult> {
-		if (typeof navigator === 'undefined' || !navigator.share) {
+		if (typeof navigator === 'undefined' || !navigator.canShare()) {
 			throw new Error('Share API not available in this browser');
 		}
 

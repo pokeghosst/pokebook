@@ -30,7 +30,7 @@ export async function writeToManifest(manifest: ManifestRecord[]): Promise<void>
 	});
 }
 
-export async function getManifestEntries(): Promise<PoemMeta[]> {
+export async function getManifestEntries(): Promise<ManifestRecord[]> {
 	if (!(await isPathExists('poems/')) || !(await isPathExists('poems/poems_local.json'))) return [];
 
 	const manifestFile = await Filesystem.readFile({
