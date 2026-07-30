@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import AlignLeft from 'lucide-svelte/icons/align-left';
 	import AlignRight from 'lucide-svelte/icons/align-right';
 	import FontSize from './FontSize.svelte';
+	import { t } from '$lib/translations';
 
 	interface Props {
 		actions: ToolbarItem[];
@@ -56,9 +57,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	</div>
 	<div class="settings-select">
 		<select bind:value={font.value} style="margin: 0; min-width: 130px;">
-			{#each padFonts as option}
+			{#each padFonts as option, i (`option.label-${i}`)}
 				<option value={option.value}>
-					{option.label}
+					{['sans', 'serif'].includes(option.value)
+						? $t(`workspace.${option.label}`)
+						: option.label}
 				</option>
 			{/each}
 		</select>
