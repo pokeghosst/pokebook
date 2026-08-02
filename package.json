@@ -59,7 +59,7 @@
 	},
 	"dependencies": {
 		"@zip.js/zip.js": "^2.8.22",
-		"fast-xml-parser": "^5.5.7",
+		"fast-xml-parser": "^5.10.1",
 		"hotkeys-js": "^3.13.7",
 		"lucide-svelte": "^0.474.0",
 		"svelte-5-french-toast": "^2.0.6",
