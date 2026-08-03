@@ -4,7 +4,15 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
-	plugins: [sveltekit(), SvelteKitPWA(), devtoolsJson()],
+	plugins: [
+		sveltekit(),
+		SvelteKitPWA({
+			devOptions: {
+				enabled: true
+			}
+		}),
+		devtoolsJson()
+	],
 	server: {
 		watch: {
 			ignored: ['**/src-tauri/**']
