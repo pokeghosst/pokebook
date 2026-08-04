@@ -39,8 +39,7 @@ export default defineConfig({
 						type: 'image/png'
 					}
 				]
-			},
-			manifestFilename: 'manifest.json'
+			}
 		}),
 		devtoolsJson()
 	],
