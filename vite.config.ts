@@ -9,7 +9,26 @@ export default defineConfig({
 		SvelteKitPWA({
 			devOptions: {
 				enabled: true
-			}
+			},
+			manifest: {
+				name: 'Poke!Book',
+				short_name: 'Poke!Book',
+				description: 'The ultimate digital notebook for writing poetry.',
+				start_url: '/',
+				display: 'standalone',
+				background_color: '#ffffff',
+				theme_color: '#bbad5d',
+				scope: '/',
+				icons: [
+					{
+						src: '/icon-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'any'
+					}
+				]
+			},
+			manifestFilename: 'manifest.json'
 		}),
 		devtoolsJson()
 	],
