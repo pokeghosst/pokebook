@@ -36,6 +36,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import Modal from '../components/Modal.svelte';
 	import NewVersionModal from '../components/NewVersionModal.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
+	import { pwaInfo } from 'virtual:pwa-info';
 
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -60,6 +61,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			latestSeenVersion.value = CURRENT_VERSION;
 		}
 	});
+
+	let webManifestLink = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 
 	function updateTheme() {
 		document.documentElement.className = '';
@@ -94,6 +97,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		}
 	}
 </script>
+
+<svelte:head>
+	{@html webManifestLink}
+</svelte:head>
 
 <svelte:window
 	onbeforeunload={(e) => {
