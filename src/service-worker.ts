@@ -18,9 +18,12 @@ const self = globalThis.self as unknown as ServiceWorkerGlobalScope;
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
+const ROUTES = ['/', '/stash', '/settings', '/privacy', '/terms', '/stash/poem'];
+
 const ASSETS = [
 	...build, // the app itself
-	...files // everything in `static`
+	...files, // everything in `static`
+	...ROUTES
 ];
 
 self.addEventListener('install', (event) => {
@@ -31,6 +34,7 @@ self.addEventListener('install', (event) => {
 	}
 
 	event.waitUntil(addFilesToCache());
+	self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -42,6 +46,7 @@ self.addEventListener('activate', (event) => {
 	}
 
 	event.waitUntil(deleteOldCaches());
+	event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', (event) => {
