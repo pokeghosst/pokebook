@@ -24,6 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { currentPoemUri } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import { onMount } from 'svelte';
+	import TimeAgo from '../../components/TimeAgo.svelte';
 
 	const FALLBACK_DELAY_MS = 100;
 
@@ -65,7 +66,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 							</p>
 							<p class="list-poem-snippet">{record.poemSnippet}</p>
 						</div>
-						<div>{new Date(record.timestamp).toLocaleDateString()}</div>
+						<div><TimeAgo timestamp={record.timestamp} /></div>
 					</button>
 				</div>
 			{/each}
