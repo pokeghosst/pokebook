@@ -17,56 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	type RelativeTimeUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second';
+	import formatTimeAgo from '$lib/time/formatTimeAgo';
+
 	let { timestamp, locale }: { timestamp: number; locale: string } = $props();
-
-	function formatTime(timestamp: number) {
-		const now = Date.now();
-		const elapsed = now - timestamp;
-
-		const units: Record<RelativeTimeUnit, number> = {
-			year: 24 * 60 * 60 * 1000 * 365,
-			month: (24 * 60 * 60 * 1000 * 365) / 12,
-			day: 24 * 60 * 60 * 1000,
-			hour: 60 * 60 * 1000,
-			minute: 60 * 1000,
-			second: 1000
-		};
-
-		if (elapsed < units.minute) {
-			return 'Just now';
-		} else if (elapsed < units.month) {
-			const rtf = new Intl.RelativeTimeFormat(locale, {
-				localeMatcher: 'best fit',
-				numeric: 'auto',
-				style: 'long'
-			});
-
-			for (const [unit, value] of Object.entries(units) as [keyof typeof units, number][]) {
-				if (elapsed >= value) {
-					return rtf.format(-Math.floor(elapsed / value), unit);
-				}
-			}
-
-			/*
-			 * This avoids function return type being inferred as 'string' | 'undefined'
-			 * since TypeScript doesn't know that conditional in the loop above will
-			 * always return something
-			 */
-			return rtf.format(-Math.floor(elapsed / units.second), 'second');
-		} else if (elapsed < units.year) {
-			return new Date(timestamp).toLocaleDateString(locale, {
-				month: 'short',
-				day: 'numeric'
-			});
-		} else {
-			return new Date(timestamp).toLocaleDateString(locale, {
-				year: 'numeric',
-				month: 'short',
-				day: 'numeric'
-			});
-		}
-	}
 </script>
 
-<time datetime={new Date(timestamp).toISOString()}>{formatTime(timestamp)}</time>
+<time datetime={new Date(timestamp).toISOString()}>{formatTimeAgo(timestamp, locale)}</time>
