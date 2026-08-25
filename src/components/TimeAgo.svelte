@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	type RelativeTimeUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second';
-	let { timestamp }: { timestamp: number } = $props();
+	let { timestamp, locale }: { timestamp: number; locale: string } = $props();
 
 	function formatTime(timestamp: number) {
 		const now = Date.now();
@@ -36,7 +36,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		if (elapsed < units.minute) {
 			return 'Just now';
 		} else if (elapsed < units.month) {
-			const rtf = new Intl.RelativeTimeFormat('en', {
+			const rtf = new Intl.RelativeTimeFormat(locale, {
 				localeMatcher: 'best fit',
 				numeric: 'auto',
 				style: 'long'
@@ -55,12 +55,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			 */
 			return rtf.format(-Math.floor(elapsed / units.second), 'second');
 		} else if (elapsed < units.year) {
-			return new Date(timestamp).toLocaleDateString('en', {
+			return new Date(timestamp).toLocaleDateString(locale, {
 				month: 'short',
 				day: 'numeric'
 			});
 		} else {
-			return new Date(timestamp).toLocaleDateString('en', {
+			return new Date(timestamp).toLocaleDateString(locale, {
 				year: 'numeric',
 				month: 'short',
 				day: 'numeric'
