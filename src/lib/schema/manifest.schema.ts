@@ -20,8 +20,9 @@ import type { Infer } from './validation';
 
 export const manifestRecordSchema = {
 	id: 'string',
-	unsavedChanges: 'boolean',
-	poemSnippet: 'string'
+	snippet: 'string',
+	mtime: 'number',
+	size: 'number'
 } as const;
 
 export const poemMetaSchema = {
@@ -30,11 +31,5 @@ export const poemMetaSchema = {
 	timestamp: 'number'
 } as const;
 
-/*
-	This provides backwards compatibility for pre-autosave version.
-	Eventually unsavedChanges can be dropped completely.
-*/
-export type ManifestRecord = Omit<Infer<typeof manifestRecordSchema>, 'unsavedChanges'> &
-	Partial<Pick<Infer<typeof manifestRecordSchema>, 'unsavedChanges'>>;
-export type PoemMeta = Omit<Infer<typeof poemMetaSchema>, 'unsavedChanges'> &
-	Partial<Pick<Infer<typeof poemMetaSchema>, 'unsavedChanges'>>;
+export type ManifestRecord = Infer<typeof manifestRecordSchema>;
+export type PoemMeta = Infer<typeof poemMetaSchema> & Partial<Infer<typeof poemMetaSchema>>;

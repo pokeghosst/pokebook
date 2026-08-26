@@ -28,10 +28,12 @@ import {
 	deleteManifestEntry,
 	getManifestEntries,
 	updateManifestEntry,
-	writeToManifest
+	writeManifest
 } from './manifest.service';
 
 const SNIPPET_LENGTH = 128;
+
+type PoemId = string;
 
 export async function listPoems(): Promise<PoemMeta[]> {
 	if (!(await isPathExists('poems'))) return [];
@@ -57,8 +59,12 @@ export async function listPoems(): Promise<PoemMeta[]> {
 		.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
 }
 
-export async function getPoem(uri: string): Promise<Poem> {
-	const file = await Filesystem.readFile({ path: uri, encoding: Encoding.UTF8 });
+export async function getPoem(id: PoemId): Promise<Poem> {
+	const file = await Filesystem.readFile({
+		path: `poems/${id}.xml`,
+		directory: Directory.Documents,
+		encoding: Encoding.UTF8
+	});
 	const parsedFile = new XMLParser(
 		{ parseTagValue: false } /* Leave number-only tag values as strings */
 	).parse(file.data.toString());
@@ -87,7 +93,7 @@ export async function savePoem(poem: Poem, timestamp?: number): Promise<void> {
 
 	const manifestEntries = await getManifestEntries();
 
-	await writeToManifest([...manifestEntries, savedPoemManifest]);
+	await writeManifest([...manifestEntries, savedPoemManifest]);
 }
 
 export async function updatePoem(uri: string, poem: Poem): Promise<string> {
@@ -97,7 +103,7 @@ export async function updatePoem(uri: string, poem: Poem): Promise<string> {
 		encoding: Encoding.UTF8
 	});
 
-	const [directory, rest] = uri.split(/poems(?=[\/\\])/);
+	const [directory, rest] = uri.split(/poems(?=[/\\])/);
 	const [poemWithSlash, timestamp] = rest.split(/_|\.xml/);
 	const slash = poemWithSlash.slice(0, 1);
 
@@ -120,6 +126,6 @@ export async function deletePoem(uri: string): Promise<void> {
 	await deleteManifestEntry(uri);
 }
 
-function sliceSnippet(textToSlice: string, snippetLength: number) {
+export function sliceSnippet(textToSlice: string, snippetLength: number) {
 	return textToSlice.slice(0, snippetLength) + (textToSlice.length > snippetLength ? '...' : '');
 }

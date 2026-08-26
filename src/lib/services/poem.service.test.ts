@@ -25,7 +25,7 @@ import {
 	deleteManifestEntry,
 	getManifestEntries,
 	updateManifestEntry,
-	writeToManifest
+	writeManifest
 } from './manifest.service';
 import { deletePoem, getPoem, listPoems, savePoem, updatePoem } from './poem.service';
 
@@ -221,7 +221,7 @@ describe('savePoem', () => {
 
 		await savePoem(poem, 100);
 
-		expect(writeToManifest).toHaveBeenCalledWith([
+		expect(writeManifest).toHaveBeenCalledWith([
 			entry1,
 			{
 				id: `${FILESYSTEM_DIR}/Unnamed3_100.xml`,
@@ -235,7 +235,7 @@ describe('savePoem', () => {
 
 		await savePoem({ ...poem, text });
 
-		expect(writeToManifest).toHaveBeenCalledWith(
+		expect(writeManifest).toHaveBeenCalledWith(
 			expect.arrayContaining([
 				expect.objectContaining({
 					poemSnippet: 'a'.repeat(128) + '...'
@@ -247,7 +247,7 @@ describe('savePoem', () => {
 	it('should not truncate poem snippet if <128 chars', async () => {
 		await savePoem(poem);
 
-		expect(writeToManifest).toHaveBeenCalledWith(
+		expect(writeManifest).toHaveBeenCalledWith(
 			expect.arrayContaining([
 				expect.objectContaining({
 					poemSnippet: poem.text

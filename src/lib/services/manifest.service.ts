@@ -17,12 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 import { Directory, Encoding, Filesystem } from '../plugins/Filesystem';
-import type { ManifestRecord, PoemMeta } from '../schema/manifest.schema';
+import type { ManifestRecord } from '../schema/manifest.schema';
 import { isPathExists } from '../util/filesystem';
 
-export async function writeToManifest(manifest: ManifestRecord[]): Promise<void> {
+const MANIFEST_PATH = 'poems/manifest.json';
+
+export async function writeManifest(manifest: ManifestRecord[]): Promise<void> {
 	await Filesystem.writeFile({
-		path: `poems/poems_local.json`,
+		path: MANIFEST_PATH,
 		data: JSON.stringify(manifest),
 		directory: Directory.Documents,
 		encoding: Encoding.UTF8,
@@ -31,17 +33,17 @@ export async function writeToManifest(manifest: ManifestRecord[]): Promise<void>
 }
 
 export async function getManifestEntries(): Promise<ManifestRecord[]> {
-	if (!(await isPathExists('poems/')) || !(await isPathExists('poems/poems_local.json'))) return [];
+	if (!(await isPathExists('poems/')) || !(await isPathExists(MANIFEST_PATH))) return [];
 
 	const manifestFile = await Filesystem.readFile({
-		path: `poems/poems_local.json`,
+		path: MANIFEST_PATH,
 		directory: Directory.Documents,
 		encoding: Encoding.UTF8
 	});
 
 	try {
 		return JSON.parse(manifestFile.data.toString());
-	} catch (_) {
+	} catch {
 		console.warn('Could not parse manifest');
 
 		return [];
@@ -55,14 +57,14 @@ export async function updateManifestEntry(uri: string, newEntry: ManifestRecord)
 
 	if (savedManifest) {
 		const changedPoemManifest = { ...savedManifest, ...newEntry };
-		await writeToManifest(manifestEntries.map((p) => (p.id === uri ? changedPoemManifest : p)));
+		await writeManifest(manifestEntries.map((p) => (p.id === uri ? changedPoemManifest : p)));
 	} else {
-		await writeToManifest([...manifestEntries, newEntry]);
+		await writeManifest([...manifestEntries, newEntry]);
 	}
 }
 
 export async function deleteManifestEntry(uri: string) {
 	const manifestEntries = await getManifestEntries();
 
-	await writeToManifest(manifestEntries.filter((p) => p.id !== uri));
+	await writeManifest(manifestEntries.filter((p) => p.id !== uri));
 }

@@ -16,95 +16,60 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import type { Poem } from '$lib/schema/poem.schema';
-import {
-	BlobReader,
-	BlobWriter,
-	TextReader,
-	TextWriter,
-	ZipReader,
-	ZipWriter
-} from '@zip.js/zip.js';
-import { XMLBuilder, XMLParser } from 'fast-xml-parser';
-import { getPoem, listPoems, savePoem } from './poem.service';
+import { Directory, Filesystem } from '$lib/plugins/Filesystem';
+import { getManifestEntries, writeManifest } from './manifest.service';
+import { getPoem, sliceSnippet } from './poem.service';
 
-export async function exportPoems() {
-	const poemList = await listPoems();
+const UUID_FILENAME =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.xml$/i;
 
-	const filePromises = poemList.map(async (meta) => {
-		const poem = await getPoem(meta.id);
-		if (!poem) return [];
-
-		return [
-			{
-				data: new XMLBuilder({ format: true }).build(poem),
-				filename: `${poem.name}_${meta.timestamp}.xml`
-			}
-		];
-	});
-	const files = (await Promise.all(filePromises)).flat();
-
-	const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
-	const zipPromises = files.map(async (file) => {
-		return zipWriter.add(file.filename, new TextReader(file.data));
-	});
-
-	await Promise.all(zipPromises);
-	const blob = await zipWriter.close();
-
-	Object.assign(document.createElement('a'), {
-		download: `pokebook_poems_${Date.now()}.zip`,
-		href: URL.createObjectURL(blob),
-		textContent: 'Download zip file'
-	}).click();
+function isUuidFilename(name: string): boolean {
+	return UUID_FILENAME.test(name);
 }
 
-export async function importPoems(event: SubmitEvent) {
-	event.preventDefault();
-	const target = event.target as HTMLFormElement;
-	const fileInput = target.poemArchive as HTMLInputElement;
-	const file: File | undefined = fileInput.files?.[0];
+export async function runMigrations() {
+	const files = (
+		await Filesystem.readdir({
+			path: 'poems',
+			directory: Directory.Documents
+		})
+	).files;
 
-	if (!file || !['application/zip', 'application/x-zip-compressed'].includes(file.type)) {
-		// TODO: Toast here, localization
-		alert('Please select a zip file');
+	console.log(files);
+
+	const legacyFiles = files.filter(
+		(file) => file.name.endsWith('.xml') && !isUuidFilename(file.name)
+	);
+
+	if (legacyFiles.length === 0) {
 		return;
 	}
 
-	const blobReader = new BlobReader(file);
-	const zipReader = new ZipReader(blobReader);
+	const manifest = await getManifestEntries();
 
-	const entries = await zipReader.getEntries();
+	for (const file of legacyFiles) {
+		const id = crypto.randomUUID();
 
-	const poemPromises = entries.map(async (entry) => {
-		if (!entry.filename.endsWith('.xml') || !('getData' in entry)) return [];
+		const newPath = `poems/${id}.xml`;
 
-		const textWriter = new TextWriter();
+		await Filesystem.rename({
+			from: file.uri,
+			to: '/DOCUMENTS/' + newPath
+		});
 
-		const timestamp = parseInt(entry.filename.split(/_|\.xml/)[1]);
+		const manifestEntry = manifest.find((entry) => entry.id === id);
 
-		const contents = await entry.getData(textWriter);
-		try {
-			return {
-				contents: new XMLParser(
-					{ parseTagValue: false } /* Leave number-only tag values as strings */
-				).parse(contents) as Poem,
-				timestamp: Number.isNaN(timestamp) ? Date.now() : timestamp
-			};
-		} catch (e) {
-			console.warn('Failed to parse', entry.filename, e);
-			return [];
+		if (!manifestEntry) {
+			const poem = await getPoem(id);
+
+			manifest.push({
+				id,
+				snippet: sliceSnippet(poem.text, 128),
+				mtime: file.mtime,
+				size: file.size
+			});
 		}
-	});
-
-	await zipReader.close();
-
-	const poems = (await Promise.all(poemPromises)).flat().reverse();
-
-	for (const poem of poems) {
-		await savePoem(poem.contents, poem.timestamp);
 	}
 
-	// TODO: Toast here
-	alert(`Successfully imported ${poems.length} poems`);
+	await writeManifest(manifest);
 }

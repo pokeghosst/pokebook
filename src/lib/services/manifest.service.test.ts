@@ -24,7 +24,7 @@ import {
 	deleteManifestEntry,
 	getManifestEntries,
 	updateManifestEntry,
-	writeToManifest
+	writeManifest
 } from './manifest.service';
 
 vi.mock('../plugins/Filesystem');
@@ -49,7 +49,7 @@ describe('writeToManifest', () => {
 	it('should serialize the manifest and write it to file', async () => {
 		vi.mocked(Filesystem.writeFile).mockResolvedValue({ uri: MANIFEST_PATH });
 
-		await writeToManifest([entry1, entry2]);
+		await writeManifest([entry1, entry2]);
 
 		expect(Filesystem.writeFile).toHaveBeenCalledWith(
 			expect.objectContaining({

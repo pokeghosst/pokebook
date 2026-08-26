@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { localizationLanguages } from '$lib/constants/LocalizationLanguages';
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { themeModes } from '$lib/constants/themeModes';
-	import { exportPoems, importPoems } from '$lib/services/migration.service';
+	import { exportPoems, importPoems } from '$lib/services/mover';
 	import { activeLanguage, dayTheme, nightTheme, themeMode } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
