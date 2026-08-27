@@ -1,19 +1,19 @@
-@import '../variables/color-variables';
+@use '../variables/color-variables';
 
 $theme-light-lemon: (
-	$--base-background: #fefce8,
-	$--base-color: #422006,
-	$--notebook-header-bg: #fef9c3,
-	$--notebook-header-color: #422006,
-	$--notebook-box-shadow-bg: #fffcdb,
-	$--notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
-	$--list-item-hover-color: #fffcdb,
-	$--notebook-paper-background: #fffcdb,
-	$--notebook-paper-line: #fde047,
-	$--notebook-text-color: #422006,
-	$--border-color: #fde047,
-	$--border-color-darker: #fde047,
-	$--select-background: #fffcdb,
-	$--select-text-color: #422006,
-	$--round-button-background: #fefce8
+	color-variables.$base-background: #fefce8,
+	color-variables.$base-color: #422006,
+	color-variables.$notebook-header-bg: #fef9c3,
+	color-variables.$notebook-header-color: #422006,
+	color-variables.$notebook-box-shadow-bg: #fffcdb,
+	color-variables.$notebook-box-shadow-line: rgba(131, 24, 67, 0.15),
+	color-variables.$list-item-hover-color: #fffcdb,
+	color-variables.$notebook-paper-background: #fffcdb,
+	color-variables.$notebook-paper-line: #fde047,
+	color-variables.$notebook-text-color: #422006,
+	color-variables.$border-color: #fde047,
+	color-variables.$border-color-darker: #fde047,
+	color-variables.$select-background: #fffcdb,
+	color-variables.$select-text-color: #422006,
+	color-variables.$round-button-background: #fefce8
 );

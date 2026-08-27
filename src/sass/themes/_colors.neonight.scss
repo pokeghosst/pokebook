@@ -1,21 +1,21 @@
-@import '../variables/color-variables';
+@use '../variables/color-variables';
 
 $theme-dark-neo: (
-	$--base-background: #262626,
-	$--base-color: #d4d4d4,
-	$--notebook-header-bg: $--base-background,
-	$--notebook-header-color: $--base-color,
-	$--notebook-paper-background: #262626,
-	$--notebook-paper-line: #404040,
-	$--notebook-text-color: $--base-color,
-	$--list-item-hover-color: #404040,
-	$--border-color: #52525b,
-	$--border-color-darker: #71717a,
-	$--notebook-box-shadow-bg: $--base-background,
-	$--notebook-box-shadow-line: $--base-background,
-	$--box-shadow-color1: #fff,
-	$--box-shadow-color2: #fff,
-	$--select-background: $--base-background,
-	$--select-text-color: #d4d4d4,
-	$--round-button-background: $--base-background
+	color-variables.$base-background: #262626,
+	color-variables.$base-color: #d4d4d4,
+	color-variables.$notebook-header-bg: color-variables.$base-background,
+	color-variables.$notebook-header-color: color-variables.$base-color,
+	color-variables.$notebook-paper-background: #262626,
+	color-variables.$notebook-paper-line: #404040,
+	color-variables.$notebook-text-color: color-variables.$base-color,
+	color-variables.$list-item-hover-color: #404040,
+	color-variables.$border-color: #52525b,
+	color-variables.$border-color-darker: #71717a,
+	color-variables.$notebook-box-shadow-bg: color-variables.$base-background,
+	color-variables.$notebook-box-shadow-line: color-variables.$base-background,
+	color-variables.$box-shadow-color1: #fff,
+	color-variables.$box-shadow-color2: #fff,
+	color-variables.$select-background: color-variables.$base-background,
+	color-variables.$select-text-color: #d4d4d4,
+	color-variables.$round-button-background: color-variables.$base-background
 );
