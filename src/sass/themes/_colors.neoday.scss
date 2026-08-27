@@ -1,21 +1,21 @@
-@import '../variables/color-variables';
+@use '../variables/color-variables';
 
 $theme-light-neo: (
-	$--base-background: #fff,
-	$--base-color: #333,
-	$--notebook-header-bg: #fff,
-	$--notebook-header-color: #333,
-	$--notebook-paper-background: #fff,
-	$--notebook-paper-line: #f4f4f5,
-	$--notebook-text-color: #333,
-	$--list-item-hover-color: #f3f4f6,
-	$--border-color: #d4d4d8,
-	$--border-color-darker: #d4d4d8,
-	$--notebook-box-shadow-bg: #fff,
-	$--notebook-box-shadow-line: #fff,
-	$--box-shadow-color1: #fff,
-	$--box-shadow-color2: #fff,
-	$--select-background: #fff,
-	$--select-text-color: #333,
-	$--round-button-background: #fff
+	color-variables.$base-background: #fff,
+	color-variables.$base-color: #333,
+	color-variables.$notebook-header-bg: #fff,
+	color-variables.$notebook-header-color: #333,
+	color-variables.$notebook-paper-background: #fff,
+	color-variables.$notebook-paper-line: #f4f4f5,
+	color-variables.$notebook-text-color: #333,
+	color-variables.$list-item-hover-color: #f3f4f6,
+	color-variables.$border-color: #d4d4d8,
+	color-variables.$border-color-darker: #d4d4d8,
+	color-variables.$notebook-box-shadow-bg: #fff,
+	color-variables.$notebook-box-shadow-line: #fff,
+	color-variables.$box-shadow-color1: #fff,
+	color-variables.$box-shadow-color2: #fff,
+	color-variables.$select-background: #fff,
+	color-variables.$select-text-color: #333,
+	color-variables.$round-button-background: #fff
 );
