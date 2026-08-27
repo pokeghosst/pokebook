@@ -85,7 +85,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	function sanitizeTitle(e: InputChangeEvent<HTMLInputElement>) {
-		e.currentTarget.value = e.currentTarget.value.replace(/[./_]/g, '');
+		// e.currentTarget.value = e.currentTarget.value.replace(/[./_]/g, '');
+		e.currentTarget.value = e.currentTarget.value;
 
 		return e;
 	}
@@ -138,7 +139,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			class="paper {justification.value} {pokehelp.value ? 'l-padded-for-pokehelp' : ''}"
 			id="poem-textarea"
 			style="font-size: {fontSize.value}px"
-			bind:this={poemTextarea}
-		></textarea>
+			bind:this={poemTextarea}></textarea>
 	</div>
 </div>

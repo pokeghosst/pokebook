@@ -18,6 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { CURRENT_VERSION } from '$lib/constants/version';
+	import { runMigrations } from '$lib/services/migration.service';
 	import {
 		activeLanguage,
 		dayTheme,
@@ -32,11 +33,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { Toaster } from 'svelte-5-french-toast';
 	import { modals, Modals } from 'svelte-modals';
 	import { createBubbler } from 'svelte/legacy';
+	import { pwaInfo } from 'virtual:pwa-info';
 	import Header from '../components/Header.svelte';
 	import Modal from '../components/Modal.svelte';
 	import NewVersionModal from '../components/NewVersionModal.svelte';
 	import Sidebar from '../components/Sidebar.svelte';
-	import { pwaInfo } from 'virtual:pwa-info';
 
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -60,6 +61,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			}
 			latestSeenVersion.value = CURRENT_VERSION;
 		}
+		runMigrations();
 	});
 
 	let webManifestLink = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
