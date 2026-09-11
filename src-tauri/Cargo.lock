@@ -2338,7 +2338,7 @@ dependencies = [
 
 [[package]]
 name = "pokebook"
-version = "3.3.0+2"
+version = "3.4.0+2"
 dependencies = [
  "log",
  "serde",

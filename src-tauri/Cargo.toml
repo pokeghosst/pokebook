@@ -1,6 +1,6 @@
 [package]
 name = "pokebook"
-version = "3.3.0+2"
+version = "3.4.0+2"
 description = "The ultimate digital notebook for writing poetry"
 authors = ["pokeghost"]
 license = "AGPL-3.0"
