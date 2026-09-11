@@ -19,6 +19,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 type RelativeTimeUnit = 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second';
 
 const rtfCache = new Map<string, Intl.RelativeTimeFormat>();
+const units: Record<RelativeTimeUnit, number> = {
+	year: 24 * 60 * 60 * 1000 * 365,
+	month: (24 * 60 * 60 * 1000 * 365) / 12,
+	day: 24 * 60 * 60 * 1000,
+	hour: 60 * 60 * 1000,
+	minute: 60 * 1000,
+	second: 1000
+};
 
 function getRelativeTimeFormat(locale: string) {
 	let rtf = rtfCache.get(locale);
@@ -39,15 +47,6 @@ function getRelativeTimeFormat(locale: string) {
 export default function formatTimeAgo(timestamp: number, locale: string) {
 	const now = Date.now();
 	const elapsed = now - timestamp;
-
-	const units: Record<RelativeTimeUnit, number> = {
-		year: 24 * 60 * 60 * 1000 * 365,
-		month: (24 * 60 * 60 * 1000 * 365) / 12,
-		day: 24 * 60 * 60 * 1000,
-		hour: 60 * 60 * 1000,
-		minute: 60 * 1000,
-		second: 1000
-	};
 
 	if (elapsed < units.minute) {
 		return 'Just now';
