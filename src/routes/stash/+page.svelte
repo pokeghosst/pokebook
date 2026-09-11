@@ -66,7 +66,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 							</p>
 							<p class="list-poem-snippet">{record.poemSnippet}</p>
 						</div>
-						<div><TimeAgo timestamp={record.timestamp} locale={activeLanguage.value} /></div>
+						<div class="list-poem-time">
+							<TimeAgo timestamp={record.timestamp} locale={activeLanguage.value} />
+						</div>
 					</button>
 				</div>
 			{/each}
