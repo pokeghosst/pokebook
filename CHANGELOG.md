@@ -1,5 +1,19 @@
 # Changelog
 
+## [v3.4] - UNRELEASED
+
+### Added
+
+- Offline mode (PWA)
+- Relative time display for poems in the list
+
+### Fixed
+
+- Remove redundant Capacitor share plugin
+- Fix Sass deprecation warnings
+- Add localization for serif and sans serif font options
+- Fix Poke!Help mode staying active after setting language to other than English
+
 ## [v3.3] - 2026-07-10
 
 ### Added
