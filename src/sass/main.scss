@@ -1,6 +1,7 @@
 @use './abstracts/mq-settings';
 
 @use 'variables/font-variables';
+@use 'abstracts/responsive-util';
 @use 'abstracts/mixins';
 
 @use 'base/base';

@@ -28,11 +28,25 @@
 	border-right: 1px solid var(--border-color);
 	z-index: inherit;
 	background-color: var(--base-background);
+
+	@include mq.mq($from: sprout) {
+		width: fit-content;
+		left: 0;
+
+		.list-item svg {
+			margin-right: 0;
+		}
+	}
 }
 
 .sidebar-nav--open {
 	left: 0;
 	transform: translateX(0);
+
+	// @include mq.mq($from: sprout) {
+	// 	left: inherit;
+	// 	transform: none;
+	// }
 }
 
 .sidebar-nav-items {
@@ -45,7 +59,6 @@
 	bottom: 0;
 	text-align: left;
 	border-top: 1px solid var(--border-color);
-	padding: 1rem;
 	font-size: 15px;
 
 	ul {
@@ -54,5 +67,22 @@
 		li:first-of-type {
 			margin-right: 10px;
 		}
+	}
+
+	@include mq.mq($until: sprout) {
+		padding: 1rem;
+
+		.list-item {
+			padding: 0;
+			border-bottom: none;
+		}
+	}
+}
+
+.desktop-only-icon {
+	display: none;
+
+	@include mq.mq($from: sprout) {
+		display: block;
 	}
 }

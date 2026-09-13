@@ -52,7 +52,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <div class="header-nav-wrapper">
-	<button onclick={toggleSidebar}>
+	<button onclick={toggleSidebar} class="sidebar-toggle">
 		<Menu />
 	</button>
 	{#if activeLanguage.value === 'en'}

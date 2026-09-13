@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
+	import { Keyboard, MessageCircleQuestion } from 'lucide-svelte';
 
 	const bubble = createBubbler();
 
@@ -54,8 +55,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			{#each navMenuItems as item, index (navMenuItems[index])}
 				<a href={item.url} onclick={() => handleSidebarItemClick()}>
 					<div class="list-item">
-						<item.icon />
-						{$t(item.label)}
+						<item.icon aria-hidden="true" />
+						<span class="visually-hidden-desktop">{$t(item.label)}</span>
 					</div>
 				</a>
 			{/each}
@@ -64,15 +65,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<button
 				onclick={() =>
 					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
-				>{$t('menu.shortcuts')}</button
 			>
-			<ul>
-				<li>
-					<button onclick={() => modals.open(Modal, { content: AboutModal })}
-						>{$t('menu.about')}</button
-					>
-				</li>
-			</ul>
+				<div class="list-item">
+					<Keyboard aria-hidden="true" class="desktop-only-icon" />
+					<span class="visually-hidden-desktop">{$t('menu.shortcuts')}</span>
+				</div>
+			</button>
+
+			<button onclick={() => modals.open(Modal, { content: AboutModal })}>
+				<div class="list-item">
+					<MessageCircleQuestion aria-hidden="true" class="desktop-only-icon" />
+					<span class="visually-hidden-desktop">{$t('menu.about')}</span>
+				</div></button
+			>
 		</div>
 	</div>
 </div>
