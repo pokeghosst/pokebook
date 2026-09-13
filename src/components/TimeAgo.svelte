@@ -1,4 +1,4 @@
-/*
+<!--
 PokeBook -- Pokeghost's poetry noteBook
 Copyright (C) 2026 Pokeghost.
 
@@ -14,21 +14,12 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+-->
 
-import { makeProxy } from '../util/makeProxy';
-import type { SharePlugin } from './SharePlugin';
+<script lang="ts">
+	import formatTimeAgo from '$lib/time/formatTimeAgo';
 
-export const Share = makeProxy<SharePlugin>(async () => {
-	if (window.__TAURI_INTERNALS__) {
-		/*
-			TODO: This needs testing, maybe there's no need for a plugin.
-			Using web plugin as the fallback for now.
-		*/
-		return new (await import('./ShareWeb')).ShareWeb();
-	} else {
-		return new (await import('./ShareWeb')).ShareWeb();
-	}
-});
+	let { timestamp, locale }: { timestamp: number; locale: string } = $props();
+</script>
 
-export * from './SharePlugin';
+<time datetime={new Date(timestamp).toISOString()}>{formatTimeAgo(timestamp, locale)}</time>

@@ -28,5 +28,10 @@
 		&-name {
 			font-weight: bold;
 		}
+
+		&-time {
+			min-width: 82px;
+			text-align: right;
+		}
 	}
 }

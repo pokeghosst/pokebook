@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { nightThemes } from '$lib/constants/NightThemes';
 	import { themeModes } from '$lib/constants/themeModes';
 	import { exportPoems, importPoems } from '$lib/services/migration.service';
-	import { activeLanguage, dayTheme, nightTheme, themeMode } from '$lib/state.svelte';
+	import { activeLanguage, dayTheme, nightTheme, pokehelp, themeMode } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import { onMount } from 'svelte';
@@ -77,7 +77,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<SettingsSelect
 		parameterName="language"
 		labelName={$t('settings.language')}
-		bind:bindParameter={activeLanguage.value}
+		bind:bindParameter={
+			() => activeLanguage.value,
+			(v) => {
+				activeLanguage.value = v;
+				if (v !== 'en') {
+					pokehelp.value = false;
+				}
+			}
+		}
 		options={localizationLanguages}
 		localizeLabel={false}
 	/>

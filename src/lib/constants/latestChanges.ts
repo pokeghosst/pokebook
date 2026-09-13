@@ -1,7 +1,6 @@
 export const latestChanges = [
-	'New desktop version',
-	'Removed redundant Save button for stashed poem',
-	'Cleanup and performance optimizations',
-	'Display date according to locale',
-	'Fixed missing poem contents when sharing'
+	'Added offline mode for web version',
+	'Changed poem time to relative format',
+	'Fixed Poke!Help mode staying enabled after switching language',
+	'Added proper localization for serif and sans fonts'
 ];

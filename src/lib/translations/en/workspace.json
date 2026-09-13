@@ -13,5 +13,7 @@
 	"unsavedChanges": "You have unsaved changes in",
 	"emptyPoemList": "Your stage is ready and the spotlight's on, but the verses are yet to bloom.",
 	"isSavePoem": "Save this poem?",
-	"unsaved": "unsaved changes"
+	"unsaved": "unsaved changes",
+	"serif": "Serif",
+	"sans-serif": "Sans-serif"
 }
