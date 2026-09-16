@@ -1,4 +1,4 @@
-import { Bolt, Layers, SquareText } from '@lucide/svelte';
+import { Bolt, Book, Library, SquareText } from '@lucide/svelte';
 import type { MenuItem } from '../types';
 
 export const navMenuItems: MenuItem[] = [
@@ -8,7 +8,7 @@ export const navMenuItems: MenuItem[] = [
 		url: '/'
 	},
 	{
-		icon: Layers,
+		icon: Book,
 		label: 'menu.stash',
 		url: '/stash'
 	},

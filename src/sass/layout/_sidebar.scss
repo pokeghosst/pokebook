@@ -20,6 +20,8 @@
 }
 
 .sidebar {
+	$sidebar: &;
+	padding-top: 16px;
 	position: fixed;
 	top: 0;
 	left: -250px;
@@ -29,21 +31,37 @@
 	z-index: inherit;
 	background-color: var(--desk-background);
 
-	.list-item {
-		padding: 1rem;
+	&-items {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
 
-		svg {
+		#{$sidebar}-item {
+			border-radius: 9px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			opacity: 0.42;
+			padding: 10px;
+
+			svg {
+				width: 17px;
+				height: 17px;
+				color: var(--ink);
+			}
+
+			&:hover,
+			&.active {
+				opacity: 1;
+				background-color: var(--hover-color);
+			}
 		}
 	}
 
 	@include mq.mq($from: sprout) {
-		width: fit-content;
+		width: 58px;
 		left: 0;
-
-		.list-item svg {
-			margin-right: 0;
-		}
 	}
 }
 
@@ -57,10 +75,6 @@
 	// }
 }
 
-.sidebar-nav-items {
-	margin-top: 1rem;
-}
-
 .sidebar-footer {
 	width: 100%;
 	position: absolute;
@@ -68,6 +82,10 @@
 	text-align: left;
 	border-top: 1px solid var(--border-color);
 	font-size: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
 
 	ul {
 		display: flex;

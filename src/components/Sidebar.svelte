@@ -26,6 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
+	import { page } from '$app/state';
 
 	const bubble = createBubbler();
 
@@ -51,29 +52,29 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		tabindex="0"
 	></div>
 	<div class="sidebar {sidebarNavOpenClass}">
-		<div class="sidebar-nav-items">
+		<div class="sidebar-items">
 			{#each navMenuItems as item, index (navMenuItems[index])}
 				<a href={item.url} onclick={() => handleSidebarItemClick()}>
-					<div class="list-item">
-						<item.icon aria-hidden="true" />
+					<div class="sidebar-item" class:active={page.route.id === item.url}>
+						<item.icon aria-hidden="true" strokeWidth={2} />
 						<span class="visually-hidden-desktop">{$t(item.label)}</span>
 					</div>
 				</a>
 			{/each}
 		</div>
-		<div class="sidebar-footer">
+		<div class="sidebar-footer sidebar-items">
 			<button
 				onclick={() =>
 					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 			>
-				<div class="list-item">
+				<div class="sidebar-item">
 					<Command aria-hidden="true" class="desktop-only-icon" />
 					<span class="visually-hidden-desktop">{$t('menu.shortcuts')}</span>
 				</div>
 			</button>
 
 			<button onclick={() => modals.open(Modal, { content: AboutModal })}>
-				<div class="list-item">
+				<div class="sidebar-item">
 					<Info aria-hidden="true" class="desktop-only-icon" />
 					<span class="visually-hidden-desktop">{$t('menu.about')}</span>
 				</div></button
