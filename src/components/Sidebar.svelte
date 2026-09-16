@@ -54,11 +54,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<div class="sidebar {sidebarNavOpenClass}">
 		<div class="sidebar-items">
 			{#each navMenuItems as item, index (navMenuItems[index])}
-				<a href={item.url} onclick={() => handleSidebarItemClick()}>
-					<div class="sidebar-item" class:active={page.route.id === item.url}>
-						<item.icon aria-hidden="true" strokeWidth={2} />
-						<span class="visually-hidden-desktop">{$t(item.label)}</span>
-					</div>
+				<a
+					href={item.url}
+					onclick={() => handleSidebarItemClick()}
+					class="sidebar-item"
+					class:active={page.route.id === item.url}
+				>
+					<item.icon aria-hidden="true" strokeWidth={2} />
+					<span class="visually-hidden-desktop">{$t(item.label)}</span>
 				</a>
 			{/each}
 		</div>
@@ -66,19 +69,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 			<button
 				onclick={() =>
 					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
+				class="sidebar-item"
 			>
-				<div class="sidebar-item">
-					<Command aria-hidden="true" class="desktop-only-icon" />
-					<span class="visually-hidden-desktop">{$t('menu.shortcuts')}</span>
-				</div>
+				<Command aria-hidden="true" class="desktop-only-icon" />
+				<span class="visually-hidden-desktop">{$t('menu.shortcuts')}</span>
 			</button>
 
-			<button onclick={() => modals.open(Modal, { content: AboutModal })}>
-				<div class="sidebar-item">
-					<Info aria-hidden="true" class="desktop-only-icon" />
-					<span class="visually-hidden-desktop">{$t('menu.about')}</span>
-				</div></button
-			>
+			<button onclick={() => modals.open(Modal, { content: AboutModal })} class="sidebar-item">
+				<Info aria-hidden="true" class="desktop-only-icon" />
+				<span class="visually-hidden-desktop">{$t('menu.about')}</span>
+			</button>
 		</div>
 	</div>
 </div>

@@ -56,6 +56,11 @@
 				opacity: 1;
 				background-color: var(--hover-color);
 			}
+
+			@include mq.mq($until: sprout) {
+				width: 85%;
+				gap: 9px;
+			}
 		}
 	}
 
