@@ -10,6 +10,8 @@
 
 @use 'themes/font-classes';
 
+@use 'themes/colors.tiramisu' as tiramisu;
+
 @use 'themes/colors.vanilla';
 @use 'themes/colors.strawberry' as colors2;
 @use 'themes/colors.lemon' as colors3;
@@ -48,6 +50,12 @@
 @use 'components/toast';
 @use 'components/toolbar-menu';
 @use 'components/button';
+
+// New themes
+
+:root.tiramisu {
+	@include mixins.spread-map(tiramisu.$theme-light-tiramisu);
+}
 
 // Day themes
 
@@ -153,4 +161,8 @@
 
 .workspace.jphand {
 	@include mixins.spread-map(font-classes.$font-family-jphand);
+}
+
+.workspace.garamond {
+	@include mixins.spread-map(font-classes.$font-family-garamond);
 }

@@ -154,3 +154,21 @@
 		local(''),
 		url('/fonts/Consolas.woff') format('woff');
 }
+
+@font-face {
+	font-family: 'EB Garamond';
+	font-style: normal;
+	src: url('/fonts/eb-garamond-latin-wght-normal.woff2');
+	src:
+		local(''),
+		url('/fonts/eb-garamond-latin-wght-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	font-style: normal;
+	src: url('/fonts/IBMPlexMono-Regular.woff2');
+	src:
+		local(''),
+		url('/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+}

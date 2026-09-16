@@ -1,5 +1,9 @@
+:root {
+	--secondary-font: 'IBM Plex Mono', monospace;
+}
+
 body {
-	background-color: var(--base-background);
+	background-color: var(--desk-background);
 	color: var(--base-color);
 	font-family:
 		Lato,

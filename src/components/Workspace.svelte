@@ -74,7 +74,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <div class="toolbar"><Toolbar {actions} /></div>
 <div class="workspace {fullWidthPad.value ? 'l-full-width' : ''} {currentState} {font.value}">
 	<div class="notebook-container">
-		<div class="notebook-container-toolbar">
+		<!-- <div class="notebook-container-toolbar">
 			<div>
 				<button onclick={expandPoemPad}>
 					<ChevronsLeftRight class="round-button" />
@@ -83,7 +83,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					<ArrowRightLeft class="round-button" />
 				</button>
 			</div>
-		</div>
+		</div> -->
 		{@render pad(views[padPositions.value[0]])}
 	</div>
 	<div class="notebook-container">

@@ -18,7 +18,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import type { OnlyPoem } from '$lib/schema/poem.schema';
-	import { fontSize, justification, pokehelp } from '$lib/state.svelte';
+	import { justification, pokehelp } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
 	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { getContext, onMount } from 'svelte';
@@ -99,46 +99,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<!-- TODO: https://codeberg.org/psuite/pokebook/issues/81 -->
-{#snippet syllableLine(syllableCount: number, line: string)}
-	<div style="font-size: {fontSize.value}px; padding: 0; margin-top: 0; margin-bottom: 0">
-		<span class="poem-syllable-count" style="margin-left: 12px">{syllableCount || ''}</span
-		>{#if line}<span style="color: transparent">{line}</span>{:else}<br />{/if}
-	</div>
-{/snippet}
-
 <div class="notebook" id="poem-notebook">
-	<input
-		class="notebook-header"
-		value={poem.name}
-		onbeforeinput={sanitizeTitle}
-		oninput={(e) => {
-			handleNameChange(sanitizeTitle(e));
-		}}
-		placeholder={$t('workspace.unnamed')}
-	/>
-	<div class="notebook-inner-wrapper">
-		{#if pokehelp.value}
-			<div class="poem-stats">
-				{$t('workspace.words')}: {stats.words} | {$t('workspace.characters')}: {stats.chars} | {$t(
-					'workspace.lines'
-				)}: {stats.lines}
-			</div>
-			<div class="notebook-paper-overlay poem-syllable-rows" aria-hidden="true">
-				{#each lines as line, i (`syllable-line-${i}`)}
-					{@render syllableLine(syllableCounts[i], line)}
-				{/each}
-				<!-- <div style="color: red; font-size: {fontSize.value}px;">{@html poem.text.split("\n").map((line, i) => `<span style="position: absolute; left: 0;">${syllableCounts[i]}</span>` + line).join("\n")}</div> -->
-				<!-- <div style="color: red; font-size: {fontSize.value}px;">{poem.text}</div> -->
-			</div>
-		{/if}
-		<textarea
-			value={poem.text}
-			oninput={handleTextChange}
-			class="paper {justification.value} {pokehelp.value ? 'l-padded-for-pokehelp' : ''}"
-			id="poem-textarea"
-			style="font-size: {fontSize.value}px"
-			bind:this={poemTextarea}
-		></textarea>
+	<div class="notebook-header">
+		<input
+			value={poem.name}
+			onbeforeinput={sanitizeTitle}
+			oninput={(e) => {
+				handleNameChange(sanitizeTitle(e));
+			}}
+			placeholder={$t('workspace.unnamed')}
+		/>
+		<div class="poem-metrics">{stats.lines} lines</div>
 	</div>
+	<textarea
+		value={poem.text}
+		oninput={handleTextChange}
+		class="paper {justification.value}"
+		id="poem-textarea"
+		bind:this={poemTextarea}></textarea>
 </div>

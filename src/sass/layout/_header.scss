@@ -30,6 +30,6 @@
 
 .sidebar-toggle {
 	@include mq.mq($from: sprout) {
-		visibility: hidden;
+		display: none;
 	}
 }

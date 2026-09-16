@@ -1,5 +1,6 @@
 import type { Icon } from 'lucide-svelte';
-import type { ComponentType } from 'svelte';
+import type { Component } from 'svelte';
+import type { LucideProps } from '@lucide/svelte';
 
 export type Mutable<T> = {
 	-readonly [K in keyof T]: T[K];
@@ -23,10 +24,10 @@ export interface PoemCacheRecord {
 	poemSnippet: string;
 }
 
-export type MenuItem = { icon: ComponentType<Icon>; label: string; url: string };
+export type MenuItem = { icon: Component<LucideProps, {}, ''>; label: string; url: string };
 
 export type ToolbarItem = {
-	icon: ComponentType<Icon>;
+	icon: Component<LucideProps, {}, ''>;
 	action: () => void;
 	label: string;
 	disabled?: boolean;

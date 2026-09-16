@@ -64,3 +64,11 @@ $font-family-jphand: (
 	font-variables.$notebook-font-family: 'JP Hand',
 	font-variables.$notebook-font-size: 30px
 );
+
+$font-family-garamond: (
+	font-variables.$notebook-font-family: (
+		'EB Garamond',
+		Georgia,
+		serif
+	)
+);

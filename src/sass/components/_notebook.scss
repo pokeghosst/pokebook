@@ -1,8 +1,69 @@
 @use '../vendors/mq';
 
 .notebook {
+	$notebook: &;
+	background-color: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	box-shadow:
+		var(--line-lighter) 0px 1px 1px,
+		var(--line-lightest) 0px 22px 44px -26px;
+	padding: 36px 52px 36px 62px;
+
+	&.note {
+		padding: 36px 30px;
+
+		#{$notebook}-header {
+			margin-bottom: 24px;
+			font:
+				400 9.5px / 1 'IBM Plex Mono',
+				monospace;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--text-light);
+		}
+	}
+
 	@include mq.mq($until: seedling) {
 		flex: none;
+	}
+
+	&-header {
+		margin-bottom: 26px;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+
+		input {
+			width: 100%;
+			height: 50px;
+			line-height: 50px;
+			border-radius: 5px 5px 0 0;
+			letter-spacing: -0.005em;
+			overflow: hidden;
+			position: relative;
+			z-index: 1;
+			opacity: 1;
+			font: 500 27px / 1 var(--notebook-font-family);
+			-webkit-text-fill-color: var(--notebook-header-color);
+			color: var(--ink);
+			background-color: inherit;
+
+			&::placeholder {
+				opacity: 0.5;
+			}
+		}
+	}
+
+	textarea {
+		font: 400 17.5px / 1.9 var(--notebook-font-family);
+		width: 100%;
+		overflow-y: hidden;
+		resize: none;
+		min-height: 60vh;
+		color: var(--ink);
+		background-color: inherit;
+		// padding-bottom: 34px;
 	}
 
 	textarea.left {
@@ -16,103 +77,13 @@
 	textarea.right {
 		text-align: right;
 	}
-
-	textarea,
-	.paper-highlight-overlay,
-	.poem-syllable-rows {
-		font-family: var(--notebook-font-family);
-		font-size: var(--notebook-font-size);
-	}
 }
 
-.notebook-header {
-	width: 100%;
-	height: 50px;
-	line-height: 50px;
-	border-radius: 5px 5px 0 0;
-	padding-left: 1.25rem;
-	font-weight: 700;
-	overflow: hidden;
-	position: relative;
-	z-index: 1;
-	opacity: 1;
-	background-color: var(--notebook-header-bg);
-	color: var(--notebook-header-color);
-	-webkit-text-fill-color: var(--notebook-header-color);
-
-	&::placeholder {
-		opacity: 0.5;
-	}
-}
-
-.paper {
-	width: 100%;
-	padding: 34px;
-	line-height: 30px;
-	overflow-y: hidden;
-	resize: none;
-	min-height: 60vh;
-	background: repeating-linear-gradient(
-		var(--notebook-paper-background),
-		var(--notebook-paper-background) 29px,
-		var(--notebook-paper-line) 29px,
-		var(--notebook-paper-line) 30px
-	);
-	box-shadow:
-		0 1px 1px var(--notebook-box-shadow-line),
-		0 10px 0 -5px var(--notebook-box-shadow-bg),
-		0 10px 1px -4px var(--notebook-box-shadow-line),
-		0 20px 0 -10px var(--notebook-box-shadow-bg),
-		0 20px 1px -9px var(--notebook-box-shadow-line);
-	color: var(--notebook-text-color);
-}
-
-.notebook-paper-overlay {
-	position: absolute;
-	user-select: none;
-	white-space: pre-wrap;
-	height: 100%;
-	width: 100%;
-	line-height: 30px;
-	padding: 34px 34.1px 34px 55px;
-	z-index: 1;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	pointer-events: none;
-}
-
-.paper-highlight-overlay {
-	color: transparent;
-}
-
-.l-padded-for-pokehelp {
-	padding-left: 55px;
-}
-
-.notebook-inner-wrapper {
-	width: 100%;
-	position: relative;
-}
-
-.poem-stats {
-	position: absolute;
-	z-index: 1;
-	right: 5px;
-	top: 5px;
-	color: var(--notebook-text-color);
-}
-
-.poem-syllable-count {
-	// margin-left: -45px;
-	position: absolute;
-	left: 0;
-}
-
-.poem-syllable-rows {
-	opacity: 0.5;
-	color: var(--notebook-text-color);
+.poem-metrics {
+	font: 400 9.5px / 1 var(--secondary-font);
+	letter-spacing: 0.1em;
+	color: rgba(70, 55, 32, 0.3);
+	text-transform: uppercase;
 }
 
 // Neo theme overrides

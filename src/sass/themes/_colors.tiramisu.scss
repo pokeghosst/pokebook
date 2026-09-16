@@ -1,0 +1,19 @@
+@use '../variables/color-variables-new';
+@use 'sass:color';
+
+$tiramisu-brown: hsl(36.316deg, 37%, 20%);
+
+$theme-light-tiramisu: (
+	// Base
+	color-variables-new.$desk-background: hsl(40deg, 30%, 88.2%),
+	color-variables-new.$paper: hsl(42.857, 100%, 99%),
+	color-variables-new.$ink: hsl(36, 12%, 16%),
+	color-variables-new.$text-light: color.change($tiramisu-brown, $alpha: 0.4),
+	// Lines
+	color-variables-new.$line-darker: color.change($tiramisu-brown, $alpha: 0.08),
+	color-variables-new.$line: color.change($tiramisu-brown, $alpha: 0.07),
+	color-variables-new.$line-lighter: color.change($tiramisu-brown, $alpha: 0.05),
+	color-variables-new.$line-lightest: color.change($tiramisu-brown, $alpha: 0.45),
+	// Hover
+	color-variables-new.$hover-color: color.change($tiramisu-brown, $alpha: 0.1)
+);

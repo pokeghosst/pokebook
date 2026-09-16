@@ -20,12 +20,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import { navMenuItems } from '$lib/constants/NavMenuItems';
 	import { sidebarOpen } from '$lib/state.svelte';
 	import { t } from '$lib/translations';
+	import { Command, Info } from '@lucide/svelte';
 	import { modals } from 'svelte-modals';
 	import { createBubbler, run } from 'svelte/legacy';
 	import AboutModal from './AboutModal.svelte';
 	import HotkeysModal from './HotkeysModal.svelte';
 	import Modal from './Modal.svelte';
-	import { Keyboard, MessageCircleQuestion } from 'lucide-svelte';
 
 	const bubble = createBubbler();
 
@@ -67,14 +67,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 					modals.open(Modal, { title: $t('workspace.hotkeys'), content: HotkeysModal })}
 			>
 				<div class="list-item">
-					<Keyboard aria-hidden="true" class="desktop-only-icon" />
+					<Command aria-hidden="true" class="desktop-only-icon" />
 					<span class="visually-hidden-desktop">{$t('menu.shortcuts')}</span>
 				</div>
 			</button>
 
 			<button onclick={() => modals.open(Modal, { content: AboutModal })}>
 				<div class="list-item">
-					<MessageCircleQuestion aria-hidden="true" class="desktop-only-icon" />
+					<Info aria-hidden="true" class="desktop-only-icon" />
 					<span class="visually-hidden-desktop">{$t('menu.about')}</span>
 				</div></button
 			>

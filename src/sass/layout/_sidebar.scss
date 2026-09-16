@@ -25,9 +25,17 @@
 	left: -250px;
 	height: 100%;
 	width: 250px;
-	border-right: 1px solid var(--border-color);
+	border-right: 1px solid var(--line);
 	z-index: inherit;
-	background-color: var(--base-background);
+	background-color: var(--desk-background);
+
+	.list-item {
+		padding: 1rem;
+
+		svg {
+			opacity: 0.42;
+		}
+	}
 
 	@include mq.mq($from: sprout) {
 		width: fit-content;
@@ -50,7 +58,7 @@
 }
 
 .sidebar-nav-items {
-	margin-top: 2.5rem;
+	margin-top: 1rem;
 }
 
 .sidebar-footer {

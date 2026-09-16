@@ -1,22 +1,19 @@
-import LibraryBig from 'lucide-svelte/icons/library-big';
-import Settings from 'lucide-svelte/icons/settings';
-import SquarePen from 'lucide-svelte/icons/square-pen';
-
+import { Bolt, Layers, SquareText } from '@lucide/svelte';
 import type { MenuItem } from '../types';
 
 export const navMenuItems: MenuItem[] = [
 	{
-		icon: SquarePen,
+		icon: SquareText,
 		label: 'menu.draft',
 		url: '/'
 	},
 	{
-		icon: LibraryBig,
+		icon: Layers,
 		label: 'menu.stash',
 		url: '/stash'
 	},
 	{
-		icon: Settings,
+		icon: Bolt,
 		label: 'menu.settings',
 		url: '/settings'
 	}

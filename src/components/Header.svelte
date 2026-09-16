@@ -55,9 +55,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<button onclick={toggleSidebar} class="sidebar-toggle">
 		<Menu />
 	</button>
-	{#if activeLanguage.value === 'en'}
-		<div class="header-icons">
-			<button onclick={() => togglePokeHelp()}><PencilRuler strokeWidth={1.7} /></button>
-		</div>
-	{/if}
 </div>
