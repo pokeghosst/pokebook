@@ -25,12 +25,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { InputChangeEvent, InputChangeHandler, ToolbarItem } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
-	import Save from 'lucide-svelte/icons/save';
-	import Share2 from 'lucide-svelte/icons/share-2';
-	import Trash2 from 'lucide-svelte/icons/trash-2';
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import toast from 'svelte-5-french-toast';
 	import Workspace from '../components/Workspace.svelte';
+	import { Button } from 'bits-ui';
 
 	let thinking = $state(true);
 
@@ -129,14 +127,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 	let isPoemNotEmpty = $derived(poem.name && poem.text);
 	let actions = $derived([
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
+		{ action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
 		{
-			icon: Share2,
 			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
 			label: $t('workspace.sharePoem'),
 			disabled: !isPoemNotEmpty
 		},
-		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
+		{ action: forgetDraft, label: $t('workspace.forgetPoem') }
 	] satisfies ToolbarItem[]);
 </script>
 
@@ -145,5 +142,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {actions} />
+	<Workspace>
+		{#snippet toolbar()}
+			<Button.Root class="btn primary">Save</Button.Root>
+			<Button.Root class="btn">Share</Button.Root>
+		{/snippet}
+	</Workspace>
 {/if}

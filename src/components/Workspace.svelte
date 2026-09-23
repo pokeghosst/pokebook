@@ -17,25 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { fullWidthPad, padPositions, font } from '$lib/state.svelte';
+	import { font, fullWidthPad } from '$lib/state.svelte';
 	import hotkeys from 'hotkeys-js';
-	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
-	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
-	import { onDestroy, onMount, type ComponentType } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import NotePad from './NotePad.svelte';
 	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	let {
-		actions
-	}: {
-		actions: { icon: ComponentType; action: () => void; label: string }[];
-	} = $props();
+	interface Props {
+		toolbar: Snippet;
+	}
 
-	let views = ['poem', 'note'];
+	let { toolbar }: Props = $props();
 
 	let currentState = $state('');
-	let isNoteToggled = $state(false);
 
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
@@ -48,31 +43,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		hotkeys.unbind('ctrl+e, command+e');
 	});
 
-	function swapViews() {
-		currentState = 'transitioning';
-		setTimeout(function () {
-			// Flip bits and convert them back to numbers with unary plus
-			padPositions.value = [+!padPositions.value[0], +!padPositions.value[1]];
-			currentState = '';
-		}, 300);
-	}
-
 	function expandPoemPad() {
 		fullWidthPad.value = !fullWidthPad.value;
 	}
 </script>
 
-{#snippet pad(state: string)}
-	{#if state === 'poem'}
-		<PoemPad />
-	{:else if state === 'note'}
-		<NotePad />
-	{:else}
-		D'oh!
-	{/if}
-{/snippet}
-
-<!-- <div class="toolbar"><Toolbar {actions} /></div> -->
 <div class="workspace {fullWidthPad.value ? 'l-full-width' : ''} {currentState} {font.value}">
 	<!-- <div class="notebook-container"> -->
 	<!-- <div class="notebook-container-toolbar">
@@ -85,10 +60,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</div> -->
-	{@render pad(views[padPositions.value[0]])}
+	<PoemPad />
 	<!-- </div> -->
 	<!-- <div class="notebook-container note"> -->
 	<button class="notes-toggle">Note</button>
-	{@render pad(views[padPositions.value[1]])}
+	<NotePad />
 	<!-- </div> -->
 </div>
+<Toolbar>{@render toolbar()}</Toolbar>

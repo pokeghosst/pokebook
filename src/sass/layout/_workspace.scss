@@ -11,6 +11,7 @@
 	position: relative;
 	margin: 0 0 0 12px;
 	height: 80vh;
+	flex-grow: 1;
 
 	@include mq.mq($from: seedling) {
 		width: 96%;

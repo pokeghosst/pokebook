@@ -17,63 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { padFonts } from '$lib/constants/PadFonts';
-	import { justification, font } from '$lib/state.svelte';
-	import type { ToolbarItem } from '$lib/types';
-	import { ChevronDown } from 'lucide-svelte';
-	import AlignCenter from 'lucide-svelte/icons/align-center';
-	import AlignLeft from 'lucide-svelte/icons/align-left';
-	import AlignRight from 'lucide-svelte/icons/align-right';
-	import FontSize from './FontSize.svelte';
-	import { t } from '$lib/translations';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
-		actions: ToolbarItem[];
+		children: Snippet;
 	}
 
-	let { actions }: Props = $props();
+	let { children }: Props = $props();
 </script>
 
-<div class="toolbar-menu">
-	<div class="button-group">
-		<button
-			onclick={() => (justification.value = 'left')}
-			class={`button ${justification.value === 'left' ? 'active' : ''}`}
-		>
-			<AlignLeft />
-		</button>
-		<button
-			onclick={() => (justification.value = 'center')}
-			class={`button ${justification.value === 'center' ? 'active' : ''}`}
-		>
-			<AlignCenter />
-		</button>
-		<button
-			onclick={() => (justification.value = 'right')}
-			class={`button ${justification.value === 'right' ? 'active' : ''}`}
-		>
-			<AlignRight />
-		</button>
+<div class="toolbar-wrapper">
+	<div class="toolbar">
+		{@render children()}
 	</div>
-	<div class="settings-select">
-		<select bind:value={font.value} style="margin: 0; min-width: 130px;">
-			{#each padFonts as option, i (`option.label-${i}`)}
-				<option value={option.value}>
-					{['sans', 'serif'].includes(option.value)
-						? $t(`workspace.${option.label}`)
-						: option.label}
-				</option>
-			{/each}
-		</select>
-		<div class="settings-select-chevron-wrapper" style="margin-top: -5px">
-			<ChevronDown />
-		</div>
-	</div>
-	<FontSize />
-	{#each actions as action}
-		<button onclick={() => action.action()} class="button" disabled={action.disabled}>
-			<action.icon />
-			{action.label}
-		</button>
-	{/each}
 </div>

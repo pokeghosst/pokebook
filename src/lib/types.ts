@@ -1,6 +1,5 @@
-import type { Icon } from 'lucide-svelte';
-import type { Component } from 'svelte';
 import type { LucideProps } from '@lucide/svelte';
+import type { Component } from 'svelte';
 
 export type Mutable<T> = {
 	-readonly [K in keyof T]: T[K];
@@ -27,10 +26,10 @@ export interface PoemCacheRecord {
 export type MenuItem = { icon: Component<LucideProps, {}, ''>; label: string; url: string };
 
 export type ToolbarItem = {
-	icon: Component<LucideProps, {}, ''>;
 	action: () => void;
 	label: string;
 	disabled?: boolean;
+	style: 'primary' | 'secondary' | 'muted';
 };
 
 export type InputChangeEvent<T extends HTMLElement> = Event & { currentTarget: EventTarget & T };

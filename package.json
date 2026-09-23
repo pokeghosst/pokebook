@@ -64,6 +64,7 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.46.0",
 		"@zip.js/zip.js": "^2.8.22",
+		"bits-ui": "^2.19.3",
 		"fast-xml-parser": "^5.10.1",
 		"hotkeys-js": "^3.13.7",
 		"lucide-svelte": "^0.474.0",

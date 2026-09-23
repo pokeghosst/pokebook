@@ -1,29 +1,15 @@
-.button {
-	display: flex;
-	gap: 8px;
-	align-items: center;
-	cursor: pointer;
-	padding: 0.35rem;
-	border-radius: 4px;
-	outline: 1px solid var(--border-color-darker);
-	background-color: var(--select-background);
-	color: var(--select-text-color);
+.btn {
+	height: 30px;
+	padding: 0px 15px;
+	border-radius: 999px;
+	font:
+		400 12px / 30px ui-sans-serif,
+		system-ui,
+		sans-serif;
 
-	> svg {
-		width: 16px;
-		height: 16px;
-	}
-
-	&:disabled {
-		opacity: 0.7;
-		cursor: default;
-	}
-
-	&:hover and &:not(:disabled),
-	&.active {
-		background-color: var(--list-item-hover-color);
-		outline: none;
-		color: var(--base-color);
-		outline: 1px solid var(--border-color-darker);
+	&.primary {
+		background: oklch(0.58 0.09 55);
+		color: rgb(255, 253, 248);
+		font-weight: 500;
 	}
 }
