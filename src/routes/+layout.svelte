@@ -124,10 +124,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <Sidebar />
 
 <div class="main-wrapper {sidebarOpen.value ? 'l-sidebar-open' : ''}">
-	<main>
-		<div>
-			<Header />
-			{@render children?.()}
-		</div>
-	</main>
+	<!-- <main> -->
+	<!-- <div> -->
+	<Header />
+	{@render children?.()}
+	<!-- </div> -->
+	<!-- </main> -->
 </div>

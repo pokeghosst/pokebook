@@ -2,11 +2,15 @@
 
 .notebook-container {
 	width: 100%;
-	grid-column: span 1 / span 1;
 	margin-bottom: 1.5rem;
 	vertical-align: top;
 	position: relative;
 	display: inline-block;
+	flex: 1.95 1 0%;
+
+	&.note {
+		flex: 1 1 0%;
+	}
 
 	@include mq.mq($until: seedling) {
 		width: 87vw;

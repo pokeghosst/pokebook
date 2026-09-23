@@ -117,4 +117,5 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		class="paper {justification.value}"
 		id="poem-textarea"
 		bind:this={poemTextarea}></textarea>
+	<!-- <div class="shadow"></div> -->
 </div>

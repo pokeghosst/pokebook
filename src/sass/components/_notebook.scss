@@ -2,6 +2,9 @@
 
 .notebook {
 	$notebook: &;
+	$note-slip: 26px;
+	$note-slip-gap: 8px;
+
 	background-color: var(--paper);
 	border: 1px solid var(--line);
 	border-radius: 4px;
@@ -9,42 +12,41 @@
 		var(--line-lighter) 0px 1px 1px,
 		var(--line-lightest) 0px 22px 44px -26px;
 	padding: 36px 52px 36px 62px;
+	max-height: 85vh;
+	overflow-y: auto;
+	position: relative;
+	scrollbar-width: thin;
+	overscroll-behavior: contain;
+	width: calc(100% - $note-slip-gap - $note-slip);
+	flex: none;
+	padding: 24px 24px 0px 30px;
 
-	&.note {
-		padding: 36px 30px;
-
-		#{$notebook}-header {
-			margin-bottom: 24px;
-			font:
-				400 9.5px / 1 'IBM Plex Mono',
-				monospace;
-			letter-spacing: 0.14em;
-			text-transform: uppercase;
-			color: var(--text-light);
-		}
-	}
-
-	@include mq.mq($until: seedling) {
-		flex: none;
+	@include mq.mq($from: seedling) {
+		flex: 1.95 1 0%;
 	}
 
 	&-header {
-		margin-bottom: 26px;
+		margin-bottom: 20px;
 		display: flex;
 		align-items: baseline;
 		justify-content: space-between;
 
+		@include mq.mq($from: seedling) {
+			margin-bottom: 26px;
+
+			input {
+				font: 500 27px / 1 var(--notebook-font-family);
+			}
+		}
+
 		input {
 			width: 100%;
-			height: 50px;
-			line-height: 50px;
-			border-radius: 5px 5px 0 0;
 			letter-spacing: -0.005em;
 			overflow: hidden;
 			position: relative;
 			z-index: 1;
 			opacity: 1;
-			font: 500 27px / 1 var(--notebook-font-family);
+			font: 500 23px / 1 var(--notebook-font-family);
 			-webkit-text-fill-color: var(--notebook-header-color);
 			color: var(--ink);
 			background-color: inherit;
@@ -56,7 +58,7 @@
 	}
 
 	textarea {
-		font: 400 17.5px / 1.9 var(--notebook-font-family);
+		font: 400 16px / 1.85 var(--notebook-font-family);
 		width: 100%;
 		overflow-y: hidden;
 		resize: none;
@@ -64,18 +66,52 @@
 		color: var(--ink);
 		background-color: inherit;
 		// padding-bottom: 34px;
+
+		@include mq.mq($from: seedling) {
+			font: 400 17.5px / 1.9 var(--notebook-font-family);
+		}
+
+		&.left {
+			text-align: left;
+		}
+
+		&.center {
+			text-align: center;
+		}
+
+		&.right {
+			text-align: right;
+		}
 	}
 
-	textarea.left {
-		text-align: left;
-	}
+	&.note {
+		padding: 36px 30px;
+		flex: 1 1 0%;
 
-	textarea.center {
-		text-align: center;
-	}
+		#{$notebook}-header {
+			margin-bottom: 24px;
+			font:
+				400 9.5px / 1 'IBM Plex Mono',
+				monospace;
+			letter-spacing: 0.14em;
+			text-transform: uppercase;
+			color: var(--text-light);
+		}
 
-	textarea.right {
-		text-align: right;
+		@include mq.mq($until: seedling) {
+			position: absolute;
+			// 	top: 0px;
+			// 	bottom: 0px;
+			// 	right: 0px;
+			width: 280px;
+			right: -280px;
+			// 	background: rgb(247, 242, 232);
+			// 	border-radius: 6px 0px 0px 6px;
+			// 	box-shadow: rgba(70, 55, 32, 0.35) -2px 0px 10px -4px;
+			// 	display: flex;
+			// 	align-items: center;
+			// 	justify-content: center;
+		}
 	}
 }
 
@@ -84,6 +120,7 @@
 	letter-spacing: 0.1em;
 	color: rgba(70, 55, 32, 0.3);
 	text-transform: uppercase;
+	flex-shrink: 0;
 }
 
 // Neo theme overrides

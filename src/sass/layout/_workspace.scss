@@ -1,19 +1,21 @@
 @use '../vendors/mq';
 
 .workspace {
-	width: 92%;
 	margin: 1.25rem auto 5rem auto;
-	white-space: nowrap;
-	display: block;
-	grid-template-columns: 2fr 1fr;
-	gap: 24px;
+	display: flex;
 	transition-property: opacity;
 	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 	transition-duration: 500ms;
 	opacity: 1;
+	overflow-x: clip;
+	position: relative;
+	margin: 0 0 0 12px;
+	height: 80vh;
 
-	@include mq.mq(seedling) {
-		display: grid;
+	@include mq.mq($from: seedling) {
+		width: 96%;
+		gap: 24px;
+		margin: 0 auto;
 	}
 
 	&.l-full-width {

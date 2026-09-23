@@ -1,0 +1,20 @@
+.notes-toggle {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	width: 26px;
+	background: rgb(247, 242, 232);
+	border-radius: 6px 0px 0px 6px;
+	box-shadow: rgba(70, 55, 32, 0.35) -2px 0px 10px -4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	writing-mode: vertical-rl;
+	font:
+		400 9px / 1 'IBM Plex Mono',
+		monospace;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(70, 55, 32, 0.38);
+}

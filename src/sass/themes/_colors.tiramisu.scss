@@ -6,8 +6,9 @@ $tiramisu-brown: hsl(36.316deg, 37%, 20%);
 $theme-light-tiramisu: (
 	// Base
 	color-variables-new.$desk-background: hsl(40deg, 30%, 88.2%),
-	color-variables-new.$paper: hsl(42.857, 100%, 99%),
-	color-variables-new.$ink: hsl(36, 12%, 16%),
+	color-variables-new.$paper: hsl(42.857deg, 100%, 99%),
+	color-variables-new.$paper-light: hsl(40, 48%, 94%),
+	color-variables-new.$ink: hsl(36deg, 12%, 16%),
 	color-variables-new.$text-light: color.change($tiramisu-brown, $alpha: 0.4),
 	// Lines
 	color-variables-new.$line-darker: color.change($tiramisu-brown, $alpha: 0.08),

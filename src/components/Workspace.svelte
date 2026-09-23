@@ -35,6 +35,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	let views = ['poem', 'note'];
 
 	let currentState = $state('');
+	let isNoteToggled = $state(false);
 
 	onMount(() => {
 		hotkeys('ctrl+e, command+e', function () {
@@ -71,10 +72,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {/snippet}
 
-<div class="toolbar"><Toolbar {actions} /></div>
+<!-- <div class="toolbar"><Toolbar {actions} /></div> -->
 <div class="workspace {fullWidthPad.value ? 'l-full-width' : ''} {currentState} {font.value}">
-	<div class="notebook-container">
-		<!-- <div class="notebook-container-toolbar">
+	<!-- <div class="notebook-container"> -->
+	<!-- <div class="notebook-container-toolbar">
 			<div>
 				<button onclick={expandPoemPad}>
 					<ChevronsLeftRight class="round-button" />
@@ -84,9 +85,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 				</button>
 			</div>
 		</div> -->
-		{@render pad(views[padPositions.value[0]])}
-	</div>
-	<div class="notebook-container">
-		{@render pad(views[padPositions.value[1]])}
-	</div>
+	{@render pad(views[padPositions.value[0]])}
+	<!-- </div> -->
+	<!-- <div class="notebook-container note"> -->
+	<button class="notes-toggle">Note</button>
+	{@render pad(views[padPositions.value[1]])}
+	<!-- </div> -->
 </div>
