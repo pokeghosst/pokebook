@@ -121,13 +121,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </Modals>
 
 <Toaster />
-<Sidebar />
+<!-- <Sidebar /> -->
 
-<div class="main-wrapper {sidebarOpen.value ? 'l-sidebar-open' : ''}">
-	<!-- <main> -->
-	<!-- <div> -->
+<div class="app-wrapper">
 	<Header />
 	{@render children?.()}
-	<!-- </div> -->
-	<!-- </main> -->
 </div>

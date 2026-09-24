@@ -1,154 +1,128 @@
 @use '../vendors/mq';
 
 .notebook {
-	$notebook: &;
-	$note-slip: 26px;
-	$note-slip-gap: 8px;
-
-	background-color: var(--paper);
-	border: 1px solid var(--line);
-	border-radius: 4px;
-	box-shadow:
-		var(--line-lighter) 0px 1px 1px,
-		var(--line-lightest) 0px 22px 44px -26px;
-	padding: 36px 52px 36px 62px;
-	max-height: 85vh;
-	overflow-y: auto;
 	position: relative;
-	scrollbar-width: thin;
-	overscroll-behavior: contain;
-	width: calc(100% - $note-slip-gap - $note-slip);
-	flex: none;
-	padding: 24px 24px 0px 30px;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 0;
 
-	@include mq.mq($from: seedling) {
-		flex: 1.95 1 0%;
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 24px;
+		pointer-events: none;
+		background: linear-gradient(transparent, var(--paper) 85%);
 	}
 
-	&-header {
-		margin-bottom: 20px;
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-
-		@include mq.mq($from: seedling) {
-			margin-bottom: 26px;
-
-			input {
-				font: 500 27px / 1 var(--notebook-font-family);
-			}
-		}
-
-		input {
-			width: 100%;
-			letter-spacing: -0.005em;
-			overflow: hidden;
-			position: relative;
-			z-index: 1;
-			opacity: 1;
-			font: 500 23px / 1 var(--notebook-font-family);
-			-webkit-text-fill-color: var(--notebook-header-color);
-			color: var(--ink);
-			background-color: inherit;
-
-			&::placeholder {
-				opacity: 0.5;
-			}
-		}
-	}
-
-	textarea {
-		font: 400 16px / 1.85 var(--notebook-font-family);
+	&-inner {
 		width: 100%;
-		overflow-y: hidden;
-		resize: none;
-		min-height: 60vh;
-		color: var(--ink);
-		background-color: inherit;
-		// padding-bottom: 34px;
-
-		@include mq.mq($from: seedling) {
-			font: 400 17.5px / 1.9 var(--notebook-font-family);
-		}
-
-		&.left {
-			text-align: left;
-		}
-
-		&.center {
-			text-align: center;
-		}
-
-		&.right {
-			text-align: right;
-		}
+		padding: 32px 40px 40px 56px;
 	}
 
 	&.note {
-		padding: 36px 30px;
-		flex: 1 1 0%;
-
-		#{$notebook}-header {
-			margin-bottom: 24px;
-			font:
-				400 9.5px / 1 'IBM Plex Mono',
-				monospace;
-			letter-spacing: 0.14em;
-			text-transform: uppercase;
-			color: var(--text-light);
-		}
-
-		@include mq.mq($until: seedling) {
-			position: absolute;
-			// 	top: 0px;
-			// 	bottom: 0px;
-			// 	right: 0px;
-			width: 280px;
-			right: -280px;
-			// 	background: rgb(247, 242, 232);
-			// 	border-radius: 6px 0px 0px 6px;
-			// 	box-shadow: rgba(70, 55, 32, 0.35) -2px 0px 10px -4px;
-			// 	display: flex;
-			// 	align-items: center;
-			// 	justify-content: center;
-		}
+		border-left: 1px solid rgba(70, 55, 32, 0.1);
 	}
+}
+
+.poem-heading {
+	display: flex;
+	align-items: baseline;
+	gap: 20px;
+	margin-bottom: 22px;
+	min-width: 0;
+}
+
+.poem-title {
+	font-family: var(--serif-font);
+	display: block;
+	font-size: 1.75rem;
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: -0.005em;
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	margin: 0;
+	background: none;
+	border: 0;
+	overflow-wrap: anywhere;
 }
 
 .poem-metrics {
-	font: 400 9.5px / 1 var(--secondary-font);
-	letter-spacing: 0.1em;
-	color: rgba(70, 55, 32, 0.3);
+	font: 400 0.75rem / 1.5 var(--secondary-font);
+	letter-spacing: 0.065em;
 	text-transform: uppercase;
-	flex-shrink: 0;
+	color: #786e61;
+	flex: none;
+	text-align: right;
+	white-space: nowrap;
 }
 
-// Neo theme overrides
-
-.neo-day,
-.neo-night {
-	.notebook-header {
-		border-bottom: 1px solid var(--border-color);
-	}
-
-	.paper {
-		box-shadow: none;
-	}
-
-	.notebook {
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-	}
+.poem-body {
+	display: block;
+	min-height: 180px;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	font-family: var(--serif-font);
+	font-size: 17.5px;
+	font-weight: 400;
+	line-height: 1.9;
+	letter-spacing: 0;
+	background: none;
+	border: 0;
+	overflow: hidden;
+	tab-size: 4;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+	resize: none;
 }
 
-.neo-day {
-	.notebook {
-		box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-	}
+.page-scroll,
+.note-scroll {
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #d7cfc2 transparent;
+	min-height: 0;
+	flex: 1;
+	overscroll-behavior: contain;
 }
 
-.neo-night {
-	.notebook {
-		box-shadow: 0 1px 2px 0 rgb(255 255 255 / 0.05);
-	}
+.note-scroll {
+	padding: 28px 32px 40px;
+}
+
+.note-heading-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 20px;
+	min-height: 23px;
+}
+
+.section-label {
+	font: 400 0.75rem / 1.5 var(--secondary-font);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: #786e61;
+	margin: 0;
+}
+
+.notes-input {
+	display: block;
+	width: 100%;
+	padding: 0;
+	background: none;
+	border: 0;
+	font-family: var(--serif-font);
+	font-size: 1rem;
+	line-height: 1.72;
+	color: #514b42;
+	min-height: 100px;
+	overflow: hidden;
 }

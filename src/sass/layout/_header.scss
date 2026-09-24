@@ -1,27 +1,13 @@
 @use '../vendors/mq';
 
-.header-nav-wrapper {
-	width: 94%;
-	margin: 0 auto;
-	height: 46px;
-	text-align: center;
+.header {
+	grid-column: 1;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-
-	button {
-		align-self: center;
-
-		&:focus {
-			outline: none;
-		}
-
-		svg {
-			width: 24px;
-			height: 24px;
-			color: var(--ink);
-		}
-	}
+	gap: 16px;
+	padding: 0 16px;
+	border-bottom: 1px solid rgba(70, 55, 32, 0.1);
+	min-width: 0;
 }
 
 .header-icons {
@@ -30,8 +16,17 @@
 	gap: 0.75rem;
 }
 
-.sidebar-toggle {
-	@include mq.mq($from: sprout) {
-		display: none;
+.menu-button {
+	width: 40px;
+	height: 40px;
+	display: grid;
+	place-items: center;
+	flex: none;
+	border-radius: 7px;
+	color: #786e61;
+
+	&:hover {
+		background: rgba(70, 55, 32, 0.07);
+		color: #2e2a24;
 	}
 }

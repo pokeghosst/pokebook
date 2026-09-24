@@ -27,8 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import hotkeys from 'hotkeys-js';
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import toast from 'svelte-5-french-toast';
-	import Workspace from '../components/Workspace.svelte';
-	import { Button } from 'bits-ui';
+	import PoemPad from '../components/PoemPad.svelte';
+	import NotePad from '../components/NotePad.svelte';
 
 	let thinking = $state(true);
 
@@ -126,26 +126,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	let isPoemNotEmpty = $derived(poem.name && poem.text);
-	let actions = $derived([
-		{ action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
-		{
-			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem'),
-			disabled: !isPoemNotEmpty
-		},
-		{ action: forgetDraft, label: $t('workspace.forgetPoem') }
-	] satisfies ToolbarItem[]);
 </script>
 
-{#if thinking}
-	<div class="placeholder-text-wrapper">
-		<p>Loading...</p>
-	</div>
-{:else}
-	<Workspace>
-		{#snippet toolbar()}
-			<Button.Root class="btn primary">Save</Button.Root>
-			<Button.Root class="btn">Share</Button.Root>
-		{/snippet}
-	</Workspace>
-{/if}
+<main class="workspace">
+	<PoemPad />
+	<NotePad />
+</main>

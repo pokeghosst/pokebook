@@ -1,5 +1,15 @@
 @use '../vendors/mq';
 
+.app-wrapper {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: 52px minmax(0, 1fr);
+	height: 100vh;
+	background: var(--paper);
+	overflow: hidden;
+}
+
 .main-wrapper {
 	z-index: 10;
 	display: flex;

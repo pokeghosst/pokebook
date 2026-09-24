@@ -62,13 +62,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<div class="notebook note">
-	<div class="notebook-header">{$t('workspace.note')}</div>
-	<textarea
-		value={note.note}
-		oninput={handleNoteChange}
-		class="paper"
-		id="note-textarea"
-		style={`font-size: ${fontSize.value}px`}
-		bind:this={noteTextarea}></textarea>
-</div>
+<sidebar class="notebook note">
+	<div class="note-scroll">
+		<div class="note-heading-row"><h2 class="section-label">{$t('workspace.note')}</h2></div>
+		<textarea
+			value={note.note}
+			oninput={handleNoteChange}
+			class="notes-input"
+			style={`font-size: ${fontSize.value}px`}
+			bind:this={noteTextarea}></textarea>
+	</div>
+</sidebar>

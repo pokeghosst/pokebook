@@ -51,8 +51,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<div class="header-nav-wrapper">
-	<button onclick={toggleSidebar} class="sidebar-toggle">
-		<Menu />
+<header class="header">
+	<button onclick={toggleSidebar} class="menu-button">
+		<Menu size={18} />
 	</button>
-</div>
+</header>

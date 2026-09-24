@@ -67,4 +67,3 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	<NotePad />
 	<!-- </div> -->
 </div>
-<Toolbar>{@render toolbar()}</Toolbar>

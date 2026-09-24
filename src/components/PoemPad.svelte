@@ -99,23 +99,27 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 </script>
 
-<div class="notebook" id="poem-notebook">
-	<div class="notebook-header">
-		<input
-			value={poem.name}
-			onbeforeinput={sanitizeTitle}
-			oninput={(e) => {
-				handleNameChange(sanitizeTitle(e));
-			}}
-			placeholder={$t('workspace.unnamed')}
-		/>
-		<div class="poem-metrics">{stats.lines} lines</div>
+<section class="notebook" id="poem-notebook">
+	<div class="page-scroll">
+		<div class="notebook-inner">
+			<div class="poem-heading">
+				<input
+					value={poem.name}
+					onbeforeinput={sanitizeTitle}
+					oninput={(e) => {
+						handleNameChange(sanitizeTitle(e));
+					}}
+					placeholder={$t('workspace.unnamed')}
+					class="poem-title"
+				/>
+				<div class="poem-metrics">{stats.lines} lines</div>
+			</div>
+
+			<textarea
+				value={poem.text}
+				class="poem-body"
+				oninput={handleTextChange}
+				bind:this={poemTextarea}></textarea>
+		</div>
 	</div>
-	<textarea
-		value={poem.text}
-		oninput={handleTextChange}
-		class="paper {justification.value}"
-		id="poem-textarea"
-		bind:this={poemTextarea}></textarea>
-	<!-- <div class="shadow"></div> -->
-</div>
+</section>
