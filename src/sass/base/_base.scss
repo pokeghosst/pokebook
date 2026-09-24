@@ -5,7 +5,7 @@
 
 body {
 	background-color: var(--paper);
-	color: var(--base-color);
+	color: var(--ink);
 	font-family:
 		Lato,
 		system-ui,
@@ -19,4 +19,9 @@ body {
 		'Open Sans',
 		'Helvetica Neue',
 		sans-serif;
+}
+
+// TODO - !!!
+:focus-visible {
+	outline: 2px solid var(--accent);
 }

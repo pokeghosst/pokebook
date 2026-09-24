@@ -25,12 +25,5 @@ export interface PoemCacheRecord {
 
 export type MenuItem = { icon: Component<LucideProps, {}, ''>; label: string; url: string };
 
-export type ToolbarItem = {
-	action: () => void;
-	label: string;
-	disabled?: boolean;
-	style: 'primary' | 'secondary' | 'muted';
-};
-
 export type InputChangeEvent<T extends HTMLElement> = Event & { currentTarget: EventTarget & T };
 export type InputChangeHandler<T extends HTMLElement> = (e: InputChangeEvent<T>) => void;

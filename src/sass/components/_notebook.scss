@@ -50,6 +50,11 @@
 	background: none;
 	border: 0;
 	overflow-wrap: anywhere;
+
+	&:focus {
+		outline: 0;
+		box-shadow: 0 1px 0 #d8cbbb;
+	}
 }
 
 .poem-metrics {
@@ -80,6 +85,14 @@
 	white-space: pre-wrap;
 	overflow-wrap: break-word;
 	resize: none;
+
+	&:focus {
+		outline: 1px solid #d8cbbb;
+		outline-offset: 12px;
+	}
+}
+
+textarea.poem-body:focus-visible {
 }
 
 .page-scroll,
@@ -125,4 +138,10 @@
 	color: #514b42;
 	min-height: 100px;
 	overflow: hidden;
+	resize: none;
+
+	&:focus {
+		outline: 1px solid #d8cbbb;
+		outline-offset: 10px;
+	}
 }

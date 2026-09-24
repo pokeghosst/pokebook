@@ -17,10 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { activeLanguage, sidebarOpen, pokehelp } from '$lib/state.svelte';
+	import { pokehelp, sidebarOpen } from '$lib/state.svelte';
 	import hotkeys from 'hotkeys-js';
 	import Menu from 'lucide-svelte/icons/menu';
-	import PencilRuler from 'lucide-svelte/icons/pencil-ruler';
 	import { onDestroy, onMount } from 'svelte';
 
 	onMount(() => {
@@ -53,6 +52,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <header class="header">
 	<button onclick={toggleSidebar} class="menu-button">
-		<Menu size={18} />
+		<Menu size={18} strokeWidth={1.5} />
 	</button>
 </header>
