@@ -18,6 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import { pokehelp, sidebarOpen } from '$lib/state.svelte';
+	import { Share } from '@lucide/svelte';
+	import { Button } from 'bits-ui';
 	import hotkeys from 'hotkeys-js';
 	import Menu from 'lucide-svelte/icons/menu';
 	import { onDestroy, onMount } from 'svelte';
@@ -51,7 +53,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 </script>
 
 <header class="header">
-	<button onclick={toggleSidebar} class="menu-button">
+	<Button.Root onclick={toggleSidebar} class="menu-button">
 		<Menu size={18} strokeWidth={1.5} />
-	</button>
+	</Button.Root>
+	<Button.Root class="header-share">
+		<Share size={15} strokeWidth={1.5} />Share
+	</Button.Root>
 </header>
