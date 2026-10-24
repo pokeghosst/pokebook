@@ -123,15 +123,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		await goto('/stash', { invalidateAll: true });
 	}
 
-	let actions = [
-		{
-			icon: Share2,
-			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem')
-		},
-		{ icon: Trash2, action: deletePoemAction, label: $t('workspace.forgetPoem') }
-	];
-
 	async function deleteTmpFile(fileUri: string) {
 		try {
 			await deletePoem(`${fileUri}.tmp`);
@@ -146,5 +137,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {actions} />
+	<Workspace>
+		{#snippet toolbar()}
+			<button
+				class="button"
+				onclick={() => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard'))}
+				><Share2 /> {$t('workspace.sharePoem')}</button
+			>
+			<button class="button" onclick={deletePoemAction}
+				><Trash2 /> {$t('workspace.forgetPoem')}</button
+			>
+		{/snippet}
+	</Workspace>
 {/if}

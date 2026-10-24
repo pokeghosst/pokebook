@@ -22,7 +22,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	import type { OnlyNote, OnlyPoem } from '$lib/schema/poem.schema';
 	import { savePoem } from '$lib/services/poem.service';
 	import { t } from '$lib/translations';
-	import type { InputChangeEvent, InputChangeHandler, ToolbarItem } from '$lib/types';
+	import type { InputChangeEvent, InputChangeHandler } from '$lib/types';
 	import { GLOBAL_TOAST_POSITION, GLOBAL_TOAST_STYLE } from '$lib/util/constants';
 	import hotkeys from 'hotkeys-js';
 	import Save from 'lucide-svelte/icons/save';
@@ -128,16 +128,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	}
 
 	let isPoemNotEmpty = $derived(poem.name && poem.text);
-	let actions = $derived([
-		{ icon: Save, action: stashPoem, label: $t('workspace.savePoem'), disabled: !isPoemNotEmpty },
-		{
-			icon: Share2,
-			action: () => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard')),
-			label: $t('workspace.sharePoem'),
-			disabled: !isPoemNotEmpty
-		},
-		{ icon: Trash2, action: forgetDraft, label: $t('workspace.forgetPoem') }
-	] satisfies ToolbarItem[]);
 </script>
 
 {#if thinking}
@@ -145,5 +135,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 		<p>Loading...</p>
 	</div>
 {:else}
-	<Workspace {actions} />
+	<Workspace>
+		{#snippet toolbar()}
+			<button class="button" onclick={stashPoem} disabled={!isPoemNotEmpty}
+				><Save /> {$t('workspace.savePoem')}</button
+			>
+			<button
+				class="button"
+				onclick={() => sharePoem(poem.name, poem.text, $t('toasts.poemCopiedToClipboard'))}
+				disabled={!isPoemNotEmpty}><Share2 /> {$t('workspace.sharePoem')}</button
+			>
+			<button class="button" onclick={forgetDraft}><Trash2 /> {$t('workspace.forgetPoem')}</button>
+		{/snippet}
+	</Workspace>
 {/if}

@@ -17,20 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import { fullWidthPad, padPositions, font } from '$lib/state.svelte';
+	import { font, fullWidthPad, padPositions } from '$lib/state.svelte';
 	import hotkeys from 'hotkeys-js';
 	import ArrowRightLeft from 'lucide-svelte/icons/arrow-right-left';
 	import ChevronsLeftRight from 'lucide-svelte/icons/chevrons-left-right';
-	import { onDestroy, onMount, type ComponentType } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import NotePad from './NotePad.svelte';
 	import PoemPad from './PoemPad.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	let {
-		actions
-	}: {
-		actions: { icon: ComponentType; action: () => void; label: string }[];
-	} = $props();
+	interface Props {
+		toolbar: Snippet;
+	}
+
+	let { toolbar }: Props = $props();
 
 	let views = ['poem', 'note'];
 
@@ -71,7 +71,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 	{/if}
 {/snippet}
 
-<div class="toolbar"><Toolbar {actions} /></div>
+<Toolbar>{@render toolbar()}</Toolbar>
 <div class="workspace {fullWidthPad.value ? 'l-full-width' : ''} {currentState} {font.value}">
 	<div class="notebook-container">
 		<div class="notebook-container-toolbar">
